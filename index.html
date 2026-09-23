@@ -1505,10 +1505,22 @@ function closeTool(){
 }
 
 /* ---- Breathing (Suspiro Fisiológico de Huberman) ---- */
+const BREATH_SEQUENCE = [
+  {label:'Inhala', ms:2500},
+  {label:'Inhala corto', ms:1000},
+  {label:'Exhala lento', ms:7000}
+];
+function stepBreathCycle(circleEl, idx){
+  const step = BREATH_SEQUENCE[idx % BREATH_SEQUENCE.length];
+  circleEl.textContent = step.label;
+  circleEl.classList.toggle('grow', step.label !== 'Exhala lento');
+  const t = setTimeout(()=>stepBreathCycle(circleEl, idx+1), step.ms);
+  toolTimers.push(t);
+}
 function startBreath(seconds){
   openTool('Suspiro Fisiológico', `
     <div class="card" style="text-align:center;">
-      <p class="desc">Inhala profundo por la nariz, una segunda inhalación corta, y exhala lentamente por la boca hasta vaciar los pulmones.</p>
+      <p class="desc">Inhala profundo por la nariz (2-3s), una segunda inhalación corta (1s), y exhala lentamente por la boca (6-8s) hasta vaciar los pulmones.</p>
       <div class="breath-circle" id="breathCircle">Inhala</div>
       <div class="timer-big" id="breathTimer">${seconds}</div>
       <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
@@ -1517,19 +1529,13 @@ function startBreath(seconds){
   let remaining = seconds;
   const circle = document.getElementById('breathCircle');
   const timerEl = document.getElementById('breathTimer');
-  let phase = 0;
-  const cyclePhases = ['Inhala x2','Mantén','Exhala largo'];
-  const t1 = setInterval(()=>{
-    phase = (phase+1) % cyclePhases.length;
-    circle.textContent = cyclePhases[phase];
-    circle.classList.toggle('grow', phase!==2);
-  }, 2000);
+  stepBreathCycle(circle, 0);
   const t2 = setInterval(()=>{
     remaining--;
     timerEl.textContent = remaining;
     if(remaining<=0){ clearToolTimers(); closeTool(); }
   }, 1000);
-  toolTimers.push(t1, t2);
+  toolTimers.push(t2);
 }
 
 /* ---- Parar y Decidir (S.T.O.P. + Semáforo + Preguntas de Emergencia, consolidados) ---- */
@@ -2060,20 +2066,15 @@ function renderResetStep(){
       </div>
       <div class="card" style="text-align:left;">${chips}</div>
       <button class="btn btn-amber" onclick="if(document.getElementById('resetSenalInput')) resetSenal=document.getElementById('resetSenalInput').value; resetGoto(2);">Continuar</button>`;
-    let remaining=30, phase=0;
-    const cyclePhases = ['Inhala x2','Mantén','Exhala largo'];
+    let remaining=30;
     const circle = document.getElementById('resetBreathCircle');
     const timerEl = document.getElementById('resetBreathTimer');
-    const t1 = setInterval(()=>{
-      phase=(phase+1)%cyclePhases.length;
-      circle.textContent = cyclePhases[phase];
-      circle.classList.toggle('grow', phase!==2);
-    },2000);
+    stepBreathCycle(circle, 0);
     const t2 = setInterval(()=>{
       remaining--; timerEl.textContent = Math.max(remaining,0);
       if(remaining<=0){ clearToolTimers(); }
     },1000);
-    toolTimers.push(t1,t2);
+    toolTimers.push(t2);
   }
   else if(resetStep===2){
     body.innerHTML = `
