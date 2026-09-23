@@ -1452,11 +1452,14 @@ function borrarSepa(id){
   if(editingSepaId===id) cancelarEdicionSepa();
   save(); renderSepaHistorial();
 }
+let sepaHistorialLimit = 10;
+function verMasSepa(){ sepaHistorialLimit += 10; renderSepaHistorial(); }
 function renderSepaHistorial(){
   renderPatrones();
   const wrap = document.getElementById('sepaHistorial');
   if(!state.sepaEntries.length){ wrap.innerHTML = '<div class="empty-state">Aún no hay registros. ¡Anota tu primer S‑E‑P‑A!</div>'; return; }
-  wrap.innerHTML = state.sepaEntries.map(e=>{
+  const visibles = state.sepaEntries.slice(0, sepaHistorialLimit);
+  wrap.innerHTML = visibles.map(e=>{
     const emos = e.emociones || (e.emocion ? [e.emocion] : []);
     const emosTxt = emos.map(id=>`${emoji(id)} ${EMOTIONS.find(x=>x.id===id)?.nombre||''}`).join(' · ');
     return `
@@ -1469,7 +1472,7 @@ function renderSepaHistorial(){
       <p><b>P+:</b> ${escapeHtml(e.pensC)}</p>
       <p><b>A:</b> ${escapeHtml(e.accion)}</p>
     </div>`;
-  }).join('');
+  }).join('') + (state.sepaEntries.length > sepaHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasSepa()">Mostrar más</button>` : '');
 }
 renderSepaHistorial();
 
@@ -2004,6 +2007,8 @@ let resetPacto = '';
 let resetAprendizaje = '', resetObservacion = '';
 let checkinState = [];
 let resetCheckinItems = [];
+let resetHistorialLimit = 5;
+function verMasReset(){ resetHistorialLimit += 5; renderResetStep(); }
 
 function saveResetProgress(){
   if(typeof resetStep!=='number' || resetStep<1){ return; }
@@ -2173,7 +2178,7 @@ function renderResetStep(){
         <span class="badge amber">Historial</span>
         <h3>🔄 Sesiones Reset</h3>
       </div>
-      ${state.resetHistory.length ? state.resetHistory.map(r=>`
+      ${state.resetHistory.length ? state.resetHistory.slice(0, resetHistorialLimit).map(r=>`
         <details class="help-item">
           <summary>${escapeHtml(r.fecha)}${r.senal?' · '+escapeHtml(r.senal):''}</summary>
           <div class="help-body">
@@ -2189,7 +2194,7 @@ function renderResetStep(){
             <p><b>Pacto de permanencia:</b> ${escapeHtml(r.pacto)||'—'}</p>
             ${r.micro ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="repetirAjuste('${r.micro.replace(/'/g,"\\'")}','${(r.senal||'').replace(/'/g,"\\'")}')">🔁 Repetir este ajuste</button>` : ''}
           </div>
-        </details>`).join('') : '<div class="card empty-state">Aún no has completado ninguna sesión Reset.</div>'}
+        </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : '<div class="card empty-state">Aún no has completado ninguna sesión Reset.</div>'}
 
       <div class="card">
         <h3>📋 Historial de Check-ins</h3>
