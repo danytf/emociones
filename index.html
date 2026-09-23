@@ -164,6 +164,7 @@ main{
 .tool-group.relief{border-left:5px solid var(--calm-blue);}
 .tool-group.anchor{border-left:5px solid var(--success-green);}
 .tool-group.tracking{border-left:5px solid var(--reset-amber);}
+.kit-summary{border-left:5px solid var(--reset-amber);}
 .tool-group.tracking .tool-cards{grid-template-columns:minmax(min(320px,100%),480px);}
 #sepaHistorial{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:10px;align-content:start;}
 @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
@@ -807,7 +808,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <h3>1. Contexto</h3>
       <label>S · Situación</label>
       <p class="desc" style="margin-top:-6px;">¿Qué está pasando realmente?</p>
-      <select id="sepaSituacion">
+      <select id="sepaSituacion" onchange="toggleSituacionOtra()">
         <option>Permiso difícil</option>
         <option>Zona con poco flujo</option>
         <option>Racha de noes seguidos</option>
@@ -818,6 +819,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <option>Cambio de zona o ubicación</option>
         <option>Otra</option>
       </select>
+      <div id="sepaSituacionOtraWrap" style="display:none;">
+        <input type="text" id="sepaSituacionOtra" placeholder="Describe brevemente la situación">
+      </div>
 
       <label>E · Emoción sentida</label>
       <p class="desc" style="margin-top:-6px;">¿Qué estoy sintiendo?</p>
@@ -910,7 +914,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <button class="close-x" onclick="closeHelp()">✕</button>
   </div>
   <div class="overlay-body">
-    <p class="desc" style="margin-bottom:14px;">Qué hace cada parte de la app y cuándo usarla. Todo lo que registres se guarda solo en este dispositivo (no se envía a ningún sitio).</p>
+    <p class="desc" style="margin-bottom:4px;">Qué hace cada parte de la app y cuándo usarla. Todo lo que registres se guarda solo en este dispositivo (no se envía a ningún sitio).</p>
+    <p class="desc" style="margin-bottom:14px;font-size:12.5px;">Estos datos pueden perderse si borras los datos del navegador o cambias de dispositivo. Puedes exportarlos desde <b>💾 Mis datos</b>, más abajo.</p>
 
     <details class="help-item" open>
       <summary>🚀 ¿Por dónde empiezo?</summary>
@@ -1003,7 +1008,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <li><b>T</b>estea ese cambio durante 10 oportunidades de abordaje sin juzgar el resultado.</li>
         </ul>
         <p>Al cerrar el protocolo hay una guía rápida <b>PARA / REVISA / PIDE</b> y un <b>Pacto de permanencia</b> para escribir tu compromiso concreto para el próximo turno.</p>
-        <p>El icono 🎒 abre en cualquier momento el <b>Kit de Emergencia del Captador</b>: tu plan personal antes de necesitarlo — señales de alerta que sueles notar, la herramienta con la que te regulas, el ajuste técnico que aplicas y a quién pides apoyo si sigues atascado.</p>
+        <p>El icono 🎒 abre en cualquier momento el <b>Kit de Emergencia del Captador</b>: tu plan personal antes de necesitarlo — señales de alerta que sueles notar, la herramienta con la que te regulas, el ajuste técnico que aplicas y a quién pides apoyo si sigues atascado. El botón <b>🚨 Activar mi plan</b> abre directamente la herramienta que hayas elegido.</p>
       </div>
     </details>
 
@@ -1011,6 +1016,19 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <summary>🌓 Modo claro / oscuro</summary>
       <div class="help-body">
         <p>El icono de la cabecera cambia el tema de la app para adaptarse a la luz ambiente (por ejemplo, modo oscuro al anochecer o pantalla muy iluminada bajo sol directo con modo claro).</p>
+      </div>
+    </details>
+
+    <details class="help-item">
+      <summary>💾 Mis datos</summary>
+      <div class="help-body">
+        <p class="desc">La app funciona sin conexión y guarda todo <b>solo en este dispositivo</b>. Eso significa que <b>no hay copia de seguridad automática</b>: si borras los datos del navegador o cambias de móvil/tablet, se pierden.</p>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn btn-navy" onclick="exportarDatos()">⬇️ Exportar datos</button>
+          <button class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
+          <button class="btn btn-outline" style="color:var(--alert-coral);" onclick="borrarTodosDatos()">🗑️ Borrar todos los datos</button>
+        </div>
+        <input type="file" id="importDatosInput" accept="application/json" style="display:none;" onchange="importarDatos(this)">
       </div>
     </details>
   </div>
@@ -1048,6 +1066,38 @@ if(!state.confidenceAnchors){
 if(state.resetProgress===undefined) state.resetProgress = null;
 if(!state.resetHistory) state.resetHistory = [];
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+/* ============ MIS DATOS: exportar / importar / borrar ============ */
+function exportarDatos(){
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `wesser-datos-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function importarDatos(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    let imported;
+    try{ imported = JSON.parse(e.target.result); }
+    catch(err){ alert('El archivo no es un JSON válido.'); input.value=''; return; }
+    if(!confirm('Esto reemplazará todos tus datos actuales por los del archivo importado. ¿Continuar?')){ input.value=''; return; }
+    state = imported;
+    save();
+    alert('Datos importados correctamente. La página se recargará.');
+    location.reload();
+  };
+  reader.readAsText(file);
+}
+function borrarTodosDatos(){
+  if(!confirm('Esto borrará TODOS tus datos guardados en este dispositivo (diario, checkpoints, historial de Reset, kit, anclajes...). Esta acción no se puede deshacer. ¿Seguro que quieres continuar?')) return;
+  localStorage.removeItem(LS_KEY);
+  location.reload();
+}
 
 /* ============ THEME ============ */
 function applyTheme(){
@@ -1133,6 +1183,26 @@ const REENCUADRES = {
   asco:'Puedo sentir rechazo sin reaccionar impulsivamente. Mantengo la calma y sigo tratando a la otra persona con respeto.',
   generico:'Es una situación difícil pero con técnica salen socios. El rechazo no es personal. Ajusto mi ritmo.'
 };
+const SITUACION_HOOKS = {
+  'Permiso difícil':'Este permiso concreto está siendo más difícil de lo habitual.',
+  'Zona con poco flujo':'El flujo de gente es bajo ahora mismo, y eso no depende de mi técnica.',
+  'Racha de noes seguidos':'Llevo varios noes seguidos, y eso no determina lo que pasará en el siguiente abordaje.',
+  'Lluvia / mal tiempo':'El tiempo está complicando la jornada, pero no cambia cómo puedo abordar.',
+  'Transeúnte borde':'Esa persona ha reaccionado mal, y eso habla de ella, no de mi trabajo.',
+  'Comparación con compañeros':'Comparar mi resultado con el de otro compañero ahora mismo no me da información útil.',
+  'Presión por el objetivo':'Sentir presión por el objetivo es normal, pero no tiene que decidir cómo abordo a la siguiente persona.',
+  'Cambio de zona o ubicación':'Es una zona nueva y necesito tiempo para adaptarme; no es una prueba definitiva.',
+  'Otra':'Esto es una situación puntual, no una conclusión sobre mi capacidad.'
+};
+const PENSAMIENTO_HOOKS = {
+  'No podré':'Todavía no sé cómo va a salir. Ahora mismo solo estoy anticipando.',
+  'Esta zona está quemada':'Una misma zona puede rendir distinto según el día y el momento.',
+  'Nadie quiere colaborar':'Hoy me está costando más, pero no todas las personas van a decir que no.',
+  'Es culpa del responsable':'Hay factores que no dependen de mí, y también hay margen en lo que sí controlo.',
+  'Siempre hace lo mismo':'Cada turno es distinto, aunque ahora se parezca a otros días difíciles.',
+  'No vale la pena':'La sensación de que no vale la pena es temporal, no un hecho.',
+  '¿Y si me voy a 0?':'Centrarme en el resultado final ahora no me ayuda a mejorar el siguiente abordaje.'
+};
 
 function renderWheel(){
   const grid = document.getElementById('wheelGrid');
@@ -1181,17 +1251,26 @@ function renderEmocionChips(){
 renderEmocionChips();
 
 function sugerirReencuadre(){
-  const txt = selectedEmociones.length ? REENCUADRES[selectedEmociones[0]] : REENCUADRES.generico;
-  document.getElementById('sepaPensConstructivo').value = txt;
+  const situacion = document.getElementById('sepaSituacion').value;
+  const pensD = document.getElementById('sepaPensDestructivo').value;
+  const emoTxt = selectedEmociones.length ? REENCUADRES[selectedEmociones[0]] : REENCUADRES.generico;
+  const partes = [SITUACION_HOOKS[situacion], PENSAMIENTO_HOOKS[pensD], emoTxt].filter(Boolean);
+  document.getElementById('sepaPensConstructivo').value = partes.join(' ');
 }
 function insertAccion(txt){
   const el = document.getElementById('sepaAccion');
   el.value = el.value ? el.value + '. ' + txt : txt;
 }
 
+function toggleSituacionOtra(){
+  const isOtra = document.getElementById('sepaSituacion').value === 'Otra';
+  document.getElementById('sepaSituacionOtraWrap').style.display = isOtra ? 'block' : 'none';
+}
 let editingSepaId = null;
 function guardarSepa(){
-  const situacion = document.getElementById('sepaSituacion').value;
+  const situacionSel = document.getElementById('sepaSituacion').value;
+  const situacionOtra = document.getElementById('sepaSituacionOtra').value.trim();
+  const situacion = (situacionSel==='Otra' && situacionOtra) ? situacionOtra : situacionSel;
   const pDLista = document.getElementById('sepaPensDestructivo').value;
   const pDLibre = document.getElementById('sepaPensDestructivoLibre').value.trim();
   const pensD = pDLibre || pDLista;
@@ -1215,6 +1294,8 @@ function guardarSepa(){
   save();
   selectedEmociones = [];
   document.querySelectorAll('#sepaEmocionChips .chip').forEach(x=>x.classList.remove('selected'));
+  document.getElementById('sepaSituacionOtra').value='';
+  toggleSituacionOtra();
   document.getElementById('sepaPensDestructivoLibre').value='';
   document.getElementById('sepaPensConstructivo').value='';
   document.getElementById('sepaAccion').value='';
@@ -1224,7 +1305,11 @@ function editarSepa(id){
   const e = state.sepaEntries.find(x=>x.id===id);
   if(!e) return;
   editingSepaId = id;
-  document.getElementById('sepaSituacion').value = e.situacion;
+  const situacionSelect = document.getElementById('sepaSituacion');
+  const situacionMatches = Array.from(situacionSelect.options).some(o=>o.value===e.situacion);
+  situacionSelect.value = situacionMatches ? e.situacion : 'Otra';
+  document.getElementById('sepaSituacionOtra').value = situacionMatches ? '' : (e.situacion||'');
+  toggleSituacionOtra();
   selectedEmociones = [...(e.emociones||[])];
   document.querySelectorAll('#sepaEmocionChips .chip').forEach(ch=>{
     ch.classList.toggle('selected', selectedEmociones.includes(ch.dataset.id));
@@ -1606,6 +1691,32 @@ function saveKitPlan(){
 
 function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
 
+const KIT_TOOL_MATCHERS = [
+  {re:/suspiro|respira/i, fn:()=>startBreath(60)},
+  {re:/parar y decidir|stop/i, fn:()=>startPauseDecision()},
+  {re:/grounding|5.?4.?3.?2.?1/i, fn:()=>startGrounding()},
+  {re:/tense|release|tensa/i, fn:()=>startTense()},
+  {re:/confianza/i, fn:()=>openAnchor()},
+  {re:/anclaje visual/i, fn:()=>openVisualAnchor()},
+  {re:/checkpoint/i, fn:()=>openCheckpoint()}
+];
+function activarKitPlan(){
+  const txt = (state.kitHerramienta||'').trim();
+  if(!txt) return;
+  const match = KIT_TOOL_MATCHERS.find(m=>m.re.test(txt));
+  if(match){ match.fn(); }
+  else {
+    openModal(`
+      <h2>🚨 Mi protocolo personal</h2>
+      <p class="desc"><b>Me regulo con:</b> ${txt}</p>
+      ${state.kitAjuste?`<p class="desc"><b>Ajusto:</b> ${state.kitAjuste}</p>`:''}
+      ${state.kitPersona?`<p class="desc"><b>Pido ayuda a:</b> ${state.kitPersona}</p>`:''}
+      ${state.kitPedira?`<p class="desc"><b>Y le pido:</b> ${state.kitPedira}</p>`:''}
+      <button class="btn btn-outline" onclick="closeModal()">Cerrar</button>
+    `);
+  }
+}
+
 /* ============ MODO RESET FLOW (Protocolo R.E.S.E.T.) ============ */
 const MICROAUDITORIA = {
   '🗣️ Ritmo y voz': ['Ralentizar el saludo','Hacer una pausa antes de continuar','Mantener un ritmo más calmado al hablar'],
@@ -1745,7 +1856,19 @@ function renderResetStep(){
         <h3>🎒 Prepara tu plan antes de necesitarlo</h3>
         <p class="desc">Cuando aparezcan tus primeras señales de mala racha, <b>no improvises</b>. Decide de antemano qué harás, qué ajustarás y a quién pedirás ayuda.</p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Primera señal → activo mi plan. No espero a estar al límite.</b></p>
+      </div>
 
+      <div class="card kit-summary">
+        <h3>🎒 Mi protocolo personal</h3>
+        ${state.kitSenales.length ? `<p class="desc"><b>Cuando noto:</b> ${state.kitSenales.join(' · ')}</p>` : ''}
+        <p class="desc"><b>Me regulo con:</b> ${state.kitHerramienta || '—'}</p>
+        <p class="desc"><b>Ajusto:</b> ${state.kitAjuste || '—'}</p>
+        <p class="desc"><b>Pido ayuda a:</b> ${state.kitPersona || '—'}</p>
+        <p class="desc"><b>Y le pido:</b> ${state.kitPedira || '—'}</p>
+        ${state.kitHerramienta ? `<button class="btn btn-primary" style="margin-top:6px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa "Me regulo con" abajo para poder activar tu plan con un toque.</p>`}
+      </div>
+
+      <div class="card">
         <p><b>🚨 Mis señales de alerta</b></p>
         <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una mala dinámica.</p>
         <div class="chip-group" id="kitSenalChips">${CHECKIN_TITLES.map(s=>`<div class="chip ${state.kitSenales.includes(s)?'selected':''}" onclick="toggleKitSenal('${s.replace(/'/g,"\\'")}')">${s}</div>`).join('')}</div>
