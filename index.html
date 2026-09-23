@@ -1749,7 +1749,6 @@ function toggleKitSenal(s){
   renderResetStep();
 }
 function saveKitPlan(){
-  state.kitHerramienta = document.getElementById('kitHerramientaInput').value.trim();
   state.kitAjuste = document.getElementById('kitAjusteInput').value.trim();
   state.kitPersona = document.getElementById('kitPersonaInput').value.trim();
   state.kitPedira = document.getElementById('kitPediraInput').value.trim();
@@ -1759,6 +1758,20 @@ function saveKitPlan(){
 
 function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
 
+const KIT_HERRAMIENTAS_FIJAS = [
+  'Suspiro fisiológico','Parar y decidir','Grounding 5-4-3-2-1','Tense & Release',
+  'Anclaje de confianza','Anclaje visual','Checkpoint Mental','Otro recurso personal'
+];
+const KIT_TOOL_EXACT = {
+  'Suspiro fisiológico': ()=>startBreath(60),
+  'Parar y decidir': ()=>startPauseDecision(),
+  'Grounding 5-4-3-2-1': ()=>startGrounding(),
+  'Tense & Release': ()=>startTense(),
+  'Anclaje de confianza': ()=>openAnchor(),
+  'Anclaje visual': ()=>openVisualAnchor(),
+  'Checkpoint Mental': ()=>openCheckpoint()
+};
+/* Coincidencia por palabras clave: solo como respaldo para datos antiguos guardados como texto libre */
 const KIT_TOOL_MATCHERS = [
   {re:/suspiro|respira/i, fn:()=>startBreath(60)},
   {re:/parar y decidir|stop/i, fn:()=>startPauseDecision()},
@@ -1768,9 +1781,22 @@ const KIT_TOOL_MATCHERS = [
   {re:/anclaje visual/i, fn:()=>openVisualAnchor()},
   {re:/checkpoint/i, fn:()=>openCheckpoint()}
 ];
+function onKitHerramientaChange(){
+  const val = document.getElementById('kitHerramientaSelect').value;
+  const wrap = document.getElementById('kitHerramientaOtraWrap');
+  if(val === 'Otro recurso personal'){
+    wrap.style.display = 'block';
+    state.kitHerramienta = document.getElementById('kitHerramientaOtraInput').value.trim();
+  } else {
+    wrap.style.display = 'none';
+    state.kitHerramienta = val;
+  }
+  save();
+}
 function activarKitPlan(){
   const txt = (state.kitHerramienta||'').trim();
   if(!txt) return;
+  if(KIT_TOOL_EXACT[txt]){ KIT_TOOL_EXACT[txt](); return; }
   const match = KIT_TOOL_MATCHERS.find(m=>m.re.test(txt));
   if(match){ match.fn(); }
   else {
@@ -1950,7 +1976,12 @@ function renderResetStep(){
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
         <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
         <label>Mi herramienta</label>
-        <input type="text" id="kitHerramientaInput" value="${escapeHtml(state.kitHerramienta)}" placeholder="Ej: Suspiro fisiológico, Parar y decidir, Grounding 5-4-3-2-1…" oninput="state.kitHerramienta=this.value;save();">
+        <select id="kitHerramientaSelect" onchange="onKitHerramientaChange()">
+          ${KIT_HERRAMIENTAS_FIJAS.map(h=>`<option ${(KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?state.kitHerramienta:'Otro recurso personal')===h?'selected':''}>${h}</option>`).join('')}
+        </select>
+        <div id="kitHerramientaOtraWrap" style="${KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?'display:none;':''}">
+          <input type="text" id="kitHerramientaOtraInput" value="${KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?'':escapeHtml(state.kitHerramienta)}" placeholder="Describe tu recurso personal" oninput="state.kitHerramienta=this.value;save();">
+        </div>
 
         <p><b>2️⃣ 🎙️ Ajusto una cosa</b></p>
         <p class="desc">Elige <b>un solo ajuste técnico</b>.</p>
