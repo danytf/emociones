@@ -871,6 +871,16 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <p class="desc" style="font-weight:700;margin-bottom:4px;">🎯 Recuerda</p>
     <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-bottom:16px;">El objetivo no es <b>pensar en positivo</b>, sino <b>pasar de una interpretación automática a una respuesta más realista y útil</b>.</p>
 
+    <div class="card card-full">
+      <h3 style="margin-top:0;">📊 Mis patrones</h3>
+      <p class="desc">Solo describe lo que has registrado. No es un diagnóstico.</p>
+      <div class="btn-row" style="max-width:280px;margin-bottom:12px;">
+        <button class="btn btn-sm" id="patronesBtn7" onclick="setPatronesRango(7)">Últimos 7 días</button>
+        <button class="btn btn-sm" id="patronesBtn30" onclick="setPatronesRango(30)">Últimos 30 días</button>
+      </div>
+      <div id="patronesBody"></div>
+    </div>
+
     <h3>📚 Historial</h3>
     <p class="desc" style="margin-bottom:10px;">Revisa tus registros S-E-P-A para <b>detectar patrones, ver qué situaciones se repiten y descubrir qué respuestas te funcionan mejor</b>.</p>
     <div id="sepaHistorial"></div>
@@ -1247,6 +1257,8 @@ renderWheel();
 
 /* ============ SEPA DIARY ============ */
 let selectedEmociones = [];
+let patronesRango = 7;
+const ACCION_LABELS = ['Pausa consciente','Respiración lenta','Regular el ritmo','Revisar mi técnica','Adaptar el speech','Cambiar el enfoque o ubicación','Pedir apoyo'];
 function renderEmocionChips(){
   const c = document.getElementById('sepaEmocionChips');
   c.innerHTML = EMOTIONS.map(e=>`<div class="chip" data-id="${e.id}">${emoji(e.id)} ${e.nombre} <span onclick="event.stopPropagation();showEmotion('${e.id}')" title="Ver ficha">ℹ️</span></div>`).join('');
@@ -1351,6 +1363,7 @@ function borrarSepa(id){
   save(); renderSepaHistorial();
 }
 function renderSepaHistorial(){
+  renderPatrones();
   const wrap = document.getElementById('sepaHistorial');
   if(!state.sepaEntries.length){ wrap.innerHTML = '<div class="empty-state">Aún no hay registros. ¡Anota tu primer S‑E‑P‑A!</div>'; return; }
   wrap.innerHTML = state.sepaEntries.map(e=>{
@@ -1370,6 +1383,56 @@ function renderSepaHistorial(){
 }
 renderSepaHistorial();
 
+/* ============ MIS PATRONES ============ */
+function setPatronesRango(n){ patronesRango = n; renderPatrones(); }
+function topEntry(counts){
+  let maxKey=null, max=0;
+  for(const k in counts){ if(counts[k]>max){ max=counts[k]; maxKey=k; } }
+  return maxKey ? {key:maxKey, count:max} : null;
+}
+function renderPatrones(){
+  const body = document.getElementById('patronesBody');
+  if(!body) return;
+  const btn7 = document.getElementById('patronesBtn7');
+  const btn30 = document.getElementById('patronesBtn30');
+  if(btn7) btn7.className = 'btn btn-sm ' + (patronesRango===7 ? 'btn-navy' : 'btn-outline');
+  if(btn30) btn30.className = 'btn btn-sm ' + (patronesRango===30 ? 'btn-navy' : 'btn-outline');
+
+  const cutoff = Date.now() - patronesRango*24*60*60*1000;
+  const entries = state.sepaEntries.filter(e=>e.id>=cutoff);
+  const resets = state.resetHistory.filter(r=>r.id>=cutoff);
+
+  if(!entries.length && !resets.length){
+    body.innerHTML = '<p class="desc">Aún no hay suficientes registros en este periodo.</p>';
+    return;
+  }
+
+  const emoCounts = {};
+  entries.forEach(e=>(e.emociones||[]).forEach(id=>{ emoCounts[id]=(emoCounts[id]||0)+1; }));
+  const emoTop = topEntry(emoCounts);
+
+  const sitCounts = {};
+  entries.forEach(e=>{ if(e.situacion) sitCounts[e.situacion]=(sitCounts[e.situacion]||0)+1; });
+  const sitTop = topEntry(sitCounts);
+
+  const accCounts = {};
+  entries.forEach(e=>{
+    const txt = (e.accion||'').toLowerCase();
+    ACCION_LABELS.forEach(lbl=>{ if(txt.includes(lbl.toLowerCase())) accCounts[lbl]=(accCounts[lbl]||0)+1; });
+  });
+  const accTop = topEntry(accCounts);
+
+  const ajusteCounts = {};
+  resets.forEach(r=>{ if(r.micro) ajusteCounts[r.micro]=(ajusteCounts[r.micro]||0)+1; });
+  const ajusteTop = topEntry(ajusteCounts);
+
+  body.innerHTML = `
+    <div class="mini-card">😣 <b>Emoción más frecuente</b><p>${emoTop ? `${emoji(emoTop.key)} ${escapeHtml(EMOTIONS.find(x=>x.id===emoTop.key)?.nombre||emoTop.key)} (${emoTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+    <div class="mini-card">📍 <b>Situación más repetida</b><p>${sitTop ? `${escapeHtml(sitTop.key)} (${sitTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+    <div class="mini-card">🛠️ <b>Acción más utilizada</b><p>${accTop ? `${escapeHtml(accTop.key)} (${accTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+    <div class="mini-card">🎯 <b>Ajuste más repetido</b><p>${ajusteTop ? `${escapeHtml(ajusteTop.key)} (${ajusteTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+  `;
+}
 
 /* ============ CHECKPOINT ============ */
 let editingCheckpointId = null;
@@ -2153,11 +2216,13 @@ function finalizarReset(){
   clearResetProgress();
   save();
   closeReset();
+  renderPatrones();
 }
 function borrarResetHistorial(id){
   if(!confirm('¿Eliminar esta sesión Reset del historial? No se puede deshacer.')) return;
   state.resetHistory = state.resetHistory.filter(x=>x.id!==id);
   save(); renderResetStep();
+  renderPatrones();
 }
 function guardarSepara(){
   resetAspecto1 = document.getElementById('resetAspecto1Input').value.trim();
