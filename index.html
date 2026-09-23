@@ -349,6 +349,11 @@ input[type=range]{width:100%;accent-color:var(--wesser-red);}
 .mini-card b{font-size:13px;color:var(--wesser-red);}
 .mini-card p{font-size:13px;margin:4px 0 0;color:var(--text-secondary);}
 
+.patron-block{margin-bottom:16px;}
+.patron-block:last-child{margin-bottom:0;}
+.patron-block h4{margin:0 0 4px;font-size:14.5px;font-weight:800;color:var(--text-primary);}
+.patron-count{font-size:12px;color:var(--text-secondary);margin:0 0 8px;font-weight:600;}
+
 .callout{background:#D1FAE5;border-radius:14px;padding:14px 16px;font-size:14px;color:#065F46;line-height:1.6;}
 :root[data-theme="dark"] .callout{background:#052e22;color:#6ee7b7;}
 
@@ -898,7 +903,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-bottom:16px;">El objetivo no es <b>pensar en positivo</b>, sino <b>pasar de una interpretación automática a una respuesta más realista y útil</b>.</p>
 
     <div class="card card-full">
-      <h3 style="margin-top:0;" id="patronesTitle">📊 Mis patrones</h3>
+      <h3 style="margin-top:0;">📊 Mis patrones</h3>
       <p class="desc">Solo describe lo que has registrado. No es un diagnóstico.</p>
       <div class="btn-row" style="max-width:280px;margin-bottom:12px;">
         <button class="btn btn-sm" id="patronesBtn7" onclick="setPatronesRango(7)">Últimos 7 días</button>
@@ -1469,6 +1474,10 @@ function topEntry(counts){
   for(const k in counts){ if(counts[k]>max){ max=counts[k]; maxKey=k; } }
   return maxKey ? {key:maxKey, count:max} : null;
 }
+function patronesTier(count){
+  if(count===0) return 'Aún no hay datos.';
+  return count<=2 ? 'Lo más registrado' : 'Mis patrones';
+}
 function renderPatrones(){
   const body = document.getElementById('patronesBody');
   if(!body) return;
@@ -1480,24 +1489,14 @@ function renderPatrones(){
   const cutoff = Date.now() - patronesRango*24*60*60*1000;
   const entries = state.sepaEntries.filter(e=>e.id>=cutoff);
   const resets = state.resetHistory.filter(r=>r.id>=cutoff);
-  const titleEl = document.getElementById('patronesTitle');
-  const totalRegistros = entries.length + resets.length;
 
-  if(totalRegistros===0){
-    if(titleEl) titleEl.textContent = '📊 Mis patrones';
-    body.innerHTML = '<p class="desc">Aún no hay datos.</p>';
-    return;
-  }
-  if(titleEl) titleEl.textContent = totalRegistros<=2 ? '📊 Lo más registrado' : '📊 Mis patrones';
-
+  /* Bloque Diario SEPA: no se mezcla con datos de Reset */
   const emoCounts = {};
   entries.forEach(e=>(e.emociones||[]).forEach(id=>{ emoCounts[id]=(emoCounts[id]||0)+1; }));
   const emoTop = topEntry(emoCounts);
-
   const sitCounts = {};
   entries.forEach(e=>{ if(e.situacion) sitCounts[e.situacion]=(sitCounts[e.situacion]||0)+1; });
   const sitTop = topEntry(sitCounts);
-
   const accCounts = {};
   entries.forEach(e=>{
     const txt = (e.accion||'').toLowerCase();
@@ -1505,16 +1504,36 @@ function renderPatrones(){
   });
   const accTop = topEntry(accCounts);
 
+  const diarioHtml = `
+    <div class="patron-block">
+      <h4>📓 Diario SEPA</h4>
+      <p class="patron-count">${entries.length} registro${entries.length===1?'':'s'} · ${patronesTier(entries.length)}</p>
+      ${entries.length===0 ? '' : `
+        <div class="mini-card">😣 <b>Emoción más registrada</b><p>${emoTop ? `${emoji(emoTop.key)} ${escapeHtml(EMOTIONS.find(x=>x.id===emoTop.key)?.nombre||emoTop.key)} (${emoTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card">📍 <b>Situación más repetida</b><p>${sitTop ? `${escapeHtml(sitTop.key)} (${sitTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card">🛠️ <b>Acción más utilizada</b><p>${accTop ? `${escapeHtml(accTop.key)} (${accTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+      `}
+    </div>`;
+
+  /* Bloque Reset: no se mezcla con datos de Diario */
   const ajusteCounts = {};
   resets.forEach(r=>{ if(r.micro) ajusteCounts[r.micro]=(ajusteCounts[r.micro]||0)+1; });
   const ajusteTop = topEntry(ajusteCounts);
+  const senalCounts = {};
+  resets.forEach(r=>{ if(r.senal) senalCounts[r.senal]=(senalCounts[r.senal]||0)+1; });
+  const senalTop = topEntry(senalCounts);
 
-  body.innerHTML = `
-    <div class="mini-card">😣 <b>Emoción más frecuente</b><p>${emoTop ? `${emoji(emoTop.key)} ${escapeHtml(EMOTIONS.find(x=>x.id===emoTop.key)?.nombre||emoTop.key)} (${emoTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-    <div class="mini-card">📍 <b>Situación más repetida</b><p>${sitTop ? `${escapeHtml(sitTop.key)} (${sitTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-    <div class="mini-card">🛠️ <b>Acción más utilizada</b><p>${accTop ? `${escapeHtml(accTop.key)} (${accTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-    <div class="mini-card">🎯 <b>Ajuste más repetido</b><p>${ajusteTop ? `${escapeHtml(ajusteTop.key)} (${ajusteTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-  `;
+  const resetHtml = `
+    <div class="patron-block">
+      <h4>🆘 Reset</h4>
+      <p class="patron-count">${resets.length===1?'1 sesión':resets.length+' sesiones'} · ${patronesTier(resets.length)}</p>
+      ${resets.length===0 ? '' : `
+        <div class="mini-card">🎯 <b>Ajuste más repetido</b><p>${ajusteTop ? `${escapeHtml(ajusteTop.key)} (${ajusteTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card">🚦 <b>Señal más repetida</b><p>${senalTop ? `${escapeHtml(senalTop.key)} (${senalTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+      `}
+    </div>`;
+
+  body.innerHTML = diarioHtml + resetHtml;
 }
 
 /* ============ CHECKPOINT ============ */
