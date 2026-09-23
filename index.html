@@ -139,6 +139,8 @@ main{
 }
 .ql-btn .ql-em{font-size:16px;}
 .ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
+#qlKitSlot{display:contents;}
+.ql-btn.ql-kit{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;}
 .ql-wrap{position:relative;}
 .ql-fade{position:absolute;top:0;right:0;bottom:2px;width:22px;background:linear-gradient(to right,rgba(0,0,0,0),var(--bg-main));pointer-events:none;}
 .ql-wrap.at-end .ql-fade{display:none;}
@@ -200,6 +202,7 @@ main{
   box-shadow:var(--shadow);
 }
 .card h3{font-size:17px;font-weight:800;}
+.tool-meta{font-size:12px;color:var(--text-secondary);font-weight:700;margin:-6px 0 10px;text-transform:uppercase;letter-spacing:.3px;}
 .card .desc{color:var(--text-secondary);font-size:14px;margin-bottom:12px;line-height:1.6;}
 .card .desc:last-child{margin-bottom:0;}
 .badge{
@@ -407,6 +410,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <div class="ql-title">¿Qué necesitas ahora?</div>
     <div class="ql-wrap">
       <div class="ql-row" id="qlRow">
+        <span id="qlKitSlot"></span>
         <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
         <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
         <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
@@ -728,26 +732,30 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <div class="tool-cards">
         <div class="card">
           <h3>🌬️ Suspiro fisiológico</h3>
+          <p class="tool-meta">⏱️ 30–60 segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>bajar rápidamente la activación y la tensión general</b> cuando estás nervioso, acelerado o tenso.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br>Haz <b>dos inhalaciones por la nariz</b> —la segunda más pequeña— y después una <b>exhalación lenta y larga</b>. Repite durante 30–60 segundos.</p>
           <button class="btn btn-blue" onclick="startBreath(60)">Respirar 60s</button>
         </div>
         <div class="card">
           <h3>🛑 Parar y decidir</h3>
+          <p class="tool-meta">⏱️ 1–2 minutos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>cortar una reacción automática y recuperar margen para decidir qué hacer</b> ante tensión, rabia, nervios o bloqueo.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br><b>PARA → Toma aire → Observa y nombra → Genera opciones → Actúa.</b></p>
           <button class="btn btn-blue" onclick="startPauseDecision()">Empezar</button>
         </div>
         <div class="card">
           <h3>👀 Grounding 5-4-3-2-1</h3>
+          <p class="tool-meta">⏱️ 1–2 minutos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>salir de la rumiación y volver al presente</b> cuando tu cabeza está atrapada en pensamientos o preocupaciones.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br>Lleva tu atención al presente utilizando los sentidos: <b>5</b> cosas que ves · <b>4</b> que oyes · <b>3</b> que tocas · <b>2</b> que hueles · <b>1</b> que saboreas.</p>
           <button class="btn btn-blue" onclick="startGrounding()">Empezar</button>
         </div>
         <div class="card">
           <h3>💪 Tense & Release</h3>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>soltar tensión física acumulada</b>, especialmente cuando notas rigidez en puños, hombros, brazos o piernas.</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa de forma firme pero cómoda, sin dolor, y después suelta lentamente</b> diferentes grupos musculares: puños, hombros, brazos y piernas.</p>
+          <p class="tool-meta">⏱️ ~2 minutos</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>soltar tensión física acumulada</b>, especialmente cuando notas rigidez en puños, brazos, hombros o piernas.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa de forma firme pero cómoda, sin dolor, y después suelta lentamente</b> diferentes grupos musculares: puños, brazos, hombros y piernas.</p>
           <button class="btn btn-blue" onclick="startTense()">Empezar</button>
         </div>
       </div>
@@ -759,12 +767,14 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <div class="tool-cards">
         <div class="card">
           <h3>🏆 Anclaje de confianza</h3>
+          <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte un estado de seguridad y confianza antes de una conversación difícil</b> o después de un momento de inseguridad.</p>
           <p class="desc"><b>¿Cómo se prepara?</b><br>Elige un gesto discreto —por ejemplo, <b>juntar pulgar e índice</b>— mientras recuerdas una situación en la que te sentiste <b>seguro, concentrado o satisfecho con tu trabajo</b>. Después puedes utilizar ese gesto como <b>recordatorio de ese estado</b>.</p>
           <button class="btn btn-green" onclick="openAnchor()">Configurar / Usar</button>
         </div>
         <div class="card">
           <h3>👁️ Anclaje visual</h3>
+          <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte cómo quieres afrontar una situación</b> cuando aparezca tensión, desánimo o dudas.</p>
           <p class="desc"><b>¿Cómo se prepara?</b><br>Guarda una <b>frase, imagen o recordatorio</b> que puedas consultar rápidamente. La idea no es obligarte a pensar en positivo, sino <b>volver a tu objetivo y a la actitud que quieres mantener</b>.</p>
           <button class="btn btn-outline" onclick="openVisualAnchor()">Ver mis frases</button>
@@ -778,6 +788,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <div class="tool-cards">
         <div class="card">
           <h3>⏱️ Checkpoint mental de mitad de turno</h3>
+          <p class="tool-meta">⏱️ ~1 minuto</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>detectar a tiempo tensión, fatiga o pérdida de concentración y ajustar tu jornada antes de que vaya a más</b>.</p>
           <p class="desc">Haz una <b>pausa breve para comprobar cómo estás física y emocionalmente</b>:</p>
           <p class="desc">🫀 <b>Cuerpo:</b> ¿estoy tenso, cansado o acelerado?<br>
@@ -1204,6 +1215,16 @@ document.getElementById('qlRow').addEventListener('scroll', updateQlFade);
 window.addEventListener('resize', updateQlFade);
 updateQlFade();
 
+function renderQlKitButton(){
+  const slot = document.getElementById('qlKitSlot');
+  if(!slot) return;
+  slot.innerHTML = state.kitHerramienta
+    ? `<button class="ql-btn ql-kit" onclick="activarKitPlan()"><span class="ql-em">🚨</span><span class="ql-lb">Activar mi plan</span></button>`
+    : '';
+  updateQlFade();
+}
+renderQlKitButton();
+
 /* ============ HELP OVERLAY ============ */
 function openHelp(){ document.getElementById('helpOverlay').classList.add('active'); }
 function closeHelp(){ document.getElementById('helpOverlay').classList.remove('active'); }
@@ -1551,6 +1572,20 @@ function closeTool(){
   clearToolTimers();
   document.getElementById('toolOverlay').classList.remove('active');
 }
+function showToolDone(title, repeatOnclick){
+  clearToolTimers();
+  openTool(title, `
+    <div class="card" style="text-align:center;">
+      <p style="font-size:40px;">✅</p>
+      <h3>Hecho</h3>
+      <p class="desc">Puedes volver a la calle o repetirla si lo necesitas.</p>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button class="btn btn-blue" onclick="${repeatOnclick}">🔁 Repetir</button>
+      </div>
+    </div>
+  `);
+}
 
 /* ---- Breathing (Suspiro Fisiológico de Huberman) ---- */
 const BREATH_SEQUENCE = [
@@ -1581,7 +1616,7 @@ function startBreath(seconds){
   const t2 = setInterval(()=>{
     remaining--;
     timerEl.textContent = remaining;
-    if(remaining<=0){ clearToolTimers(); closeTool(); }
+    if(remaining<=0){ showToolDone('Suspiro Fisiológico', 'startBreath(60)'); }
   }, 1000);
   toolTimers.push(t2);
 }
@@ -1659,7 +1694,7 @@ function renderGroundingStep(){
 }
 function nextGrounding(){
   groundingIdx++;
-  if(groundingIdx>=groundingSteps.length){ closeTool(); return; }
+  if(groundingIdx>=groundingSteps.length){ showToolDone('Grounding 5‑4‑3‑2‑1', 'startGrounding()'); return; }
   renderGroundingStep();
 }
 
@@ -1723,7 +1758,7 @@ function runAnchorGuide(i){
 
 /* ---- Tense & Release ---- */
 const tenseGroups = [
-  {name:'Puños', emoji:'✊'}, {name:'Hombros', emoji:'🤷'}, {name:'Piernas', emoji:'🦵'}
+  {name:'Puños', emoji:'✊'}, {name:'Brazos', emoji:'💪'}, {name:'Hombros', emoji:'🤷'}, {name:'Piernas', emoji:'🦵'}
 ];
 let tenseIdx = 0, tensePhase = 'tense';
 function startTense(){ tenseIdx=0; runTensePhase('tense',5); }
@@ -1749,7 +1784,7 @@ function runTensePhase(phase, secs){
       if(phase==='tense'){ runTensePhase('release',5); }
       else{
         tenseIdx++;
-        if(tenseIdx>=tenseGroups.length){ closeTool(); }
+        if(tenseIdx>=tenseGroups.length){ showToolDone('Tense & Release', 'startTense()'); }
         else{ runTensePhase('tense',5); }
       }
     }
@@ -1801,6 +1836,7 @@ function saveKitPlan(){
   state.kitPersona = document.getElementById('kitPersonaInput').value.trim();
   state.kitPedira = document.getElementById('kitPediraInput').value.trim();
   save();
+  renderQlKitButton();
   resetGoto(0);
 }
 
