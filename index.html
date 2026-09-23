@@ -279,6 +279,8 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 .history-item{border-left:4px solid var(--wesser-red);padding:10px 12px;margin-bottom:10px;background:var(--bg-main);border-radius:0 10px 10px 0;}
 .history-item .meta{font-size:11px;color:var(--text-secondary);margin-bottom:4px;}
 .history-item .del{float:right;background:none;border:none;color:var(--alert-coral);font-size:13px;font-weight:700;}
+.history-item .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:13px;font-weight:700;margin-right:14px;}
+:root[data-theme="dark"] .history-item .edit{color:#cbd5e1;}
 
 /* WHEEL */
 .wheel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:12px;}
@@ -831,7 +833,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       </div>
       <textarea id="sepaAccion" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
 
-      <button class="btn btn-primary" onclick="guardarSepa()">Guardar registro</button>
+      <button class="btn btn-primary" id="sepaSaveBtn" onclick="guardarSepa()">Guardar registro</button>
+      <button class="btn btn-outline" id="sepaCancelBtn" style="display:none;margin-top:10px;" onclick="cancelarEdicionSepa()">Cancelar edición</button>
     </div>
 
     <p class="desc" style="font-weight:700;margin-bottom:4px;">🎯 Recuerda</p>
@@ -1157,6 +1160,7 @@ function insertAccion(txt){
   el.value = el.value ? el.value + '. ' + txt : txt;
 }
 
+let editingSepaId = null;
 function guardarSepa(){
   const situacion = document.getElementById('sepaSituacion').value;
   const pDLista = document.getElementById('sepaPensDestructivo').value;
@@ -1166,10 +1170,19 @@ function guardarSepa(){
   const accion = document.getElementById('sepaAccion').value.trim();
   if(!selectedEmociones.length){ alert('Selecciona al menos una emoción sentida.'); return; }
   if(!pensC || !accion){ alert('Completa el pensamiento útil y la acción.'); return; }
-  state.sepaEntries.unshift({
-    id: Date.now(), fecha: new Date().toLocaleString('es-ES'),
-    situacion, emociones: [...selectedEmociones], pensD, pensC, accion
-  });
+  if(editingSepaId){
+    const entry = state.sepaEntries.find(x=>x.id===editingSepaId);
+    if(entry){
+      entry.situacion = situacion; entry.emociones = [...selectedEmociones];
+      entry.pensD = pensD; entry.pensC = pensC; entry.accion = accion;
+    }
+    cancelarEdicionSepa();
+  } else {
+    state.sepaEntries.unshift({
+      id: Date.now(), fecha: new Date().toLocaleString('es-ES'),
+      situacion, emociones: [...selectedEmociones], pensD, pensC, accion
+    });
+  }
   save();
   selectedEmociones = [];
   document.querySelectorAll('#sepaEmocionChips .chip').forEach(x=>x.classList.remove('selected'));
@@ -1178,8 +1191,33 @@ function guardarSepa(){
   document.getElementById('sepaAccion').value='';
   renderSepaHistorial();
 }
+function editarSepa(id){
+  const e = state.sepaEntries.find(x=>x.id===id);
+  if(!e) return;
+  editingSepaId = id;
+  document.getElementById('sepaSituacion').value = e.situacion;
+  selectedEmociones = [...(e.emociones||[])];
+  document.querySelectorAll('#sepaEmocionChips .chip').forEach(ch=>{
+    ch.classList.toggle('selected', selectedEmociones.includes(ch.dataset.id));
+  });
+  const pensSelect = document.getElementById('sepaPensDestructivo');
+  const matchesOption = Array.from(pensSelect.options).some(o=>o.value===e.pensD);
+  pensSelect.value = matchesOption ? e.pensD : pensSelect.options[0].value;
+  document.getElementById('sepaPensDestructivoLibre').value = matchesOption ? '' : (e.pensD||'');
+  document.getElementById('sepaPensConstructivo').value = e.pensC||'';
+  document.getElementById('sepaAccion').value = e.accion||'';
+  document.getElementById('sepaSaveBtn').textContent = 'Actualizar registro';
+  document.getElementById('sepaCancelBtn').style.display = 'block';
+  document.getElementById('sepaSituacion').scrollIntoView({behavior:'smooth', block:'center'});
+}
+function cancelarEdicionSepa(){
+  editingSepaId = null;
+  document.getElementById('sepaSaveBtn').textContent = 'Guardar registro';
+  document.getElementById('sepaCancelBtn').style.display = 'none';
+}
 function borrarSepa(id){
   state.sepaEntries = state.sepaEntries.filter(x=>x.id!==id);
+  if(editingSepaId===id) cancelarEdicionSepa();
   save(); renderSepaHistorial();
 }
 function renderSepaHistorial(){
@@ -1191,6 +1229,7 @@ function renderSepaHistorial(){
     return `
     <div class="history-item">
       <button class="del" onclick="borrarSepa(${e.id})">Eliminar</button>
+      <button class="edit" onclick="editarSepa(${e.id})">Editar</button>
       <div class="meta">${e.fecha} · ${emosTxt}</div>
       <p><b>S:</b> ${e.situacion}</p>
       <p><b>P:</b> ${e.pensD||'—'}</p>
@@ -1203,18 +1242,24 @@ renderSepaHistorial();
 
 
 /* ============ CHECKPOINT ============ */
-function openCheckpoint(){
+let editingCheckpointId = null;
+function openCheckpoint(editId){
+  editingCheckpointId = editId || null;
+  const existing = editingCheckpointId ? state.checkpoints.find(x=>x.id===editingCheckpointId) : null;
+  const fatiga = existing ? existing.fatiga : 5;
+  const emocional = existing ? existing.emocional : 5;
+  const nota = existing ? (existing.nota||'') : '';
   openTool('Checkpoint Mental', `
     <div class="card">
       <label>Nivel de fatiga física/mental (1‑10)</label>
-      <input type="range" id="cpFatiga" min="1" max="10" value="5" oninput="document.getElementById('cpFatigaVal').textContent=this.value">
-      <div class="range-val" id="cpFatigaVal">5</div>
+      <input type="range" id="cpFatiga" min="1" max="10" value="${fatiga}" oninput="document.getElementById('cpFatigaVal').textContent=this.value">
+      <div class="range-val" id="cpFatigaVal">${fatiga}</div>
       <label style="margin-top:14px;">Estado emocional (1‑10)</label>
-      <input type="range" id="cpEmocional" min="1" max="10" value="5" oninput="document.getElementById('cpEmocionalVal').textContent=this.value">
-      <div class="range-val" id="cpEmocionalVal">5</div>
+      <input type="range" id="cpEmocional" min="1" max="10" value="${emocional}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value">
+      <div class="range-val" id="cpEmocionalVal">${emocional}</div>
       <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
-      <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina..."></textarea>
-      <button class="btn btn-green" onclick="guardarCheckpoint()">Guardar checkpoint</button>
+      <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${nota}</textarea>
+      <button class="btn btn-green" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
     </div>
   `);
 }
@@ -1222,7 +1267,13 @@ function guardarCheckpoint(){
   const fatiga = document.getElementById('cpFatiga').value;
   const emocional = document.getElementById('cpEmocional').value;
   const nota = document.getElementById('cpNota').value.trim();
-  state.checkpoints.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), fatiga, emocional, nota});
+  if(editingCheckpointId){
+    const entry = state.checkpoints.find(x=>x.id===editingCheckpointId);
+    if(entry){ entry.fatiga = fatiga; entry.emocional = emocional; entry.nota = nota; }
+    editingCheckpointId = null;
+  } else {
+    state.checkpoints.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), fatiga, emocional, nota});
+  }
   save(); closeTool(); renderCheckpointHistorial();
 }
 function borrarCheckpoint(id){
@@ -1236,6 +1287,7 @@ function renderCheckpointHistorial(){
   wrap.innerHTML = state.checkpoints.map(c=>`
     <div class="history-item">
       <button class="del" onclick="borrarCheckpoint(${c.id})">Eliminar</button>
+      <button class="edit" onclick="openCheckpoint(${c.id})">Editar</button>
       <div class="meta">${c.fecha}</div>
       <p>Fatiga: <b>${c.fatiga}/10</b> · Emocional: <b>${c.emocional}/10</b></p>
       ${c.nota?`<p>${c.nota}</p>`:''}
