@@ -120,6 +120,20 @@ main{
   padding:24px 28px 40px;
 }
 .view{display:none;animation:fade .18s ease;}
+
+/* QUICK LAUNCHER */
+.quick-launcher{margin-bottom:20px;}
+.ql-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:8px;}
+.ql-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.ql-row::-webkit-scrollbar{display:none;}
+.ql-btn{
+  flex:0 0 auto;display:flex;align-items:center;gap:7px;
+  background:var(--card-bg);border:1px solid var(--border-color);border-radius:99px;
+  padding:8px 14px 8px 10px;font-size:12.5px;font-weight:700;color:var(--text-primary);
+  white-space:nowrap;box-shadow:var(--shadow);
+}
+.ql-btn .ql-em{font-size:16px;}
+.ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
 .view.active{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));
@@ -278,9 +292,9 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 /* HISTORY */
 .history-item{border-left:4px solid var(--wesser-red);padding:10px 12px;margin-bottom:10px;background:var(--bg-main);border-radius:0 10px 10px 0;}
 .history-item .meta{font-size:11px;color:var(--text-secondary);margin-bottom:4px;}
-.history-item .del{float:right;background:none;border:none;color:var(--alert-coral);font-size:13px;font-weight:700;}
-.history-item .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:13px;font-weight:700;margin-right:14px;}
-:root[data-theme="dark"] .history-item .edit{color:#cbd5e1;}
+.history-item .del, .help-body .del{float:right;background:none;border:none;color:var(--alert-coral);font-size:13px;font-weight:700;}
+.history-item .edit, .help-body .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:13px;font-weight:700;margin-right:14px;}
+:root[data-theme="dark"] .history-item .edit, :root[data-theme="dark"] .help-body .edit{color:#cbd5e1;}
 
 /* WHEEL */
 .wheel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:12px;}
@@ -377,6 +391,18 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 
 <main>
 <div class="content-wrap">
+
+  <!-- QUICK LAUNCHER: ¿Qué necesitas ahora? -->
+  <div class="quick-launcher">
+    <div class="ql-title">¿Qué necesitas ahora?</div>
+    <div class="ql-row">
+      <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
+      <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">Atrapado en pensamientos</span></button>
+      <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
+      <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Tensión física</span></button>
+      <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Llevo varios días así</span></button>
+    </div>
+  </div>
 
   <!-- APRENDER (Fundamentos + Emociones) -->
   <section class="view active" id="view-aprender">
@@ -1005,7 +1031,8 @@ function loadState(){
     visualAnchors:[],
     checkins:[],
     confidenceAnchors:[],
-    kitSenales:[], kitHerramienta:'', kitAjuste:'', kitPersona:'', kitPedira:''
+    kitSenales:[], kitHerramienta:'', kitAjuste:'', kitPersona:'', kitPedira:'',
+    resetProgress:null, resetHistory:[]
   };
 }
 let state = loadState();
@@ -1018,6 +1045,8 @@ if(state.kitPedira===undefined) state.kitPedira = '';
 if(!state.confidenceAnchors){
   state.confidenceAnchors = (state.anchorWord && state.anchorMemory) ? [{word:state.anchorWord, memory:state.anchorMemory}] : [];
 }
+if(state.resetProgress===undefined) state.resetProgress = null;
+if(!state.resetHistory) state.resetHistory = [];
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
 
 /* ============ THEME ============ */
@@ -1621,14 +1650,51 @@ let resetStops = 0;
 let resetSenal = '';
 let resetExamResultado = '', resetExamRendimiento = '';
 let resetAspecto1 = '', resetAspecto2 = '';
+let resetPacto = '';
 let checkinState = [];
 let resetCheckinItems = [];
 
+function saveResetProgress(){
+  if(typeof resetStep!=='number' || resetStep<1){ return; }
+  state.resetProgress = {
+    step: resetStep, senal: resetSenal,
+    examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
+    aspecto1: resetAspecto1, aspecto2: resetAspecto2,
+    micro: resetMicro, stops: resetStops, pacto: resetPacto
+  };
+  save();
+}
+function clearResetProgress(){ state.resetProgress = null; save(); }
+
 function openReset(){
-  resetStep = 0; resetMicro=null; resetStops=0;
-  resetSenal=''; resetExamResultado=''; resetExamRendimiento=''; resetAspecto1=''; resetAspecto2='';
-  resetCheckinItems = [];
   document.getElementById('resetOverlay').classList.add('active');
+  if(state.resetProgress && state.resetProgress.step>=1){
+    resetStep = 'resume';
+  } else {
+    resetStep = 0; resetMicro=null; resetStops=0;
+    resetSenal=''; resetExamResultado=''; resetExamRendimiento=''; resetAspecto1=''; resetAspecto2=''; resetPacto='';
+    resetCheckinItems = [];
+  }
+  renderResetStep();
+}
+function resumeReset(){
+  const p = state.resetProgress || {};
+  resetStep = p.step || 1;
+  resetSenal = p.senal || '';
+  resetExamResultado = p.examResultado || '';
+  resetExamRendimiento = p.examRendimiento || '';
+  resetAspecto1 = p.aspecto1 || '';
+  resetAspecto2 = p.aspecto2 || '';
+  resetMicro = p.micro || null;
+  resetStops = p.stops || 0;
+  resetPacto = p.pacto || '';
+  renderResetStep();
+}
+function startFreshReset(){
+  clearResetProgress();
+  resetStep = 0; resetMicro=null; resetStops=0;
+  resetSenal=''; resetExamResultado=''; resetExamRendimiento=''; resetAspecto1=''; resetAspecto2=''; resetPacto='';
+  resetCheckinItems = [];
   renderResetStep();
 }
 function closeReset(){
@@ -1656,10 +1722,23 @@ function saveCheckin(){
 
 function renderResetStep(){
   const body = document.getElementById('resetBody');
-  body.classList.toggle('center-short', resetStep===0);
+  body.classList.toggle('center-short', resetStep===0 || resetStep==='resume');
   clearToolTimers();
 
-  if(resetStep==='kit'){
+  if(resetStep==='resume'){
+    body.innerHTML = `
+      <div class="card" style="text-align:center;">
+        <span class="badge amber">Reset a medias</span>
+        <h3>Has dejado un Reset a medias.</h3>
+        <p class="desc">Puedes continuar donde lo dejaste o empezar uno nuevo (se perderá el progreso guardado).</p>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn btn-amber" onclick="resumeReset()">Continuar</button>
+          <button class="btn btn-outline" onclick="startFreshReset()">Empezar de nuevo</button>
+        </div>
+      </div>
+    `;
+  }
+  else if(resetStep==='kit'){
     body.innerHTML = `
       <div class="card">
         <span class="badge amber">Kit de Emergencia</span>
@@ -1703,7 +1782,25 @@ function renderResetStep(){
     body.innerHTML = `
       <div class="card">
         <span class="badge amber">Historial</span>
-        <h3>📚 Historial de Check-ins</h3>
+        <h3>🔄 Sesiones Reset</h3>
+      </div>
+      ${state.resetHistory.length ? state.resetHistory.map(r=>`
+        <details class="help-item">
+          <summary>${r.fecha}${r.senal?' · '+r.senal:''}</summary>
+          <div class="help-body">
+            <button class="del" onclick="borrarResetHistorial(${r.id})">Eliminar</button>
+            <p><b>Señal principal:</b> ${r.senal||'—'}</p>
+            <p><b>Contexto (no depende de mí):</b> ${r.examResultado||'—'}</p>
+            <p><b>Mi actuación:</b> ${r.examRendimiento||'—'}</p>
+            <p><b>Lo que sigue funcionando:</b> ${[r.aspecto1,r.aspecto2].filter(Boolean).join(' · ')||'—'}</p>
+            <p><b>Ajuste elegido:</b> ${r.micro||'—'}</p>
+            <p><b>Abordajes testeados:</b> ${r.stops||0} / 10</p>
+            <p><b>Pacto de permanencia:</b> ${r.pacto||'—'}</p>
+          </div>
+        </details>`).join('') : '<div class="card empty-state">Aún no has completado ninguna sesión Reset.</div>'}
+
+      <div class="card">
+        <h3>📋 Historial de Check-ins</h3>
       </div>
       ${state.checkins.length ? state.checkins.map(c=>`
         <div class="card history-item">
@@ -1782,7 +1879,7 @@ function renderResetStep(){
       <div class="chip-group">${resetCheckinItems.map(s=>`<div class="chip ${resetSenal===s?'selected':''}" onclick="selectSenal(this)">${s}</div>`).join('')}</div>
     ` : `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el "no", cansancio previo, abordar menos, trabajar en automático…</p>
-      <textarea id="resetSenalInput" placeholder="Escribe tu señal principal (opcional)...">${resetSenal}</textarea>
+      <textarea id="resetSenalInput" placeholder="Escribe tu señal principal (opcional)..." oninput="resetSenal=this.value;saveResetProgress();">${resetSenal}</textarea>
     `;
     body.innerHTML = `
       ${resetDots()}
@@ -1839,11 +1936,11 @@ function renderResetStep(){
         </ul>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando pertenece al contexto y qué parte puedo ajustar yo?</b></p>
         <label>El contexto (no depende de mí)</label>
-        <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas...">${resetExamResultado}</textarea>
+        <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgress();">${resetExamResultado}</textarea>
         <label>Mi actuación (puedo ajustar)</label>
-        <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos...">${resetExamRendimiento}</textarea>
+        <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgress();">${resetExamRendimiento}</textarea>
       </div>
-      <button class="btn btn-amber" onclick="resetExamResultado=document.getElementById('resetExamResultadoInput').value; resetExamRendimiento=document.getElementById('resetExamRendimientoInput').value; resetGoto(3);">Continuar</button>
+      <button class="btn btn-amber" onclick="resetGoto(3);">Continuar</button>
     `;
   }
   else if(resetStep===3){
@@ -1854,9 +1951,9 @@ function renderResetStep(){
         <h3>Lo que sigue funcionando</h3>
         <p class="desc">Escribe <b>2 cosas concretas que estás haciendo bien y quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
         <label>Aspecto 1</label>
-        <input type="text" id="resetAspecto1Input" value="${resetAspecto1}" placeholder="Ej: mantengo la sonrisa en el saludo">
+        <input type="text" id="resetAspecto1Input" value="${resetAspecto1}" placeholder="Ej: mantengo la sonrisa en el saludo" oninput="resetAspecto1=this.value;saveResetProgress();">
         <label>Aspecto 2</label>
-        <input type="text" id="resetAspecto2Input" value="${resetAspecto2}" placeholder="Ej: sigo escuchando antes de responder">
+        <input type="text" id="resetAspecto2Input" value="${resetAspecto2}" placeholder="Ej: sigo escuchando antes de responder" oninput="resetAspecto2=this.value;saveResetProgress();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 Piensa en conductas concretas: cómo abordas, cómo escuchas, cómo explicas, cómo gestionas una objeción, tu actitud…</p>
       </div>
       <button class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Continuar</button>
@@ -1909,7 +2006,8 @@ function renderResetStep(){
       <p class="desc">Pregúntate:</p>
       <p class="desc"><b>¿He ejecutado mejor este ajuste?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Una mala conversación no invalida el ajuste. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
-      <button class="btn btn-primary" style="margin-top:8px;" onclick="resetGoto(6)">Continuar</button>
+      ${resetStops>=10 ? '<p class="desc" style="color:var(--success-green);font-weight:700;">✅ Test completado.</p>' : `<p class="desc">Te faltan <b>${10-resetStops}</b> abordajes para poder continuar.</p>`}
+      <button class="btn btn-primary" style="margin-top:8px;" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Continuar</button>
       <button class="btn btn-outline" style="margin-top:10px;" onclick="closeReset()">Cerrar y seguir luego</button>
     `;
   }
@@ -1934,11 +2032,27 @@ function renderResetStep(){
       <div class="card">
         <h3>Pacto de permanencia</h3>
         <p class="desc">«Cuando El Número no acompañe, yo me comprometo a...»</p>
-        <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..."></textarea>
+        <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..." oninput="resetPacto=this.value;saveResetProgress();">${resetPacto}</textarea>
       </div>
-      <button class="btn btn-primary" onclick="closeReset()">Finalizar</button>
+      <button class="btn btn-primary" onclick="finalizarReset()">Finalizar</button>
     `;
   }
+}
+function finalizarReset(){
+  const pactoEl = document.getElementById('resetPactoInput');
+  if(pactoEl) resetPacto = pactoEl.value.trim();
+  state.resetHistory.unshift({
+    id: Date.now(), fecha: new Date().toLocaleString('es-ES'),
+    senal: resetSenal, examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
+    aspecto1: resetAspecto1, aspecto2: resetAspecto2, micro: resetMicro, stops: resetStops, pacto: resetPacto
+  });
+  clearResetProgress();
+  save();
+  closeReset();
+}
+function borrarResetHistorial(id){
+  state.resetHistory = state.resetHistory.filter(x=>x.id!==id);
+  save(); renderResetStep();
 }
 function guardarSepara(){
   resetAspecto1 = document.getElementById('resetAspecto1Input').value.trim();
@@ -1946,10 +2060,10 @@ function guardarSepara(){
   if(!resetAspecto1 || !resetAspecto2){ alert('Escribe los 2 aspectos que sigues haciendo bien.'); return; }
   resetGoto(4);
 }
-function selectSenal(el){ resetSenal = el.textContent; renderResetStep(); }
-function selectMicro(m){ resetMicro = m; renderResetStep(); }
-function resetGoto(step){ resetStep = step; renderResetStep(); }
-function incrementStop(){ if(resetStops<10) resetStops++; renderResetStep(); }
+function selectSenal(el){ resetSenal = el.textContent; saveResetProgress(); renderResetStep(); }
+function selectMicro(m){ resetMicro = m; saveResetProgress(); renderResetStep(); }
+function resetGoto(step){ resetStep = step; saveResetProgress(); renderResetStep(); }
+function incrementStop(){ if(resetStops<10) resetStops++; saveResetProgress(); renderResetStep(); }
 
 /* ============ INIT ============ */
 goto('aprender');
