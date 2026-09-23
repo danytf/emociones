@@ -724,13 +724,13 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <div class="card">
           <h3>🛑 Parar y decidir</h3>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>cortar una reacción automática y recuperar margen para decidir qué hacer</b> ante tensión, rabia, nervios o bloqueo.</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br><b>STOP → Toma aire → Observa → Nombra → Decide → Actúa.</b></p>
+          <p class="desc"><b>¿Cómo se hace?</b><br><b>PARA → Toma aire → Observa y nombra → Genera opciones → Actúa.</b></p>
           <button class="btn btn-blue" onclick="startPauseDecision()">Empezar</button>
         </div>
         <div class="card">
           <h3>👀 Grounding 5-4-3-2-1</h3>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>salir de la rumiación y volver al presente</b> cuando tu cabeza está atrapada en pensamientos o preocupaciones.</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br>Lleva tu atención al presente utilizando los sentidos: <b>5</b> cosas que ves · <b>4</b> que sientes · <b>3</b> que oyes · <b>2</b> que hueles · <b>1</b> que saboreas.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Lleva tu atención al presente utilizando los sentidos: <b>5</b> cosas que ves · <b>4</b> que oyes · <b>3</b> que tocas · <b>2</b> que hueles · <b>1</b> que saboreas.</p>
           <button class="btn btn-blue" onclick="startGrounding()">Empezar</button>
         </div>
         <div class="card">
@@ -974,7 +974,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <p><b>Alivio inmediato</b> (1-2 min, para calmar cuerpo y mente ya):</p>
         <ul>
           <li><b>Suspiro Fisiológico</b>: respiración de 60s que puede ayudarte a reducir rápidamente la activación cuando estás acelerado o tenso.</li>
-          <li><b>Parar y Decidir</b>: STOP → Toma aire → Observa → Nombra → Decide → Actúa. Es la técnica general para cualquier tensión, rabia o bloqueo — úsala siempre que no sepas cuál elegir.</li>
+          <li><b>Parar y Decidir</b>: PARA → Toma aire → Observa y nombra → Genera opciones → Actúa. Es la técnica general para cualquier tensión, rabia o bloqueo — úsala siempre que no sepas cuál elegir.</li>
           <li><b>Grounding 5‑4‑3‑2‑1</b>: ancla tus 5 sentidos al momento presente.</li>
           <li><b>Tense & Release</b>: tensa y suelta puños, hombros, brazos y piernas para liberar tensión física.</li>
         </ul>
@@ -1538,30 +1538,48 @@ function startBreath(seconds){
   toolTimers.push(t2);
 }
 
-/* ---- Parar y Decidir (S.T.O.P. + Semáforo + Preguntas de Emergencia, consolidados) ---- */
+/* ---- Parar y Decidir (PARA → Toma aire → Observa y nombra → Genera opciones → Actúa) ---- */
 const pauseSteps = [
-  {l:'S', title:'Stop', desc:'Detente un momento. Lo que sucede fuera puede esperar 30 segundos.'},
+  {l:'P', title:'Para', desc:'Detente un momento. Lo que sucede fuera puede esperar 30 segundos.'},
   {l:'T', title:'Toma aire', desc:'Respira lento y profundo (suspiro fisiológico: 2 inhalaciones nasales, exhalación larga por la boca).'},
-  {l:'O', title:'Observa y nombra', desc:'¿Qué sucede ahora? ¿Qué sientes física y emocionalmente? Nombra el problema en una frase.', input:true, ph:'Escribe lo que notas (opcional)...'},
-  {l:'G', title:'Genera alternativas', desc:'¿Qué quieres realmente? ¿Qué puedes hacer? ¿Funcionará?', input:true, ph:'Escribe 1 o 2 alternativas (opcional)...'},
-  {l:'A', title:'Actúa', desc:'Pon en marcha la alternativa más adaptativa, con intención consciente, no en automático.'}
+  {l:'O', title:'Observa y nombra', desc:'¿Qué sucede ahora? ¿Qué sientes física y emocionalmente? Nombra el problema en una frase.', input:true, key:'observa', ph:'Escribe lo que notas (opcional)...'},
+  {l:'G', title:'Genera opciones', desc:'¿Qué quieres realmente? ¿Qué puedes hacer? ¿Funcionará?', input:true, key:'opciones', ph:'Escribe 1 o 2 opciones (opcional)...'},
+  {l:'A', title:'Actúa', desc:'Pon en marcha la opción más adaptativa, con intención consciente, no en automático.'}
 ];
 let pauseIdx = 0;
-function startPauseDecision(){ pauseIdx=0; renderPauseStep(); }
+let pauseObserva = '', pauseOpciones = '';
+function startPauseDecision(){ pauseIdx=0; pauseObserva=''; pauseOpciones=''; renderPauseStep(); }
 function renderPauseStep(){
   const s = pauseSteps[pauseIdx];
+  const isLast = pauseIdx === pauseSteps.length-1;
+  const prefill = s.key==='observa' ? pauseObserva : s.key==='opciones' ? pauseOpciones : '';
+  const summary = isLast ? `
+    <div class="card" style="text-align:left;">
+      <p><b>Has observado</b></p>
+      <p class="desc">${escapeHtml(pauseObserva) || '—'}</p>
+      <p><b>Has pensado estas opciones</b></p>
+      <p class="desc">${escapeHtml(pauseOpciones) || '—'}</p>
+      <p><b>Ahora decide</b></p>
+    </div>` : '';
   openTool('Parar y Decidir', `
     <div class="card" style="text-align:center;">
       <div class="step-dots">${pauseSteps.map((_,i)=>`<span class="${i<=pauseIdx?'on':''}"></span>`).join('')}</div>
       <div class="timer-big" style="font-size:36px;">${s.l}</div>
       <h3>${s.title}</h3>
       <p class="desc">${s.desc}</p>
-      ${s.input ? `<textarea id="pauseInput" placeholder="${s.ph}"></textarea>` : ''}
-      <button class="btn btn-navy" onclick="nextPause()">${pauseIdx<pauseSteps.length-1?'Siguiente':'Terminar'}</button>
+      ${s.input ? `<textarea id="pauseInput" placeholder="${s.ph}">${escapeHtml(prefill)}</textarea>` : ''}
     </div>
+    ${summary}
+    <button class="btn btn-navy" onclick="nextPause()">${pauseIdx<pauseSteps.length-1?'Siguiente':'Terminar'}</button>
   `);
 }
 function nextPause(){
+  const s = pauseSteps[pauseIdx];
+  if(s.input){
+    const val = document.getElementById('pauseInput').value.trim();
+    if(s.key==='observa') pauseObserva = val;
+    if(s.key==='opciones') pauseOpciones = val;
+  }
   pauseIdx++;
   if(pauseIdx>=pauseSteps.length){ closeTool(); return; }
   renderPauseStep();
@@ -1571,9 +1589,9 @@ function nextPause(){
 const groundingSteps = [
   {n:5, label:'cosas que puedes VER'},
   {n:4, label:'sonidos que puedes ESCUCHAR'},
-  {n:3, label:'texturas que puedes TOCAR'},
-  {n:2, label:'olores que puedes PERCIBIR'},
-  {n:1, label:'respiración profunda'}
+  {n:3, label:'cosas que puedes TOCAR'},
+  {n:2, label:'olores que puedes OLER'},
+  {n:1, label:'cosa que puedes SABOREAR'}
 ];
 let groundingIdx = 0;
 function startGrounding(){
