@@ -1054,6 +1054,7 @@ function loadState(){
     if(raw) return JSON.parse(raw);
   }catch(e){}
   return {
+    dataVersion: 1,
     theme:null,
     sepaEntries:[],
     checkpoints:[],
@@ -1064,18 +1065,34 @@ function loadState(){
     resetProgress:null, resetHistory:[]
   };
 }
-let state = loadState();
-if(!state.checkins) state.checkins = [];
-if(!state.kitSenales) state.kitSenales = [];
-if(state.kitHerramienta===undefined) state.kitHerramienta = '';
-if(state.kitAjuste===undefined) state.kitAjuste = '';
-if(state.kitPersona===undefined) state.kitPersona = '';
-if(state.kitPedira===undefined) state.kitPedira = '';
-if(!state.confidenceAnchors){
-  state.confidenceAnchors = (state.anchorWord && state.anchorMemory) ? [{word:state.anchorWord, memory:state.anchorMemory}] : [];
+/* Normaliza datos cargados o importados: rellena campos que puedan faltar en versiones antiguas.
+   Punto único donde añadir futuras migraciones cuando dataVersion suba. */
+function normalizeState(s){
+  if(!s.checkins) s.checkins = [];
+  if(!s.kitSenales) s.kitSenales = [];
+  if(s.kitHerramienta===undefined) s.kitHerramienta = '';
+  if(s.kitAjuste===undefined) s.kitAjuste = '';
+  if(s.kitPersona===undefined) s.kitPersona = '';
+  if(s.kitPedira===undefined) s.kitPedira = '';
+  if(!s.confidenceAnchors){
+    s.confidenceAnchors = (s.anchorWord && s.anchorMemory) ? [{word:s.anchorWord, memory:s.anchorMemory}] : [];
+  }
+  if(s.resetProgress===undefined) s.resetProgress = null;
+  if(!s.resetHistory) s.resetHistory = [];
+  if(!s.sepaEntries) s.sepaEntries = [];
+  if(!s.checkpoints) s.checkpoints = [];
+  if(!s.visualAnchors) s.visualAnchors = [];
+  if(!s.dataVersion) s.dataVersion = 1;
+  return s;
 }
-if(state.resetProgress===undefined) state.resetProgress = null;
-if(!state.resetHistory) state.resetHistory = [];
+/* Comprobación básica de forma: no valida contenido en profundidad, solo que "parezca" un export de Wesser */
+function isValidWesserData(obj){
+  if(!obj || typeof obj !== 'object') return false;
+  const expectedArrayKeys = ['sepaEntries','checkpoints','visualAnchors','checkins','confidenceAnchors','resetHistory'];
+  return expectedArrayKeys.every(k => k in obj) &&
+    Array.isArray(obj.sepaEntries) && Array.isArray(obj.checkpoints) && Array.isArray(obj.checkins);
+}
+let state = normalizeState(loadState());
 function save(){
   try{
     localStorage.setItem(LS_KEY, JSON.stringify(state));
@@ -1108,8 +1125,13 @@ function importarDatos(input){
     let imported;
     try{ imported = JSON.parse(e.target.result); }
     catch(err){ alert('El archivo no es un JSON válido.'); input.value=''; return; }
+    if(!isValidWesserData(imported)){
+      alert('Este archivo no parece un archivo de datos válido de Wesser.');
+      input.value='';
+      return;
+    }
     if(!confirm('Esto reemplazará todos tus datos actuales por los del archivo importado. ¿Continuar?')){ input.value=''; return; }
-    state = imported;
+    state = normalizeState(imported);
     save();
     alert('Datos importados correctamente. La página se recargará.');
     location.reload();
