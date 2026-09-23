@@ -243,6 +243,7 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
   cursor:pointer;
 }
 .chip.selected{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;}
+.chip:focus-visible, button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible{outline:2.5px solid var(--wesser-red);outline-offset:2px;}
 .chip-cat{font-size:12px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.3px;margin:10px 0 6px;}
 
 
@@ -374,8 +375,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <div class="header-inner">
     <div class="brand"><b>WESSER</b><span>Gestión Emocional</span></div>
     <div class="header-actions">
-      <button class="icon-btn" onclick="openHelp()" title="Ayuda">❓</button>
-      <button class="icon-btn" id="themeToggle" title="Modo claro/oscuro">🌓</button>
+      <button class="icon-btn" onclick="openHelp()" title="Ayuda" aria-label="Abrir ayuda">❓</button>
+      <button class="icon-btn" id="themeToggle" title="Modo claro/oscuro" aria-label="Cambiar entre modo claro y oscuro">🌓</button>
     </div>
   </div>
   <div class="tabs-wrap">
@@ -888,11 +889,11 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <div class="overlay-header">
     <b>🆘 MODO RESET</b>
     <div class="oh-actions">
-      <button class="close-x labeled" onclick="startCheckin()" title="Señales de alerta">🚦<span class="lbl">Señales</span></button>
-      <button class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset">🆘<span class="lbl">Iniciar</span></button>
-      <button class="close-x labeled" onclick="openKit()" title="Kit de Emergencia">🎒<span class="lbl">Kit</span></button>
-      <button class="close-x labeled" onclick="openCheckinHistorial()" title="Historial">📚<span class="lbl">Historial</span></button>
-      <button class="close-x" onclick="closeReset()" title="Cerrar">✕</button>
+      <button class="close-x labeled" onclick="startCheckin()" title="Señales de alerta" aria-label="Señales de alerta">🚦<span class="lbl">Señales</span></button>
+      <button class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset" aria-label="Iniciar Modo Reset">🆘<span class="lbl">Iniciar</span></button>
+      <button class="close-x labeled" onclick="openKit()" title="Kit de Emergencia" aria-label="Kit de Emergencia">🎒<span class="lbl">Kit</span></button>
+      <button class="close-x labeled" onclick="openCheckinHistorial()" title="Historial" aria-label="Ver historial">📚<span class="lbl">Historial</span></button>
+      <button class="close-x" onclick="closeReset()" title="Cerrar" aria-label="Cerrar Modo Reset">✕</button>
     </div>
   </div>
   <div class="overlay-body" id="resetBody"></div>
@@ -902,7 +903,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <div class="overlay" id="toolOverlay">
   <div class="overlay-header" style="background:linear-gradient(135deg,var(--calm-blue),var(--wesser-navy));">
     <b id="toolTitle">Herramienta</b>
-    <button class="close-x" onclick="closeTool()">✕</button>
+    <button class="close-x" onclick="closeTool()" aria-label="Cerrar herramienta">✕</button>
   </div>
   <div class="overlay-body" id="toolBody"></div>
 </div>
@@ -911,7 +912,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <div class="overlay" id="helpOverlay">
   <div class="overlay-header" style="background:linear-gradient(135deg,var(--wesser-navy),#0b1120);">
     <b>❓ Ayuda</b>
-    <button class="close-x" onclick="closeHelp()">✕</button>
+    <button class="close-x" onclick="closeHelp()" aria-label="Cerrar ayuda">✕</button>
   </div>
   <div class="overlay-body">
     <p class="desc" style="margin-bottom:4px;">Qué hace cada parte de la app y cuándo usarla. Todo lo que registres se guarda solo en este dispositivo (no se envía a ningún sitio).</p>
@@ -962,7 +963,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <p>Elige según lo que necesites ahora mismo, agrupadas en 3 bloques:</p>
         <p><b>Alivio inmediato</b> (1-2 min, para calmar cuerpo y mente ya):</p>
         <ul>
-          <li><b>Suspiro Fisiológico</b>: respiración de 60s para calmar el sistema nervioso en menos de 1 minuto.</li>
+          <li><b>Suspiro Fisiológico</b>: respiración de 60s que puede ayudarte a reducir rápidamente la activación cuando estás acelerado o tenso.</li>
           <li><b>Parar y Decidir</b>: STOP → Toma aire → Observa → Nombra → Decide → Actúa. Es la técnica general para cualquier tensión, rabia o bloqueo — úsala siempre que no sepas cuál elegir.</li>
           <li><b>Grounding 5‑4‑3‑2‑1</b>: ancla tus 5 sentidos al momento presente.</li>
           <li><b>Tense & Release</b>: tensa y suelta puños, hombros, brazos y piernas para liberar tensión física.</li>
@@ -1065,7 +1066,19 @@ if(!state.confidenceAnchors){
 }
 if(state.resetProgress===undefined) state.resetProgress = null;
 if(!state.resetHistory) state.resetHistory = [];
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+function save(){
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+  }catch(e){
+    console.error('No se pudo guardar en localStorage', e);
+    alert('No se ha podido guardar. Puede que el almacenamiento del navegador esté lleno o desactivado (por ejemplo, en navegación privada).');
+  }
+}
+function escapeHtml(str){
+  return String(str==null?'':str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
 /* ============ MIS DATOS: exportar / importar / borrar ============ */
 function exportarDatos(){
@@ -1103,7 +1116,9 @@ function borrarTodosDatos(){
 function applyTheme(){
   const t = state.theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');
   document.documentElement.setAttribute('data-theme', t);
-  document.getElementById('themeToggle').textContent = t === 'dark' ? '☀️' : '🌙';
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = t === 'dark' ? '☀️' : '🌙';
+  btn.setAttribute('aria-label', t === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
 }
 applyTheme();
 document.getElementById('themeToggle').onclick = ()=>{
@@ -1330,6 +1345,7 @@ function cancelarEdicionSepa(){
   document.getElementById('sepaCancelBtn').style.display = 'none';
 }
 function borrarSepa(id){
+  if(!confirm('¿Eliminar este registro del Diario? No se puede deshacer.')) return;
   state.sepaEntries = state.sepaEntries.filter(x=>x.id!==id);
   if(editingSepaId===id) cancelarEdicionSepa();
   save(); renderSepaHistorial();
@@ -1344,11 +1360,11 @@ function renderSepaHistorial(){
     <div class="history-item">
       <button class="del" onclick="borrarSepa(${e.id})">Eliminar</button>
       <button class="edit" onclick="editarSepa(${e.id})">Editar</button>
-      <div class="meta">${e.fecha} · ${emosTxt}</div>
-      <p><b>S:</b> ${e.situacion}</p>
-      <p><b>P:</b> ${e.pensD||'—'}</p>
-      <p><b>P+:</b> ${e.pensC}</p>
-      <p><b>A:</b> ${e.accion}</p>
+      <div class="meta">${escapeHtml(e.fecha)} · ${emosTxt}</div>
+      <p><b>S:</b> ${escapeHtml(e.situacion)}</p>
+      <p><b>P:</b> ${escapeHtml(e.pensD)||'—'}</p>
+      <p><b>P+:</b> ${escapeHtml(e.pensC)}</p>
+      <p><b>A:</b> ${escapeHtml(e.accion)}</p>
     </div>`;
   }).join('');
 }
@@ -1372,7 +1388,7 @@ function openCheckpoint(editId){
       <input type="range" id="cpEmocional" min="1" max="10" value="${emocional}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value">
       <div class="range-val" id="cpEmocionalVal">${emocional}</div>
       <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
-      <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${nota}</textarea>
+      <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
       <button class="btn btn-green" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
     </div>
   `);
@@ -1391,6 +1407,7 @@ function guardarCheckpoint(){
   save(); closeTool(); renderCheckpointHistorial();
 }
 function borrarCheckpoint(id){
+  if(!confirm('¿Eliminar este checkpoint? No se puede deshacer.')) return;
   state.checkpoints = state.checkpoints.filter(x=>x.id!==id);
   save(); renderCheckpointHistorial();
 }
@@ -1402,9 +1419,9 @@ function renderCheckpointHistorial(){
     <div class="history-item">
       <button class="del" onclick="borrarCheckpoint(${c.id})">Eliminar</button>
       <button class="edit" onclick="openCheckpoint(${c.id})">Editar</button>
-      <div class="meta">${c.fecha}</div>
+      <div class="meta">${escapeHtml(c.fecha)}</div>
       <p>Fatiga: <b>${c.fatiga}/10</b> · Emocional: <b>${c.emocional}/10</b></p>
-      ${c.nota?`<p>${c.nota}</p>`:''}
+      ${c.nota?`<p>${escapeHtml(c.nota)}</p>`:''}
     </div>`).join('');
 }
 renderCheckpointHistorial();
@@ -1528,8 +1545,8 @@ function renderAnchorTool(){
       ${state.confidenceAnchors.length ? state.confidenceAnchors.map((a,i)=>`
         <div class="history-item">
           <button class="del" onclick="delConfidenceAnchor(${i})">Eliminar</button>
-          <p style="font-weight:700;">${a.word}</p>
-          <p class="desc">${a.memory}</p>
+          <p style="font-weight:700;">${escapeHtml(a.word)}</p>
+          <p class="desc">${escapeHtml(a.memory)}</p>
           <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="runAnchorGuide(${i})">Usar ahora</button>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado ningún anclaje.</div>'}
     </div>
@@ -1544,6 +1561,7 @@ function addConfidenceAnchor(){
   renderAnchorTool();
 }
 function delConfidenceAnchor(i){
+  if(!confirm('¿Eliminar este anclaje? No se puede deshacer.')) return;
   state.confidenceAnchors.splice(i,1); save();
   renderAnchorTool();
 }
@@ -1552,9 +1570,9 @@ function runAnchorGuide(i){
   openTool('Anclaje de confianza', `
     <div class="card" style="text-align:center;">
       <p class="desc">Repite tu gesto mientras recuerdas:</p>
-      <p style="font-weight:700;font-size:17px;">«${a.memory}»</p>
+      <p style="font-weight:700;font-size:17px;">«${escapeHtml(a.memory)}»</p>
       <p class="desc" style="margin-top:14px;">Repite tu palabra clave:</p>
-      <p style="font-size:26px;font-weight:800;color:var(--success-green);">${a.word}</p>
+      <p style="font-size:26px;font-weight:800;color:var(--success-green);">${escapeHtml(a.word)}</p>
       <div class="timer-big" id="anchorTimer">30</div>
       <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
     </div>
@@ -1604,44 +1622,6 @@ function runTensePhase(phase, secs){
   toolTimers.push(t);
 }
 
-/* ---- Lápiz en los dientes ---- */
-function startPencil(){
-  openTool('Lápiz en los Dientes', `
-    <div class="card" style="text-align:center;">
-      <p style="font-size:40px;">✏️😁</p>
-      <p class="desc">Sostén un lápiz (o bolígrafo) horizontal entre los dientes, sin apretar con los labios, activando la musculatura de la sonrisa.</p>
-      <div class="timer-big" id="pencilTimer">60</div>
-      <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
-    </div>
-  `);
-  let remaining=60;
-  const el = document.getElementById('pencilTimer');
-  const t = setInterval(()=>{
-    remaining--; el.textContent = remaining;
-    if(remaining<=0){ clearToolTimers(); closeTool(); }
-  },1000);
-  toolTimers.push(t);
-}
-
-/* ---- Postura de Poder ---- */
-function startPower(){
-  openTool('Postura de Poder', `
-    <div class="card" style="text-align:center;">
-      <p style="font-size:40px;">🧍‍♂️💪</p>
-      <p class="desc">Espalda recta, pecho abierto, manos en la cintura. Ocupa espacio con seguridad.</p>
-      <div class="timer-big" id="powerTimer">90</div>
-      <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
-    </div>
-  `);
-  let remaining=90;
-  const el = document.getElementById('powerTimer');
-  const t = setInterval(()=>{
-    remaining--; el.textContent = remaining;
-    if(remaining<=0){ clearToolTimers(); closeTool(); }
-  },1000);
-  toolTimers.push(t);
-}
-
 /* ---- Visual Anchor ---- */
 function openVisualAnchor(){
   renderVisualAnchorModal();
@@ -1656,7 +1636,7 @@ function renderVisualAnchorModal(){
       ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
         <div class="history-item">
           <button class="del" onclick="delVisualAnchor(${i})">Eliminar</button>
-          <p style="font-weight:700;">"${p}"</p>
+          <p style="font-weight:700;">"${escapeHtml(p)}"</p>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado frases.</div>'}
     </div>
   `);
@@ -1668,6 +1648,7 @@ function addVisualAnchor(){
   renderVisualAnchorModal();
 }
 function delVisualAnchor(i){
+  if(!confirm('¿Eliminar esta frase? No se puede deshacer.')) return;
   state.visualAnchors.splice(i,1); save();
   renderVisualAnchorModal();
 }
@@ -1708,10 +1689,10 @@ function activarKitPlan(){
   else {
     openModal(`
       <h2>🚨 Mi protocolo personal</h2>
-      <p class="desc"><b>Me regulo con:</b> ${txt}</p>
-      ${state.kitAjuste?`<p class="desc"><b>Ajusto:</b> ${state.kitAjuste}</p>`:''}
-      ${state.kitPersona?`<p class="desc"><b>Pido ayuda a:</b> ${state.kitPersona}</p>`:''}
-      ${state.kitPedira?`<p class="desc"><b>Y le pido:</b> ${state.kitPedira}</p>`:''}
+      <p class="desc"><b>Me regulo con:</b> ${escapeHtml(txt)}</p>
+      ${state.kitAjuste?`<p class="desc"><b>Ajusto:</b> ${escapeHtml(state.kitAjuste)}</p>`:''}
+      ${state.kitPersona?`<p class="desc"><b>Pido ayuda a:</b> ${escapeHtml(state.kitPersona)}</p>`:''}
+      ${state.kitPedira?`<p class="desc"><b>Y le pido:</b> ${escapeHtml(state.kitPedira)}</p>`:''}
       <button class="btn btn-outline" onclick="closeModal()">Cerrar</button>
     `);
   }
@@ -1860,11 +1841,11 @@ function renderResetStep(){
 
       <div class="card kit-summary">
         <h3>🎒 Mi protocolo personal</h3>
-        ${state.kitSenales.length ? `<p class="desc"><b>Cuando noto:</b> ${state.kitSenales.join(' · ')}</p>` : ''}
-        <p class="desc"><b>Me regulo con:</b> ${state.kitHerramienta || '—'}</p>
-        <p class="desc"><b>Ajusto:</b> ${state.kitAjuste || '—'}</p>
-        <p class="desc"><b>Pido ayuda a:</b> ${state.kitPersona || '—'}</p>
-        <p class="desc"><b>Y le pido:</b> ${state.kitPedira || '—'}</p>
+        ${state.kitSenales.length ? `<p class="desc"><b>Cuando noto:</b> ${state.kitSenales.map(escapeHtml).join(' · ')}</p>` : ''}
+        <p class="desc"><b>Me regulo con:</b> ${escapeHtml(state.kitHerramienta) || '—'}</p>
+        <p class="desc"><b>Ajusto:</b> ${escapeHtml(state.kitAjuste) || '—'}</p>
+        <p class="desc"><b>Pido ayuda a:</b> ${escapeHtml(state.kitPersona) || '—'}</p>
+        <p class="desc"><b>Y le pido:</b> ${escapeHtml(state.kitPedira) || '—'}</p>
         ${state.kitHerramienta ? `<button class="btn btn-primary" style="margin-top:6px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa "Me regulo con" abajo para poder activar tu plan con un toque.</p>`}
       </div>
 
@@ -1876,20 +1857,20 @@ function renderResetStep(){
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
         <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
         <label>Mi herramienta</label>
-        <input type="text" id="kitHerramientaInput" value="${state.kitHerramienta||''}" placeholder="Ej: Suspiro fisiológico, Parar y decidir, Grounding 5-4-3-2-1…" oninput="state.kitHerramienta=this.value;save();">
+        <input type="text" id="kitHerramientaInput" value="${escapeHtml(state.kitHerramienta)}" placeholder="Ej: Suspiro fisiológico, Parar y decidir, Grounding 5-4-3-2-1…" oninput="state.kitHerramienta=this.value;save();">
 
         <p><b>2️⃣ 🎙️ Ajusto una cosa</b></p>
         <p class="desc">Elige <b>un solo ajuste técnico</b>.</p>
         <label>Mi ajuste</label>
-        <input type="text" id="kitAjusteInput" value="${state.kitAjuste||''}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…" oninput="state.kitAjuste=this.value;save();">
+        <input type="text" id="kitAjusteInput" value="${escapeHtml(state.kitAjuste)}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…" oninput="state.kitAjuste=this.value;save();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una sola variable. Una cosa cada vez.</b></p>
 
         <p><b>3️⃣ 🤝 Pido apoyo si lo necesito</b></p>
         <p class="desc">Elige de antemano <b>a quién acudir</b> y qué pedir.</p>
         <label>Mi persona de apoyo</label>
-        <input type="text" id="kitPersonaInput" value="${state.kitPersona||''}" oninput="state.kitPersona=this.value;save();">
+        <input type="text" id="kitPersonaInput" value="${escapeHtml(state.kitPersona)}" oninput="state.kitPersona=this.value;save();">
         <label>¿Qué pediré?</label>
-        <input type="text" id="kitPediraInput" value="${state.kitPedira||''}" placeholder="Ej: feedback rápido, observar un abordaje, acompañamiento…" oninput="state.kitPedira=this.value;save();">
+        <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: feedback rápido, observar un abordaje, acompañamiento…" oninput="state.kitPedira=this.value;save();">
 
         <p><b>🚨 ¿Cuándo pediré ayuda?</b></p>
         <p class="desc"><b>Si después de regularme y aplicar mi ajuste sigo bloqueado, evitando abordajes o trabajando en automático.</b></p>
@@ -1909,16 +1890,16 @@ function renderResetStep(){
       </div>
       ${state.resetHistory.length ? state.resetHistory.map(r=>`
         <details class="help-item">
-          <summary>${r.fecha}${r.senal?' · '+r.senal:''}</summary>
+          <summary>${escapeHtml(r.fecha)}${r.senal?' · '+escapeHtml(r.senal):''}</summary>
           <div class="help-body">
             <button class="del" onclick="borrarResetHistorial(${r.id})">Eliminar</button>
-            <p><b>Señal principal:</b> ${r.senal||'—'}</p>
-            <p><b>Contexto (no depende de mí):</b> ${r.examResultado||'—'}</p>
-            <p><b>Mi actuación:</b> ${r.examRendimiento||'—'}</p>
-            <p><b>Lo que sigue funcionando:</b> ${[r.aspecto1,r.aspecto2].filter(Boolean).join(' · ')||'—'}</p>
-            <p><b>Ajuste elegido:</b> ${r.micro||'—'}</p>
+            <p><b>Señal principal:</b> ${escapeHtml(r.senal)||'—'}</p>
+            <p><b>Contexto (no depende de mí):</b> ${escapeHtml(r.examResultado)||'—'}</p>
+            <p><b>Mi actuación:</b> ${escapeHtml(r.examRendimiento)||'—'}</p>
+            <p><b>Lo que sigue funcionando:</b> ${[r.aspecto1,r.aspecto2].filter(Boolean).map(escapeHtml).join(' · ')||'—'}</p>
+            <p><b>Ajuste elegido:</b> ${escapeHtml(r.micro)||'—'}</p>
             <p><b>Abordajes testeados:</b> ${r.stops||0} / 10</p>
-            <p><b>Pacto de permanencia:</b> ${r.pacto||'—'}</p>
+            <p><b>Pacto de permanencia:</b> ${escapeHtml(r.pacto)||'—'}</p>
           </div>
         </details>`).join('') : '<div class="card empty-state">Aún no has completado ninguna sesión Reset.</div>'}
 
@@ -2002,7 +1983,7 @@ function renderResetStep(){
       <div class="chip-group">${resetCheckinItems.map(s=>`<div class="chip ${resetSenal===s?'selected':''}" onclick="selectSenal(this)">${s}</div>`).join('')}</div>
     ` : `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el "no", cansancio previo, abordar menos, trabajar en automático…</p>
-      <textarea id="resetSenalInput" placeholder="Escribe tu señal principal (opcional)..." oninput="resetSenal=this.value;saveResetProgress();">${resetSenal}</textarea>
+      <textarea id="resetSenalInput" placeholder="Escribe tu señal principal (opcional)..." oninput="resetSenal=this.value;saveResetProgress();">${escapeHtml(resetSenal)}</textarea>
     `;
     body.innerHTML = `
       ${resetDots()}
@@ -2059,9 +2040,9 @@ function renderResetStep(){
         </ul>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando pertenece al contexto y qué parte puedo ajustar yo?</b></p>
         <label>El contexto (no depende de mí)</label>
-        <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgress();">${resetExamResultado}</textarea>
+        <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgress();">${escapeHtml(resetExamResultado)}</textarea>
         <label>Mi actuación (puedo ajustar)</label>
-        <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgress();">${resetExamRendimiento}</textarea>
+        <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgress();">${escapeHtml(resetExamRendimiento)}</textarea>
       </div>
       <button class="btn btn-amber" onclick="resetGoto(3);">Continuar</button>
     `;
@@ -2074,9 +2055,9 @@ function renderResetStep(){
         <h3>Lo que sigue funcionando</h3>
         <p class="desc">Escribe <b>2 cosas concretas que estás haciendo bien y quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
         <label>Aspecto 1</label>
-        <input type="text" id="resetAspecto1Input" value="${resetAspecto1}" placeholder="Ej: mantengo la sonrisa en el saludo" oninput="resetAspecto1=this.value;saveResetProgress();">
+        <input type="text" id="resetAspecto1Input" value="${escapeHtml(resetAspecto1)}" placeholder="Ej: mantengo la sonrisa en el saludo" oninput="resetAspecto1=this.value;saveResetProgress();">
         <label>Aspecto 2</label>
-        <input type="text" id="resetAspecto2Input" value="${resetAspecto2}" placeholder="Ej: sigo escuchando antes de responder" oninput="resetAspecto2=this.value;saveResetProgress();">
+        <input type="text" id="resetAspecto2Input" value="${escapeHtml(resetAspecto2)}" placeholder="Ej: sigo escuchando antes de responder" oninput="resetAspecto2=this.value;saveResetProgress();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 Piensa en conductas concretas: cómo abordas, cómo escuchas, cómo explicas, cómo gestionas una objeción, tu actitud…</p>
       </div>
       <button class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Continuar</button>
@@ -2155,7 +2136,7 @@ function renderResetStep(){
       <div class="card">
         <h3>Pacto de permanencia</h3>
         <p class="desc">«Cuando El Número no acompañe, yo me comprometo a...»</p>
-        <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..." oninput="resetPacto=this.value;saveResetProgress();">${resetPacto}</textarea>
+        <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..." oninput="resetPacto=this.value;saveResetProgress();">${escapeHtml(resetPacto)}</textarea>
       </div>
       <button class="btn btn-primary" onclick="finalizarReset()">Finalizar</button>
     `;
@@ -2174,6 +2155,7 @@ function finalizarReset(){
   closeReset();
 }
 function borrarResetHistorial(id){
+  if(!confirm('¿Eliminar esta sesión Reset del historial? No se puede deshacer.')) return;
   state.resetHistory = state.resetHistory.filter(x=>x.id!==id);
   save(); renderResetStep();
 }
@@ -2187,6 +2169,65 @@ function selectSenal(el){ resetSenal = el.textContent; saveResetProgress(); rend
 function selectMicro(m){ resetMicro = m; saveResetProgress(); renderResetStep(); }
 function resetGoto(step){ resetStep = step; saveResetProgress(); renderResetStep(); }
 function incrementStop(){ if(resetStops<10) resetStops++; saveResetProgress(); renderResetStep(); }
+
+/* ============ ACCESIBILIDAD ============ */
+let lastFocusedEl = null;
+function focusOverlay(el){
+  const target = el.querySelector('.close-x') || el.querySelector('button, [tabindex]');
+  if(target) target.focus();
+}
+['resetOverlay','toolOverlay','helpOverlay','modalBack'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  const obs = new MutationObserver(()=>{
+    if(el.classList.contains('active')){
+      lastFocusedEl = document.activeElement;
+      focusOverlay(el);
+    } else if(lastFocusedEl && document.body.contains(lastFocusedEl)){
+      lastFocusedEl.focus();
+      lastFocusedEl = null;
+    }
+  });
+  obs.observe(el, {attributes:true, attributeFilter:['class']});
+});
+function closeTopOverlay(){
+  if(document.getElementById('modalBack').classList.contains('active')) closeModal();
+  else if(document.getElementById('toolOverlay').classList.contains('active')) closeTool();
+  else if(document.getElementById('resetOverlay').classList.contains('active')) closeReset();
+  else if(document.getElementById('helpOverlay').classList.contains('active')) closeHelp();
+}
+
+function enhanceChip(el){
+  if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
+  if(!el.hasAttribute('role')) el.setAttribute('role','button');
+  el.setAttribute('aria-pressed', el.classList.contains('selected') ? 'true' : 'false');
+}
+function enhanceAllChips(root){
+  (root||document).querySelectorAll('.chip').forEach(enhanceChip);
+}
+const chipObserver = new MutationObserver((mutations)=>{
+  for(const m of mutations){
+    if(m.type==='childList'){
+      m.addedNodes.forEach(node=>{
+        if(node.nodeType!==1) return;
+        if(node.classList && node.classList.contains('chip')) enhanceChip(node);
+        if(node.querySelectorAll) node.querySelectorAll('.chip').forEach(enhanceChip);
+      });
+    } else if(m.type==='attributes' && m.target.classList && m.target.classList.contains('chip')){
+      enhanceChip(m.target);
+    }
+  }
+});
+chipObserver.observe(document.body, {childList:true, subtree:true, attributes:true, attributeFilter:['class']});
+enhanceAllChips();
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape'){ closeTopOverlay(); return; }
+  if((e.key==='Enter' || e.key===' ') && e.target.classList && e.target.classList.contains('chip')){
+    e.preventDefault();
+    e.target.click();
+  }
+});
 
 /* ============ INIT ============ */
 goto('aprender');
