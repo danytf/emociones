@@ -83,12 +83,19 @@ header{
 }
 .reset-btn:active{transform:scale(.96);}
 
+.tabs-wrap{position:relative;max-width:1280px;margin:0 auto;}
 .header-tabs{
-  max-width:1280px;margin:12px auto 0;
+  margin:12px 0 0;
   display:flex;gap:6px;overflow-x:auto;
   scrollbar-width:none;padding-bottom:2px;
 }
 .header-tabs::-webkit-scrollbar{display:none;}
+.tabs-fade{
+  position:absolute;top:12px;right:0;bottom:2px;width:28px;
+  background:linear-gradient(to right,rgba(198,40,40,0),var(--wesser-red-dark));
+  pointer-events:none;
+}
+.tabs-wrap.at-end .tabs-fade{display:none;}
 .header-tabs button{
   flex:0 0 auto;background:rgba(255,255,255,.12);border:none;
   color:rgba(255,255,255,.85);font-weight:700;font-size:12.5px;
@@ -137,7 +144,7 @@ main{
 .tool-group{border:1.5px solid var(--border-color);border-radius:18px;padding:18px;background:var(--card-bg);}
 .tool-group h3{margin-top:0;font-size:15px;}
 .tool-group .tool-desc{margin-bottom:14px;}
-.tool-group .tool-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;align-items:stretch;}
+.tool-group .tool-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:14px;align-items:stretch;}
 .tool-group .tool-cards .card{margin-bottom:0;display:flex;flex-direction:column;}
 .tool-group .tool-cards .card .desc:last-of-type{flex:1;}
 .tool-group.relief{border-left:5px solid var(--calm-blue);}
@@ -236,7 +243,14 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 }
 .overlay-header .oh-actions{display:flex;gap:8px;}
 .overlay-body{padding:24px 28px;max-width:900px;margin:0 auto;width:100%;flex:1;}
+.overlay-body.center-short{display:flex;flex-direction:column;justify-content:center;}
 .close-x{background:rgba(255,255,255,.2);border:none;color:#fff;width:38px;height:38px;border-radius:10px;font-size:18px;flex-shrink:0;}
+.close-x.labeled{width:auto;height:38px;padding:0 12px;display:flex;align-items:center;gap:6px;}
+.close-x.labeled .lbl{font-size:12.5px;font-weight:700;white-space:nowrap;}
+@media (max-width:600px){
+  .close-x.labeled{width:38px;padding:0;justify-content:center;}
+  .close-x.labeled .lbl{display:none;}
+}
 .step-dots{display:flex;gap:6px;justify-content:center;margin:14px 0 4px;}
 .step-dots span{width:8px;height:8px;border-radius:99px;background:var(--border-color);}
 .step-dots span.on{background:var(--wesser-red);}
@@ -341,12 +355,15 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="icon-btn" id="themeToggle" title="Modo claro/oscuro">🌓</button>
     </div>
   </div>
-  <div class="header-tabs" id="headerTabs">
-    <button data-view="aprender" class="active"><span class="ic">🧠</span><span class="lb">Aprender</span></button>
-    <button data-view="bienestar"><span class="ic">🌱</span><span class="lb">Bienestar</span></button>
-    <button data-view="herramientas"><span class="ic">🧰</span><span class="lb">Herramientas</span></button>
-    <button data-view="diario"><span class="ic">📓</span><span class="lb">Diario</span></button>
-    <button class="tab-reset" onclick="openReset()"><span class="ic">🆘</span><span class="lb">Reset</span></button>
+  <div class="tabs-wrap">
+    <div class="header-tabs" id="headerTabs">
+      <button data-view="aprender" class="active"><span class="ic">🧠</span><span class="lb">Aprender</span></button>
+      <button data-view="bienestar"><span class="ic">🌱</span><span class="lb">Bienestar</span></button>
+      <button data-view="herramientas"><span class="ic">🧰</span><span class="lb">Herramientas</span></button>
+      <button data-view="diario"><span class="ic">📓</span><span class="lb">Diario</span></button>
+      <button class="tab-reset" onclick="openReset()"><span class="ic">🆘</span><span class="lb">Reset</span></button>
+    </div>
+    <div class="tabs-fade" aria-hidden="true"></div>
   </div>
 </header>
 
@@ -414,7 +431,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p><b>5️⃣ Habilidades sociales 🗣️</b><br><b>Comunicar, escuchar, adaptarse, resolver conflictos y relacionarnos bien con los demás.</b></p>
 
           <p><b>🎯 En la calle</b></p>
-          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Tener Inteligencia Emocional no significa <b>"no sentir"</b>. Significa <b>darte cuenta de lo que estás sintiendo, gestionarlo y decidir cómo quieres responder</b>.</p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Tener Inteligencia Emocional no significa <b>«no sentir»</b>. Significa <b>darte cuenta de lo que estás sintiendo, gestionarlo y decidir cómo quieres responder</b>.</p>
         </div>
       </details>
 
@@ -440,7 +457,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p>Es un <b>bucle</b>: cada parte puede alimentar a las demás.</p>
 
           <p><b>📍 Un ejemplo</b></p>
-          <p style="text-align:center;"><b>"No voy a conseguir ni un socio."</b></p>
+          <p style="text-align:center;"><b>«No voy a conseguir ni un socio.»</b></p>
           <p style="text-align:center;">↓</p>
           <p style="text-align:center;">😞 <b>Frustración / desánimo</b></p>
           <p style="text-align:center;">↓</p>
@@ -448,7 +465,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p style="text-align:center;">↓</p>
           <p style="text-align:center;">👀 <b>Presto más atención a los rechazos y los interpreto como una confirmación</b></p>
           <p style="text-align:center;">↓</p>
-          <p style="text-align:center;">🔄 <b>"¿Ves? Ya sabía que hoy no iba a funcionar."</b></p>
+          <p style="text-align:center;">🔄 <b>«¿Ves? Ya sabía que hoy no iba a funcionar.»</b></p>
 
           <p><b>🎯 La clave</b></p>
           <p>No se trata de <b>forzarnos a pensar en positivo</b>.</p>
@@ -497,66 +514,66 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <details class="help-item">
             <summary>😰 Ansiedad anticipatoria</summary>
             <div class="help-body">
-              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"¿Y si hoy no sale bien?"</p>
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«¿Y si hoy no sale bien?»</p>
               <p>Aparece cuando anticipamos <b>un resultado negativo que todavía no ha ocurrido</b>: no alcanzar el objetivo, encadenar rechazos o pensar cómo terminará el día.</p>
               <p>👉 <b>Clave:</b> preocupa <b>lo que podría pasar</b>.</p>
               <p>🛠️ <b>¿Qué hago?</b><br>Deja el resultado final fuera de la cabeza y céntrate en <b>el siguiente abordaje</b>.</p>
-              <p style="font-style:italic;">💬 "No sé cómo acabará el día. Solo necesito hacer bien la próxima conversación."</p>
+              <p style="font-style:italic;">💬 «No sé cómo acabará el día. Solo necesito hacer bien la próxima conversación.»</p>
             </div>
           </details>
 
           <details class="help-item">
             <summary>😣 Frustración</summary>
             <div class="help-body">
-              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Estoy esforzándome y no consigo el resultado."</p>
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«Estoy esforzándome y no consigo el resultado.»</p>
               <p>Surge cuando <b>un objetivo se bloquea a pesar del esfuerzo</b>: muchas conversaciones y pocas firmas, o una colaboración que finalmente se cae.</p>
               <p>👉 <b>Clave:</b> quiero conseguir algo y <b>algo se interpone</b>.</p>
               <p>🛠️ <b>¿Qué hago?</b><br>Haz una pausa y busca <b>un ajuste concreto</b> para el siguiente intento.</p>
-              <p style="font-style:italic;">💬 "Esto no ha salido como quería. ¿Qué puedo hacer diferente en la próxima?"</p>
+              <p style="font-style:italic;">💬 «Esto no ha salido como quería. ¿Qué puedo hacer diferente en la próxima?»</p>
             </div>
           </details>
 
           <details class="help-item">
             <summary>😨 Miedo al rechazo / juicio</summary>
             <div class="help-body">
-              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"¿Qué pensarán de mí?"</p>
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«¿Qué pensarán de mí?»</p>
               <p>Aparece cuando nos preocupa <b>que nos rechacen, quedar mal o ser valorados negativamente</b>. Puede hacer que abordemos menos, dudemos más o evitemos determinadas situaciones.</p>
               <p>👉 <b>Clave:</b> preocupa <b>cómo me van a recibir o valorar</b>.</p>
               <p>🛠️ <b>¿Qué hago?</b><br>Deja de intentar controlar la reacción de la otra persona y vuelve a tu tarea: <b>acercarte, comunicar y escuchar con respeto</b>.</p>
-              <p style="font-style:italic;">💬 "No controlo su reacción. Sí controlo cómo hago mi trabajo."</p>
+              <p style="font-style:italic;">💬 «No controlo su reacción. Sí controlo cómo hago mi trabajo.»</p>
             </div>
           </details>
 
           <details class="help-item">
             <summary>😔 Desánimo</summary>
             <div class="help-body">
-              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"No tengo ganas de seguir."</p>
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«No tengo ganas de seguir.»</p>
               <p>Puede aparecer después de varios resultados negativos y afectar a nuestra <b>energía, motivación o confianza</b>.</p>
               <p>👉 <b>Clave:</b> bajan <b>las ganas de continuar</b>.</p>
               <p>🛠️ <b>¿Qué hago?</b><br>Reduce el horizonte: no pienses en toda la jornada. Céntrate en <b>los próximos abordajes</b>.</p>
-              <p style="font-style:italic;">💬 "No necesito tener ganas ahora. Solo necesito dar el siguiente paso."</p>
+              <p style="font-style:italic;">💬 «No necesito tener ganas ahora. Solo necesito dar el siguiente paso.»</p>
             </div>
           </details>
 
           <details class="help-item">
             <summary>😩 Impotencia</summary>
             <div class="help-body">
-              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Haga lo que haga, no depende de mí."</p>
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«Haga lo que haga, no depende de mí.»</p>
               <p>Aparece cuando sentimos que tenemos <b>poco control sobre la situación</b>: una zona complicada, pocas oportunidades de abordaje, permisos difíciles o factores externos.</p>
               <p>👉 <b>Clave:</b> siento que <b>no puedo cambiar lo que está pasando</b>.</p>
               <p>🛠️ <b>¿Qué hago?</b><br>Separa lo que depende de ti de lo que no y vuelve a <b>lo controlable: actitud, técnica, abordaje, escucha y adaptación</b>.</p>
-              <p style="font-style:italic;">💬 "No controlo el entorno. Sí controlo mi siguiente respuesta."</p>
+              <p style="font-style:italic;">💬 «No controlo el entorno. Sí controlo mi siguiente respuesta.»</p>
             </div>
           </details>
 
           <details class="help-item">
             <summary>🥵 Fatiga mental</summary>
             <div class="help-body">
-              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Estoy mentalmente quemado."</p>
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«Estoy mentalmente quemado.»</p>
               <p>Aparece cuando se acumulan <b>esfuerzo, rechazo, tensión y atención constante</b>. Puede hacer que baje el ritmo, cueste concentrarse o empecemos a funcionar en automático.</p>
               <p>👉 <b>Clave:</b> no es <b>«no quiero»</b>, sino <b>«me falta energía mental»</b>.</p>
               <p>🛠️ <b>¿Qué hago?</b><br>Haz una <b>pausa real</b>: aléjate unos minutos, hidrátate, respira y desconecta antes de volver.</p>
-              <p style="font-style:italic;">💬 "No necesito apretar más. Primero recupero; después continúo."</p>
+              <p style="font-style:italic;">💬 «No necesito apretar más. Primero recupero; después continúo.»</p>
             </div>
           </details>
 
@@ -593,20 +610,59 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <h2>🌱 Cuidar tu bienestar</h2>
     <p class="desc" style="margin-bottom:14px;"><b>Pequeños hábitos y prácticas para cuidar tu bienestar emocional y recuperarte mejor.</b></p>
 
+    <h3>12 prácticas</h3>
+    <div class="accordion-block">
+      <details class="help-item">
+        <summary>1. Saborea lo bueno 😊</summary>
+        <div class="help-body"><p>Cuando ocurra algo agradable, <b>no pases inmediatamente a lo siguiente</b>. Detente unos segundos, presta atención y disfruta del momento.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>2. Cuida tus conexiones 🤝</summary>
+        <div class="help-body"><p>Dedica tiempo a las personas que te hacen bien. <b>Escuchar, compartir, agradecer o ayudar</b> puede fortalecer tus relaciones.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>3. Practica la amabilidad ❤️</summary>
+        <div class="help-body"><p>Haz pequeños gestos de ayuda o amabilidad de forma intencionada. <b>No tienen que ser grandes cosas.</b></p></div>
+      </details>
+      <details class="help-item">
+        <summary>4. Desengancha de la rumiación 🔄</summary>
+        <div class="help-body"><p>Cuando lleves demasiado tiempo dando vueltas a lo mismo, <b>cambia de foco de forma consciente</b>: caminar, hablar con alguien, escuchar música o centrarte en una tarea concreta.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>5. Cuestiona tus pensamientos 💭</summary>
+        <div class="help-body"><p>Cuando aparezca un pensamiento negativo, pregúntate: <b>¿Qué evidencias tengo? ¿Estoy sacando alguna conclusión demasiado rápido? ¿Hay otra forma más realista de interpretar lo ocurrido?</b></p></div>
+      </details>
+      <details class="help-item">
+        <summary>6. Busca contacto con la naturaleza 🌿</summary>
+        <div class="help-body"><p>Siempre que puedas, <b>sal a un espacio verde, pasea o dedica unos minutos a estar al aire libre</b>.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>7. Utiliza tus fortalezas 💪</summary>
+        <div class="help-body"><p>Identifica tus principales <b>fortalezas de carácter</b> y busca oportunidades para utilizarlas en tu trabajo y en tu vida.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>8. Practica mindfulness 🧘</summary>
+        <div class="help-body"><p>Dedica unos minutos a prestar atención al <b>momento presente</b>, observando pensamientos, emociones y sensaciones sin intentar cambiarlos inmediatamente.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>9. Practica la autocompasión 🤍</summary>
+        <div class="help-body"><p>Cuando tengas un mal día, <b>háblate como hablarías a un compañero al que aprecias</b>: con comprensión, pero también con honestidad.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>10. Entrena la gratitud 🙏</summary>
+        <div class="help-body"><p>Al final del día, recuerda <b>3 cosas concretas que hayan ido bien o que valores</b>. Pueden ser cosas pequeñas.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>11. Visualiza y aterriza 🎯</summary>
+        <div class="help-body"><p>Imagina <b>cómo quieres afrontar una situación futura</b> y después pregúntate: <b>¿Qué obstáculo puede aparecer? ¿Qué haré cuando aparezca?</b> Prepararte también para las dificultades hace que el plan sea más realista.</p></div>
+      </details>
+      <details class="help-item">
+        <summary>12. Aprende a estar en lo incómodo 🛡️</summary>
+        <div class="help-body"><p>No todo malestar necesita desaparecer inmediatamente. Practica <b>seguir haciendo lo que es importante para ti aunque aparezcan nervios, frustración o incomodidad</b>.</p></div>
+      </details>
+    </div>
+
     <div class="card card-full">
-      <h3>12 prácticas</h3>
-      <p class="desc"><b>1️⃣ Saborea lo bueno 😊</b><br>Cuando ocurra algo agradable, <b>no pases inmediatamente a lo siguiente</b>. Detente unos segundos, presta atención y disfruta del momento.</p>
-      <p class="desc"><b>2️⃣ Cuida tus conexiones 🤝</b><br>Dedica tiempo a las personas que te hacen bien. <b>Escuchar, compartir, agradecer o ayudar</b> puede fortalecer tus relaciones.</p>
-      <p class="desc"><b>3️⃣ Practica la amabilidad ❤️</b><br>Haz pequeños gestos de ayuda o amabilidad de forma intencionada. <b>No tienen que ser grandes cosas.</b></p>
-      <p class="desc"><b>4️⃣ Desengancha de la rumiación 🔄</b><br>Cuando lleves demasiado tiempo dando vueltas a lo mismo, <b>cambia de foco de forma consciente</b>: caminar, hablar con alguien, escuchar música o centrarte en una tarea concreta.</p>
-      <p class="desc"><b>5️⃣ Cuestiona tus pensamientos 💭</b><br>Cuando aparezca un pensamiento negativo, pregúntate: <b>¿Qué evidencias tengo? ¿Estoy sacando alguna conclusión demasiado rápido? ¿Hay otra forma más realista de interpretar lo ocurrido?</b></p>
-      <p class="desc"><b>6️⃣ Busca contacto con la naturaleza 🌿</b><br>Siempre que puedas, <b>sal a un espacio verde, pasea o dedica unos minutos a estar al aire libre</b>.</p>
-      <p class="desc"><b>7️⃣ Utiliza tus fortalezas 💪</b><br>Identifica tus principales <b>fortalezas de carácter</b> y busca oportunidades para utilizarlas en tu trabajo y en tu vida.</p>
-      <p class="desc"><b>8️⃣ Practica mindfulness 🧘</b><br>Dedica unos minutos a prestar atención al <b>momento presente</b>, observando pensamientos, emociones y sensaciones sin intentar cambiarlos inmediatamente.</p>
-      <p class="desc"><b>9️⃣ Practica la autocompasión 🤍</b><br>Cuando tengas un mal día, <b>háblate como hablarías a un compañero al que aprecias</b>: con comprensión, pero también con honestidad.</p>
-      <p class="desc"><b>🔟 Entrena la gratitud 🙏</b><br>Al final del día, recuerda <b>3 cosas concretas que hayan ido bien o que valores</b>. Pueden ser cosas pequeñas.</p>
-      <p class="desc"><b>1️⃣1️⃣ Visualiza y aterriza 🎯</b><br>Imagina <b>cómo quieres afrontar una situación futura</b> y después pregúntate: <b>¿Qué obstáculo puede aparecer? ¿Qué haré cuando aparezca?</b> Prepararte también para las dificultades hace que el plan sea más realista.</p>
-      <p class="desc"><b>1️⃣2️⃣ Aprende a estar en lo incómodo 🛡️</b><br>No todo malestar necesita desaparecer inmediatamente. Practica <b>seguir haciendo lo que es importante para ti aunque aparezcan nervios, frustración o incomodidad</b>.</p>
 
       <p class="desc" style="font-weight:700;margin-bottom:4px;">🎯 La clave</p>
       <p class="desc" style="font-style:italic;">No necesitas sentirte bien para actuar bien.</p>
@@ -705,11 +761,11 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <b>A · Acción:</b> ¿Qué voy a hacer ahora?</p>
 
       <p class="desc" style="font-weight:700;margin-bottom:4px;">🔴 Ejemplo automático</p>
-      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Esta zona es horrible. No vale la pena ni intentar parar."</p>
+      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«Esta zona es horrible. No vale la pena ni intentar parar.»</p>
       <p class="desc">Puede llevar a <b>abordajes sin energía, postura cerrada y abandono prematuro</b>.</p>
 
       <p class="desc" style="font-weight:700;margin-bottom:4px;">🟢 Ejemplo útil</p>
-      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"El flujo es menor, pero puedo adaptar mi entrada, mantener la calma y centrarme en hacer buenas conversaciones."</p>
+      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«El flujo es menor, pero puedo adaptar mi entrada, mantener la calma y centrarme en hacer buenas conversaciones.»</p>
       <p class="desc">→ <b>Foco en lo que sí puedo controlar:</b> técnica, actitud y calidad de la interacción.</p>
     </div>
 
@@ -793,10 +849,10 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <div class="overlay-header">
     <b>🆘 MODO RESET</b>
     <div class="oh-actions">
-      <button class="close-x" onclick="startCheckin()" title="Señales de alerta">🚦</button>
-      <button class="close-x" onclick="resetGoto(1)" title="Iniciar Modo Reset">🆘</button>
-      <button class="close-x" onclick="openKit()" title="Kit de Emergencia">🎒</button>
-      <button class="close-x" onclick="openCheckinHistorial()" title="Historial">📚</button>
+      <button class="close-x labeled" onclick="startCheckin()" title="Señales de alerta">🚦<span class="lbl">Señales</span></button>
+      <button class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset">🆘<span class="lbl">Iniciar</span></button>
+      <button class="close-x labeled" onclick="openKit()" title="Kit de Emergencia">🎒<span class="lbl">Kit</span></button>
+      <button class="close-x labeled" onclick="openCheckinHistorial()" title="Historial">📚<span class="lbl">Historial</span></button>
       <button class="close-x" onclick="closeReset()" title="Cerrar">✕</button>
     </div>
   </div>
@@ -831,7 +887,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <p><b>3️⃣ Cierra el día con el Diario SEPA</b> 📝<br>
         Dedica unos minutos a revisar cómo ha ido la jornada, qué has sentido y qué puedes aprender de ella.</p>
         <p><b>4️⃣ ¿Llevas varios días de mala racha? 🆘 Reset</b><br>
-        Cuando sientas que "chocas con la pared", utiliza <b>🆘 Reset</b> para parar, recolocarte y volver a la calle con otra perspectiva.</p>
+        Cuando sientas que «chocas con la pared», utiliza <b>🆘 Reset</b> para parar, recolocarte y volver a la calle con otra perspectiva.</p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Aprende → Aplica → Reflexiona → Resetea.</b> No necesitas utilizar todo a la vez. Empieza por lo que necesites en cada momento.</p>
       </div>
     </details>
@@ -867,13 +923,13 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <p><b>Alivio inmediato</b> (1-2 min, para calmar cuerpo y mente ya):</p>
         <ul>
           <li><b>Suspiro Fisiológico</b>: respiración de 60s para calmar el sistema nervioso en menos de 1 minuto.</li>
-          <li><b>Parar y Decidir</b>: Stop → Toma aire → Observa y nombra → Genera alternativas → Actúa. Es la técnica general para cualquier tensión, rabia o bloqueo — úsala siempre que no sepas cuál elegir.</li>
+          <li><b>Parar y Decidir</b>: STOP → Toma aire → Observa → Nombra → Decide → Actúa. Es la técnica general para cualquier tensión, rabia o bloqueo — úsala siempre que no sepas cuál elegir.</li>
           <li><b>Grounding 5‑4‑3‑2‑1</b>: ancla tus 5 sentidos al momento presente.</li>
           <li><b>Tense & Release</b>: tensa y suelta puños, hombros, brazos y piernas para liberar tensión física.</li>
         </ul>
         <p><b>Anclajes</b> (prepáralos antes de necesitarlos):</p>
         <ul>
-          <li><b>Anclaje de Éxito (PNL)</b>: guarda una palabra clave y un recuerdo de éxito para "activarlos" apretando pulgar e índice.</li>
+          <li><b>Anclaje de confianza</b>: guarda un gesto, una palabra clave y un recuerdo de seguridad para recordarte ese estado antes de una conversación difícil.</li>
           <li><b>Anclaje Visual</b>: guarda frases inspiradoras para releer cuando lo necesites.</li>
         </ul>
         <p><b>Seguimiento del turno</b>:</p>
@@ -968,13 +1024,24 @@ document.getElementById('themeToggle').onclick = ()=>{
 function goto(view){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+view).classList.add('active');
+  const activeBtn = document.querySelector(`#headerTabs button[data-view="${view}"]`);
   document.querySelectorAll('#headerTabs button').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  if(activeBtn) activeBtn.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
   document.querySelector('main').scrollTo(0,0);
 }
 document.getElementById('headerTabs').addEventListener('click', e=>{
   const btn = e.target.closest('button[data-view]');
   if(btn) goto(btn.dataset.view);
 });
+function updateTabsFade(){
+  const el = document.getElementById('headerTabs');
+  const wrap = el.closest('.tabs-wrap');
+  const atEnd = el.scrollWidth - el.scrollLeft - el.clientWidth < 4;
+  wrap.classList.toggle('at-end', atEnd);
+}
+document.getElementById('headerTabs').addEventListener('scroll', updateTabsFade);
+window.addEventListener('resize', updateTabsFade);
+updateTabsFade();
 
 /* ============ HELP OVERLAY ============ */
 function openHelp(){ document.getElementById('helpOverlay').classList.add('active'); }
@@ -1171,7 +1238,9 @@ let toolTimers = [];
 function clearToolTimers(){ toolTimers.forEach(t=>clearInterval(t)); toolTimers=[]; }
 function openTool(title, html){
   document.getElementById('toolTitle').textContent = title;
-  document.getElementById('toolBody').innerHTML = html;
+  const body = document.getElementById('toolBody');
+  body.innerHTML = html;
+  body.classList.add('center-short');
   document.getElementById('toolOverlay').classList.add('active');
 }
 function closeTool(){
@@ -1508,6 +1577,7 @@ function saveCheckin(){
 
 function renderResetStep(){
   const body = document.getElementById('resetBody');
+  body.classList.toggle('center-short', resetStep===0);
   clearToolTimers();
 
   if(resetStep==='kit'){
@@ -1525,20 +1595,20 @@ function renderResetStep(){
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
         <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
         <label>Mi herramienta</label>
-        <input type="text" id="kitHerramientaInput" value="${state.kitHerramienta||''}" placeholder="Ej: Suspiro fisiológico, Parar y decidir, Grounding 5-4-3-2-1…">
+        <input type="text" id="kitHerramientaInput" value="${state.kitHerramienta||''}" placeholder="Ej: Suspiro fisiológico, Parar y decidir, Grounding 5-4-3-2-1…" oninput="state.kitHerramienta=this.value;save();">
 
         <p><b>2️⃣ 🎙️ Ajusto una cosa</b></p>
         <p class="desc">Elige <b>un solo ajuste técnico</b>.</p>
         <label>Mi ajuste</label>
-        <input type="text" id="kitAjusteInput" value="${state.kitAjuste||''}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…">
+        <input type="text" id="kitAjusteInput" value="${state.kitAjuste||''}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…" oninput="state.kitAjuste=this.value;save();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una sola variable. Una cosa cada vez.</b></p>
 
         <p><b>3️⃣ 🤝 Pido apoyo si lo necesito</b></p>
         <p class="desc">Elige de antemano <b>a quién acudir</b> y qué pedir.</p>
         <label>Mi persona de apoyo</label>
-        <input type="text" id="kitPersonaInput" value="${state.kitPersona||''}">
+        <input type="text" id="kitPersonaInput" value="${state.kitPersona||''}" oninput="state.kitPersona=this.value;save();">
         <label>¿Qué pediré?</label>
-        <input type="text" id="kitPediraInput" value="${state.kitPedira||''}" placeholder="Ej: feedback rápido, observar un abordaje, acompañamiento…">
+        <input type="text" id="kitPediraInput" value="${state.kitPedira||''}" placeholder="Ej: feedback rápido, observar un abordaje, acompañamiento…" oninput="state.kitPedira=this.value;save();">
 
         <p><b>🚨 ¿Cuándo pediré ayuda?</b></p>
         <p class="desc"><b>Si después de regularme y aplicar mi ajuste sigo bloqueado, evitando abordajes o trabajando en automático.</b></p>
@@ -1780,11 +1850,11 @@ function renderResetStep(){
         <h3>Guía rápida de emergencia</h3>
         <div class="mini-card"><b>PARA</b><p>No es abandonar la jornada. Es cortar el automático: 2 minutos, respirar, pedir un relevo de aire. ¿Necesito seguir empujando o necesito 2 minutos para volver mejor?</p></div>
         <div class="mini-card"><b>REVISA</b><p>Antes de cambiar: separa resultado de rendimiento y haz la microauditoría. ¿Qué está cambiando realmente en mi forma de captar?</p></div>
-        <div class="mini-card"><b>PIDE</b><p>No hace falta llegar a "no puedo más". ¿Hay algo que ahora mismo otra persona puede ayudarme a ver?</p></div>
+        <div class="mini-card"><b>PIDE</b><p>No hace falta llegar a «no puedo más». ¿Hay algo que ahora mismo otra persona puede ayudarme a ver?</p></div>
       </div>
       <div class="card">
         <h3>Pacto de permanencia</h3>
-        <p class="desc">"Cuando El Número no acompañe, yo me comprometo a..."</p>
+        <p class="desc">«Cuando El Número no acompañe, yo me comprometo a...»</p>
         <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..."></textarea>
       </div>
       <button class="btn btn-primary" onclick="closeReset()">Finalizar</button>
