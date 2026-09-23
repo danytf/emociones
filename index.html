@@ -1486,8 +1486,6 @@ function delVisualAnchor(i){
 }
 
 /* ============ KIT DE EMERGENCIA DEL CAPTADOR ============ */
-const KIT_SENALES_EJEMPLO = ['Anticipo el "no"','Me acelero','Abordo menos','Trabajo en automático','Me cuesta escuchar'];
-
 function openKit(){ resetStep = 'kit'; renderResetStep(); }
 function toggleKitSenal(s){
   if(state.kitSenales.includes(s)) state.kitSenales = state.kitSenales.filter(x=>x!==s);
@@ -1542,6 +1540,7 @@ const CHECKIN_SECTIONS = [
     '<b>Evito pedir ayuda</b><br>No pido un feedback rápido o apoyo aunque sé que podría ayudarme.'
   ]}
 ];
+const CHECKIN_TITLES = CHECKIN_SECTIONS.flatMap(s=>s.items.map(i=>i.match(/<b>(.*?)<\/b>/)[1]));
 
 let resetStep = 0;
 let resetMicro = null;
@@ -1597,7 +1596,7 @@ function renderResetStep(){
 
         <p><b>🚨 Mis señales de alerta</b></p>
         <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una mala dinámica.</p>
-        <div class="chip-group" id="kitSenalChips">${KIT_SENALES_EJEMPLO.map(s=>`<div class="chip ${state.kitSenales.includes(s)?'selected':''}" onclick="toggleKitSenal('${s.replace(/'/g,"\\'")}')">${s}</div>`).join('')}</div>
+        <div class="chip-group" id="kitSenalChips">${CHECKIN_TITLES.map(s=>`<div class="chip ${state.kitSenales.includes(s)?'selected':''}" onclick="toggleKitSenal('${s.replace(/'/g,"\\'")}')">${s}</div>`).join('')}</div>
 
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
         <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
