@@ -338,6 +338,8 @@ input[type=range]{width:100%;accent-color:var(--wesser-red);}
 .prompt-text{font-size:20px;font-weight:700;text-align:center;padding:30px 10px;color:var(--wesser-navy);}
 :root[data-theme="dark"] .prompt-text{color:#fff;}
 
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
 .compare-row{display:flex;gap:10px;margin-bottom:10px;}
 .compare-col{flex:1;background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px 12px;}
 .compare-col b{font-size:12px;text-transform:uppercase;letter-spacing:.3px;color:var(--wesser-red);}
@@ -394,6 +396,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <body>
 
 <header>
+  <h1 class="sr-only">Wesser · Gestión Emocional</h1>
   <div class="header-inner">
     <div class="brand"><b>WESSER</b><span>Gestión Emocional</span></div>
     <div class="header-actions">
