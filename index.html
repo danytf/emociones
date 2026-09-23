@@ -11,15 +11,19 @@
   --wesser-red-dark:#B71C1C;
   --wesser-navy:#1A2B4C;
   --reset-amber:#F59E0B;
-  --calm-blue:#0EA5E9;
-  --success-green:#10B981;
-  --alert-coral:#EF4444;
+  --reset-amber-dark:#B45309;
+  --calm-blue:#0369A1;
+  --success-green:#047857;
+  --alert-coral:#B91C1C;
+  --danger:#B91C1C;
+  --asco-purple:#6D28D9;
   --bg-main:#F8FAFC;
   --card-bg:#FFFFFF;
   --text-primary:#0F172A;
   --text-secondary:#475569;
-  --border-color:#E2E8F0;
+  --border-color:#CBD5E1;
   --shadow:0 2px 8px rgba(15,23,42,0.08);
+  --shadow-lvl2:0 6px 20px rgba(15,23,42,0.12);
   --radius:16px;
 }
 :root[data-theme="dark"]{
@@ -45,6 +49,7 @@ body{
   transition:background .2s ease,color .2s ease;
 }
 h1,h2,h3,h4{margin:0 0 8px 0;}
+.view h2{font-size:26px;font-weight:800;}
 p{margin:0 0 8px 0;}
 ul{margin:0 0 8px 0;padding-left:20px;}
 li{margin-bottom:4px;}
@@ -98,12 +103,12 @@ header{
 .tabs-wrap.at-end .tabs-fade{display:none;}
 .header-tabs button{
   flex:0 0 auto;background:rgba(255,255,255,.12);border:none;
-  color:rgba(255,255,255,.85);font-weight:700;font-size:12.5px;
+  color:rgba(255,255,255,.85);font-weight:700;font-size:13px;
   padding:9px 14px;border-radius:10px;white-space:nowrap;
   display:flex;align-items:center;gap:6px;
 }
 .header-tabs button .ic{font-size:15px;}
-.header-tabs button.active{background:#fff;color:var(--wesser-red);}
+.header-tabs button.active{background:#fff;color:var(--wesser-red);box-shadow:inset 0 -3px 0 var(--wesser-red-dark);}
 .header-tabs button.tab-reset{background:var(--reset-amber);color:#1A2B4C;}
 
 /* MAIN */
@@ -129,8 +134,8 @@ main{
 .ql-btn{
   flex:0 0 auto;display:flex;align-items:center;gap:7px;
   background:var(--card-bg);border:1px solid var(--border-color);border-radius:99px;
-  padding:8px 14px 8px 10px;font-size:12.5px;font-weight:700;color:var(--text-primary);
-  white-space:nowrap;box-shadow:var(--shadow);
+  padding:8px 14px 8px 10px;font-size:13.5px;font-weight:700;color:var(--text-primary);
+  white-space:nowrap;box-shadow:var(--shadow-lvl2);
 }
 .ql-btn .ql-em{font-size:16px;}
 .ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
@@ -167,7 +172,7 @@ main{
 .tool-group.relief{border-left:5px solid var(--calm-blue);}
 .tool-group.anchor{border-left:5px solid var(--success-green);}
 .tool-group.tracking{border-left:5px solid var(--reset-amber);}
-.kit-summary{border-left:5px solid var(--reset-amber);}
+.kit-summary{border-left:5px solid var(--reset-amber);box-shadow:var(--shadow-lvl2);}
 .tool-group.tracking .tool-cards{grid-template-columns:minmax(min(320px,100%),480px);}
 #sepaHistorial{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:10px;align-content:start;}
 @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
@@ -194,7 +199,7 @@ main{
   margin-bottom:14px;
   box-shadow:var(--shadow);
 }
-.card h3{font-size:16px;}
+.card h3{font-size:17px;font-weight:800;}
 .card .desc{color:var(--text-secondary);font-size:14px;margin-bottom:12px;line-height:1.6;}
 .card .desc:last-child{margin-bottom:0;}
 .badge{
@@ -258,7 +263,7 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 .overlay.active{display:flex;}
 .overlay-header{
   padding:calc(16px + env(safe-area-inset-top,0px)) 16px 14px;
-  background:linear-gradient(135deg,var(--reset-amber),var(--wesser-red));
+  background:linear-gradient(135deg,var(--reset-amber-dark),var(--wesser-red-dark));
   color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
 .overlay-header .oh-actions{display:flex;gap:8px;}
@@ -296,7 +301,7 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 
 /* HISTORY */
 .history-item{border-left:4px solid var(--wesser-red);padding:10px 12px;margin-bottom:10px;background:var(--bg-main);border-radius:0 10px 10px 0;}
-.history-item .meta{font-size:11px;color:var(--text-secondary);margin-bottom:4px;}
+.history-item .meta{font-size:12px;color:var(--text-secondary);margin-bottom:4px;}
 .history-item .del, .help-body .del{float:right;background:none;border:none;color:var(--alert-coral);font-size:13px;font-weight:700;}
 .history-item .edit, .help-body .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:13px;font-weight:700;margin-right:14px;}
 :root[data-theme="dark"] .history-item .edit, :root[data-theme="dark"] .help-body .edit{color:#cbd5e1;}
@@ -313,7 +318,7 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 .modal-back.active{display:flex;}
 .modal-sheet{
   background:var(--card-bg);width:100%;max-width:760px;border-radius:20px 20px 0 0;
-  padding:24px;max-height:85vh;overflow-y:auto;
+  padding:24px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lvl2);
 }
 .modal-sheet .handle{width:40px;height:4px;background:var(--border-color);border-radius:99px;margin:0 auto 14px;}
 
@@ -382,7 +387,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="icon-btn" id="themeToggle" title="Modo claro/oscuro" aria-label="Cambiar entre modo claro y oscuro">🌓</button>
     </div>
   </div>
-  <div class="tabs-wrap">
+  <nav class="tabs-wrap" aria-label="Secciones principales">
     <div class="header-tabs" id="headerTabs">
       <button data-view="aprender" class="active"><span class="ic">🧠</span><span class="lb">Aprender</span></button>
       <button data-view="bienestar"><span class="ic">🌱</span><span class="lb">Bienestar</span></button>
@@ -391,7 +396,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="tab-reset" onclick="openReset()"><span class="ic">🆘</span><span class="lb">Reset</span></button>
     </div>
     <div class="tabs-fade" aria-hidden="true"></div>
-  </div>
+  </nav>
 </header>
 
 <main>
@@ -1212,7 +1217,7 @@ function closeModal(){ document.getElementById('modalBack').classList.remove('ac
 
 /* ============ DATA: EMOTIONS (enfoque autogestión del captador) ============ */
 const EMOTIONS = [
-  {id:'alegria', nombre:'Alegría', color:'var(--reset-amber)', tipo:'Básica', finalidad:'CONEXIÓN Y ENERGÍA',
+  {id:'alegria', nombre:'Alegría', color:'var(--reset-amber)', textColor:'var(--wesser-navy)', tipo:'Básica', finalidad:'CONEXIÓN Y ENERGÍA',
     funcion:'Nos ayuda a acercarnos a los demás, conectar y afrontar lo que hacemos con más energía y motivación.',
     expresion:'Sonrisa, sensación de energía y bienestar, mayor apertura y disposición a relacionarnos.',
     reencuadre:'Disfruto la conversación, conecto con la persona y doy lo mejor de mí.'},
@@ -1232,7 +1237,7 @@ const EMOTIONS = [
     funcion:'Nos ayuda a detenernos y prestar atención cuando ocurre algo inesperado, para valorar rápidamente qué está pasando.',
     expresion:'Ojos más abiertos, pausa momentánea y aumento de la atención.',
     reencuadre:'Ha ocurrido algo inesperado. Observo, me adapto y continúo con calma.'},
-  {id:'asco', nombre:'Asco', color:'var(--wesser-red)', tipo:'Básica', finalidad:'PROTECCIÓN',
+  {id:'asco', nombre:'Asco', color:'var(--asco-purple)', tipo:'Básica', finalidad:'PROTECCIÓN',
     funcion:'Nos ayuda a alejarnos o evitar aquello que percibimos como dañino o muy desagradable.',
     expresion:'Gesto de rechazo, ganas de alejarnos, náusea o sensación de repulsión.',
     reencuadre:'Puedo sentir rechazo sin reaccionar impulsivamente. Mantengo la calma y sigo tratando a la otra persona con respeto.'}
@@ -1271,7 +1276,7 @@ const PENSAMIENTO_HOOKS = {
 function renderWheel(){
   const grid = document.getElementById('wheelGrid');
   grid.innerHTML = EMOTIONS.map(e=>`
-    <button class="wheel-btn" style="background:${e.color}" onclick="showEmotion('${e.id}')">
+    <button class="wheel-btn" style="background:${e.color};${e.textColor?`color:${e.textColor};`:''}" onclick="showEmotion('${e.id}')">
       <span class="em">${emoji(e.id)}</span>${e.nombre}
     </button>`).join('');
 }
