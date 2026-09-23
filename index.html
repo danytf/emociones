@@ -399,9 +399,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <div class="ql-title">¿Qué necesitas ahora?</div>
     <div class="ql-row">
       <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
-      <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">Atrapado en pensamientos</span></button>
+      <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
       <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
-      <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Tensión física</span></button>
+      <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
       <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
     </div>
   </div>
@@ -613,7 +613,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
             </div>
           </details>
 
-          <p><b>🎯 Las 6, de un vistazo</b></p>
+          <p><b>🎯 Los 6 estados más habituales en captación</b></p>
           <ul>
             <li>😰 <b>Ansiedad anticipatoria</b> → «¿Qué podría pasar?»</li>
             <li>😣 <b>Frustración</b> → «No consigo lo que quiero.»</li>
@@ -736,7 +736,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <div class="card">
           <h3>💪 Tense & Release</h3>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>soltar tensión física acumulada</b>, especialmente cuando notas rigidez en puños, hombros, brazos o piernas.</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa durante unos segundos y suelta</b> diferentes grupos musculares: puños, hombros, brazos y piernas.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa de forma firme pero cómoda, sin dolor, y después suelta lentamente</b> diferentes grupos musculares: puños, hombros, brazos y piernas.</p>
           <button class="btn btn-blue" onclick="startTense()">Empezar</button>
         </div>
       </div>
@@ -872,7 +872,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-bottom:16px;">El objetivo no es <b>pensar en positivo</b>, sino <b>pasar de una interpretación automática a una respuesta más realista y útil</b>.</p>
 
     <div class="card card-full">
-      <h3 style="margin-top:0;">📊 Mis patrones</h3>
+      <h3 style="margin-top:0;" id="patronesTitle">📊 Mis patrones</h3>
       <p class="desc">Solo describe lo que has registrado. No es un diagnóstico.</p>
       <div class="btn-row" style="max-width:280px;margin-bottom:12px;">
         <button class="btn btn-sm" id="patronesBtn7" onclick="setPatronesRango(7)">Últimos 7 días</button>
@@ -1009,7 +1009,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <summary>🆘 Modo Reset</summary>
       <div class="help-body">
         <p>Botón siempre visible en la cabecera para cuando sientes que has «chocado con la pared» (mala racha, desgaste, frustración acumulada).</p>
-        <p>La pantalla de inicio explica qué hacer en una mala racha (Normalizar, Rescatar, Regular, Pedir ayuda) y tu apartado <b>¿Qué está en mis manos?</b> (qué no controlas, qué puedes influir, qué puedes revisar). Desde ahí puedes hacer un <b>Check-in de señales</b> (17 señales de autodiagnóstico, con historial guardado) antes de empezar el protocolo.</p>
+        <p>La pantalla de inicio explica qué hacer en una mala racha (Normalizar, Rescatar, Regular, Pedir ayuda) y tu apartado <b>¿Qué está en mis manos?</b> (qué no controlas, qué puedes influir, qué puedes revisar). Desde ahí puedes hacer un <b>Check-in de señales</b> (17 señales de autoobservación, con historial guardado) antes de empezar el protocolo.</p>
         <p>El protocolo <b>R.E.S.E.T.</b>:</p>
         <ul>
           <li><b>R</b>econoce la mala racha, sin juzgarte, con una respiración guiada y tu señal de alerta principal.</li>
@@ -1401,11 +1401,15 @@ function renderPatrones(){
   const cutoff = Date.now() - patronesRango*24*60*60*1000;
   const entries = state.sepaEntries.filter(e=>e.id>=cutoff);
   const resets = state.resetHistory.filter(r=>r.id>=cutoff);
+  const titleEl = document.getElementById('patronesTitle');
+  const totalRegistros = entries.length + resets.length;
 
-  if(!entries.length && !resets.length){
-    body.innerHTML = '<p class="desc">Aún no hay suficientes registros en este periodo.</p>';
+  if(totalRegistros===0){
+    if(titleEl) titleEl.textContent = '📊 Mis patrones';
+    body.innerHTML = '<p class="desc">Aún no hay datos.</p>';
     return;
   }
+  if(titleEl) titleEl.textContent = totalRegistros<=2 ? '📊 Lo más registrado' : '📊 Mis patrones';
 
   const emoCounts = {};
   entries.forEach(e=>(e.emociones||[]).forEach(id=>{ emoCounts[id]=(emoCounts[id]||0)+1; }));
@@ -1687,7 +1691,7 @@ function runTensePhase(phase, secs){
       <div class="step-dots">${tenseGroups.map((_,i)=>`<span class="${i<=tenseIdx?'on':''}"></span>`).join('')}</div>
       <p style="font-size:40px;">${g.emoji}</p>
       <h3>${g.name}</h3>
-      <p class="desc">${phase==='tense' ? 'Aprieta con fuerza...' : 'Suelta lentamente y nota la liberación...'}</p>
+      <p class="desc">${phase==='tense' ? 'Tensa de forma firme pero cómoda, sin dolor...' : 'Suelta lentamente y nota la liberación...'}</p>
       <div class="timer-big" id="tenseTimer">${secs}</div>
     </div>
   `);
