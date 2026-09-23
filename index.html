@@ -328,6 +328,7 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 .slider-wrap{margin-bottom:12px;}
 input[type=range]{width:100%;accent-color:var(--wesser-red);}
 .range-val{text-align:center;font-weight:800;font-size:20px;color:var(--wesser-red);}
+.range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:-4px;}
 
 .prompt-text{font-size:20px;font-weight:700;text-align:center;padding:30px 10px;color:var(--wesser-navy);}
 :root[data-theme="dark"] .prompt-text{color:#fff;}
@@ -856,7 +857,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <h3>2. Pensamiento y acción</h3>
       <label>P · Pensamiento automático</label>
       <p class="desc" style="margin-top:-6px;">¿Qué me estoy diciendo?</p>
-      <select id="sepaPensDestructivo">
+      <select id="sepaPensDestructivo" onchange="toggleSepaPensOtro()">
         <option>No podré</option>
         <option>Esta zona está quemada</option>
         <option>Nadie quiere colaborar</option>
@@ -866,7 +867,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <option>¿Y si me voy a 0?</option>
         <option>Otro</option>
       </select>
-      <textarea id="sepaPensDestructivoLibre" placeholder="Escribe tu pensamiento si no está en la lista..."></textarea>
+      <div id="sepaPensOtroWrap" style="display:none;">
+        <textarea id="sepaPensDestructivoLibre" placeholder="Escribe tu pensamiento..."></textarea>
+      </div>
 
       <label>P+ · Pensamiento útil 💡</label>
       <p class="desc" style="margin-top:-6px;">¿Cómo puedo interpretar la situación de una forma más realista y útil?</p>
@@ -1346,8 +1349,10 @@ function sugerirReencuadre(){
   const situacion = document.getElementById('sepaSituacion').value;
   const pensD = document.getElementById('sepaPensDestructivo').value;
   const emoTxt = selectedEmociones.length ? REENCUADRES[selectedEmociones[0]] : REENCUADRES.generico;
-  const partes = [SITUACION_HOOKS[situacion], PENSAMIENTO_HOOKS[pensD], emoTxt].filter(Boolean);
-  document.getElementById('sepaPensConstructivo').value = partes.join(' ');
+  /* Máximo 2 frases (~30-35 palabras): un solo gancho de contexto + el reencuadre de la emoción */
+  const contextHook = SITUACION_HOOKS[situacion] || PENSAMIENTO_HOOKS[pensD] || '';
+  const texto = contextHook ? `${contextHook} ${emoTxt}` : emoTxt;
+  document.getElementById('sepaPensConstructivo').value = texto;
 }
 function insertAccion(txt){
   const el = document.getElementById('sepaAccion');
@@ -1358,14 +1363,20 @@ function toggleSituacionOtra(){
   const isOtra = document.getElementById('sepaSituacion').value === 'Otra';
   document.getElementById('sepaSituacionOtraWrap').style.display = isOtra ? 'block' : 'none';
 }
+function toggleSepaPensOtro(){
+  const isOtro = document.getElementById('sepaPensDestructivo').value === 'Otro';
+  document.getElementById('sepaPensOtroWrap').style.display = isOtro ? 'block' : 'none';
+}
 let editingSepaId = null;
 function guardarSepa(){
   const situacionSel = document.getElementById('sepaSituacion').value;
   const situacionOtra = document.getElementById('sepaSituacionOtra').value.trim();
+  if(situacionSel==='Otra' && !situacionOtra){ alert('Describe brevemente la situación.'); return; }
   const situacion = (situacionSel==='Otra' && situacionOtra) ? situacionOtra : situacionSel;
   const pDLista = document.getElementById('sepaPensDestructivo').value;
   const pDLibre = document.getElementById('sepaPensDestructivoLibre').value.trim();
-  const pensD = pDLibre || pDLista;
+  if(pDLista==='Otro' && !pDLibre){ alert('Escribe tu pensamiento automático.'); return; }
+  const pensD = (pDLista==='Otro' && pDLibre) ? pDLibre : pDLista;
   const pensC = document.getElementById('sepaPensConstructivo').value.trim();
   const accion = document.getElementById('sepaAccion').value.trim();
   if(!selectedEmociones.length){ alert('Selecciona al menos una emoción sentida.'); return; }
@@ -1389,6 +1400,7 @@ function guardarSepa(){
   document.getElementById('sepaSituacionOtra').value='';
   toggleSituacionOtra();
   document.getElementById('sepaPensDestructivoLibre').value='';
+  toggleSepaPensOtro();
   document.getElementById('sepaPensConstructivo').value='';
   document.getElementById('sepaAccion').value='';
   renderSepaHistorial();
@@ -1407,9 +1419,10 @@ function editarSepa(id){
     ch.classList.toggle('selected', selectedEmociones.includes(ch.dataset.id));
   });
   const pensSelect = document.getElementById('sepaPensDestructivo');
-  const matchesOption = Array.from(pensSelect.options).some(o=>o.value===e.pensD);
-  pensSelect.value = matchesOption ? e.pensD : pensSelect.options[0].value;
+  const matchesOption = Array.from(pensSelect.options).some(o=>o.value===e.pensD && o.value!=='Otro');
+  pensSelect.value = matchesOption ? e.pensD : 'Otro';
   document.getElementById('sepaPensDestructivoLibre').value = matchesOption ? '' : (e.pensD||'');
+  toggleSepaPensOtro();
   document.getElementById('sepaPensConstructivo').value = e.pensC||'';
   document.getElementById('sepaAccion').value = e.accion||'';
   document.getElementById('sepaSaveBtn').textContent = 'Actualizar registro';
@@ -1515,9 +1528,11 @@ function openCheckpoint(editId){
     <div class="card">
       <label>Nivel de fatiga física/mental (1‑10)</label>
       <input type="range" id="cpFatiga" min="1" max="10" value="${fatiga}" oninput="document.getElementById('cpFatigaVal').textContent=this.value">
+      <div class="range-labels"><span>1 = nada</span><span>10 = mucha</span></div>
       <div class="range-val" id="cpFatigaVal">${fatiga}</div>
-      <label style="margin-top:14px;">Estado emocional (1‑10)</label>
+      <label style="margin-top:14px;">Activación emocional (1‑10)</label>
       <input type="range" id="cpEmocional" min="1" max="10" value="${emocional}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value">
+      <div class="range-labels"><span>1 = baja</span><span>10 = alta</span></div>
       <div class="range-val" id="cpEmocionalVal">${emocional}</div>
       <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
       <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
@@ -1552,7 +1567,7 @@ function renderCheckpointHistorial(){
       <button class="del" onclick="borrarCheckpoint(${c.id})">Eliminar</button>
       <button class="edit" onclick="openCheckpoint(${c.id})">Editar</button>
       <div class="meta">${escapeHtml(c.fecha)}</div>
-      <p>Fatiga: <b>${c.fatiga}/10</b> · Emocional: <b>${c.emocional}/10</b></p>
+      <p>Fatiga: <b>${c.fatiga}/10</b> · Activación: <b>${c.emocional}/10</b></p>
       ${c.nota?`<p>${escapeHtml(c.nota)}</p>`:''}
     </div>`).join('');
 }
