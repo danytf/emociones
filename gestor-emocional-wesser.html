@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#D32F2F">
+<title>Wesser · Gestión Emocional</title>
+<style>
+:root{
+  --wesser-red:#D32F2F;
+  --wesser-red-dark:#B71C1C;
+  --wesser-navy:#1A2B4C;
+  --reset-amber:#F59E0B;
+  --calm-blue:#0EA5E9;
+  --success-green:#10B981;
+  --alert-coral:#EF4444;
+  --bg-main:#F8FAFC;
+  --card-bg:#FFFFFF;
+  --text-primary:#0F172A;
+  --text-secondary:#475569;
+  --border-color:#E2E8F0;
+  --shadow:0 2px 8px rgba(15,23,42,0.08);
+  --radius:16px;
+}
+:root[data-theme="dark"]{
+  --bg-main:#0B1120;
+  --card-bg:#141B2E;
+  --text-primary:#F1F5F9;
+  --text-secondary:#94A3B8;
+  --border-color:#243047;
+  --shadow:0 2px 10px rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg-main);
+  color:var(--text-primary);
+  font-size:16px;
+  line-height:1.5;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  height:100dvh;
+  transition:background .2s ease,color .2s ease;
+}
+h1,h2,h3,h4{margin:0 0 8px 0;}
+p{margin:0 0 8px 0;}
+ul{margin:0 0 8px 0;padding-left:20px;}
+li{margin-bottom:4px;}
+button{font-family:inherit;}
+
+/* HEADER */
+header{
+  flex:0 0 auto;
+  background:linear-gradient(135deg,var(--wesser-red),var(--wesser-red-dark));
+  color:#fff;
+  padding:14px 16px 14px;
+  padding-top:calc(14px + env(safe-area-inset-top,0px));
+  box-shadow:var(--shadow);
+}
+.header-inner{
+  max-width:1280px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.brand{display:flex;flex-direction:column;line-height:1.15;}
+.brand b{font-size:17px;letter-spacing:.3px;}
+.brand span{font-size:11px;opacity:.85;text-transform:uppercase;letter-spacing:.6px;}
+.header-actions{display:flex;gap:8px;align-items:center;}
+.icon-btn{
+  background:rgba(255,255,255,.18);
+  border:none;color:#fff;border-radius:12px;
+  width:42px;height:42px;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+}
+.reset-btn{
+  background:var(--reset-amber);
+  color:#1A2B4C;font-weight:800;
+  border:none;border-radius:12px;
+  padding:0 14px;height:42px;font-size:14px;
+  display:flex;align-items:center;gap:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,.25);
+}
+.reset-btn:active{transform:scale(.96);}
+
+.header-tabs{
+  max-width:1280px;margin:12px auto 0;
+  display:flex;gap:6px;overflow-x:auto;
+  scrollbar-width:none;padding-bottom:2px;
+}
+.header-tabs::-webkit-scrollbar{display:none;}
+.header-tabs button{
+  flex:0 0 auto;background:rgba(255,255,255,.12);border:none;
+  color:rgba(255,255,255,.85);font-weight:700;font-size:12.5px;
+  padding:9px 14px;border-radius:10px;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;
+}
+.header-tabs button .ic{font-size:15px;}
+.header-tabs button.active{background:#fff;color:var(--wesser-red);}
+.header-tabs button.tab-reset{background:var(--reset-amber);color:#1A2B4C;}
+
+/* MAIN */
+main{
+  flex:1 1 auto;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  width:100%;
+}
+.content-wrap{
+  max-width:1280px;margin:0 auto;
+  padding:24px 28px 40px;
+}
+.view{display:none;animation:fade .18s ease;}
+.view.active{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));
+  gap:18px;
+  align-items:start;
+}
+.view.active > h2,
+.view.active > h2 + p,
+.view.active > h3,
+.view.active > h3 + p,
+.view.active > .wheel-grid,
+.view.active > .accordion-block,
+.view.active > .tool-group,
+.view.active > .card-full,
+.view.active > #sepaHistorial,
+.view.active > #checkinHistorial{
+  grid-column:1 / -1;
+}
+.accordion-block{width:100%;}
+.accordion-block details.help-item{background:var(--card-bg);}
+
+.tool-group{border:1.5px solid var(--border-color);border-radius:18px;padding:18px;background:var(--card-bg);}
+.tool-group h3{margin-top:0;font-size:15px;}
+.tool-group .tool-desc{margin-bottom:14px;}
+.tool-group .tool-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;align-items:stretch;}
+.tool-group .tool-cards .card{margin-bottom:0;display:flex;flex-direction:column;}
+.tool-group .tool-cards .card .desc:last-of-type{flex:1;}
+.tool-group.relief{border-left:5px solid var(--calm-blue);}
+.tool-group.anchor{border-left:5px solid var(--success-green);}
+.tool-group.tracking{border-left:5px solid var(--reset-amber);}
+#sepaHistorial{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:10px;align-content:start;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* Diario SEPA is a sequential form, not independent cards: keep it single-column and
+   centered at a comfortable reading width instead of stretching edge to edge */
+#view-diario.active{display:block;max-width:760px;margin:0 auto;}
+
+/* Herramientas breaks out of the content-wrap max-width to use the full screen */
+#view-herramientas.active{
+  max-width:none;
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  padding-left:28px;
+  padding-right:28px;
+}
+
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+.card h3{font-size:16px;}
+.card .desc{color:var(--text-secondary);font-size:14px;margin-bottom:12px;line-height:1.6;}
+.card .desc:last-child{margin-bottom:0;}
+.badge{
+  display:inline-block;font-size:11px;font-weight:700;
+  padding:3px 9px;border-radius:99px;letter-spacing:.4px;
+  text-transform:uppercase;margin-bottom:8px;
+}
+.badge.amber{background:#FEF3C7;color:#92400E;}
+.badge.blue{background:#E0F2FE;color:#075985;}
+.badge.green{background:#D1FAE5;color:#065F46;}
+.badge.navy{background:#E2E8F0;color:var(--wesser-navy);}
+.badge.coral{background:#FEE2E2;color:#991B1B;}
+:root[data-theme="dark"] .badge.amber{background:#3a2a05;color:#fbbf24;}
+:root[data-theme="dark"] .badge.blue{background:#052a3a;color:#7dd3fc;}
+:root[data-theme="dark"] .badge.green{background:#052e22;color:#6ee7b7;}
+:root[data-theme="dark"] .badge.navy{background:#1e2940;color:#cbd5e1;}
+:root[data-theme="dark"] .badge.coral{background:#3a0d0d;color:#fca5a5;}
+
+.btn{
+  border:none;border-radius:12px;padding:14px 18px;
+  font-size:16px;font-weight:700;min-height:48px;
+  width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;
+}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--wesser-red);color:#fff;}
+.btn-amber{background:var(--reset-amber);color:#1A2B4C;}
+.btn-blue{background:var(--calm-blue);color:#fff;}
+.btn-green{background:var(--success-green);color:#fff;}
+.btn-navy{background:var(--wesser-navy);color:#fff;}
+.btn-outline{background:transparent;color:var(--text-primary);border:1.5px solid var(--border-color);}
+.btn-sm{padding:10px 14px;min-height:40px;font-size:14px;width:auto;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-row .btn{flex:1 1 160px;}
+.btn[disabled]{opacity:.5;}
+
+select,input[type=text],input[type=number],textarea{
+  width:100%;padding:12px 14px;border-radius:12px;
+  border:1.5px solid var(--border-color);background:var(--bg-main);
+  color:var(--text-primary);font-size:16px;margin-bottom:10px;font-family:inherit;
+}
+textarea{min-height:70px;resize:vertical;}
+label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
+
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.chip{
+  padding:9px 13px;border-radius:99px;border:1.5px solid var(--border-color);
+  background:var(--card-bg);color:var(--text-primary);font-size:13px;font-weight:600;
+  cursor:pointer;
+}
+.chip.selected{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;}
+.chip-cat{font-size:12px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.3px;margin:10px 0 6px;}
+
+
+/* OVERLAY / RESET FLOW */
+.overlay{
+  position:fixed;inset:0;z-index:200;background:var(--bg-main);
+  display:none;flex-direction:column;overflow-y:auto;
+}
+.overlay.active{display:flex;}
+.overlay-header{
+  padding:calc(16px + env(safe-area-inset-top,0px)) 16px 14px;
+  background:linear-gradient(135deg,var(--reset-amber),var(--wesser-red));
+  color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.overlay-header .oh-actions{display:flex;gap:8px;}
+.overlay-body{padding:24px 28px;max-width:900px;margin:0 auto;width:100%;flex:1;}
+.close-x{background:rgba(255,255,255,.2);border:none;color:#fff;width:38px;height:38px;border-radius:10px;font-size:18px;flex-shrink:0;}
+.step-dots{display:flex;gap:6px;justify-content:center;margin:14px 0 4px;}
+.step-dots span{width:8px;height:8px;border-radius:99px;background:var(--border-color);}
+.step-dots span.on{background:var(--wesser-red);}
+
+.breath-circle{
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,var(--calm-blue),#0369a1);
+  margin:24px auto;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:18px;text-align:center;
+  transition:transform 1.6s ease-in-out;box-shadow:0 8px 24px rgba(14,165,233,.35);
+}
+.breath-circle.grow{transform:scale(1.3);}
+.timer-big{font-size:44px;font-weight:800;text-align:center;margin:8px 0;color:var(--wesser-navy);}
+:root[data-theme="dark"] .timer-big{color:#fff;}
+.check-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:10px;cursor:pointer;}
+.check-item.checked{background:rgba(16,185,129,.08);border-color:var(--success-green);}
+.check-item input{width:20px;height:20px;margin-top:2px;flex-shrink:0;}
+
+/* HISTORY */
+.history-item{border-left:4px solid var(--wesser-red);padding:10px 12px;margin-bottom:10px;background:var(--bg-main);border-radius:0 10px 10px 0;}
+.history-item .meta{font-size:11px;color:var(--text-secondary);margin-bottom:4px;}
+.history-item .del{float:right;background:none;border:none;color:var(--alert-coral);font-size:13px;font-weight:700;}
+
+/* WHEEL */
+.wheel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:12px;}
+.wheel-btn{
+  border:none;border-radius:16px;padding:20px 10px;color:#fff;font-weight:800;font-size:15px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;min-height:96px;justify-content:center;
+}
+.wheel-btn .em{font-size:26px;}
+
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:250;display:none;align-items:flex-end;justify-content:center;}
+.modal-back.active{display:flex;}
+.modal-sheet{
+  background:var(--card-bg);width:100%;max-width:760px;border-radius:20px 20px 0 0;
+  padding:24px;max-height:85vh;overflow-y:auto;
+}
+.modal-sheet .handle{width:40px;height:4px;background:var(--border-color);border-radius:99px;margin:0 auto 14px;}
+
+.slider-wrap{margin-bottom:12px;}
+input[type=range]{width:100%;accent-color:var(--wesser-red);}
+.range-val{text-align:center;font-weight:800;font-size:20px;color:var(--wesser-red);}
+
+.prompt-text{font-size:20px;font-weight:700;text-align:center;padding:30px 10px;color:var(--wesser-navy);}
+:root[data-theme="dark"] .prompt-text{color:#fff;}
+
+.compare-row{display:flex;gap:10px;margin-bottom:10px;}
+.compare-col{flex:1;background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px 12px;}
+.compare-col b{font-size:12px;text-transform:uppercase;letter-spacing:.3px;color:var(--wesser-red);}
+.compare-col p{font-size:13.5px;margin:4px 0 0;color:var(--text-secondary);}
+
+
+.circle-control{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.circle-control .cc-col{flex:1;min-width:96px;background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px;}
+.circle-control .cc-col b{font-size:11px;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:6px;color:var(--wesser-red);}
+.circle-control .cc-col ul{margin:0;padding-left:16px;font-size:12.5px;color:var(--text-secondary);}
+.circle-control .cc-col li{margin-bottom:3px;}
+
+.mini-card{background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.mini-card b{font-size:13px;color:var(--wesser-red);}
+.mini-card p{font-size:13px;margin:4px 0 0;color:var(--text-secondary);}
+
+.callout{background:#D1FAE5;border-radius:14px;padding:14px 16px;font-size:14px;color:#065F46;line-height:1.6;}
+:root[data-theme="dark"] .callout{background:#052e22;color:#6ee7b7;}
+
+/* HELP */
+details.help-item{border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:10px;overflow:hidden;background:var(--bg-main);}
+details.help-item summary{
+  padding:13px 14px;font-weight:700;font-size:15px;cursor:pointer;list-style:none;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+details.help-item summary::-webkit-details-marker{display:none;}
+details.help-item summary::after{content:'+';font-size:20px;color:var(--text-secondary);font-weight:400;flex-shrink:0;}
+details.help-item[open] summary::after{content:'–';}
+details.help-item .help-body{padding:0 14px 16px;font-size:14px;color:var(--text-secondary);}
+details.help-item .help-body details.help-item{background:var(--card-bg);margin-top:12px;margin-bottom:12px;}
+details.help-item .help-body details.help-item summary{font-size:14px;}
+details.help-item .help-body p{margin:0 0 14px;line-height:1.65;}
+details.help-item .help-body p:has(> b:first-child){margin-top:18px;}
+details.help-item .help-body p:first-child{margin-top:0;}
+details.help-item .help-body ul,
+details.help-item .help-body ol{margin:0 0 14px;}
+details.help-item .help-body li{margin-bottom:6px;}
+details.help-item .help-body .compare-row{margin-bottom:14px;}
+details.help-item .help-body .flow-diagram{margin:14px 0;}
+
+.flow-diagram{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-weight:700;justify-content:center;margin:8px 0;}
+.flow-diagram .fbox{background:var(--bg-main);border:1.5px solid var(--border-color);border-radius:10px;padding:8px 10px;}
+.flow-diagram .arrow{color:var(--text-secondary);}
+
+.hidden{display:none !important;}
+.empty-state{text-align:center;color:var(--text-secondary);padding:24px 10px;font-size:14px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand"><b>WESSER</b><span>Gestión Emocional</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openHelp()" title="Ayuda">❓</button>
+      <button class="icon-btn" id="themeToggle" title="Modo claro/oscuro">🌓</button>
+    </div>
+  </div>
+  <div class="header-tabs" id="headerTabs">
+    <button data-view="aprender" class="active"><span class="ic">🧠</span><span class="lb">Aprender</span></button>
+    <button data-view="bienestar"><span class="ic">🌱</span><span class="lb">Bienestar</span></button>
+    <button data-view="herramientas"><span class="ic">🧰</span><span class="lb">Herramientas</span></button>
+    <button data-view="diario"><span class="ic">📓</span><span class="lb">Diario</span></button>
+    <button class="tab-reset" onclick="openReset()"><span class="ic">🆘</span><span class="lb">Reset</span></button>
+  </div>
+</header>
+
+<main>
+<div class="content-wrap">
+
+  <!-- APRENDER (Fundamentos + Emociones) -->
+  <section class="view active" id="view-aprender">
+    <h2>🧠 Aprender</h2>
+    <p class="desc" style="margin-bottom:14px;">Aquí tienes <b>las bases de la gestión emocional y las 6 emociones básicas</b>.<br>Léelo con calma una vez. <b>Entender qué te pasa y por qué reaccionas así hará mucho más fácil utilizar las herramientas del día a día.</b></p>
+
+    <h3>🧠 Fundamentos de la Inteligencia Emocional</h3>
+    <div class="accordion-block">
+      <details class="help-item">
+        <summary>🧠 ¿Qué es una emoción?</summary>
+        <div class="help-body">
+          <p>Una emoción es una <b>respuesta de nuestro cuerpo y nuestra mente ante algo que sucede o que interpretamos</b>. Muchas veces aparece de forma automática y nos prepara para responder.</p>
+
+          <p><b>🔹 ¿De dónde puede surgir?</b></p>
+          <p>Puede aparecer por algo que <b>pasa fuera de nosotros</b> 🌍 o por algo que <b>pensamos, recordamos o imaginamos</b> 💭.</p>
+
+          <p><b>⚡ ¿Para qué sirve?</b></p>
+          <p>Las emociones <b>pueden cumplir una función útil</b>: nos ayudan a adaptarnos y nos preparan para responder a lo que está ocurriendo.</p>
+          <p>Por eso pueden provocar cambios físicos, como:</p>
+          <ul>
+            <li>❤️ <b>acelerar el pulso</b></li>
+            <li>💪 <b>tensar los músculos</b></li>
+            <li>🌬️ <b>cambiar la respiración</b></li>
+          </ul>
+
+          <p><b>👀 ¿Todos sentimos lo mismo?</b></p>
+          <p>No necesariamente. Ante una misma situación, <b>dos personas pueden sentir emociones diferentes</b>.</p>
+          <p>Esto depende también de <b>cómo interpretamos lo que está pasando</b>, nuestras experiencias, creencias, objetivos y el contexto.</p>
+
+          <p><b>⚡ Emoción vs. 💭 Sentimiento</b></p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Emoción = la respuesta que se activa.</b> ⚡<br><b>Sentimiento = cómo vivimos conscientemente esa experiencia y qué significado le damos.</b> 💭</p>
+
+          <p><b>🎯 En pocas palabras</b></p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Una emoción aparece cuando nuestro organismo percibe algo como <b>relevante para nosotros</b> y se prepara para responder.</p>
+        </div>
+      </details>
+
+      <details class="help-item">
+        <summary>🎭 Las 6 Emociones Básicas</summary>
+        <div class="help-body">
+          <p>Aquí conocerás <b>6 emociones básicas de un modelo clásico de la psicología</b>. Pulsa en una emoción para descubrir <b>para qué puede servir, cómo puede manifestarse en tu cuerpo y cómo puedes responder cuando aparezca en la calle</b>.</p>
+          <p>🎯 <b>Recuerda:</b> el objetivo <b>no es eliminar lo que sientes</b>, sino <b>entender qué te está señalando y aprender a responder mejor</b>.</p>
+          <div class="wheel-grid" id="wheelGrid"></div>
+        </div>
+      </details>
+
+      <details class="help-item">
+        <summary>🧩 Inteligencia Emocional en la calle</summary>
+        <div class="help-body">
+          <p>La <b>Inteligencia Emocional</b> consiste en <b>reconocer y gestionar nuestras emociones y comprender mejor las de los demás</b> para responder de forma más eficaz.</p>
+          <p>Nos basamos en el <b>modelo de las 5 competencias de Daniel Goleman</b>.</p>
+
+          <p><b>🪞 Conmigo mismo</b></p>
+          <p><b>1️⃣ Autoconciencia 👀</b><br>Reconocer <b>qué estoy sintiendo y ponerle nombre</b>.</p>
+          <p><b>2️⃣ Autorregulación 🧘</b><br>Gestionar lo que siento <b>sin reaccionar automáticamente</b>.</p>
+          <p><b>3️⃣ Motivación 🎯</b><br>Mantener el rumbo hacia un objetivo <b>aunque aparezcan dificultades, rechazo o días malos</b>.</p>
+
+          <p><b>🤝 Con los demás</b></p>
+          <p><b>4️⃣ Empatía ❤️</b><br>Intentar comprender <b>qué puede estar sintiendo o pensando la otra persona</b>, sin necesidad de estar de acuerdo.</p>
+          <p><b>5️⃣ Habilidades sociales 🗣️</b><br><b>Comunicar, escuchar, adaptarse, resolver conflictos y relacionarnos bien con los demás.</b></p>
+
+          <p><b>🎯 En la calle</b></p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Tener Inteligencia Emocional no significa <b>"no sentir"</b>. Significa <b>darte cuenta de lo que estás sintiendo, gestionarlo y decidir cómo quieres responder</b>.</p>
+        </div>
+      </details>
+
+      <details class="help-item">
+        <summary>💭 El diálogo interno</summary>
+        <div class="help-body">
+          <p>El <b>diálogo interno</b> es lo que nos decimos a nosotros mismos y cómo <b>interpretamos lo que nos ocurre</b>.</p>
+          <p>Muchas veces aparece de forma <b>automática</b>, especialmente cuando estamos cansados, frustrados, nerviosos o después de una situación difícil.</p>
+
+          <p>En captación pueden aparecer pensamientos como:</p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">
+            "Hoy no me va a salir nada."<br>
+            "La gente está pasando de mí."<br>
+            "No se me da bien esto."<br>
+            "Siempre me pasa lo mismo."
+          </p>
+
+          <p><b>🔄 El bucle negativo</b></p>
+          <p>Un pensamiento puede influir en <b>lo que sentimos y en cómo reacciona nuestro cuerpo</b>. A su vez, esas emociones y sensaciones pueden influir en cómo interpretamos lo que está ocurriendo y <b>reforzar el pensamiento inicial</b>.</p>
+          <div class="flow-diagram">
+            <span class="fbox">Pensamiento / interpretación</span><span class="arrow">→</span><span class="fbox">Emoción</span><span class="arrow">→</span><span class="fbox">Cuerpo</span><span class="arrow">→</span><span class="fbox">Interpretación</span><span class="arrow">→</span><span class="fbox">🔄</span>
+          </div>
+          <p>Es un <b>bucle</b>: cada parte puede alimentar a las demás.</p>
+
+          <p><b>📍 Un ejemplo</b></p>
+          <p style="text-align:center;"><b>"No voy a conseguir ni un socio."</b></p>
+          <p style="text-align:center;">↓</p>
+          <p style="text-align:center;">😞 <b>Frustración / desánimo</b></p>
+          <p style="text-align:center;">↓</p>
+          <p style="text-align:center;">💪 <b>Más tensión y activación</b></p>
+          <p style="text-align:center;">↓</p>
+          <p style="text-align:center;">👀 <b>Presto más atención a los rechazos y los interpreto como una confirmación</b></p>
+          <p style="text-align:center;">↓</p>
+          <p style="text-align:center;">🔄 <b>"¿Ves? Ya sabía que hoy no iba a funcionar."</b></p>
+
+          <p><b>🎯 La clave</b></p>
+          <p>No se trata de <b>forzarnos a pensar en positivo</b>.</p>
+          <p>Se trata de <b>detectar lo que nos estamos diciendo, comprobar qué evidencias tenemos y buscar una interpretación más realista y útil</b>.</p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>No siempre puedes elegir el primer pensamiento que aparece. Sí puedes decidir qué hacer con él.</b></p>
+        </div>
+      </details>
+
+      <details class="help-item">
+        <summary>🚫 Mitos del autocontrol</summary>
+        <div class="help-body">
+          <p><b>❌ Reprimir o negar la emoción</b></p>
+          <p style="font-style:italic;">«No pasa nada», «no debería sentirme así»</p>
+          <p>o intentar actuar como si la emoción no existiera.</p>
+          <p><b>Ignorar lo que sentimos no hace que desaparezca necesariamente.</b> La activación emocional puede mantenerse, especialmente si seguimos evitando lo ocurrido o dándole vueltas.</p>
+
+          <p><b>❌ Quedarse atrapado en la emoción</b></p>
+          <p>Prestar tanta atención a lo negativo que entramos en un <b>bucle de pensamientos, emociones y sensaciones físicas</b> que cada vez cuesta más cortar.</p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«Me han rechazado otra vez → qué mal se me da esto → seguro que hoy no consigo nada → otro rechazo más…»</p>
+          <p>Aquí la emoción y los pensamientos <b>empiezan a dirigir nuestra conducta</b>.</p>
+
+          <p><b>❌ Confundir autocontrol con estar siempre tranquilo</b></p>
+          <p><b>Estar nervioso, activado o sentir cierta tensión no significa que estés haciéndolo mal.</b></p>
+          <p>Una activación manejable puede ayudarte a <b>estar atento, concentrarte y actuar</b>. Cuando es demasiado intensa o se mantiene durante demasiado tiempo, puede empezar a dificultar tu rendimiento.</p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🟢 <b>Activación manejable → puede ayudarte.</b><br>🔴 <b>Activación excesiva o mantenida → puede dificultarte.</b></p>
+          <p>🎯 <b>No necesitas eliminar toda la activación. Necesitas regularla cuando empieza a jugar en tu contra.</b></p>
+
+          <p><b>✅ Entonces, ¿qué es gestionar bien una emoción?</b></p>
+          <p><b>1️⃣ Reconocerla 👀</b><br><span style="font-style:italic;">«Estoy frustrado.»</span></p>
+          <p><b>2️⃣ Aceptarla 🧘</b><br>Reconocer que está ahí <b>sin juzgarte por sentirla</b>.</p>
+          <p><b>3️⃣ Hacer una pausa ⏸️</b><br>Evitar la reacción automática y recuperar algo de calma.</p>
+          <p><b>4️⃣ Revisar el pensamiento 💭</b><br>Preguntarte: <b>«¿Qué estoy interpretando? ¿Qué evidencias tengo? ¿Hay una forma más realista y útil de verlo?»</b></p>
+          <p><b>5️⃣ Actuar 🎯</b><br>Elegir <b>una respuesta concreta</b> que te acerque a lo que quieres hacer.</p>
+
+          <p><b>🔑 La clave</b></p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Gestionar una emoción no significa eliminarla ni estar siempre tranquilo. Significa reconocerla, regularla cuando sea necesario y elegir cómo responder.</b></p>
+        </div>
+      </details>
+
+      <details class="help-item">
+        <summary>😣 Estados emocionales incómodos del captador</summary>
+        <div class="help-body">
+          <p>Además de las 6 emociones básicas, en captación pueden aparecer <b>estados emocionales muy concretos</b> relacionados con el rechazo, la presión, la incertidumbre y el desgaste de la jornada.</p>
+          <p>Distinguirlos ayuda a <b>poner nombre a lo que te está pasando y elegir mejor cómo responder</b>.</p>
+
+          <details class="help-item">
+            <summary>😰 Ansiedad anticipatoria</summary>
+            <div class="help-body">
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"¿Y si hoy no sale bien?"</p>
+              <p>Aparece cuando anticipamos <b>un resultado negativo que todavía no ha ocurrido</b>: no alcanzar el objetivo, encadenar rechazos o pensar cómo terminará el día.</p>
+              <p>👉 <b>Clave:</b> preocupa <b>lo que podría pasar</b>.</p>
+              <p>🛠️ <b>¿Qué hago?</b><br>Deja el resultado final fuera de la cabeza y céntrate en <b>el siguiente abordaje</b>.</p>
+              <p style="font-style:italic;">💬 "No sé cómo acabará el día. Solo necesito hacer bien la próxima conversación."</p>
+            </div>
+          </details>
+
+          <details class="help-item">
+            <summary>😣 Frustración</summary>
+            <div class="help-body">
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Estoy esforzándome y no consigo el resultado."</p>
+              <p>Surge cuando <b>un objetivo se bloquea a pesar del esfuerzo</b>: muchas conversaciones y pocas firmas, o una colaboración que finalmente se cae.</p>
+              <p>👉 <b>Clave:</b> quiero conseguir algo y <b>algo se interpone</b>.</p>
+              <p>🛠️ <b>¿Qué hago?</b><br>Haz una pausa y busca <b>un ajuste concreto</b> para el siguiente intento.</p>
+              <p style="font-style:italic;">💬 "Esto no ha salido como quería. ¿Qué puedo hacer diferente en la próxima?"</p>
+            </div>
+          </details>
+
+          <details class="help-item">
+            <summary>😨 Miedo al rechazo / juicio</summary>
+            <div class="help-body">
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"¿Qué pensarán de mí?"</p>
+              <p>Aparece cuando nos preocupa <b>que nos rechacen, quedar mal o ser valorados negativamente</b>. Puede hacer que abordemos menos, dudemos más o evitemos determinadas situaciones.</p>
+              <p>👉 <b>Clave:</b> preocupa <b>cómo me van a recibir o valorar</b>.</p>
+              <p>🛠️ <b>¿Qué hago?</b><br>Deja de intentar controlar la reacción de la otra persona y vuelve a tu tarea: <b>acercarte, comunicar y escuchar con respeto</b>.</p>
+              <p style="font-style:italic;">💬 "No controlo su reacción. Sí controlo cómo hago mi trabajo."</p>
+            </div>
+          </details>
+
+          <details class="help-item">
+            <summary>😔 Desánimo</summary>
+            <div class="help-body">
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"No tengo ganas de seguir."</p>
+              <p>Puede aparecer después de varios resultados negativos y afectar a nuestra <b>energía, motivación o confianza</b>.</p>
+              <p>👉 <b>Clave:</b> bajan <b>las ganas de continuar</b>.</p>
+              <p>🛠️ <b>¿Qué hago?</b><br>Reduce el horizonte: no pienses en toda la jornada. Céntrate en <b>los próximos abordajes</b>.</p>
+              <p style="font-style:italic;">💬 "No necesito tener ganas ahora. Solo necesito dar el siguiente paso."</p>
+            </div>
+          </details>
+
+          <details class="help-item">
+            <summary>😩 Impotencia</summary>
+            <div class="help-body">
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Haga lo que haga, no depende de mí."</p>
+              <p>Aparece cuando sentimos que tenemos <b>poco control sobre la situación</b>: una zona complicada, pocas oportunidades de abordaje, permisos difíciles o factores externos.</p>
+              <p>👉 <b>Clave:</b> siento que <b>no puedo cambiar lo que está pasando</b>.</p>
+              <p>🛠️ <b>¿Qué hago?</b><br>Separa lo que depende de ti de lo que no y vuelve a <b>lo controlable: actitud, técnica, abordaje, escucha y adaptación</b>.</p>
+              <p style="font-style:italic;">💬 "No controlo el entorno. Sí controlo mi siguiente respuesta."</p>
+            </div>
+          </details>
+
+          <details class="help-item">
+            <summary>🥵 Fatiga mental</summary>
+            <div class="help-body">
+              <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Estoy mentalmente quemado."</p>
+              <p>Aparece cuando se acumulan <b>esfuerzo, rechazo, tensión y atención constante</b>. Puede hacer que baje el ritmo, cueste concentrarse o empecemos a funcionar en automático.</p>
+              <p>👉 <b>Clave:</b> no es <b>«no quiero»</b>, sino <b>«me falta energía mental»</b>.</p>
+              <p>🛠️ <b>¿Qué hago?</b><br>Haz una <b>pausa real</b>: aléjate unos minutos, hidrátate, respira y desconecta antes de volver.</p>
+              <p style="font-style:italic;">💬 "No necesito apretar más. Primero recupero; después continúo."</p>
+            </div>
+          </details>
+
+          <p><b>🎯 Las 6, de un vistazo</b></p>
+          <ul>
+            <li>😰 <b>Ansiedad anticipatoria</b> → "¿Qué podría pasar?"</li>
+            <li>😣 <b>Frustración</b> → "No consigo lo que quiero."</li>
+            <li>😨 <b>Miedo al rechazo / juicio</b> → "¿Cómo me van a recibir?"</li>
+            <li>😔 <b>Desánimo</b> → "No tengo ganas de seguir."</li>
+            <li>😩 <b>Impotencia</b> → "No depende de mí."</li>
+            <li>🥵 <b>Fatiga mental</b> → "Me falta energía mental."</li>
+          </ul>
+
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🔑 <b>Ponle nombre a lo que te pasa. Después, decide qué hacer con ello.</b></p>
+        </div>
+      </details>
+
+      <details class="help-item">
+        <summary>🛡️ Antifragilidad</summary>
+        <div class="help-body">
+          <p>Un rechazo no tiene por qué hacerte mejor automáticamente. Pero puedes <b>utilizarlo como información</b>:</p>
+          <p><b>¿Qué ha pasado? → ¿Qué puedo aprender? → ¿Qué voy a hacer diferente?</b></p>
+          <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>No se trata de buscar golpes. Se trata de aprovechar lo que aprendes de ellos.</b></p>
+          <p>🎯 <b>No eliges siempre lo que sientes. Sí puedes trabajar en cómo respondes.</b></p>
+        </div>
+      </details>
+
+    </div>
+
+  </section>
+
+  <!-- BIENESTAR -->
+  <section class="view" id="view-bienestar">
+    <h2>🌱 Cuidar tu bienestar</h2>
+    <p class="desc" style="margin-bottom:14px;"><b>Pequeños hábitos y prácticas para cuidar tu bienestar emocional y recuperarte mejor.</b></p>
+
+    <div class="card card-full">
+      <h3>12 prácticas</h3>
+      <p class="desc"><b>1️⃣ Saborea lo bueno 😊</b><br>Cuando ocurra algo agradable, <b>no pases inmediatamente a lo siguiente</b>. Detente unos segundos, presta atención y disfruta del momento.</p>
+      <p class="desc"><b>2️⃣ Cuida tus conexiones 🤝</b><br>Dedica tiempo a las personas que te hacen bien. <b>Escuchar, compartir, agradecer o ayudar</b> puede fortalecer tus relaciones.</p>
+      <p class="desc"><b>3️⃣ Practica la amabilidad ❤️</b><br>Haz pequeños gestos de ayuda o amabilidad de forma intencionada. <b>No tienen que ser grandes cosas.</b></p>
+      <p class="desc"><b>4️⃣ Desengancha de la rumiación 🔄</b><br>Cuando lleves demasiado tiempo dando vueltas a lo mismo, <b>cambia de foco de forma consciente</b>: caminar, hablar con alguien, escuchar música o centrarte en una tarea concreta.</p>
+      <p class="desc"><b>5️⃣ Cuestiona tus pensamientos 💭</b><br>Cuando aparezca un pensamiento negativo, pregúntate: <b>¿Qué evidencias tengo? ¿Estoy sacando alguna conclusión demasiado rápido? ¿Hay otra forma más realista de interpretar lo ocurrido?</b></p>
+      <p class="desc"><b>6️⃣ Busca contacto con la naturaleza 🌿</b><br>Siempre que puedas, <b>sal a un espacio verde, pasea o dedica unos minutos a estar al aire libre</b>.</p>
+      <p class="desc"><b>7️⃣ Utiliza tus fortalezas 💪</b><br>Identifica tus principales <b>fortalezas de carácter</b> y busca oportunidades para utilizarlas en tu trabajo y en tu vida.</p>
+      <p class="desc"><b>8️⃣ Practica mindfulness 🧘</b><br>Dedica unos minutos a prestar atención al <b>momento presente</b>, observando pensamientos, emociones y sensaciones sin intentar cambiarlos inmediatamente.</p>
+      <p class="desc"><b>9️⃣ Practica la autocompasión 🤍</b><br>Cuando tengas un mal día, <b>háblate como hablarías a un compañero al que aprecias</b>: con comprensión, pero también con honestidad.</p>
+      <p class="desc"><b>🔟 Entrena la gratitud 🙏</b><br>Al final del día, recuerda <b>3 cosas concretas que hayan ido bien o que valores</b>. Pueden ser cosas pequeñas.</p>
+      <p class="desc"><b>1️⃣1️⃣ Visualiza y aterriza 🎯</b><br>Imagina <b>cómo quieres afrontar una situación futura</b> y después pregúntate: <b>¿Qué obstáculo puede aparecer? ¿Qué haré cuando aparezca?</b> Prepararte también para las dificultades hace que el plan sea más realista.</p>
+      <p class="desc"><b>1️⃣2️⃣ Aprende a estar en lo incómodo 🛡️</b><br>No todo malestar necesita desaparecer inmediatamente. Practica <b>seguir haciendo lo que es importante para ti aunque aparezcan nervios, frustración o incomodidad</b>.</p>
+
+      <p class="desc" style="font-weight:700;margin-bottom:4px;">🎯 La clave</p>
+      <p class="desc" style="font-style:italic;">No necesitas sentirte bien para actuar bien.</p>
+      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Cuidar tu bienestar emocional no significa <b>eliminar las emociones incómodas</b>, sino desarrollar hábitos que te ayuden a <b>recuperarte, ampliar tu perspectiva y responder mejor cuando aparezcan</b>.</p>
+    </div>
+  </section>
+
+  <!-- HERRAMIENTAS -->
+  <section class="view" id="view-herramientas">
+    <h2>🧰 Caja de Herramientas</h2>
+    <p class="desc" style="margin-bottom:14px;">Elige la herramienta que mejor encaje con lo que necesitas ahora mismo en calle.</p>
+
+    <div class="tool-group relief">
+      <h3>😮‍💨 Alivio inmediato</h3>
+      <p class="desc tool-desc">Herramientas para <b>bajar la activación, recuperar el control y volver a centrarte en 1–2 minutos</b>.</p>
+      <div class="tool-cards">
+        <div class="card">
+          <h3>🌬️ Suspiro fisiológico</h3>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>bajar rápidamente la activación y la tensión general</b> cuando estás nervioso, acelerado o tenso.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Haz <b>dos inhalaciones por la nariz</b> —la segunda más pequeña— y después una <b>exhalación lenta y larga</b>. Repite durante 30–60 segundos.</p>
+          <button class="btn btn-blue" onclick="startBreath(60)">Respirar 60s</button>
+        </div>
+        <div class="card">
+          <h3>🛑 Parar y decidir</h3>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>cortar una reacción automática y recuperar margen para decidir qué hacer</b> ante tensión, rabia, nervios o bloqueo.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br><b>STOP → Toma aire → Observa → Nombra → Decide → Actúa.</b></p>
+          <button class="btn btn-blue" onclick="startPauseDecision()">Empezar</button>
+        </div>
+        <div class="card">
+          <h3>👀 Grounding 5-4-3-2-1</h3>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>salir de la rumiación y volver al presente</b> cuando tu cabeza está atrapada en pensamientos o preocupaciones.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Lleva tu atención al presente utilizando los sentidos: <b>5</b> cosas que ves · <b>4</b> que sientes · <b>3</b> que oyes · <b>2</b> que hueles · <b>1</b> que saboreas.</p>
+          <button class="btn btn-blue" onclick="startGrounding()">Empezar</button>
+        </div>
+        <div class="card">
+          <h3>💪 Tense & Release</h3>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>soltar tensión física acumulada</b>, especialmente cuando notas rigidez en puños, hombros, brazos o piernas.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa durante unos segundos y suelta</b> diferentes grupos musculares: puños, hombros, brazos y piernas.</p>
+          <button class="btn btn-blue" onclick="startTense()">Empezar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-group anchor">
+      <h3>⚓ Anclajes</h3>
+      <p class="desc tool-desc"><b>Prepara un recurso antes de que lo necesites.</b></p>
+      <div class="tool-cards">
+        <div class="card">
+          <h3>🏆 Anclaje de confianza</h3>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte un estado de seguridad y confianza antes de una conversación difícil</b> o después de un momento de inseguridad.</p>
+          <p class="desc"><b>¿Cómo se prepara?</b><br>Elige un gesto discreto —por ejemplo, <b>juntar pulgar e índice</b>— mientras recuerdas una situación en la que te sentiste <b>seguro, concentrado o satisfecho con tu trabajo</b>. Después puedes utilizar ese gesto como <b>recordatorio de ese estado</b>.</p>
+          <button class="btn btn-green" onclick="openAnchor()">Configurar / Usar</button>
+        </div>
+        <div class="card">
+          <h3>👁️ Anclaje visual</h3>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte cómo quieres afrontar una situación</b> cuando aparezca tensión, desánimo o dudas.</p>
+          <p class="desc"><b>¿Cómo se prepara?</b><br>Guarda una <b>frase, imagen o recordatorio</b> que puedas consultar rápidamente. La idea no es obligarte a pensar en positivo, sino <b>volver a tu objetivo y a la actitud que quieres mantener</b>.</p>
+          <button class="btn btn-outline" onclick="openVisualAnchor()">Ver mis frases</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-group tracking">
+      <h3>📊 Seguimiento del turno</h3>
+      <p class="desc tool-desc"><b>Revisa cómo vas antes de acumular fatiga.</b></p>
+      <div class="tool-cards">
+        <div class="card">
+          <h3>⏱️ Checkpoint mental de mitad de turno</h3>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>detectar a tiempo tensión, fatiga o pérdida de concentración y ajustar tu jornada antes de que vaya a más</b>.</p>
+          <p class="desc">Haz una <b>pausa breve para comprobar cómo estás física y emocionalmente</b>:</p>
+          <p class="desc">🫀 <b>Cuerpo:</b> ¿estoy tenso, cansado o acelerado?<br>
+          🧠 <b>Cabeza:</b> ¿estoy concentrado o funcionando en automático?<br>
+          💭 <b>Emoción:</b> ¿qué estoy sintiendo?<br>
+          🎯 <b>Estrategia:</b> ¿necesito cambiar algo?</p>
+          <p class="desc">Termina con una decisión concreta: <b>seguir igual · hacer una pausa · ajustar la estrategia</b>.</p>
+          <p class="desc">Se guarda en tu historial para que puedas <b>revisar cómo llegas a mitad de turno y detectar patrones con el tiempo</b>.</p>
+          <button class="btn btn-amber" onclick="openCheckpoint()">Hacer checkpoint</button>
+          <div id="checkpointHistorial" style="margin-top:12px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIARIO SEPA -->
+  <section class="view" id="view-diario">
+    <h2>📓 Registro S‑E‑P‑A</h2>
+    <p class="desc" style="margin-bottom:16px;"><b>Situación → Emoción → Pensamiento → Acción</b></p>
+
+    <div class="card card-full">
+      <p class="desc">El S-E-P-A te ayuda a <b>parar, entender qué te está pasando y elegir una respuesta más útil</b>.</p>
+
+      <p class="desc" style="font-weight:700;margin-bottom:4px;">💡 ¿Cómo funciona?</p>
+      <p class="desc"><b>S · Situación:</b> ¿Qué ha pasado?<br>
+      <b>E · Emoción:</b> ¿Qué estoy sintiendo?<br>
+      <b>P · Pensamiento:</b> ¿Qué me estoy diciendo?<br>
+      <b>A · Acción:</b> ¿Qué voy a hacer ahora?</p>
+
+      <p class="desc" style="font-weight:700;margin-bottom:4px;">🔴 Ejemplo automático</p>
+      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Esta zona es horrible. No vale la pena ni intentar parar."</p>
+      <p class="desc">Puede llevar a <b>abordajes sin energía, postura cerrada y abandono prematuro</b>.</p>
+
+      <p class="desc" style="font-weight:700;margin-bottom:4px;">🟢 Ejemplo útil</p>
+      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"El flujo es menor, pero puedo adaptar mi entrada, mantener la calma y centrarme en hacer buenas conversaciones."</p>
+      <p class="desc">→ <b>Foco en lo que sí puedo controlar:</b> técnica, actitud y calidad de la interacción.</p>
+    </div>
+
+    <div class="card">
+      <h3>1. Contexto</h3>
+      <label>S · Situación</label>
+      <p class="desc" style="margin-top:-6px;">¿Qué está pasando realmente?</p>
+      <select id="sepaSituacion">
+        <option>Permiso difícil</option>
+        <option>Zona con poco flujo</option>
+        <option>Racha de noes seguidos</option>
+        <option>Lluvia / mal tiempo</option>
+        <option>Transeúnte borde</option>
+        <option>Comparación con compañeros</option>
+        <option>Presión por el objetivo</option>
+        <option>Cambio de zona o ubicación</option>
+        <option>Otra</option>
+      </select>
+
+      <label>E · Emoción sentida</label>
+      <p class="desc" style="margin-top:-6px;">¿Qué estoy sintiendo?</p>
+      <div class="chip-group" id="sepaEmocionChips"></div>
+      <p class="desc" style="font-size:12.5px;">Puedes marcar más de una si has sentido varias a la vez.</p>
+    </div>
+
+    <div class="card">
+      <h3>2. Pensamiento y acción</h3>
+      <label>P · Pensamiento automático</label>
+      <p class="desc" style="margin-top:-6px;">¿Qué me estoy diciendo?</p>
+      <select id="sepaPensDestructivo">
+        <option>No podré</option>
+        <option>Esta zona está quemada</option>
+        <option>Nadie quiere colaborar</option>
+        <option>Es culpa del responsable</option>
+        <option>Siempre hace lo mismo</option>
+        <option>No vale la pena</option>
+        <option>¿Y si me voy a 0?</option>
+        <option>Otro</option>
+      </select>
+      <textarea id="sepaPensDestructivoLibre" placeholder="Escribe tu pensamiento si no está en la lista..."></textarea>
+
+      <label>P+ · Pensamiento útil 💡</label>
+      <p class="desc" style="margin-top:-6px;">¿Cómo puedo interpretar la situación de una forma más realista y útil?</p>
+      <button class="btn btn-outline btn-sm" style="margin-bottom:10px;" onclick="sugerirReencuadre()">💡 Sugerir reencuadre</button>
+      <textarea id="sepaPensConstructivo" placeholder="Es una zona difícil pero con técnica salen socios / El rechazo no es personal / Ajusto mi ritmo..."></textarea>
+
+      <label>A · Acción inmediata</label>
+      <p class="desc" style="margin-top:-6px;">¿Qué voy a hacer ahora?</p>
+      <div class="chip-group">
+        <div class="chip" onclick="insertAccion('Pausa consciente')">⏸️ Pausa consciente</div>
+        <div class="chip" onclick="insertAccion('Respiración lenta')">🌬️ Respiración lenta</div>
+        <div class="chip" onclick="insertAccion('Regular el ritmo')">🎯 Regular el ritmo</div>
+        <div class="chip" onclick="insertAccion('Revisar mi técnica')">🔍 Revisar mi técnica</div>
+        <div class="chip" onclick="insertAccion('Adaptar el speech')">🗣️ Adaptar el speech</div>
+        <div class="chip" onclick="insertAccion('Cambiar el enfoque o ubicación')">🚶 Cambiar el enfoque o ubicación</div>
+        <div class="chip" onclick="insertAccion('Pedir apoyo')">🤝 Pedir apoyo</div>
+      </div>
+      <textarea id="sepaAccion" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
+
+      <button class="btn btn-primary" onclick="guardarSepa()">Guardar registro</button>
+    </div>
+
+    <p class="desc" style="font-weight:700;margin-bottom:4px;">🎯 Recuerda</p>
+    <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-bottom:16px;">El objetivo no es <b>pensar en positivo</b>, sino <b>pasar de una interpretación automática a una respuesta más realista y útil</b>.</p>
+
+    <h3>📚 Historial</h3>
+    <p class="desc" style="margin-bottom:10px;">Revisa tus registros S-E-P-A para <b>detectar patrones, ver qué situaciones se repiten y descubrir qué respuestas te funcionan mejor</b>.</p>
+    <div id="sepaHistorial"></div>
+  </section>
+
+</div>
+</main>
+
+<!-- MODAL SHEET (generic, used by emotion wheel, anchor, visual anchor, kit) -->
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()">
+  <div class="modal-sheet" id="modalSheet"></div>
+</div>
+
+<!-- RESET FLOW OVERLAY -->
+<div class="overlay" id="resetOverlay">
+  <div class="overlay-header">
+    <b>🆘 MODO RESET</b>
+    <div class="oh-actions">
+      <button class="close-x" onclick="startCheckin()" title="Señales de alerta">🚦</button>
+      <button class="close-x" onclick="resetGoto(1)" title="Iniciar Modo Reset">🆘</button>
+      <button class="close-x" onclick="openKit()" title="Kit de Emergencia">🎒</button>
+      <button class="close-x" onclick="openCheckinHistorial()" title="Historial">📚</button>
+      <button class="close-x" onclick="closeReset()" title="Cerrar">✕</button>
+    </div>
+  </div>
+  <div class="overlay-body" id="resetBody"></div>
+</div>
+
+<!-- GENERIC TOOL OVERLAY -->
+<div class="overlay" id="toolOverlay">
+  <div class="overlay-header" style="background:linear-gradient(135deg,var(--calm-blue),var(--wesser-navy));">
+    <b id="toolTitle">Herramienta</b>
+    <button class="close-x" onclick="closeTool()">✕</button>
+  </div>
+  <div class="overlay-body" id="toolBody"></div>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="overlay" id="helpOverlay">
+  <div class="overlay-header" style="background:linear-gradient(135deg,var(--wesser-navy),#0b1120);">
+    <b>❓ Ayuda</b>
+    <button class="close-x" onclick="closeHelp()">✕</button>
+  </div>
+  <div class="overlay-body">
+    <p class="desc" style="margin-bottom:14px;">Qué hace cada parte de la app y cuándo usarla. Todo lo que registres se guarda solo en este dispositivo (no se envía a ningún sitio).</p>
+
+    <details class="help-item" open>
+      <summary>🚀 ¿Por dónde empiezo?</summary>
+      <div class="help-body">
+        <p><b>1️⃣ Empieza por Aprender</b><br>
+        Lee esa sección para entender las bases. <b>Solo te llevará 2 minutos.</b></p>
+        <p><b>2️⃣ Usa Herramientas cuando lo necesites</b><br>
+        ¿Notas <b>tensión, rabia, frustración o bloqueo</b> en calle? 😤 Entra en <b>Herramientas</b> y elige la técnica que mejor encaje con lo que te está pasando.</p>
+        <p><b>3️⃣ Cierra el día con el Diario SEPA</b> 📝<br>
+        Dedica unos minutos a revisar cómo ha ido la jornada, qué has sentido y qué puedes aprender de ella.</p>
+        <p><b>4️⃣ ¿Llevas varios días de mala racha? 🆘 Reset</b><br>
+        Cuando sientas que "chocas con la pared", utiliza <b>🆘 Reset</b> para parar, recolocarte y volver a la calle con otra perspectiva.</p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Aprende → Aplica → Reflexiona → Resetea.</b> No necesitas utilizar todo a la vez. Empieza por lo que necesites en cada momento.</p>
+      </div>
+    </details>
+
+    <details class="help-item">
+      <summary>🧠 Aprender</summary>
+      <div class="help-body">
+        <p>Léelo con calma antes de necesitar las herramientas. Son 7 fichas desplegables — abre solo la que te interese:</p>
+        <ul>
+          <li>¿Qué es una emoción? (incluye emoción vs. sentimiento)</li>
+          <li>Las 6 Emociones Básicas (rueda interactiva)</li>
+          <li>Inteligencia Emocional en la calle</li>
+          <li>El diálogo interno</li>
+          <li>Mitos del autocontrol</li>
+          <li>Estados emocionales incómodos del captador</li>
+          <li>Antifragilidad</li>
+        </ul>
+        <p>Dentro de "Las 6 Emociones Básicas" está la <b>rueda interactiva</b> (Alegría, Tristeza, Miedo, Ira, Sorpresa, Asco): pulsa cada una para ver su función adaptativa, su expresión fisiológica y una frase de reencuadre. Son las mismas emociones que eliges en el Diario SEPA (ahí puedes pulsar el icono ℹ️ de cada una para ver su ficha sin cambiar de pestaña).</p>
+      </div>
+    </details>
+
+    <details class="help-item">
+      <summary>🌱 Bienestar</summary>
+      <div class="help-body">
+        <p>Hábitos y prácticas para mantener una buena base emocional a medio y largo plazo, y recuperarte mejor tras un día difícil. Es una lectura, no una herramienta de uso inmediato en calle (para eso está Herramientas).</p>
+      </div>
+    </details>
+
+    <details class="help-item">
+      <summary>🧰 Herramientas</summary>
+      <div class="help-body">
+        <p>Elige según lo que necesites ahora mismo, agrupadas en 3 bloques:</p>
+        <p><b>Alivio inmediato</b> (1-2 min, para calmar cuerpo y mente ya):</p>
+        <ul>
+          <li><b>Suspiro Fisiológico</b>: respiración de 60s para calmar el sistema nervioso en menos de 1 minuto.</li>
+          <li><b>Parar y Decidir</b>: Stop → Toma aire → Observa y nombra → Genera alternativas → Actúa. Es la técnica general para cualquier tensión, rabia o bloqueo — úsala siempre que no sepas cuál elegir.</li>
+          <li><b>Grounding 5‑4‑3‑2‑1</b>: ancla tus 5 sentidos al momento presente.</li>
+          <li><b>Tense & Release</b>: tensa y suelta puños, hombros, brazos y piernas para liberar tensión física.</li>
+        </ul>
+        <p><b>Anclajes</b> (prepáralos antes de necesitarlos):</p>
+        <ul>
+          <li><b>Anclaje de Éxito (PNL)</b>: guarda una palabra clave y un recuerdo de éxito para "activarlos" apretando pulgar e índice.</li>
+          <li><b>Anclaje Visual</b>: guarda frases inspiradoras para releer cuando lo necesites.</li>
+        </ul>
+        <p><b>Seguimiento del turno</b>:</p>
+        <ul>
+          <li><b>Checkpoint Mental</b>: escaneo de fatiga y estado emocional a mitad de turno, queda guardado en tu historial.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="help-item">
+      <summary>📓 Diario SEPA</summary>
+      <div class="help-body">
+        <p>Registra momentos difíciles en 4 pasos para entrenar la reestructuración cognitiva:</p>
+        <ul>
+          <li><b>S</b>ituación que lo disparó.</li>
+          <li><b>E</b>moción o emociones que sentiste (puedes marcar más de una; pulsa ℹ️ si quieres recordar su ficha).</li>
+          <li><b>P</b>ensamiento automático que apareció.</li>
+          <li><b>P+</b>: su versión más útil (puedes pulsar "Sugerir reencuadre" para que te proponga una).</li>
+          <li><b>A</b>cción inmediata que vas a aplicar en la próxima parada (hay chips con ideas rápidas).</li>
+        </ul>
+        <p>Cada registro queda en tu historial, revisable en cualquier momento (botón "Eliminar" si quieres borrarlo).</p>
+      </div>
+    </details>
+
+    <details class="help-item">
+      <summary>🆘 Modo Reset</summary>
+      <div class="help-body">
+        <p>Botón siempre visible en la cabecera para cuando sientes que has "chocado con la pared" (mala racha, desgaste, frustración acumulada).</p>
+        <p>La pantalla de inicio explica qué hacer en una mala racha (Normalizar, Rescatar, Regular, Pedir ayuda) y tu Círculo de Control (qué no controlas, qué puedes influir, qué puedes revisar). Desde ahí puedes hacer un <b>Check-in de señales</b> (17 señales de autodiagnóstico, con historial guardado) antes de empezar el protocolo.</p>
+        <p>El protocolo <b>R.E.S.E.T.</b>:</p>
+        <ul>
+          <li><b>R</b>econoce la mala racha, sin juzgarte, con una respiración guiada y tu señal de alerta principal.</li>
+          <li><b>E</b>xamina qué parte es Resultado (incontrolable) y qué parte es Rendimiento (revisable).</li>
+          <li><b>S</b>epara: escribe 2 aspectos que sigues haciendo bien a pesar de la racha.</li>
+          <li><b>E</b>lige una sola variable técnica a ajustar (Ritmo, Escucha, Presencia, Empuje o un vicio adquirido).</li>
+          <li><b>T</b>estea ese cambio durante 10 paradas (o ~2 horas) sin juzgar el resultado.</li>
+        </ul>
+        <p>Al cerrar el protocolo hay una guía rápida <b>PARA / REVISA / PIDE</b> y un <b>Pacto de Permanencia</b> para escribir tu compromiso concreto para el próximo turno.</p>
+        <p>El icono 🎒 abre en cualquier momento el <b>Kit de Emergencia del Captador</b>: tu plan personal antes de necesitarlo — señales de alerta que sueles notar, la herramienta con la que te regulas, el ajuste técnico que aplicas y a quién pides apoyo si sigues atascado.</p>
+      </div>
+    </details>
+
+    <details class="help-item">
+      <summary>🌓 Modo claro / oscuro</summary>
+      <div class="help-body">
+        <p>El icono de la cabecera cambia el tema de la app para adaptarse a la luz ambiente (por ejemplo, modo oscuro al anochecer o pantalla muy iluminada bajo sol directo con modo claro).</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<script>
+/* ============ STATE ============ */
+const LS_KEY = 'wesserAppState';
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {
+    theme:null,
+    sepaEntries:[],
+    checkpoints:[],
+    visualAnchors:[],
+    checkins:[],
+    anchorWord:'', anchorMemory:'',
+    kitSenales:[], kitHerramienta:'', kitAjuste:'', kitPersona:'', kitPedira:''
+  };
+}
+let state = loadState();
+if(!state.checkins) state.checkins = [];
+if(!state.kitSenales) state.kitSenales = [];
+if(state.kitHerramienta===undefined) state.kitHerramienta = '';
+if(state.kitAjuste===undefined) state.kitAjuste = '';
+if(state.kitPersona===undefined) state.kitPersona = '';
+if(state.kitPedira===undefined) state.kitPedira = '';
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+/* ============ THEME ============ */
+function applyTheme(){
+  const t = state.theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');
+  document.documentElement.setAttribute('data-theme', t);
+}
+applyTheme();
+document.getElementById('themeToggle').onclick = ()=>{
+  const cur = document.documentElement.getAttribute('data-theme');
+  state.theme = cur === 'dark' ? 'light' : 'dark';
+  save(); applyTheme();
+};
+
+/* ============ NAV ============ */
+function goto(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('#headerTabs button').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  document.querySelector('main').scrollTo(0,0);
+}
+document.getElementById('headerTabs').addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-view]');
+  if(btn) goto(btn.dataset.view);
+});
+
+/* ============ HELP OVERLAY ============ */
+function openHelp(){ document.getElementById('helpOverlay').classList.add('active'); }
+function closeHelp(){ document.getElementById('helpOverlay').classList.remove('active'); }
+
+/* ============ MODAL HELPERS ============ */
+function openModal(html){
+  document.getElementById('modalSheet').innerHTML = '<div class="handle"></div>'+html;
+  document.getElementById('modalBack').classList.add('active');
+}
+function closeModal(){ document.getElementById('modalBack').classList.remove('active'); }
+
+/* ============ DATA: EMOTIONS (enfoque autogestión del captador) ============ */
+const EMOTIONS = [
+  {id:'alegria', nombre:'Alegría', color:'var(--reset-amber)', tipo:'Básica', finalidad:'CONEXIÓN Y ENERGÍA',
+    funcion:'Nos ayuda a acercarnos a los demás, conectar y afrontar lo que hacemos con más energía y motivación.',
+    expresion:'Sonrisa, sensación de energía y bienestar, mayor apertura y disposición a relacionarnos.',
+    reencuadre:'Disfruto la conversación, conecto con la persona y doy lo mejor de mí.'},
+  {id:'tristeza', nombre:'Tristeza', color:'var(--wesser-navy)', tipo:'Básica', finalidad:'ASIMILACIÓN',
+    funcion:'Nos ayuda a asimilar una pérdida, una decepción o algo que nos ha afectado, y puede llevarnos a buscar apoyo.',
+    expresion:'Menos energía, ganas de estar más solos, llanto o sensación de pesadez.',
+    reencuadre:'Esto me ha afectado, pero un rechazo no define mi capacidad. Puedo aprender de lo ocurrido y seguir.'},
+  {id:'miedo', nombre:'Miedo', color:'var(--calm-blue)', tipo:'Básica', finalidad:'SEGURIDAD',
+    funcion:'Nos ayuda a detectar posibles peligros y prepararnos para responder ante ellos.',
+    expresion:'Tensión muscular, aceleración del pulso, respiración más rápida y mayor estado de alerta.',
+    reencuadre:'Puedo mantener la calma y hacer bien mi parte. Su primera reacción no define cómo terminará la conversación.'},
+  {id:'ira', nombre:'Ira', color:'var(--alert-coral)', tipo:'Básica', finalidad:'LÍMITES',
+    funcion:'Nos ayuda a reaccionar cuando percibimos una amenaza, un obstáculo o un límite que ha sido sobrepasado.',
+    expresion:'Tensión muscular, aumento del ritmo cardíaco, más energía y ganas de actuar o defendernos.',
+    reencuadre:'Puedo notar la rabia sin dejar que me dirija. Mantengo el control y uso esa energía para comunicarme mejor, no para entrar en conflicto.'},
+  {id:'sorpresa', nombre:'Sorpresa', color:'var(--success-green)', tipo:'Básica', finalidad:'ATENCIÓN',
+    funcion:'Nos ayuda a detenernos y prestar atención cuando ocurre algo inesperado, para valorar rápidamente qué está pasando.',
+    expresion:'Ojos más abiertos, pausa momentánea y aumento de la atención.',
+    reencuadre:'Ha ocurrido algo inesperado. Observo, me adapto y continúo con calma.'},
+  {id:'asco', nombre:'Asco', color:'var(--wesser-red)', tipo:'Básica', finalidad:'PROTECCIÓN',
+    funcion:'Nos ayuda a alejarnos o evitar aquello que percibimos como dañino o muy desagradable.',
+    expresion:'Gesto de rechazo, ganas de alejarnos, náusea o sensación de repulsión.',
+    reencuadre:'Puedo sentir rechazo sin reaccionar impulsivamente. Mantengo la calma y sigo tratando a la otra persona con respeto.'}
+];
+
+const REENCUADRES = {
+  alegria:'Disfruto la conversación, conecto con la persona y doy lo mejor de mí.',
+  tristeza:'Esto me ha afectado, pero un rechazo no define mi capacidad. Puedo aprender de lo ocurrido y seguir.',
+  miedo:'Puedo mantener la calma y hacer bien mi parte. Su primera reacción no define cómo terminará la conversación.',
+  ira:'Puedo notar la rabia sin dejar que me dirija. Mantengo el control y uso esa energía para comunicarme mejor, no para entrar en conflicto.',
+  sorpresa:'Ha ocurrido algo inesperado. Observo, me adapto y continúo con calma.',
+  asco:'Puedo sentir rechazo sin reaccionar impulsivamente. Mantengo la calma y sigo tratando a la otra persona con respeto.',
+  generico:'Es una situación difícil pero con técnica salen socios. El rechazo no es personal. Ajusto mi ritmo.'
+};
+
+function renderWheel(){
+  const grid = document.getElementById('wheelGrid');
+  grid.innerHTML = EMOTIONS.map(e=>`
+    <button class="wheel-btn" style="background:${e.color}" onclick="showEmotion('${e.id}')">
+      <span class="em">${emoji(e.id)}</span>${e.nombre}
+    </button>`).join('');
+}
+function emoji(id){
+  return {alegria:'😊',tristeza:'😢',miedo:'😨',ira:'😡',sorpresa:'😲',asco:'🤢'}[id]||'🙂';
+}
+function showEmotion(id){
+  const e = EMOTIONS.find(x=>x.id===id);
+  openModal(`
+    <span class="badge navy">${e.tipo} · Busca ${e.finalidad}</span>
+    <h2>${emoji(e.id)} ${e.nombre}</h2>
+    <h3 style="margin-top:14px;">🎯 ¿Para qué sirve?</h3>
+    <p class="desc">${e.funcion}</p>
+    <h3 style="margin-top:14px;">🫀 ¿Cómo se nota?</h3>
+    <p class="desc">${e.expresion}</p>
+    <h3 style="margin-top:14px;">💬 ¿Qué me puedo decir?</h3>
+    <p style="font-weight:700;font-style:italic;">«${e.reencuadre}»</p>
+    <button class="btn btn-outline" style="margin-top:14px;" onclick="closeModal()">Cerrar</button>
+  `);
+}
+renderWheel();
+
+/* ============ SEPA DIARY ============ */
+let selectedEmociones = [];
+function renderEmocionChips(){
+  const c = document.getElementById('sepaEmocionChips');
+  c.innerHTML = EMOTIONS.map(e=>`<div class="chip" data-id="${e.id}">${emoji(e.id)} ${e.nombre} <span onclick="event.stopPropagation();showEmotion('${e.id}')" title="Ver ficha">ℹ️</span></div>`).join('');
+  c.querySelectorAll('.chip').forEach(ch=>{
+    ch.onclick = ()=>{
+      const id = ch.dataset.id;
+      if(selectedEmociones.includes(id)){
+        selectedEmociones = selectedEmociones.filter(x=>x!==id);
+        ch.classList.remove('selected');
+      } else {
+        selectedEmociones.push(id);
+        ch.classList.add('selected');
+      }
+    };
+  });
+}
+renderEmocionChips();
+
+function sugerirReencuadre(){
+  const txt = selectedEmociones.length ? REENCUADRES[selectedEmociones[0]] : REENCUADRES.generico;
+  document.getElementById('sepaPensConstructivo').value = txt;
+}
+function insertAccion(txt){
+  const el = document.getElementById('sepaAccion');
+  el.value = el.value ? el.value + '. ' + txt : txt;
+}
+
+function guardarSepa(){
+  const situacion = document.getElementById('sepaSituacion').value;
+  const pDLista = document.getElementById('sepaPensDestructivo').value;
+  const pDLibre = document.getElementById('sepaPensDestructivoLibre').value.trim();
+  const pensD = pDLibre || pDLista;
+  const pensC = document.getElementById('sepaPensConstructivo').value.trim();
+  const accion = document.getElementById('sepaAccion').value.trim();
+  if(!selectedEmociones.length){ alert('Selecciona al menos una emoción sentida.'); return; }
+  if(!pensC || !accion){ alert('Completa el pensamiento útil y la acción.'); return; }
+  state.sepaEntries.unshift({
+    id: Date.now(), fecha: new Date().toLocaleString('es-ES'),
+    situacion, emociones: [...selectedEmociones], pensD, pensC, accion
+  });
+  save();
+  selectedEmociones = [];
+  document.querySelectorAll('#sepaEmocionChips .chip').forEach(x=>x.classList.remove('selected'));
+  document.getElementById('sepaPensDestructivoLibre').value='';
+  document.getElementById('sepaPensConstructivo').value='';
+  document.getElementById('sepaAccion').value='';
+  renderSepaHistorial();
+}
+function borrarSepa(id){
+  state.sepaEntries = state.sepaEntries.filter(x=>x.id!==id);
+  save(); renderSepaHistorial();
+}
+function renderSepaHistorial(){
+  const wrap = document.getElementById('sepaHistorial');
+  if(!state.sepaEntries.length){ wrap.innerHTML = '<div class="empty-state">Aún no hay registros. ¡Anota tu primer S‑E‑P‑A!</div>'; return; }
+  wrap.innerHTML = state.sepaEntries.map(e=>{
+    const emos = e.emociones || (e.emocion ? [e.emocion] : []);
+    const emosTxt = emos.map(id=>`${emoji(id)} ${EMOTIONS.find(x=>x.id===id)?.nombre||''}`).join(' · ');
+    return `
+    <div class="history-item">
+      <button class="del" onclick="borrarSepa(${e.id})">Eliminar</button>
+      <div class="meta">${e.fecha} · ${emosTxt}</div>
+      <p><b>S:</b> ${e.situacion}</p>
+      <p><b>P:</b> ${e.pensD||'—'}</p>
+      <p><b>P+:</b> ${e.pensC}</p>
+      <p><b>A:</b> ${e.accion}</p>
+    </div>`;
+  }).join('');
+}
+renderSepaHistorial();
+
+
+/* ============ CHECKPOINT ============ */
+function openCheckpoint(){
+  openTool('Checkpoint Mental', `
+    <div class="card">
+      <label>Nivel de fatiga física/mental (1‑10)</label>
+      <input type="range" id="cpFatiga" min="1" max="10" value="5" oninput="document.getElementById('cpFatigaVal').textContent=this.value">
+      <div class="range-val" id="cpFatigaVal">5</div>
+      <label style="margin-top:14px;">Estado emocional (1‑10)</label>
+      <input type="range" id="cpEmocional" min="1" max="10" value="5" oninput="document.getElementById('cpEmocionalVal').textContent=this.value">
+      <div class="range-val" id="cpEmocionalVal">5</div>
+      <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
+      <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina..."></textarea>
+      <button class="btn btn-green" onclick="guardarCheckpoint()">Guardar checkpoint</button>
+    </div>
+  `);
+}
+function guardarCheckpoint(){
+  const fatiga = document.getElementById('cpFatiga').value;
+  const emocional = document.getElementById('cpEmocional').value;
+  const nota = document.getElementById('cpNota').value.trim();
+  state.checkpoints.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), fatiga, emocional, nota});
+  save(); closeTool(); renderCheckpointHistorial();
+}
+function borrarCheckpoint(id){
+  state.checkpoints = state.checkpoints.filter(x=>x.id!==id);
+  save(); renderCheckpointHistorial();
+}
+function renderCheckpointHistorial(){
+  const wrap = document.getElementById('checkpointHistorial');
+  if(!wrap) return;
+  if(!state.checkpoints.length){ wrap.innerHTML='<div class="empty-state">Sin checkpoints todavía.</div>'; return; }
+  wrap.innerHTML = state.checkpoints.map(c=>`
+    <div class="history-item">
+      <button class="del" onclick="borrarCheckpoint(${c.id})">Eliminar</button>
+      <div class="meta">${c.fecha}</div>
+      <p>Fatiga: <b>${c.fatiga}/10</b> · Emocional: <b>${c.emocional}/10</b></p>
+      ${c.nota?`<p>${c.nota}</p>`:''}
+    </div>`).join('');
+}
+renderCheckpointHistorial();
+
+/* ============ GENERIC TOOL OVERLAY ============ */
+let toolTimers = [];
+function clearToolTimers(){ toolTimers.forEach(t=>clearInterval(t)); toolTimers=[]; }
+function openTool(title, html){
+  document.getElementById('toolTitle').textContent = title;
+  document.getElementById('toolBody').innerHTML = html;
+  document.getElementById('toolOverlay').classList.add('active');
+}
+function closeTool(){
+  clearToolTimers();
+  document.getElementById('toolOverlay').classList.remove('active');
+}
+
+/* ---- Breathing (Suspiro Fisiológico de Huberman) ---- */
+function startBreath(seconds){
+  openTool('Suspiro Fisiológico', `
+    <div class="card" style="text-align:center;">
+      <p class="desc">Inhala profundo por la nariz, una segunda inhalación corta, y exhala lentamente por la boca hasta vaciar los pulmones.</p>
+      <div class="breath-circle" id="breathCircle">Inhala</div>
+      <div class="timer-big" id="breathTimer">${seconds}</div>
+      <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
+    </div>
+  `);
+  let remaining = seconds;
+  const circle = document.getElementById('breathCircle');
+  const timerEl = document.getElementById('breathTimer');
+  let phase = 0;
+  const cyclePhases = ['Inhala x2','Mantén','Exhala largo'];
+  const t1 = setInterval(()=>{
+    phase = (phase+1) % cyclePhases.length;
+    circle.textContent = cyclePhases[phase];
+    circle.classList.toggle('grow', phase!==2);
+  }, 2000);
+  const t2 = setInterval(()=>{
+    remaining--;
+    timerEl.textContent = remaining;
+    if(remaining<=0){ clearToolTimers(); closeTool(); }
+  }, 1000);
+  toolTimers.push(t1, t2);
+}
+
+/* ---- Parar y Decidir (S.T.O.P. + Semáforo + Preguntas de Emergencia, consolidados) ---- */
+const pauseSteps = [
+  {l:'S', title:'Stop', desc:'Detente un momento. Lo que sucede fuera puede esperar 30 segundos.'},
+  {l:'T', title:'Toma aire', desc:'Respira lento y profundo (suspiro fisiológico: 2 inhalaciones nasales, exhalación larga por la boca).'},
+  {l:'O', title:'Observa y nombra', desc:'¿Qué sucede ahora? ¿Qué sientes física y emocionalmente? Nombra el problema en una frase.', input:true, ph:'Escribe lo que notas (opcional)...'},
+  {l:'G', title:'Genera alternativas', desc:'¿Qué quieres realmente? ¿Qué puedes hacer? ¿Funcionará?', input:true, ph:'Escribe 1 o 2 alternativas (opcional)...'},
+  {l:'A', title:'Actúa', desc:'Pon en marcha la alternativa más adaptativa, con intención consciente, no en automático.'}
+];
+let pauseIdx = 0;
+function startPauseDecision(){ pauseIdx=0; renderPauseStep(); }
+function renderPauseStep(){
+  const s = pauseSteps[pauseIdx];
+  openTool('Parar y Decidir', `
+    <div class="card" style="text-align:center;">
+      <div class="step-dots">${pauseSteps.map((_,i)=>`<span class="${i<=pauseIdx?'on':''}"></span>`).join('')}</div>
+      <div class="timer-big" style="font-size:36px;">${s.l}</div>
+      <h3>${s.title}</h3>
+      <p class="desc">${s.desc}</p>
+      ${s.input ? `<textarea id="pauseInput" placeholder="${s.ph}"></textarea>` : ''}
+      <button class="btn btn-navy" onclick="nextPause()">${pauseIdx<pauseSteps.length-1?'Siguiente':'Terminar'}</button>
+    </div>
+  `);
+}
+function nextPause(){
+  pauseIdx++;
+  if(pauseIdx>=pauseSteps.length){ closeTool(); return; }
+  renderPauseStep();
+}
+
+/* ---- Grounding 5-4-3-2-1 ---- */
+const groundingSteps = [
+  {n:5, label:'cosas que puedes VER'},
+  {n:4, label:'sonidos que puedes ESCUCHAR'},
+  {n:3, label:'texturas que puedes TOCAR'},
+  {n:2, label:'olores que puedes PERCIBIR'},
+  {n:1, label:'respiración profunda'}
+];
+let groundingIdx = 0;
+function startGrounding(){
+  groundingIdx = 0;
+  renderGroundingStep();
+}
+function renderGroundingStep(){
+  const s = groundingSteps[groundingIdx];
+  openTool('Grounding 5‑4‑3‑2‑1', `
+    <div class="card" style="text-align:center;">
+      <div class="step-dots">${groundingSteps.map((_,i)=>`<span class="${i<=groundingIdx?'on':''}"></span>`).join('')}</div>
+      <div class="timer-big">${s.n}</div>
+      <p style="font-size:18px;font-weight:700;">${s.label}</p>
+      <button class="btn btn-blue" onclick="nextGrounding()">${groundingIdx<groundingSteps.length-1?'Siguiente':'Terminar'}</button>
+    </div>
+  `);
+}
+function nextGrounding(){
+  groundingIdx++;
+  if(groundingIdx>=groundingSteps.length){ closeTool(); return; }
+  renderGroundingStep();
+}
+
+/* ---- PNL Anchor ---- */
+function openAnchor(){
+  openTool('Anclaje de Éxito (PNL)', `
+    <div class="card">
+      <label>Palabra clave</label>
+      <input type="text" id="anchorWordInput" value="${state.anchorWord||''}" placeholder='Ej: "Confianza", "Fluir", "Energía"'>
+      <label>Recuerdo de un cierre masivo</label>
+      <textarea id="anchorMemoryInput" placeholder="Describe brevemente ese momento de éxito...">${state.anchorMemory||''}</textarea>
+      <button class="btn btn-green" onclick="saveAnchorAndGuide()">Guardar y empezar guiado</button>
+    </div>
+  `);
+}
+function saveAnchorAndGuide(){
+  state.anchorWord = document.getElementById('anchorWordInput').value.trim();
+  state.anchorMemory = document.getElementById('anchorMemoryInput').value.trim();
+  save();
+  if(!state.anchorWord || !state.anchorMemory){ alert('Rellena la palabra clave y el recuerdo.'); return; }
+  runAnchorGuide();
+}
+function runAnchorGuide(){
+  openTool('Anclaje de Éxito (PNL)', `
+    <div class="card" style="text-align:center;">
+      <p class="desc">Presiona con fuerza tu pulgar e índice mientras recuerdas:</p>
+      <p style="font-weight:700;font-size:17px;">"${state.anchorMemory}"</p>
+      <p class="desc" style="margin-top:14px;">Repite tu palabra clave:</p>
+      <p style="font-size:26px;font-weight:800;color:var(--success-green);">${state.anchorWord}</p>
+      <div class="timer-big" id="anchorTimer">30</div>
+      <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
+    </div>
+  `);
+  let remaining = 30;
+  const el = document.getElementById('anchorTimer');
+  const t = setInterval(()=>{
+    remaining--; el.textContent = remaining;
+    if(remaining<=0){ clearToolTimers(); closeTool(); }
+  },1000);
+  toolTimers.push(t);
+}
+
+/* ---- Tense & Release ---- */
+const tenseGroups = [
+  {name:'Puños', emoji:'✊'}, {name:'Hombros', emoji:'🤷'}, {name:'Piernas', emoji:'🦵'}
+];
+let tenseIdx = 0, tensePhase = 'tense';
+function startTense(){ tenseIdx=0; runTensePhase('tense',5); }
+function runTensePhase(phase, secs){
+  tensePhase = phase;
+  const g = tenseGroups[tenseIdx];
+  openTool('Tense & Release', `
+    <div class="card" style="text-align:center;">
+      <div class="step-dots">${tenseGroups.map((_,i)=>`<span class="${i<=tenseIdx?'on':''}"></span>`).join('')}</div>
+      <p style="font-size:40px;">${g.emoji}</p>
+      <h3>${g.name}</h3>
+      <p class="desc">${phase==='tense' ? 'Aprieta con fuerza...' : 'Suelta lentamente y nota la liberación...'}</p>
+      <div class="timer-big" id="tenseTimer">${secs}</div>
+    </div>
+  `);
+  clearToolTimers();
+  let remaining = secs;
+  const el = document.getElementById('tenseTimer');
+  const t = setInterval(()=>{
+    remaining--; el.textContent = remaining;
+    if(remaining<=0){
+      clearInterval(t);
+      if(phase==='tense'){ runTensePhase('release',5); }
+      else{
+        tenseIdx++;
+        if(tenseIdx>=tenseGroups.length){ closeTool(); }
+        else{ runTensePhase('tense',5); }
+      }
+    }
+  },1000);
+  toolTimers.push(t);
+}
+
+/* ---- Lápiz en los dientes ---- */
+function startPencil(){
+  openTool('Lápiz en los Dientes', `
+    <div class="card" style="text-align:center;">
+      <p style="font-size:40px;">✏️😁</p>
+      <p class="desc">Sostén un lápiz (o bolígrafo) horizontal entre los dientes, sin apretar con los labios, activando la musculatura de la sonrisa.</p>
+      <div class="timer-big" id="pencilTimer">60</div>
+      <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
+    </div>
+  `);
+  let remaining=60;
+  const el = document.getElementById('pencilTimer');
+  const t = setInterval(()=>{
+    remaining--; el.textContent = remaining;
+    if(remaining<=0){ clearToolTimers(); closeTool(); }
+  },1000);
+  toolTimers.push(t);
+}
+
+/* ---- Postura de Poder ---- */
+function startPower(){
+  openTool('Postura de Poder', `
+    <div class="card" style="text-align:center;">
+      <p style="font-size:40px;">🧍‍♂️💪</p>
+      <p class="desc">Espalda recta, pecho abierto, manos en la cintura. Ocupa espacio con seguridad.</p>
+      <div class="timer-big" id="powerTimer">90</div>
+      <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
+    </div>
+  `);
+  let remaining=90;
+  const el = document.getElementById('powerTimer');
+  const t = setInterval(()=>{
+    remaining--; el.textContent = remaining;
+    if(remaining<=0){ clearToolTimers(); closeTool(); }
+  },1000);
+  toolTimers.push(t);
+}
+
+/* ---- Visual Anchor ---- */
+function openVisualAnchor(){
+  renderVisualAnchorModal();
+}
+function renderVisualAnchorModal(){
+  openModal(`
+    <h2>Anclaje Visual</h2>
+    <label>Nueva frase inspiradora</label>
+    <input type="text" id="newVisualPhrase" placeholder="Ej: Cada intento me acerca más al SÍ">
+    <button class="btn btn-navy" onclick="addVisualAnchor()">Guardar frase</button>
+    <div style="margin-top:16px;">
+      ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
+        <div class="history-item">
+          <button class="del" onclick="delVisualAnchor(${i})">Eliminar</button>
+          <p style="font-weight:700;">"${p}"</p>
+        </div>`).join('') : '<div class="empty-state">Aún no has guardado frases.</div>'}
+    </div>
+  `);
+}
+function addVisualAnchor(){
+  const v = document.getElementById('newVisualPhrase').value.trim();
+  if(!v) return;
+  state.visualAnchors.unshift(v); save();
+  renderVisualAnchorModal();
+}
+function delVisualAnchor(i){
+  state.visualAnchors.splice(i,1); save();
+  renderVisualAnchorModal();
+}
+
+/* ============ KIT DE EMERGENCIA DEL CAPTADOR ============ */
+const KIT_SENALES_EJEMPLO = ['Anticipo el "no"','Me acelero','Abordo menos','Trabajo en automático','Me cuesta escuchar'];
+
+function openKit(){ resetStep = 'kit'; renderResetStep(); }
+function toggleKitSenal(s){
+  if(state.kitSenales.includes(s)) state.kitSenales = state.kitSenales.filter(x=>x!==s);
+  else state.kitSenales.push(s);
+  save();
+  renderResetStep();
+}
+function saveKitPlan(){
+  state.kitHerramienta = document.getElementById('kitHerramientaInput').value.trim();
+  state.kitAjuste = document.getElementById('kitAjusteInput').value.trim();
+  state.kitPersona = document.getElementById('kitPersonaInput').value.trim();
+  state.kitPedira = document.getElementById('kitPediraInput').value.trim();
+  save();
+  resetGoto(0);
+}
+
+function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
+
+/* ============ MODO RESET FLOW (Protocolo R.E.S.E.T.) ============ */
+const MICROAUDITORIA = {
+  '🗣️ Ritmo y voz': ['Ralentizar el saludo','Hacer una pausa antes de continuar','Mantener un ritmo más calmado al hablar'],
+  '👂 Escucha': ['Escuchar hasta el final antes de responder','Reconocer lo que dice la persona antes de responder','Dejar un silencio sin intentar llenarlo'],
+  '👀 Presencia y abordaje': ['Buscar contacto visual antes de hablar','Sonreír al iniciar el abordaje','Revisar mi posición o ángulo de abordaje'],
+  '🎯 Apertura y adaptación': ['Simplificar la apertura','Adaptar mi respuesta a lo que la persona acaba de decir','No anticipar la objeción antes de que aparezca'],
+  '⚠️ Un hábito que quiero corregir (elige solo uno)': ['Reducir las muletillas','Evitar explicar de más','No apresurar el cierre','No responder automáticamente','No repetir la misma respuesta']
+};
+
+const CHECKIN_SECTIONS = [
+  {title:'1️⃣ 🔄 La espiral de la mala racha', items:[
+    '<b>Anticipo el rechazo</b><br>Doy por hecho que la persona dirá que "no" antes de terminar siquiera el saludo.',
+    '<b>El "no" me afecta más de lo habitual</b><br>Cada rechazo me pesa, me irrita o me desanima más de lo normal.',
+    '<b>Empiezo ya cansado</b><br>Llego a trabajar con pesadez física o mental, incluso antes de empezar.',
+    '<b>Sigo dándole vueltas al turno</b><br>Después de terminar, sigo pensando mucho en los rechazos, los resultados o lo ocurrido en calle.',
+    '<b>Me engancho a la queja</b><br>Paso demasiado tiempo hablando de lo mal que está la situación o me alejo del equipo.'
+  ]},
+  {title:'2️⃣ 🎯 Mi valor frente al resultado', items:[
+    '<b>Mi valor depende del número</b><br>Empiezo a medir cómo de buen captador soy según los socios que consigo.',
+    '<b>Un turno a cero me arrastra</b><br>Un mal turno condiciona cómo veo el resto de la semana o del mes.',
+    '<b>Me comparo demasiado con los demás</b><br>El resultado de otros captadores afecta demasiado a cómo valoro mi propio rendimiento.',
+    '<b>Pienso que "ya debería saber hacerlo"</b><br>Me cuesta aceptar una mala racha porque siento que por mi experiencia no debería estar ocurriendo.',
+    '<b>Me desgasto con lo que no controlo</b><br>Gasto mucha energía preocupándome por el tráfico, el clima, los permisos u otros factores externos.'
+  ]},
+  {title:'3️⃣ 🎙️ Cambios en mi forma de captar', items:[
+    '<b>Funciono en piloto automático</b><br>Hago el speech de forma mecánica y con poca presencia.',
+    '<b>Me acelero y sobreexplico</b><br>Hablo más rápido, explico demasiado o me cuesta tolerar los silencios.',
+    '<b>Dejo de escuchar</b><br>Mientras la otra persona habla, estoy pensando en qué responder en lugar de escuchar de verdad.',
+    '<b>Abordo menos</b><br>Después de varios rechazos, reduzco el número de personas a las que intento parar.',
+    '<b>Cambio de método constantemente</b><br>Después de unos pocos rechazos, cambio mi forma de abordar buscando una solución inmediata.'
+  ]},
+  {title:'4️⃣ ⏱️ Fugas de energía y evitación', items:[
+    '<b>Alargo los descansos</b><br>Empiezo a utilizar el café, el móvil u otras pausas para retrasar el siguiente abordaje.',
+    '<b>Evito pedir ayuda</b><br>No pido un feedback rápido o apoyo aunque sé que podría ayudarme.'
+  ]}
+];
+
+let resetStep = 0;
+let resetMicro = null;
+let resetStops = 0;
+let resetSenal = '';
+let resetExamResultado = '', resetExamRendimiento = '';
+let resetAspecto1 = '', resetAspecto2 = '';
+let checkinState = [];
+let resetCheckinItems = [];
+
+function openReset(){
+  resetStep = 0; resetMicro=null; resetStops=0;
+  resetSenal=''; resetExamResultado=''; resetExamRendimiento=''; resetAspecto1=''; resetAspecto2='';
+  resetCheckinItems = [];
+  document.getElementById('resetOverlay').classList.add('active');
+  renderResetStep();
+}
+function closeReset(){
+  clearToolTimers();
+  document.getElementById('resetOverlay').classList.remove('active');
+}
+function resetDots(){
+  return `<div class="step-dots">${[1,2,3,4,5,6].map(i=>`<span class="${i<=resetStep?'on':''}"></span>`).join('')}</div>`;
+}
+
+function startCheckin(){
+  checkinState = CHECKIN_SECTIONS.map(s=>s.items.map(()=>false));
+  resetStep = 'checkin';
+  renderResetStep();
+}
+function toggleCheckinItem(si,ii){ checkinState[si][ii] = !checkinState[si][ii]; renderResetStep(); }
+function saveCheckin(){
+  const checkedLabels = [];
+  CHECKIN_SECTIONS.forEach((s,si)=>s.items.forEach((label,ii)=>{ if(checkinState[si][ii]) checkedLabels.push(label); }));
+  state.checkins.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), total:checkedLabels.length, items:checkedLabels});
+  save();
+  resetCheckinItems = checkedLabels;
+  resetGoto(1);
+}
+
+function renderResetStep(){
+  const body = document.getElementById('resetBody');
+  clearToolTimers();
+
+  if(resetStep==='kit'){
+    body.innerHTML = `
+      <div class="card">
+        <span class="badge amber">Kit de Emergencia</span>
+        <h3>🎒 Prepara tu plan antes de necesitarlo</h3>
+        <p class="desc">Cuando aparezcan tus primeras señales de mala racha, <b>no improvises</b>. Decide de antemano qué harás, qué ajustarás y a quién pedirás ayuda.</p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Primera señal → activo mi plan. No espero a estar al límite.</b></p>
+
+        <p><b>🚨 Mis señales de alerta</b></p>
+        <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una mala dinámica.</p>
+        <div class="chip-group" id="kitSenalChips">${KIT_SENALES_EJEMPLO.map(s=>`<div class="chip ${state.kitSenales.includes(s)?'selected':''}" onclick="toggleKitSenal('${s.replace(/'/g,"\\'")}')">${s}</div>`).join('')}</div>
+
+        <p><b>1️⃣ 🌬️ Me regulo</b></p>
+        <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
+        <label>Mi herramienta</label>
+        <input type="text" id="kitHerramientaInput" value="${state.kitHerramienta||''}" placeholder="Ej: Suspiro fisiológico, Parar y decidir, Grounding 5-4-3-2-1…">
+
+        <p><b>2️⃣ 🎙️ Ajusto una cosa</b></p>
+        <p class="desc">Elige <b>un solo ajuste técnico</b>.</p>
+        <label>Mi ajuste</label>
+        <input type="text" id="kitAjusteInput" value="${state.kitAjuste||''}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…">
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una sola variable. Una cosa cada vez.</b></p>
+
+        <p><b>3️⃣ 🤝 Pido apoyo si lo necesito</b></p>
+        <p class="desc">Elige de antemano <b>a quién acudir</b> y qué pedir.</p>
+        <label>Mi persona de apoyo</label>
+        <input type="text" id="kitPersonaInput" value="${state.kitPersona||''}">
+        <label>¿Qué pediré?</label>
+        <input type="text" id="kitPediraInput" value="${state.kitPedira||''}" placeholder="Ej: feedback rápido, observar un abordaje, acompañamiento…">
+
+        <p><b>🚨 ¿Cuándo pediré ayuda?</b></p>
+        <p class="desc"><b>Si después de regularme y aplicar mi ajuste sigo bloqueado, evitando abordajes o trabajando en automático.</b></p>
+
+        <p><b>🔑 Mi regla de emergencia</b></p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Si detecto mis señales → me regulo → aplico un ajuste → y pido apoyo si sigo atascado.</b></p>
+      </div>
+      <button class="btn btn-amber" onclick="saveKitPlan()">Guardar mi plan</button>
+      <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
+    `;
+  }
+  else if(resetStep==='historial'){
+    body.innerHTML = `
+      <div class="card">
+        <span class="badge amber">Historial</span>
+        <h3>📚 Historial de Check-ins</h3>
+      </div>
+      ${state.checkins.length ? state.checkins.map(c=>`
+        <div class="card history-item">
+          <div class="meta">${c.fecha} · ${c.total} señales marcadas</div>
+          ${c.items.length? `<ul>${c.items.map(i=>`<li>${i}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
+        </div>`).join('') : '<div class="card empty-state">Aún no has hecho ningún check-in.</div>'}
+      <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
+    `;
+  }
+  else if(resetStep==='checkin'){
+    body.innerHTML = `
+      <div class="card">
+        <span class="badge amber">Check-in de señales</span>
+        <h3>¿Qué señales estás notando?</h3>
+        <p class="desc">Marca todo aquello con lo que <b>te estés identificando ahora o hayas notado durante tus últimas rachas difíciles</b>.</p>
+        <p class="desc">No es un diagnóstico. Es una herramienta personal para <b>detectar cambios, entender qué te está pasando y decidir si necesitas hacer algún ajuste</b>.</p>
+      </div>
+      ${CHECKIN_SECTIONS.map((s,si)=>`
+        <div class="card">
+          <h3>${s.title}</h3>
+          ${s.items.map((label,ii)=>`
+            <div class="check-item ${checkinState[si][ii]?'checked':''}" onclick="toggleCheckinItem(${si},${ii})">
+              <input type="checkbox" ${checkinState[si][ii]?'checked':''} onclick="event.stopPropagation()" onchange="toggleCheckinItem(${si},${ii})">
+              <span>${label}</span>
+            </div>`).join('')}
+        </div>
+      `).join('')}
+      <div class="card">
+        <h3>🎯 ¿Qué busca este check-in?</h3>
+        <p class="desc">No se trata de contar "cuántas señales tienes".</p>
+        <p class="desc">Se trata de detectar <b>qué está empezando a cambiar en ti</b> para poder actuar antes de que la mala racha termine afectando a tu rendimiento, tu bienestar o tu vida fuera del trabajo.</p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🔑 <b>Detectarlo pronto te da más margen para corregirlo.</b></p>
+      </div>
+      <button class="btn btn-amber" onclick="saveCheckin()">Guardar check-in y continuar</button>
+      <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
+    `;
+  }
+  else if(resetStep===0){
+    body.innerHTML = `
+      <div class="card">
+        <span class="badge amber">Modo Reset</span>
+        <h3>¿Llevas varios días sin encontrar tu ritmo?</h3>
+        <p class="desc">Es normal que un captador pueda pasar por <b>rachas de estancamiento o varios días malos</b>. Una mala racha no significa que hayas dejado de saber captar.</p>
+        <p class="desc">Lo importante es detectar si empieza a cambiar <b>cómo abordas, cómo piensas o cómo trabajas</b>: abordas menos, anticipas el rechazo, pierdes energía o empiezas a trabajar en automático.</p>
+      </div>
+      <div class="card">
+        <details class="help-item">
+          <summary>🔄 ¿Qué hago cuando estoy en mala racha?</summary>
+          <div class="help-body">
+            <div class="mini-card"><b>1️⃣ Normalizar</b><p>Reconoce lo que está pasando <b>sin convertir una mala racha en un juicio sobre tu capacidad</b>.</p><p style="font-style:italic;">💬 «Estoy pasando por una mala racha. Esto no define cómo capto.»</p></div>
+            <div class="mini-card"><b>2️⃣ Rescatar</b><p>Recupera lo que <b>ya te ha funcionado</b>: vuelve a lo básico del speech, pide feedback, observa a alguien que esté fluyendo o haz una pausa real.</p><p>Durante unos días, <b>reduce el foco en el resultado y vuelve a centrarte en el proceso</b>.</p></div>
+            <div class="mini-card"><b>3️⃣ Regular</b><p>Utiliza las herramientas de la app para <b>bajar tensión, recuperar concentración y afrontar mejor el siguiente abordaje</b>.</p><p>Fuera del turno, favorece la <b>desconexión y la recuperación</b>.</p></div>
+            <div class="mini-card"><b>4️⃣ Pedir ayuda 🤝</b><p>Habla con tu responsable o con un compañero. <b>Una mirada externa puede ayudarte a detectar qué está cambiando y qué puedes ajustar.</b></p></div>
+          </div>
+        </details>
+      </div>
+      <div class="card">
+        <details class="help-item">
+          <summary>🎯 ¿Qué está en mis manos?</summary>
+          <div class="help-body">
+            <div class="circle-control">
+              <div class="cc-col"><b>❌ No controlo</b><ul><li>El flujo de gente</li><li>Que alguien tenga prisa</li><li>Que ya colabore con otra ONG</li><li>Que una persona rechace</li></ul></div>
+              <div class="cc-col"><b>🟡 Puedo influir</b><ul><li>Cómo hago el abordaje</li><li>Mi energía y mi escucha</li><li>La adaptación del speech</li><li>Cómo gestiono las objeciones</li><li>Dónde y cuándo abordo, cuando tengo margen para ello</li></ul></div>
+              <div class="cc-col"><b>🔍 Puedo revisar</b><ul><li>Si estoy abordando menos</li><li>Si anticipo el "no"</li><li>Si estoy funcionando en automático</li><li>Si he cambiado demasiado mi forma de trabajar</li><li>Si necesito feedback</li></ul></div>
+            </div>
+            <p class="desc"><b>🔑 La clave.</b> Cuando llevamos varios días malos, es fácil gastar energía intentando controlar <b>lo que no depende de nosotros</b>.</p>
+            <p class="desc"><b>El Reset consiste en volver al proceso: observar, ajustar, pedir ayuda y seguir.</b></p>
+          </div>
+        </details>
+      </div>
+    `;
+  }
+  else if(resetStep===1){
+    const chips = resetCheckinItems.length ? `
+      <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>De lo marcado en tu check-in, elige la principal.</p>
+      <div class="chip-group">${resetCheckinItems.map(s=>`<div class="chip ${resetSenal===s?'selected':''}" onclick="selectSenal(this)">${s}</div>`).join('')}</div>
+    ` : `
+      <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el "no", cansancio previo, abordar menos, trabajar en automático…</p>
+      <textarea id="resetSenalInput" placeholder="Escribe tu señal principal (opcional)...">${resetSenal}</textarea>
+    `;
+    body.innerHTML = `
+      ${resetDots()}
+      <div class="card" style="text-align:center;">
+        <span class="badge amber">R · Reconoce</span>
+        <h3>Reconoce lo que está pasando</h3>
+        <p class="desc"><b>Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.</b></p>
+        <p class="desc">Reconocer lo que está ocurriendo <b>sin juzgarte por ello</b> es el primer paso para poder cambiarlo.</p>
+        <div class="breath-circle" id="resetBreathCircle">Inhala</div>
+        <div class="timer-big" id="resetBreathTimer">30</div>
+      </div>
+      <div class="card" style="text-align:left;">${chips}</div>
+      <button class="btn btn-amber" onclick="if(document.getElementById('resetSenalInput')) resetSenal=document.getElementById('resetSenalInput').value; resetGoto(2);">Continuar</button>`;
+    let remaining=30, phase=0;
+    const cyclePhases = ['Inhala x2','Mantén','Exhala largo'];
+    const circle = document.getElementById('resetBreathCircle');
+    const timerEl = document.getElementById('resetBreathTimer');
+    const t1 = setInterval(()=>{
+      phase=(phase+1)%cyclePhases.length;
+      circle.textContent = cyclePhases[phase];
+      circle.classList.toggle('grow', phase!==2);
+    },2000);
+    const t2 = setInterval(()=>{
+      remaining--; timerEl.textContent = Math.max(remaining,0);
+      if(remaining<=0){ clearToolTimers(); }
+    },1000);
+    toolTimers.push(t1,t2);
+  }
+  else if(resetStep===2){
+    body.innerHTML = `
+      ${resetDots()}
+      <div class="card">
+        <span class="badge amber">E · Examina</span>
+        <h3>Separa el contexto de tu actuación</h3>
+        <p class="desc">Cuando llevas varios días malos, distingue entre <b>lo que está ocurriendo a tu alrededor</b> y <b>lo que puedes revisar y ajustar en tu forma de trabajar</b>.</p>
+        <p><b>🌍 El contexto</b></p>
+        <p class="desc">Factores que <b>no dependen directamente de ti</b>:</p>
+        <ul>
+          <li>Flujo de gente</li>
+          <li>Clima</li>
+          <li>Permisos</li>
+          <li>Prisa o situación de la persona</li>
+          <li>Que alguien rechace</li>
+        </ul>
+        <p><b>🎯 Mi actuación</b></p>
+        <p class="desc">Aspectos que <b>sí puedo revisar y ajustar</b>:</p>
+        <ul>
+          <li>Escucha</li>
+          <li>Ritmo de abordaje</li>
+          <li>Adaptación del speech</li>
+          <li>Gestión de objeciones</li>
+          <li>Actitud y energía</li>
+          <li>Forma de abordar</li>
+        </ul>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando pertenece al contexto y qué parte puedo ajustar yo?</b></p>
+        <label>El contexto (no depende de mí)</label>
+        <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas...">${resetExamResultado}</textarea>
+        <label>Mi actuación (puedo ajustar)</label>
+        <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos...">${resetExamRendimiento}</textarea>
+      </div>
+      <button class="btn btn-amber" onclick="resetExamResultado=document.getElementById('resetExamResultadoInput').value; resetExamRendimiento=document.getElementById('resetExamRendimientoInput').value; resetGoto(3);">Continuar</button>
+    `;
+  }
+  else if(resetStep===3){
+    body.innerHTML = `
+      ${resetDots()}
+      <div class="card">
+        <span class="badge amber">S · Separa</span>
+        <h3>Lo que sigue funcionando</h3>
+        <p class="desc">Escribe <b>2 cosas concretas que estás haciendo bien y quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
+        <label>Aspecto 1</label>
+        <input type="text" id="resetAspecto1Input" value="${resetAspecto1}" placeholder="Ej: mantengo la sonrisa en el saludo">
+        <label>Aspecto 2</label>
+        <input type="text" id="resetAspecto2Input" value="${resetAspecto2}" placeholder="Ej: sigo escuchando antes de responder">
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 Piensa en conductas concretas: cómo abordas, cómo escuchas, cómo explicas, cómo gestionas una objeción, tu actitud…</p>
+      </div>
+      <button class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Continuar</button>
+    `;
+  }
+  else if(resetStep===4){
+    body.innerHTML = `
+      ${resetDots()}
+      <div class="card">
+        <span class="badge amber">E · Elige</span>
+        <h3>Un solo ajuste</h3>
+        <p class="desc">Cuando llevamos varios días malos, es fácil caer en esta trampa:</p>
+        <div class="flow-diagram">
+          <span class="fbox">No sale</span><span class="arrow">→</span><span class="fbox">Cambio más cosas</span><span class="arrow">→</span><span class="fbox">Gasto más energía</span><span class="arrow">→</span><span class="fbox">Capto con más tensión</span>
+        </div>
+        <p class="desc"><b>No necesitas cambiarlo todo. Elige una sola conducta, pruébala y observa qué ocurre.</b></p>
+      </div>
+      <div class="card">
+        <h3>🎯 Elige 1 ajuste</h3>
+        <p class="desc">Selecciona <b>una conducta concreta que puedas aplicar durante los próximos 10 abordajes</b>.</p>
+        ${Object.entries(MICROAUDITORIA).map(([cat,items])=>`
+          <div class="chip-cat">${cat}</div>
+          <div class="chip-group">
+            ${items.map(m=>`<div class="chip ${resetMicro===m?'selected':''}" onclick="selectMicro('${m.replace(/'/g,"\\'")}')">${m}</div>`).join('')}
+          </div>
+        `).join('')}
+      </div>
+      <div class="card">
+        <h3>🔬 Después, a prueba</h3>
+        <p class="desc">El ajuste que elijas pasará directamente a <b>T · Testea</b>.</p>
+        <p class="desc"><b>Mantén este único ajuste durante los próximos 10 abordajes</b> y observa cómo lo ejecutas, cómo te sientes y cómo se desarrolla la conversación.</p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>No busques arreglarlo todo. Elige una cosa, pruébala y aprende de lo que ocurra.</b></p>
+      </div>
+      <button class="btn btn-amber" ${resetMicro?'':'disabled'} onclick="resetGoto(5)">Continuar</button>
+    `;
+  }
+  else if(resetStep===5){
+    body.innerHTML = `
+      ${resetDots()}
+      <span class="badge amber">T · Testea</span>
+      <h3>Prueba el ajuste</h3>
+      <p class="desc"><b>Microcambio elegido:</b><br><b>${resetMicro}</b></p>
+      <div class="timer-big">${resetStops} / 10</div>
+      <div class="btn-row">
+        <button class="btn btn-green" onclick="incrementStop()">+1 abordaje probado</button>
+      </div>
+      <p class="desc" style="margin-top:10px;">Pruébalo durante <b>las próximas 10 oportunidades de abordaje</b>. Mantén el mismo ajuste y evita cambiar otras cosas al mismo tiempo.</p>
+      <p class="desc">No necesitas que todas las conversaciones salgan bien. <b>Observa cómo ejecutas el ajuste, cómo te sientes y cómo se desarrolla la conversación.</b></p>
+      <p><b>🔎 Al terminar</b></p>
+      <p class="desc">Pregúntate:</p>
+      <p class="desc"><b>¿He ejecutado mejor este ajuste?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Una mala conversación no invalida el ajuste. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
+      <button class="btn btn-primary" style="margin-top:8px;" onclick="resetGoto(6)">Continuar</button>
+      <button class="btn btn-outline" style="margin-top:10px;" onclick="closeReset()">Cerrar y seguir luego</button>
+    `;
+  }
+  else if(resetStep===6){
+    body.innerHTML = `
+      ${resetDots()}
+      <div class="card">
+        <span class="badge amber">Cierre</span>
+        <h3>Tres ideas importantes</h3>
+        <ul>
+          <li>Resultado puntual y rendimiento no son lo mismo.</li>
+          <li>La experiencia da recursos, y también automatismos que conviene vigilar.</li>
+          <li>Tener experiencia no significa tener que poder siempre solo.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Guía rápida de emergencia</h3>
+        <div class="mini-card"><b>PARA</b><p>No es abandonar la jornada. Es cortar el automático: 2 minutos, respirar, pedir un relevo de aire. ¿Necesito seguir empujando o necesito 2 minutos para volver mejor?</p></div>
+        <div class="mini-card"><b>REVISA</b><p>Antes de cambiar: separa resultado de rendimiento y haz la microauditoría. ¿Qué está cambiando realmente en mi forma de captar?</p></div>
+        <div class="mini-card"><b>PIDE</b><p>No hace falta llegar a "no puedo más". ¿Hay algo que ahora mismo otra persona puede ayudarme a ver?</p></div>
+      </div>
+      <div class="card">
+        <h3>Pacto de permanencia</h3>
+        <p class="desc">"Cuando El Número no acompañe, yo me comprometo a..."</p>
+        <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..."></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="closeReset()">Finalizar</button>
+    `;
+  }
+}
+function guardarSepara(){
+  resetAspecto1 = document.getElementById('resetAspecto1Input').value.trim();
+  resetAspecto2 = document.getElementById('resetAspecto2Input').value.trim();
+  if(!resetAspecto1 || !resetAspecto2){ alert('Escribe los 2 aspectos que sigues haciendo bien.'); return; }
+  resetGoto(4);
+}
+function selectSenal(el){ resetSenal = el.textContent; renderResetStep(); }
+function selectMicro(m){ resetMicro = m; renderResetStep(); }
+function resetGoto(step){ resetStep = step; renderResetStep(); }
+function incrementStop(){ if(resetStops<10) resetStops++; renderResetStep(); }
+
+/* ============ INIT ============ */
+goto('aprender');
+</script>
+</body>
+</html>
