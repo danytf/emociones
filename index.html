@@ -422,6 +422,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <div class="ql-wrap">
       <div class="ql-row" id="qlRow">
         <span id="qlKitSlot"></span>
+        <button class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
         <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
         <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
         <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
@@ -1625,6 +1626,26 @@ function showToolDone(title, repeatOnclick){
       </div>
     </div>
   `);
+}
+
+/* ---- Antes de salir (pre-turno) ---- */
+function startPreTurno(){
+  openTool('🚀 Antes de salir', `
+    <div class="card" style="text-align:left;">
+      <p class="tool-meta">⏱️ 30–45 segundos</p>
+      <p class="desc">Tres preguntas rápidas antes de empezar el turno.</p>
+      <label>¿Cómo llego hoy?</label>
+      <textarea id="preTurno1" placeholder="Una palabra o frase corta..."></textarea>
+      <label>¿Qué quiero cuidar en mi forma de captar?</label>
+      <textarea id="preTurno2" placeholder="Ej: escuchar hasta el final, sonreír más..."></textarea>
+      <label>Si aparece mi primera señal, ¿qué haré?</label>
+      <textarea id="preTurno3" placeholder="Tu respuesta de emergencia..."></textarea>
+      <button class="btn btn-amber" style="margin-top:6px;" onclick="finalizarPreTurno()">✅ Estoy preparado</button>
+    </div>
+  `);
+}
+function finalizarPreTurno(){
+  showToolDone('🚀 Antes de salir', 'startPreTurno()');
 }
 
 /* ---- Breathing (Suspiro Fisiológico de Huberman) ---- */
