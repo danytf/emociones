@@ -134,6 +134,9 @@ main{
 }
 .ql-btn .ql-em{font-size:16px;}
 .ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
+.ql-wrap{position:relative;}
+.ql-fade{position:absolute;top:0;right:0;bottom:2px;width:22px;background:linear-gradient(to right,rgba(0,0,0,0),var(--bg-main));pointer-events:none;}
+.ql-wrap.at-end .ql-fade{display:none;}
 .view.active{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));
@@ -397,12 +400,15 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <!-- QUICK LAUNCHER: ¿Qué necesitas ahora? -->
   <div class="quick-launcher">
     <div class="ql-title">¿Qué necesitas ahora?</div>
-    <div class="ql-row">
-      <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
-      <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
-      <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
-      <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
-      <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
+    <div class="ql-wrap">
+      <div class="ql-row" id="qlRow">
+        <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
+        <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
+        <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
+        <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
+        <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
+      </div>
+      <div class="ql-fade" aria-hidden="true"></div>
     </div>
   </div>
 
@@ -890,12 +896,12 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 </main>
 
 <!-- MODAL SHEET (generic, used by emotion wheel, anchor, visual anchor, kit) -->
-<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()">
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()" role="dialog" aria-modal="true">
   <div class="modal-sheet" id="modalSheet"></div>
 </div>
 
 <!-- RESET FLOW OVERLAY -->
-<div class="overlay" id="resetOverlay">
+<div class="overlay" id="resetOverlay" role="dialog" aria-modal="true" aria-label="Modo Reset">
   <div class="overlay-header">
     <b>🆘 MODO RESET</b>
     <div class="oh-actions">
@@ -910,7 +916,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 </div>
 
 <!-- GENERIC TOOL OVERLAY -->
-<div class="overlay" id="toolOverlay">
+<div class="overlay" id="toolOverlay" role="dialog" aria-modal="true" aria-labelledby="toolTitle">
   <div class="overlay-header" style="background:linear-gradient(135deg,var(--calm-blue),var(--wesser-navy));">
     <b id="toolTitle">Herramienta</b>
     <button class="close-x" onclick="closeTool()" aria-label="Cerrar herramienta">✕</button>
@@ -919,7 +925,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 </div>
 
 <!-- HELP OVERLAY -->
-<div class="overlay" id="helpOverlay">
+<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-label="Ayuda">
   <div class="overlay-header" style="background:linear-gradient(135deg,var(--wesser-navy),#0b1120);">
     <b>❓ Ayuda</b>
     <button class="close-x" onclick="closeHelp()" aria-label="Cerrar ayuda">✕</button>
@@ -1033,7 +1039,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <details class="help-item">
       <summary>💾 Mis datos</summary>
       <div class="help-body">
-        <p class="desc">La app funciona sin conexión y guarda todo <b>solo en este dispositivo</b>. Eso significa que <b>no hay copia de seguridad automática</b>: si borras los datos del navegador o cambias de móvil/tablet, se pierden.</p>
+        <p class="desc">Tus datos se guardan solo en este dispositivo y no se envían a ningún sitio. Eso significa que <b>no hay copia de seguridad automática</b>: si borras los datos del navegador o cambias de móvil/tablet, se pierden.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button class="btn btn-navy" onclick="exportarDatos()">⬇️ Exportar datos</button>
           <button class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
@@ -1181,6 +1187,17 @@ function updateTabsFade(){
 document.getElementById('headerTabs').addEventListener('scroll', updateTabsFade);
 window.addEventListener('resize', updateTabsFade);
 updateTabsFade();
+
+function updateQlFade(){
+  const el = document.getElementById('qlRow');
+  if(!el) return;
+  const wrap = el.closest('.ql-wrap');
+  const atEnd = el.scrollWidth - el.scrollLeft - el.clientWidth < 4;
+  wrap.classList.toggle('at-end', atEnd);
+}
+document.getElementById('qlRow').addEventListener('scroll', updateQlFade);
+window.addEventListener('resize', updateQlFade);
+updateQlFade();
 
 /* ============ HELP OVERLAY ============ */
 function openHelp(){ document.getElementById('helpOverlay').classList.add('active'); }
@@ -2392,6 +2409,20 @@ const chipObserver = new MutationObserver((mutations)=>{
 chipObserver.observe(document.body, {childList:true, subtree:true, attributes:true, attributeFilter:['class']});
 enhanceAllChips();
 
+function getActiveOverlayEl(){
+  const ids = ['modalBack','toolOverlay','resetOverlay','helpOverlay'];
+  for(const id of ids){
+    const el = document.getElementById(id);
+    if(el && el.classList.contains('active')) return el;
+  }
+  return null;
+}
+/* Focus trap sencillo: si el foco se escapa del overlay activo por cualquier vía, lo devolvemos dentro */
+document.addEventListener('focusin', (e)=>{
+  const overlay = getActiveOverlayEl();
+  if(!overlay) return;
+  if(!overlay.contains(e.target)) focusOverlay(overlay);
+});
 document.addEventListener('keydown', (e)=>{
   if(e.key==='Escape'){ closeTopOverlay(); return; }
   if((e.key==='Enter' || e.key===' ') && e.target.classList && e.target.classList.contains('chip')){
