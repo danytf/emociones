@@ -1001,7 +1001,7 @@ function loadState(){
     checkpoints:[],
     visualAnchors:[],
     checkins:[],
-    anchorWord:'', anchorMemory:'',
+    confidenceAnchors:[],
     kitSenales:[], kitHerramienta:'', kitAjuste:'', kitPersona:'', kitPedira:''
   };
 }
@@ -1012,6 +1012,9 @@ if(state.kitHerramienta===undefined) state.kitHerramienta = '';
 if(state.kitAjuste===undefined) state.kitAjuste = '';
 if(state.kitPersona===undefined) state.kitPersona = '';
 if(state.kitPedira===undefined) state.kitPedira = '';
+if(!state.confidenceAnchors){
+  state.confidenceAnchors = (state.anchorWord && state.anchorMemory) ? [{word:state.anchorWord, memory:state.anchorMemory}] : [];
+}
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
 
 /* ============ THEME ============ */
@@ -1342,32 +1345,50 @@ function nextGrounding(){
   renderGroundingStep();
 }
 
-/* ---- PNL Anchor ---- */
+/* ---- Anclaje de confianza ---- */
 function openAnchor(){
-  openTool('Anclaje de Éxito (PNL)', `
+  renderAnchorTool();
+}
+function renderAnchorTool(){
+  openTool('Anclaje de confianza', `
     <div class="card">
       <label>Palabra clave</label>
-      <input type="text" id="anchorWordInput" value="${state.anchorWord||''}" placeholder='Ej: "Confianza", "Fluir", "Energía"'>
-      <label>Recuerdo de un cierre masivo</label>
-      <textarea id="anchorMemoryInput" placeholder="Describe brevemente ese momento de éxito...">${state.anchorMemory||''}</textarea>
-      <button class="btn btn-green" onclick="saveAnchorAndGuide()">Guardar y empezar guiado</button>
+      <input type="text" id="anchorWordInput" placeholder='Ej: "Confianza", "Calma", "Seguridad"'>
+      <label>Recuerdo de seguridad o confianza</label>
+      <textarea id="anchorMemoryInput" placeholder="Describe brevemente ese momento..."></textarea>
+      <button class="btn btn-green" onclick="addConfidenceAnchor()">Guardar anclaje</button>
+    </div>
+    <div style="margin-top:16px;">
+      ${state.confidenceAnchors.length ? state.confidenceAnchors.map((a,i)=>`
+        <div class="history-item">
+          <button class="del" onclick="delConfidenceAnchor(${i})">Eliminar</button>
+          <p style="font-weight:700;">${a.word}</p>
+          <p class="desc">${a.memory}</p>
+          <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="runAnchorGuide(${i})">Usar ahora</button>
+        </div>`).join('') : '<div class="empty-state">Aún no has guardado ningún anclaje.</div>'}
     </div>
   `);
 }
-function saveAnchorAndGuide(){
-  state.anchorWord = document.getElementById('anchorWordInput').value.trim();
-  state.anchorMemory = document.getElementById('anchorMemoryInput').value.trim();
+function addConfidenceAnchor(){
+  const word = document.getElementById('anchorWordInput').value.trim();
+  const memory = document.getElementById('anchorMemoryInput').value.trim();
+  if(!word || !memory){ alert('Rellena la palabra clave y el recuerdo.'); return; }
+  state.confidenceAnchors.unshift({word, memory});
   save();
-  if(!state.anchorWord || !state.anchorMemory){ alert('Rellena la palabra clave y el recuerdo.'); return; }
-  runAnchorGuide();
+  renderAnchorTool();
 }
-function runAnchorGuide(){
-  openTool('Anclaje de Éxito (PNL)', `
+function delConfidenceAnchor(i){
+  state.confidenceAnchors.splice(i,1); save();
+  renderAnchorTool();
+}
+function runAnchorGuide(i){
+  const a = state.confidenceAnchors[i];
+  openTool('Anclaje de confianza', `
     <div class="card" style="text-align:center;">
-      <p class="desc">Presiona con fuerza tu pulgar e índice mientras recuerdas:</p>
-      <p style="font-weight:700;font-size:17px;">"${state.anchorMemory}"</p>
+      <p class="desc">Repite tu gesto mientras recuerdas:</p>
+      <p style="font-weight:700;font-size:17px;">«${a.memory}»</p>
       <p class="desc" style="margin-top:14px;">Repite tu palabra clave:</p>
-      <p style="font-size:26px;font-weight:800;color:var(--success-green);">${state.anchorWord}</p>
+      <p style="font-size:26px;font-weight:800;color:var(--success-green);">${a.word}</p>
       <div class="timer-big" id="anchorTimer">30</div>
       <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
     </div>
