@@ -2570,11 +2570,11 @@ function activarKitPlan(){
 
 /* ============ MODO RESET FLOW (Protocolo R.E.S.E.T.) ============ */
 const MICROAUDITORIA = {
-  '🗣️ Ritmo y voz': ['Ralentizar el saludo','Hacer una pausa antes de continuar','Mantener un ritmo más calmado al hablar'],
+  '🗣️ Ritmo y voz': ['Bajar un poco el ritmo del saludo','Hacer una pausa antes de continuar','Mantener un ritmo más calmado al hablar'],
   '👂 Escucha': ['Escuchar hasta el final antes de responder','Reconocer lo que dice la persona antes de responder','Dejar un silencio sin intentar llenarlo'],
-  '👀 Presencia y parada': ['Buscar contacto visual antes de hablar','Sonreír al iniciar la parada','Revisar mi posición o ángulo de parada'],
-  '🎯 Apertura y adaptación': ['Simplificar la apertura','Adaptar mi respuesta a lo que la persona acaba de decir','No anticipar la objeción antes de que aparezca'],
-  '⚠️ Un hábito que quiero corregir (elige solo uno)': ['Reducir las muletillas','Evitar explicar de más','No apresurar el cierre','No responder automáticamente','No repetir la misma respuesta']
+  '👀 Presencia y parada': ['Buscar contacto visual antes de hablar','Iniciar la parada con una actitud abierta y natural','Revisar mi posición o ángulo de parada'],
+  '🎯 Apertura y adaptación': ['Simplificar la apertura','Adaptar mi respuesta a lo que la persona acaba de decir','No anticipar una objeción antes de que aparezca'],
+  '⚠️ Un hábito que quiero corregir': ['Reducir las muletillas','Evitar explicar de más','No apresurar el cierre','No responder automáticamente','No repetir la misma respuesta']
 };
 
 const CHECKIN_SECTIONS = [
@@ -2952,11 +2952,11 @@ function renderResetStep(){
         <span class="badge amber">S · Separa</span>
         <h3>Lo que sigue funcionando</h3>
         <p class="desc">Escribe <b>2 cosas concretas que estás haciendo bien y quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
-        <label>Aspecto 1</label>
+        <label>Conducta 1</label>
         <input type="text" id="resetAspecto1Input" value="${escapeHtml(resetAspecto1)}" placeholder="Ej: mantengo la sonrisa en el saludo" oninput="resetAspecto1=this.value;saveResetProgress();">
-        <label>Aspecto 2</label>
+        <label>Conducta 2</label>
         <input type="text" id="resetAspecto2Input" value="${escapeHtml(resetAspecto2)}" placeholder="Ej: sigo escuchando antes de responder" oninput="resetAspecto2=this.value;saveResetProgress();">
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 Piensa en conductas concretas: cómo haces la parada, cómo escuchas, cómo explicas, cómo gestionas una objeción, tu actitud…</p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 Piensa en cosas que haces tú y que puedes repetir: cómo haces la parada, cómo escuchas, cómo explicas, cómo gestionas una objeción, cómo mantienes la actitud o cómo adaptas tu forma de trabajar.</p>
       </div>
       <button class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Continuar</button>
     `;
@@ -2986,7 +2986,7 @@ function renderResetStep(){
       <div class="card">
         <h3>🔬 Después, a prueba</h3>
         <p class="desc">El ajuste que elijas pasará directamente a <b>T · Testea</b>.</p>
-        <p class="desc"><b>Mantén este único ajuste durante las próximas 10 paradas</b> y observa cómo lo ejecutas, cómo te sientes y cómo se desarrolla la conversación.</p>
+        <p class="desc"><b>Mantén este único ajuste durante las próximas 10 paradas</b> y observa cómo lo aplicas, cómo te sientes y qué ocurre en las conversaciones.</p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>No busques arreglarlo todo. Elige una cosa, pruébala y aprende de lo que ocurra.</b></p>
       </div>
       <button class="btn btn-amber" ${resetMicro?'':'disabled'} onclick="resetGoto(5)">Continuar</button>
