@@ -185,7 +185,7 @@ main{
 .kit-flow-step p{margin:2px 0 0;font-size:14.5px;font-weight:700;color:var(--text-primary);}
 .kit-flow-label{font-size:11px;font-weight:800;letter-spacing:.4px;color:var(--reset-amber-dark);}
 .kit-flow-arrow{text-align:center;font-size:14px;color:var(--text-secondary);line-height:1.4;}
-.tool-group.tracking .tool-cards{grid-template-columns:minmax(min(320px,100%),480px);}
+.tool-group.tracking .tool-cards{grid-template-columns:repeat(auto-fit, minmax(min(320px,100%),480px));}
 #sepaHistorial{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:10px;align-content:start;}
 @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
