@@ -452,6 +452,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
       <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
       <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
+      <button class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em">👋</span><span class="ql-lb">Dudo en abordar</span></button>
       <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
       <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
     </div>
@@ -787,6 +788,13 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>cortar una reacción automática y recuperar margen para decidir qué hacer</b> ante tensión, rabia, nervios o bloqueo.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br><b>PARA → Toma aire → Observa y nombra → Genera opciones → Actúa.</b></p>
           <button class="btn btn-blue" onclick="startPauseDecision()">Empezar</button>
+        </div>
+        <div class="card">
+          <h3>👋 El momento de decidir</h3>
+          <p class="tool-meta">⏱️ 10 segundos</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para el instante justo <b>antes de dejar pasar a alguien</b>, cuando no está claro si es una decisión consciente o estás evitando sentir el rechazo.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Responde a una sola pregunta y sigue.</p>
+          <button class="btn btn-blue" onclick="startMomentoDecidir()">Empezar</button>
         </div>
         <div class="card">
           <h3>👀 Grounding 5-4-3-2-1</h3>
@@ -2048,6 +2056,47 @@ function finalizarRP(foco){
       <div class="btn-row" style="margin-top:14px;">
         <button class="btn btn-outline" onclick="closeTool()">Volver</button>
         <button class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
+      </div>
+    </div>
+  `);
+}
+
+/* ---- El momento de decidir (duda anticipatoria justo antes de abordar) ---- */
+function startMomentoDecidir(){
+  openTool('👋 El momento de decidir', `
+    <div class="card" style="text-align:center;">
+      <p class="desc">Antes de dejar pasar a alguien, hazte esta pregunta:</p>
+      <p style="font-size:17px;font-weight:800;margin:10px 0;">¿Estoy decidiendo no abordar o estoy evitando sentir el rechazo?</p>
+      <div class="btn-row" style="flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="selectMomentoDecidir('decide')">Decido conscientemente</button>
+        <button class="btn btn-outline" onclick="selectMomentoDecidir('evita')">Estoy evitando</button>
+      </div>
+    </div>
+  `);
+}
+function selectMomentoDecidir(val){
+  if(val==='decide'){
+    openTool('👋 El momento de decidir', `
+      <div class="card" style="text-align:center;">
+        <p style="font-size:36px;">👋</p>
+        <h3>Es tu decisión</h3>
+        <p class="desc">No todos los abordajes tienen que producirse. Decidir con criterio también es parte del trabajo.</p>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+          <button class="btn btn-blue" onclick="startMomentoDecidir()">🔁 Repetir</button>
+        </div>
+      </div>
+    `);
+    return;
+  }
+  openTool('👋 El momento de decidir', `
+    <div class="card" style="text-align:center;">
+      <p style="font-size:36px;">👋</p>
+      <h3>Solo necesitas decidir</h3>
+      <p style="font-size:19px;font-weight:800;color:var(--wesser-navy);">"No necesito sentirme seguro. Solo necesito decidir."</p>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button class="btn btn-blue" onclick="startMomentoDecidir()">🔁 Repetir</button>
       </div>
     </div>
   `);
