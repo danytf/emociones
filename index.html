@@ -447,6 +447,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <div class="ql-wrap">
       <div class="ql-row" id="qlRow">
         <span id="qlKitSlot"></span>
+        <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
         <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mal abordaje</span></button>
         <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
         <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
@@ -1860,6 +1861,58 @@ function nextBadApproach(){
   badApproachIdx++;
   if(badApproachIdx>=badApproachSteps.length){ showToolDone('💥 Después de un mal abordaje', 'startBadApproach()'); return; }
   renderBadApproachStep();
+}
+
+/* ---- No sé qué necesito (router de 4 preguntas hacia una herramienta existente) ---- */
+const NSQN_QUESTIONS = [
+  {key:'acelerado', q:'¿Tu cuerpo está acelerado?'},
+  {key:'cabeza', q:'¿Tu cabeza no para?'},
+  {key:'evitando', q:'¿Estás evitando abordar?'},
+  {key:'dias', q:'¿Llevas varios días así?'}
+];
+let nsqnAnswers = {};
+function startNoSeQueNecesito(){ nsqnAnswers = {}; renderNoSeQueNecesito(); }
+function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(); }
+/* Orden de prioridad: un patrón de varios días pesa más que un automatismo puntual,
+   que a su vez pesa más que la activación o la rumiación de este momento. */
+function nsqnRecommendation(){
+  if(nsqnAnswers.dias === true) return {title:'🆘 Puede ser una mala racha', desc:'Cuando la sensación se repite varios días, tiene sentido pasar por el modo Reset.', action:"closeTool();openReset();", cta:'Ir a Reset'};
+  if(nsqnAnswers.evitando === true) return {title:'🛑 Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:'startPauseDecision();', cta:'Empezar'};
+  if(nsqnAnswers.acelerado === true) return {title:'🌬️ Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:'startBreath(60);', cta:'Respirar 60s'};
+  if(nsqnAnswers.cabeza === true) return {title:'👀 Grounding 5-4-3-2-1', desc:'Puede ayudarte a salir de la rumiación y volver al presente.', action:'startGrounding();', cta:'Empezar'};
+  return null;
+}
+function renderNoSeQueNecesito(){
+  const answered = Object.keys(nsqnAnswers).length;
+  const rec = nsqnRecommendation();
+  let resultHtml = '';
+  if(rec){
+    resultHtml = `
+      <div class="card kit-summary">
+        <h3>${rec.title}</h3>
+        <p class="desc">${rec.desc}</p>
+        <button class="btn btn-primary" onclick="${rec.action}">${rec.cta}</button>
+      </div>`;
+  } else if(answered === NSQN_QUESTIONS.length){
+    resultHtml = `
+      <div class="card" style="text-align:center;">
+        <p class="desc">Ahora mismo no parece que necesites una herramienta de regulación. Puedes seguir con tu turno, o hacer un Checkpoint mental si quieres registrar cómo estás.</p>
+        <button class="btn btn-outline" onclick="closeTool();openCheckpoint();">Checkpoint Mental</button>
+      </div>`;
+  }
+  openTool('🤔 No sé qué necesito', `
+    <div class="card" style="text-align:left;">
+      <p class="desc">Responde estas 4 preguntas rápidas y te sugerimos una herramienta.</p>
+      ${NSQN_QUESTIONS.map(q=>`
+        <p style="margin-top:14px;"><b>${q.q}</b></p>
+        <div class="btn-row">
+          <button class="btn btn-sm ${nsqnAnswers[q.key]===true?'btn-navy':'btn-outline'}" style="flex:1 1 80px;" onclick="setNsqnAnswer('${q.key}', true)">Sí</button>
+          <button class="btn btn-sm ${nsqnAnswers[q.key]===false?'btn-navy':'btn-outline'}" style="flex:1 1 80px;" onclick="setNsqnAnswer('${q.key}', false)">No</button>
+        </div>
+      `).join('')}
+    </div>
+    ${resultHtml}
+  `);
 }
 
 /* ---- Grounding 5-4-3-2-1 ---- */
