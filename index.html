@@ -140,6 +140,7 @@ main{
 }
 .ql-btn .ql-em{font-size:16px;}
 .ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
+.ql-btn.ql-success{background:var(--success-green);border-color:var(--success-green);color:#fff;}
 #qlKitSlot{display:contents;}
 .ql-btn.ql-kit{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;}
 .view.active{
@@ -445,6 +446,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
       <button class="ql-btn" onclick="startCierreTurno()"><span class="ql-em">🏠</span><span class="ql-lb">Cierre de turno</span></button>
       <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
+      <button class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
       <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mal abordaje</span></button>
       <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
       <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
@@ -848,6 +850,14 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <button class="btn btn-amber" onclick="openCheckpoint()">Hacer checkpoint</button>
           <div id="checkpointHistorial" style="margin-top:12px;"></div>
         </div>
+        <div class="card">
+          <h3>🟢 ¿Qué ha funcionado?</h3>
+          <p class="tool-meta">⏱️ 30 segundos</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>identificar una conducta concreta que ha funcionado</b> después de una buena conversación, y decidir qué repetir en la siguiente.</p>
+          <p class="desc">No es para puntuarte. Es para <b>quedarte con lo que ya funciona</b>, en vez de entrenar solo la corrección del error.</p>
+          <button class="btn btn-green" onclick="startExito()">Registrar</button>
+          <div id="exitoHistorial" style="margin-top:12px;"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1134,7 +1144,7 @@ function loadState(){
     checkins:[],
     confidenceAnchors:[],
     kitSenales:[], kitHerramienta:'', kitAjuste:'', kitPersona:'', kitPedira:'',
-    resetProgress:null, resetHistory:[]
+    resetProgress:null, resetHistory:[], exitos:[]
   };
 }
 /* Normaliza datos cargados o importados: rellena campos que puedan faltar en versiones antiguas
@@ -1156,6 +1166,7 @@ function normalizeState(s){
   if(!Array.isArray(s.sepaEntries)) s.sepaEntries = [];
   if(!Array.isArray(s.checkpoints)) s.checkpoints = [];
   if(!Array.isArray(s.visualAnchors)) s.visualAnchors = [];
+  if(!Array.isArray(s.exitos)) s.exitos = [];
   if(!s.dataVersion) s.dataVersion = 1;
   return s;
 }
@@ -1568,7 +1579,22 @@ function renderPatrones(){
       `}
     </div>`;
 
-  body.innerHTML = diarioHtml + resetHtml;
+  /* Bloque Éxitos: no se mezcla con Diario ni Reset */
+  const exitos = state.exitos.filter(e=>e.id>=cutoff);
+  const conductaCounts = {};
+  exitos.forEach(e=>{ if(e.conducta) conductaCounts[e.conducta]=(conductaCounts[e.conducta]||0)+1; });
+  const conductaTop = topEntry(conductaCounts);
+
+  const exitosHtml = `
+    <div class="patron-block">
+      <h4>🟢 Qué ha funcionado</h4>
+      <p class="patron-count">${exitos.length} registro${exitos.length===1?'':'s'} · ${patronesTier(exitos.length)}</p>
+      ${exitos.length===0 ? '' : `
+        <div class="mini-card">🔁 <b>Conducta más repetida</b><p>${conductaTop ? `${escapeHtml(conductaTop.key)} (${conductaTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+      `}
+    </div>`;
+
+  body.innerHTML = diarioHtml + resetHtml + exitosHtml;
 }
 
 /* ============ CHECKPOINT ============ */
@@ -1646,6 +1672,78 @@ function renderCheckpointHistorial(){
     </div>`).join('');
 }
 renderCheckpointHistorial();
+
+/* ============ QUÉ HA FUNCIONADO (consolidación de conductas eficaces) ============ */
+const EXITO_OPCIONES = ['He escuchado bien','He adaptado mi entrada','He mantenido buen ritmo'];
+let exitoConducta = '';
+let exitoOtraTexto = '';
+let exitoRepetirTexto = '';
+function startExito(){
+  exitoConducta = ''; exitoOtraTexto = ''; exitoRepetirTexto = '';
+  renderExito();
+}
+function selectExitoConducta(v){ exitoConducta = v; renderExito(); }
+function renderExito(){
+  openTool('🟢 ¿Qué ha funcionado?', `
+    <div class="card" style="text-align:left;">
+      <p class="desc">Piensa en una conversación que haya ido bien. No es para puntuarte, es para quedarte con lo que funciona.</p>
+      <p><b>¿Qué ha funcionado?</b></p>
+      <div class="chip-group">
+        ${EXITO_OPCIONES.map(o=>`<div class="chip ${exitoConducta===o?'selected':''}" onclick="selectExitoConducta('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
+        <div class="chip ${exitoConducta==='Otra'?'selected':''}" onclick="selectExitoConducta('Otra')">Otra</div>
+      </div>
+      <div id="exitoOtraWrap" style="${exitoConducta==='Otra'?'':'display:none;'}">
+        <textarea id="exitoOtraInput" placeholder="Escribe qué ha funcionado..." oninput="exitoOtraTexto=this.value;">${escapeHtml(exitoOtraTexto)}</textarea>
+      </div>
+      <label style="margin-top:14px;">¿Qué quiero repetir en el siguiente?</label>
+      <textarea id="exitoRepetirInput" placeholder="Sé concreto: una sola cosa..." oninput="exitoRepetirTexto=this.value;">${escapeHtml(exitoRepetirTexto)}</textarea>
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">💡 Ha ido bien no significa que tengas que cambiarlo todo. Mantén lo que ya funciona.</p>
+      <button class="btn btn-green" style="margin-top:6px;" onclick="guardarExito()">Guardar</button>
+    </div>
+  `);
+}
+function guardarExito(){
+  let conducta = exitoConducta;
+  if(conducta==='Otra'){
+    conducta = document.getElementById('exitoOtraInput').value.trim();
+    if(!conducta){ alert('Escribe qué ha funcionado.'); return; }
+  }
+  if(!conducta){ alert('Elige o escribe qué ha funcionado.'); return; }
+  const repetir = document.getElementById('exitoRepetirInput').value.trim();
+  state.exitos.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), conducta, repetir});
+  save();
+  renderExitoHistorial();
+  renderPatrones();
+  openTool('🟢 ¿Qué ha funcionado?', `
+    <div class="card" style="text-align:left;">
+      <h3 style="text-align:center;">✅ Guardado</h3>
+      <p class="desc"><b>Ha funcionado:</b><br>${escapeHtml(conducta)}</p>
+      ${repetir ? `<p class="desc"><b>Quiero repetir:</b><br>${escapeHtml(repetir)}</p>` : ''}
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button class="btn btn-blue" onclick="startExito()">🔁 Repetir</button>
+      </div>
+    </div>
+  `);
+}
+function renderExitoHistorial(){
+  const wrap = document.getElementById('exitoHistorial');
+  if(!wrap) return;
+  if(!state.exitos.length){ wrap.innerHTML=''; return; }
+  wrap.innerHTML = state.exitos.slice(0,5).map(e=>`
+    <div class="history-item">
+      <button class="del" onclick="borrarExito(${e.id})">Eliminar</button>
+      <div class="meta">${escapeHtml(e.fecha)}</div>
+      <p><b>${escapeHtml(e.conducta)}</b></p>
+      ${e.repetir?`<p class="desc">Repetir: ${escapeHtml(e.repetir)}</p>`:''}
+    </div>`).join('');
+}
+function borrarExito(id){
+  if(!confirm('¿Eliminar este registro? No se puede deshacer.')) return;
+  state.exitos = state.exitos.filter(x=>x.id!==id);
+  save(); renderExitoHistorial(); renderPatrones();
+}
+renderExitoHistorial();
 
 /* ============ GENERIC TOOL OVERLAY ============ */
 let toolTimers = [];
