@@ -234,9 +234,21 @@ main{
   border:none;border-radius:12px;padding:14px 18px;
   font-size:16px;font-weight:700;min-height:48px;
   width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
-  cursor:pointer;
+  cursor:pointer;transition:transform .12s ease;
 }
 .btn:active{transform:scale(.98);}
+@media (hover:hover){
+  .btn:hover, .ql-btn:hover, .wheel-btn:hover, .chip:hover, .icon-btn:hover{transform:translateY(-1px);}
+  .btn:active{transform:scale(.98);}
+}
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
 .btn-primary{background:var(--wesser-red);color:#fff;}
 .btn-amber{background:var(--reset-amber);color:#1A2B4C;}
 .btn-blue{background:var(--calm-blue);color:#fff;}
@@ -756,7 +768,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <div class="card">
           <h3>🌬️ Suspiro fisiológico</h3>
           <p class="tool-meta">⏱️ 30–60 segundos</p>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>bajar rápidamente la activación y la tensión general</b> cuando estás nervioso, acelerado o tenso.</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br><b>Puede ayudarte a reducir rápidamente la activación</b> y la tensión general cuando estás nervioso, acelerado o tenso.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br>Haz <b>dos inhalaciones por la nariz</b> —la segunda más pequeña— y después una <b>exhalación lenta y larga</b>. Repite durante 30–60 segundos.</p>
           <button class="btn btn-blue" onclick="startBreath(60)">Respirar 60s</button>
         </div>
@@ -1112,32 +1124,34 @@ function loadState(){
     resetProgress:null, resetHistory:[]
   };
 }
-/* Normaliza datos cargados o importados: rellena campos que puedan faltar en versiones antiguas.
-   Punto único donde añadir futuras migraciones cuando dataVersion suba. */
+/* Normaliza datos cargados o importados: rellena campos que puedan faltar en versiones antiguas
+   y repara campos corruptos (null, tipo incorrecto, etc.) para que el resto de la app pueda
+   asumir siempre la forma esperada. Punto único donde añadir futuras migraciones. */
 function normalizeState(s){
-  if(!s.checkins) s.checkins = [];
-  if(!s.kitSenales) s.kitSenales = [];
-  if(s.kitHerramienta===undefined) s.kitHerramienta = '';
-  if(s.kitAjuste===undefined) s.kitAjuste = '';
-  if(s.kitPersona===undefined) s.kitPersona = '';
-  if(s.kitPedira===undefined) s.kitPedira = '';
-  if(!s.confidenceAnchors){
+  if(!s || typeof s !== 'object' || Array.isArray(s)) s = {};
+  if(!Array.isArray(s.checkins)) s.checkins = [];
+  if(!Array.isArray(s.kitSenales)) s.kitSenales = [];
+  if(typeof s.kitHerramienta !== 'string') s.kitHerramienta = '';
+  if(typeof s.kitAjuste !== 'string') s.kitAjuste = '';
+  if(typeof s.kitPersona !== 'string') s.kitPersona = '';
+  if(typeof s.kitPedira !== 'string') s.kitPedira = '';
+  if(!Array.isArray(s.confidenceAnchors)){
     s.confidenceAnchors = (s.anchorWord && s.anchorMemory) ? [{word:s.anchorWord, memory:s.anchorMemory}] : [];
   }
-  if(s.resetProgress===undefined) s.resetProgress = null;
-  if(!s.resetHistory) s.resetHistory = [];
-  if(!s.sepaEntries) s.sepaEntries = [];
-  if(!s.checkpoints) s.checkpoints = [];
-  if(!s.visualAnchors) s.visualAnchors = [];
+  if(s.resetProgress===undefined || typeof s.resetProgress !== 'object') s.resetProgress = null;
+  if(!Array.isArray(s.resetHistory)) s.resetHistory = [];
+  if(!Array.isArray(s.sepaEntries)) s.sepaEntries = [];
+  if(!Array.isArray(s.checkpoints)) s.checkpoints = [];
+  if(!Array.isArray(s.visualAnchors)) s.visualAnchors = [];
   if(!s.dataVersion) s.dataVersion = 1;
   return s;
 }
-/* Comprobación básica de forma: no valida contenido en profundidad, solo que "parezca" un export de Wesser */
+/* Valida en profundidad que el JSON importado tenga la forma esperada de un export de Wesser:
+   todas las colecciones deben existir y ser arrays. No valida el contenido interno de cada entrada. */
 function isValidWesserData(obj){
-  if(!obj || typeof obj !== 'object') return false;
+  if(!obj || typeof obj !== 'object' || Array.isArray(obj)) return false;
   const expectedArrayKeys = ['sepaEntries','checkpoints','visualAnchors','checkins','confidenceAnchors','resetHistory'];
-  return expectedArrayKeys.every(k => k in obj) &&
-    Array.isArray(obj.sepaEntries) && Array.isArray(obj.checkpoints) && Array.isArray(obj.checkins);
+  return expectedArrayKeys.every(k => Array.isArray(obj[k]));
 }
 let state = normalizeState(loadState());
 function save(){
@@ -1558,12 +1572,18 @@ function renderPatrones(){
 
 /* ============ CHECKPOINT ============ */
 let editingCheckpointId = null;
+const CHECKPOINT_DECISIONES = [
+  {v:'Sigo igual', em:'▶️'},
+  {v:'Hago una pausa', em:'⏸️'},
+  {v:'Ajusto la estrategia', em:'🎯'}
+];
 function openCheckpoint(editId){
   editingCheckpointId = editId || null;
   const existing = editingCheckpointId ? state.checkpoints.find(x=>x.id===editingCheckpointId) : null;
   const fatiga = existing ? existing.fatiga : 5;
   const emocional = existing ? existing.emocional : 5;
   const nota = existing ? (existing.nota||'') : '';
+  const decision = existing ? (existing.decision||'') : '';
   openTool('Checkpoint Mental', `
     <div class="card">
       <label>Nivel de fatiga física/mental (1‑10)</label>
@@ -1576,20 +1596,32 @@ function openCheckpoint(editId){
       <div class="range-labels"><span>1 = baja</span><span>10 = alta</span></div>
       <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
       <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
-      <button class="btn btn-green" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
+      <p style="margin-top:14px;"><b>¿Qué hago ahora?</b></p>
+      <div class="btn-row" id="cpDecisionRow" style="flex-wrap:wrap;">
+        ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" data-decision="${escapeHtml(o.v)}" onclick="setCpDecision('${o.v}')">${o.em} ${o.v}</button>`).join('')}
+      </div>
+      <input type="hidden" id="cpDecision" value="${escapeHtml(decision)}">
+      <button class="btn btn-green" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
     </div>
   `);
+}
+function setCpDecision(v){
+  document.getElementById('cpDecision').value = v;
+  document.querySelectorAll('#cpDecisionRow button').forEach(b=>{
+    b.className = 'btn ' + (b.dataset.decision===v ? 'btn-amber' : 'btn-outline');
+  });
 }
 function guardarCheckpoint(){
   const fatiga = document.getElementById('cpFatiga').value;
   const emocional = document.getElementById('cpEmocional').value;
   const nota = document.getElementById('cpNota').value.trim();
+  const decision = document.getElementById('cpDecision').value;
   if(editingCheckpointId){
     const entry = state.checkpoints.find(x=>x.id===editingCheckpointId);
-    if(entry){ entry.fatiga = fatiga; entry.emocional = emocional; entry.nota = nota; }
+    if(entry){ entry.fatiga = fatiga; entry.emocional = emocional; entry.nota = nota; entry.decision = decision; }
     editingCheckpointId = null;
   } else {
-    state.checkpoints.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), fatiga, emocional, nota});
+    state.checkpoints.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), fatiga, emocional, nota, decision});
   }
   save(); closeTool(); renderCheckpointHistorial();
 }
@@ -1608,6 +1640,7 @@ function renderCheckpointHistorial(){
       <button class="edit" onclick="openCheckpoint(${c.id})">Editar</button>
       <div class="meta">${escapeHtml(c.fecha)}</div>
       <p>Fatiga: <b>${c.fatiga}/10</b> · Activación: <b>${c.emocional}/10</b></p>
+      ${c.decision?`<p><b>Decisión:</b> ${escapeHtml(c.decision)}</p>`:''}
       ${c.nota?`<p>${escapeHtml(c.nota)}</p>`:''}
     </div>`).join('');
 }
@@ -1615,7 +1648,7 @@ renderCheckpointHistorial();
 
 /* ============ GENERIC TOOL OVERLAY ============ */
 let toolTimers = [];
-function clearToolTimers(){ toolTimers.forEach(t=>clearInterval(t)); toolTimers=[]; }
+function clearToolTimers(){ toolTimers.forEach(t=>{ clearInterval(t); clearTimeout(t); }); toolTimers=[]; }
 function openTool(title, html){
   document.getElementById('toolTitle').textContent = title;
   const body = document.getElementById('toolBody');
@@ -1685,7 +1718,23 @@ function startPreTurno(){
   `);
 }
 function finalizarPreTurno(){
-  showToolDone('🚀 Antes de salir', 'startPreTurno()');
+  const llego = document.getElementById('preTurno1').value.trim();
+  const cuidar = document.getElementById('preTurno2').value.trim();
+  const senal = document.getElementById('preTurno3').value.trim();
+  clearToolTimers();
+  openTool('🚀 Antes de salir', `
+    <div class="card" style="text-align:left;">
+      <h3 style="text-align:center;">✅ Estoy preparado</h3>
+      <p><b>Mi enfoque para hoy</b></p>
+      <p class="desc"><b>¿Cómo llego?</b><br>${escapeHtml(llego)||'—'}</p>
+      <p class="desc"><b>Quiero cuidar:</b><br>${escapeHtml(cuidar)||'—'}</p>
+      <p class="desc"><b>Si aparece la señal:</b><br>${escapeHtml(senal)||'—'}</p>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button class="btn btn-blue" onclick="startPreTurno()">🔁 Repetir</button>
+      </div>
+    </div>
+  `);
 }
 
 /* ---- Breathing (Suspiro Fisiológico de Huberman) ---- */
@@ -1765,7 +1814,7 @@ function nextPause(){
     if(s.key==='opciones') pauseOpciones = val;
   }
   pauseIdx++;
-  if(pauseIdx>=pauseSteps.length){ closeTool(); return; }
+  if(pauseIdx>=pauseSteps.length){ showToolDone('Parar y Decidir', 'startPauseDecision()'); return; }
   renderPauseStep();
 }
 
@@ -1899,16 +1948,18 @@ function openVisualAnchor(){
 }
 function renderVisualAnchorModal(){
   openModal(`
-    <h2>Recordatorio visual</h2>
-    <label>Nueva frase de enfoque</label>
+    <h2>👁️ Recordatorio visual</h2>
+    <p class="desc">Guarda una frase o recordatorio de enfoque que puedas consultar rápidamente cuando lo necesites.</p>
+    <label>Nuevo recordatorio</label>
     <input type="text" id="newVisualPhrase" placeholder="Ej: Me centro en hacer bien el siguiente abordaje">
-    <button class="btn btn-navy" onclick="addVisualAnchor()">Guardar frase</button>
+    <button class="btn btn-navy" onclick="addVisualAnchor()">Guardar</button>
     <div style="margin-top:16px;">
       ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
         <div class="history-item">
           <button class="del" onclick="delVisualAnchor(${i})">Eliminar</button>
           <p style="font-weight:700;">"${escapeHtml(p)}"</p>
-        </div>`).join('') : '<div class="empty-state">Aún no has guardado frases.</div>'}
+          <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="usarRecordatorioVisual(${i})">👁️ Usar ahora</button>
+        </div>`).join('') : '<div class="empty-state">Aún no has guardado recordatorios.</div>'}
     </div>
   `);
 }
@@ -1919,16 +1970,40 @@ function addVisualAnchor(){
   renderVisualAnchorModal();
 }
 function delVisualAnchor(i){
-  if(!confirm('¿Eliminar esta frase? No se puede deshacer.')) return;
+  if(!confirm('¿Eliminar este recordatorio? No se puede deshacer.')) return;
   state.visualAnchors.splice(i,1); save();
   renderVisualAnchorModal();
+}
+function usarRecordatorioVisual(i){
+  const v = state.visualAnchors[i];
+  if(v===undefined) return;
+  closeModal();
+  openTool('👁️ Recordatorio visual', `
+    <div class="card" style="text-align:center;">
+      <p style="font-size:20px;font-weight:700;line-height:1.5;">«${escapeHtml(v)}»</p>
+      <button class="btn btn-outline" style="margin-top:16px;" onclick="closeTool()">Cerrar</button>
+    </div>
+  `);
+}
+/* Usada por "Activar mi plan" del Kit: muestra directamente el recordatorio mas reciente,
+   o abre el configurador si todavia no hay ninguno guardado. */
+function activarRecordatorioVisual(){
+  if(state.visualAnchors.length){ usarRecordatorioVisual(0); }
+  else{ openVisualAnchor(); }
 }
 
 /* ============ KIT DE EMERGENCIA DEL CAPTADOR ============ */
 function openKit(){ resetStep = 'kit'; renderResetStep(); }
 function toggleKitSenal(s){
-  if(state.kitSenales.includes(s)) state.kitSenales = state.kitSenales.filter(x=>x!==s);
-  else state.kitSenales.push(s);
+  if(state.kitSenales.includes(s)){
+    state.kitSenales = state.kitSenales.filter(x=>x!==s);
+  } else {
+    if(state.kitSenales.length >= 3){
+      alert('Tu protocolo debe ser fácil de recordar. Elige como máximo 3 señales.');
+      return;
+    }
+    state.kitSenales.push(s);
+  }
   save();
   renderResetStep();
 }
@@ -1945,7 +2020,7 @@ function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
 
 const KIT_HERRAMIENTAS_FIJAS = [
   'Suspiro fisiológico','Parar y decidir','Grounding 5-4-3-2-1','Tense & Release',
-  'Recordatorio de confianza','Recordatorio visual','Checkpoint Mental','Antes de salir','Otro recurso personal'
+  'Recordatorio de confianza','Recordatorio visual','Antes de salir','Otro recurso personal'
 ];
 const KIT_TOOL_EXACT = {
   'Suspiro fisiológico': ()=>startBreath(60),
@@ -1953,8 +2028,7 @@ const KIT_TOOL_EXACT = {
   'Grounding 5-4-3-2-1': ()=>startGrounding(),
   'Tense & Release': ()=>startTense(),
   'Recordatorio de confianza': ()=>openAnchor(),
-  'Recordatorio visual': ()=>openVisualAnchor(),
-  'Checkpoint Mental': ()=>openCheckpoint(),
+  'Recordatorio visual': ()=>activarRecordatorioVisual(),
   'Antes de salir': ()=>startPreTurno()
 };
 /* Coincidencia por palabras clave: solo como respaldo para datos antiguos guardados como texto libre */
@@ -1964,7 +2038,7 @@ const KIT_TOOL_MATCHERS = [
   {re:/grounding|5.?4.?3.?2.?1/i, fn:()=>startGrounding()},
   {re:/tense|release|tensa/i, fn:()=>startTense()},
   {re:/confianza/i, fn:()=>openAnchor()},
-  {re:/anclaje visual/i, fn:()=>openVisualAnchor()},
+  {re:/anclaje visual|recordatorio visual/i, fn:()=>activarRecordatorioVisual()},
   {re:/checkpoint/i, fn:()=>openCheckpoint()}
 ];
 function onKitHerramientaChange(){
