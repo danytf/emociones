@@ -177,6 +177,7 @@ main{
 .tool-group .tool-cards .card{margin-bottom:0;display:flex;flex-direction:column;}
 .tool-group .tool-cards .card .desc:last-of-type{flex:1;}
 .tool-group.relief{border-left:5px solid var(--calm-blue);}
+.tool-group.focus{border-left:5px solid var(--wesser-navy);}
 .tool-group.anchor{border-left:5px solid var(--success-green);}
 .tool-group.tracking{border-left:5px solid var(--reset-amber);}
 .kit-summary{border-left:5px solid var(--reset-amber);box-shadow:var(--shadow-lvl2);}
@@ -921,8 +922,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <p class="desc" style="margin-bottom:14px;">Elige la herramienta que mejor encaje con lo que necesitas ahora mismo en calle.</p>
 
     <div class="tool-group relief">
-      <h3>😮‍💨 Alivio inmediato</h3>
-      <p class="desc tool-desc">Herramientas para <b>bajar la activación, recuperar el control y volver a centrarte en 1–2 minutos</b>.</p>
+      <h3>😮‍💨 Reinicio y regulación</h3>
+      <p class="desc tool-desc">Herramientas para <b>bajar la activación, recuperar perspectiva o volver a centrarte en poco tiempo</b>.</p>
       <div class="tool-cards">
         <div class="card">
           <h3>💥 Después de una mala interacción</h3>
@@ -934,8 +935,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <div class="card">
           <h3>🌬️ Suspiro fisiológico</h3>
           <p class="tool-meta">⏱️ 30–60 segundos</p>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br><b>Puede ayudarte a reducir rápidamente la activación</b> y la tensión general cuando estás nervioso, acelerado o tenso.</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br>Haz <b>dos inhalaciones por la nariz</b> —la segunda más pequeña— y después una <b>exhalación lenta y larga</b>. Repite durante 30–60 segundos.</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br><b>Puede ayudarte a bajar rápidamente la activación</b> cuando estás nervioso, acelerado o tenso.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Haz <b>dos inhalaciones seguidas</b>, preferiblemente por la nariz —la segunda más pequeña— y después una <b>exhalación lenta y larga</b>. Repite durante 30–60 segundos.</p>
           <button class="btn btn-blue" onclick="startBreath(60)">Respirar 60s</button>
         </div>
         <div class="card">
@@ -946,70 +947,77 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <button class="btn btn-blue" onclick="startPauseDecision()">Empezar</button>
         </div>
         <div class="card">
-          <h3>👋 El momento de decidir</h3>
-          <p class="tool-meta">⏱️ 10 segundos</p>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para el instante justo <b>antes de dejar pasar a alguien</b>, cuando no está claro si es una decisión consciente o estás evitando sentir el rechazo.</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br>Responde a una sola pregunta y sigue.</p>
-          <button class="btn btn-blue" onclick="startMomentoDecidir()">Empezar</button>
-        </div>
-        <div class="card">
           <h3>👀 Grounding 5-4-3-2-1</h3>
           <p class="tool-meta">⏱️ 1–2 minutos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>salir de la rumiación y volver al presente</b> cuando tu cabeza está atrapada en pensamientos o preocupaciones.</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br>Lleva tu atención al presente utilizando los sentidos: <b>5</b> cosas que ves · <b>4</b> que oyes · <b>3</b> que tocas · <b>2</b> que hueles · <b>1</b> que saboreas.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Lleva tu atención al entorno utilizando los sentidos: <b>5</b> cosas que ves · <b>4</b> que oyes · <b>3</b> que tocas · <b>2</b> que hueles · <b>1</b> que saboreas.</p>
           <button class="btn btn-blue" onclick="startGrounding()">Empezar</button>
         </div>
         <div class="card">
           <h3>💪 Tense & Release</h3>
           <p class="tool-meta">⏱️ ~2 minutos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>soltar tensión física acumulada</b>, especialmente cuando notas rigidez en puños, brazos, hombros o piernas.</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa de forma firme pero cómoda, sin dolor, y después suelta lentamente</b> diferentes grupos musculares: puños, brazos, hombros y piernas.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa de forma firme pero cómoda, sin dolor, y después suelta</b> diferentes grupos musculares: puños, brazos, hombros y piernas.</p>
           <button class="btn btn-blue" onclick="startTense()">Empezar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-group focus">
+      <h3>🎯 Foco y rendimiento</h3>
+      <p class="desc tool-desc">Herramientas para <b>volver al proceso, tomar mejores decisiones y evitar que la presión por el resultado marque tu conducta</b>.</p>
+      <div class="tool-cards">
+        <div class="card">
+          <h3>👋 El momento de decidir</h3>
+          <p class="tool-meta">⏱️ 10 segundos</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para ese instante justo <b>antes de dejar pasar a alguien</b>, cuando no tienes claro si estás tomando una decisión consciente o <b>evitando un posible rechazo o una interacción incómoda</b>.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Responde a una sola pregunta: <b>«¿Estoy decidiendo o estoy evitando?»</b> Después, sigue.</p>
+          <button class="btn btn-blue" onclick="startMomentoDecidir()">Empezar</button>
         </div>
         <div class="card">
           <h3>🎯 Resultado vs. Proceso</h3>
           <p class="tool-meta">⏱️ 20 segundos</p>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>identificar si la presión por objetivo te ha hecho mirar el resultado</b> (socios, ratio, número del día) <b>en vez del proceso</b> (paradas, apertura, escucha, técnica).</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br>Responde <b>dónde estás mirando ahora mismo</b> y, si es el resultado, elige una conducta de proceso a la que volver.</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para detectar si la presión por objetivo te ha hecho <b>fijarte demasiado en el resultado</b> —socios, ratio, número del día— <b>en lugar de en el proceso</b> —paradas, apertura, escucha y técnica—.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Identifica <b>dónde estás mirando ahora mismo</b>. Si estás centrado en el resultado, elige una conducta de proceso a la que volver.</p>
           <button class="btn btn-blue" onclick="startResultadoProceso()">Empezar</button>
+        </div>
+        <div class="card">
+          <h3>🗣️ Pide feedback</h3>
+          <p class="tool-meta">⏱️ 30 segundos</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>pedir una observación concreta</b> en lugar de un genérico «dime si lo hago bien».</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Elige <b>una sola petición concreta</b> y tendrás la frase lista para decirla.</p>
+          <button class="btn btn-outline" onclick="startPedirFeedback()">Empezar</button>
         </div>
       </div>
     </div>
 
     <div class="tool-group anchor">
-      <h3>⚓ Anclajes</h3>
+      <h3>⚓ Preparación</h3>
       <p class="desc tool-desc"><b>Prepara un recurso antes de que lo necesites.</b></p>
       <div class="tool-cards">
         <div class="card">
           <h3>🏆 Recordatorio de confianza</h3>
           <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte un estado de seguridad y confianza antes de una conversación difícil</b> o después de un momento de inseguridad.</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>evocar una sensación de seguridad y confianza</b> antes de una conversación difícil o después de un momento de inseguridad.</p>
           <p class="desc"><b>¿Cómo se prepara?</b><br>Elige un gesto discreto —por ejemplo, <b>juntar pulgar e índice</b>— mientras recuerdas una situación en la que te sentiste <b>seguro, concentrado o satisfecho con tu trabajo</b>. Después puedes utilizar ese gesto como <b>recordatorio de ese estado</b>.</p>
           <button class="btn btn-green" onclick="openAnchor()">Configurar / Usar</button>
         </div>
         <div class="card">
           <h3>👁️ Recordatorio visual</h3>
           <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte cómo quieres afrontar una situación</b> cuando aparezca tensión, desánimo o dudas.</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte cómo quieres afrontar una situación</b> cuando aparezcan tensión, desánimo o dudas.</p>
           <p class="desc"><b>¿Cómo se prepara?</b><br>Guarda una <b>frase, imagen o recordatorio</b> que puedas consultar rápidamente. La idea no es obligarte a pensar en positivo, sino <b>volver a tu objetivo y a la actitud que quieres mantener</b>.</p>
           <button class="btn btn-outline" onclick="openVisualAnchor()">Ver mis frases</button>
-        </div>
-        <div class="card">
-          <h3>🗣️ Pide feedback</h3>
-          <p class="tool-meta">⏱️ 30 segundos</p>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>concretar qué observación necesitas</b> antes de pedir ayuda, en vez de un genérico "dime si lo hago bien".</p>
-          <p class="desc"><b>¿Cómo se hace?</b><br>Elige <b>una sola petición concreta</b> y ya tienes la frase lista para decirla.</p>
-          <button class="btn btn-outline" onclick="startPedirFeedback()">Empezar</button>
         </div>
       </div>
     </div>
 
     <div class="tool-group tracking">
       <h3>📊 Seguimiento del turno</h3>
-      <p class="desc tool-desc"><b>Revisa cómo vas antes de acumular fatiga.</b></p>
+      <p class="desc tool-desc"><b>Revisa cómo vas antes de acumular fatiga o perder el foco.</b></p>
       <div class="tool-cards">
         <div class="card">
-          <h3>⏱️ Checkpoint mental de mitad de turno</h3>
+          <h3>⏱️ Checkpoint de mitad de turno</h3>
           <p class="tool-meta">⏱️ ~1 minuto</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>detectar a tiempo tensión, fatiga o pérdida de concentración y ajustar tu jornada antes de que vaya a más</b>.</p>
           <p class="desc">Haz una <b>pausa breve para comprobar cómo estás física y emocionalmente</b>:</p>
@@ -1224,22 +1232,30 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <details class="help-item">
       <summary>🧰 Herramientas</summary>
       <div class="help-body">
-        <p>Elige según lo que necesites ahora mismo, agrupadas en 3 bloques:</p>
-        <p><b>Alivio inmediato</b> (1-2 min, para calmar cuerpo y mente ya):</p>
+        <p>Elige según lo que necesites ahora mismo, agrupadas en 4 bloques:</p>
+        <p><b>Reinicio y regulación</b> (para bajar activación o recuperar perspectiva ya):</p>
         <ul>
-          <li><b>Suspiro Fisiológico</b>: respiración de 60s que puede ayudarte a reducir rápidamente la activación cuando estás acelerado o tenso.</li>
+          <li><b>Después de una mala interacción</b>: Corta → Separa → Aprende → Suelta → Vuelve, para que una interacción que te ha dejado tocado no contamine las siguientes.</li>
+          <li><b>Suspiro Fisiológico</b>: respiración de 60s que puede ayudarte a bajar rápidamente la activación cuando estás acelerado o tenso.</li>
           <li><b>Parar y Decidir</b>: PARA → Toma aire → Observa y nombra → Genera opciones → Actúa. Es la técnica general para cualquier tensión, rabia o bloqueo — úsala siempre que no sepas cuál elegir.</li>
-          <li><b>Grounding 5‑4‑3‑2‑1</b>: ancla tus 5 sentidos al momento presente.</li>
-          <li><b>Tense & Release</b>: tensa y suelta puños, hombros, brazos y piernas para liberar tensión física.</li>
+          <li><b>Grounding 5‑4‑3‑2‑1</b>: ancla tus 5 sentidos al entorno.</li>
+          <li><b>Tense & Release</b>: tensa y suelta puños, brazos, hombros y piernas para liberar tensión física.</li>
         </ul>
-        <p><b>Anclajes</b> (prepáralos antes de necesitarlos):</p>
+        <p><b>Foco y rendimiento</b> (para volver al proceso y decidir mejor):</p>
+        <ul>
+          <li><b>El momento de decidir</b>: una sola pregunta para el instante justo antes de dejar pasar a alguien.</li>
+          <li><b>Resultado vs. Proceso</b>: identifica si te has centrado en el resultado en vez de en lo que sí puedes controlar.</li>
+          <li><b>Pide feedback</b>: elige una petición concreta de observación en vez de un genérico «dime si lo hago bien».</li>
+        </ul>
+        <p><b>Preparación</b> (prepáralos antes de necesitarlos):</p>
         <ul>
           <li><b>Recordatorio de confianza</b>: guarda uno o varios gestos, palabras clave y recuerdos de seguridad, y elige cuál usar antes de una conversación difícil.</li>
-          <li><b>Anclaje Visual</b>: guarda frases inspiradoras para releer cuando lo necesites.</li>
+          <li><b>Recordatorio visual</b>: guarda frases o recordatorios de enfoque para releer cuando lo necesites.</li>
         </ul>
         <p><b>Seguimiento del turno</b>:</p>
         <ul>
-          <li><b>Checkpoint Mental</b>: escaneo de fatiga y estado emocional a mitad de turno, queda guardado en tu historial.</li>
+          <li><b>Checkpoint de mitad de turno</b>: escaneo de fatiga y activación a mitad de turno, queda guardado en tu historial.</li>
+          <li><b>¿Qué ha funcionado?</b>: registra una conducta que te haya funcionado para repetirla.</li>
         </ul>
       </div>
     </details>
