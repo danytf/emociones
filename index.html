@@ -819,6 +819,13 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p class="desc"><b>¿Cómo se prepara?</b><br>Guarda una <b>frase, imagen o recordatorio</b> que puedas consultar rápidamente. La idea no es obligarte a pensar en positivo, sino <b>volver a tu objetivo y a la actitud que quieres mantener</b>.</p>
           <button class="btn btn-outline" onclick="openVisualAnchor()">Ver mis frases</button>
         </div>
+        <div class="card">
+          <h3>🗣️ Pide feedback</h3>
+          <p class="tool-meta">⏱️ 30 segundos</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>concretar qué observación necesitas</b> antes de pedir ayuda, en vez de un genérico "dime si lo hago bien".</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Elige <b>una sola petición concreta</b> y ya tienes la frase lista para decirla.</p>
+          <button class="btn btn-outline" onclick="startPedirFeedback()">Empezar</button>
+        </div>
       </div>
     </div>
 
@@ -2084,6 +2091,60 @@ function usarRecordatorioVisual(i){
 function activarRecordatorioVisual(){
   if(state.visualAnchors.length){ usarRecordatorioVisual(0); }
   else{ openVisualAnchor(); }
+}
+
+/* ---- Pide feedback (concreta una peticion de observacion en vez de un generico "dime si lo hago bien") ---- */
+const PEDIR_FEEDBACK_OPCIONES = [
+  {em:'👀', v:'Obsérvame en un abordaje'},
+  {em:'🎙️', v:'Escucha mi apertura'},
+  {em:'🧠', v:'Dime si estoy anticipando demasiado'},
+  {em:'⏱️', v:'Mira mi ritmo'},
+  {em:'💬', v:'Ayúdame con esta objeción'}
+];
+let pedirFeedbackSel = '';
+let pedirFeedbackOtro = '';
+function startPedirFeedback(){ pedirFeedbackSel=''; pedirFeedbackOtro=''; renderPedirFeedback(); }
+function selectPedirFeedback(v){ pedirFeedbackSel = v; renderPedirFeedback(); }
+function renderPedirFeedback(){
+  openTool('🗣️ Pide feedback', `
+    <div class="card" style="text-align:left;">
+      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Necesito una observación, no que me digas si lo hago bien o mal."</p>
+      <p><b>Elige una sola petición concreta</b></p>
+      <div class="chip-group">
+        ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<div class="chip ${pedirFeedbackSel===o.v?'selected':''}" onclick="selectPedirFeedback('${o.v.replace(/'/g,"\\'")}')">${o.em} ${o.v}</div>`).join('')}
+        <div class="chip ${pedirFeedbackSel==='Otro'?'selected':''}" onclick="selectPedirFeedback('Otro')">✍️ Otra petición</div>
+      </div>
+      <div id="pedirFeedbackOtroWrap" style="${pedirFeedbackSel==='Otro'?'':'display:none;'}">
+        <textarea id="pedirFeedbackOtroInput" placeholder="Escribe qué quieres pedir...">${escapeHtml(pedirFeedbackOtro)}</textarea>
+      </div>
+      <button class="btn btn-primary" style="margin-top:10px;" onclick="finalizarPedirFeedback()">Ver mi petición</button>
+    </div>
+  `);
+}
+function finalizarPedirFeedback(){
+  let peticion = pedirFeedbackSel;
+  if(pedirFeedbackSel === 'Otro'){
+    peticion = document.getElementById('pedirFeedbackOtroInput').value.trim();
+    if(!peticion){ alert('Escribe qué quieres pedir.'); return; }
+  }
+  if(!peticion){ alert('Elige una petición.'); return; }
+  openTool('🗣️ Pide feedback', `
+    <div class="card" style="text-align:center;">
+      <p><b>¿Qué quiero saber?</b></p>
+      <p style="font-size:19px;font-weight:800;color:var(--wesser-navy);">«${escapeHtml(peticion)}»</p>
+      ${state.kitPersona ? `<p class="desc" style="margin-top:10px;">Puedes pedírselo a: <b>${escapeHtml(state.kitPersona)}</b></p>` : ''}
+      <div class="btn-row" style="margin-top:14px;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button class="btn btn-blue" onclick="startPedirFeedback()">🔁 Repetir</button>
+      </div>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="guardarPedirFeedbackEnKit('${peticion.replace(/'/g,"\\'")}')">Guardar como mi petición del Kit</button>
+    </div>
+  `);
+}
+function guardarPedirFeedbackEnKit(peticion){
+  state.kitPedira = peticion;
+  save();
+  alert('Guardado en tu Kit: «¿Qué pediré?»');
 }
 
 /* ============ KIT DE EMERGENCIA DEL CAPTADOR ============ */
