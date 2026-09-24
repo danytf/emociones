@@ -447,6 +447,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <div class="ql-wrap">
       <div class="ql-row" id="qlRow">
         <span id="qlKitSlot"></span>
+        <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mal abordaje</span></button>
         <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
         <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
         <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
@@ -768,6 +769,13 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <h3>😮‍💨 Alivio inmediato</h3>
       <p class="desc tool-desc">Herramientas para <b>bajar la activación, recuperar el control y volver a centrarte en 1–2 minutos</b>.</p>
       <div class="tool-cards">
+        <div class="card">
+          <h3>💥 Después de un mal abordaje</h3>
+          <p class="tool-meta">⏱️ 30–45 segundos</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>evitar que un abordaje que te ha dejado tocado contamine los siguientes</b>: un grito, una risa, un rechazo especialmente desagradable o una conversación que ha salido mal.</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br><b>Corta → Separa → Aprende → Suelta → Vuelve.</b></p>
+          <button class="btn btn-blue" onclick="startBadApproach()">Empezar</button>
+        </div>
         <div class="card">
           <h3>🌬️ Suspiro fisiológico</h3>
           <p class="tool-meta">⏱️ 30–60 segundos</p>
@@ -1821,6 +1829,39 @@ function nextPause(){
   renderPauseStep();
 }
 
+/* ---- Después de un mal abordaje (Corta → Separa → Aprende → Suelta → Vuelve) ---- */
+const badApproachSteps = [
+  {l:'✂️', title:'Corta', desc:'Ese abordaje ya ha terminado.'},
+  {l:'🔀', title:'Separa', desc:'Lo que ha pasado no determina cómo irá el siguiente.'},
+  {l:'🔎', title:'Aprende', desc:'¿Hay algo concreto que pueda revisar?', input:true, key:'aprende', ph:'Escribe algo breve si se te ocurre (opcional)...'},
+  {l:'🌬️', title:'Suelta', desc:'Haz una respiración lenta: inhala por la nariz y exhala despacio por la boca.'},
+  {l:'➡️', title:'Vuelve', desc:'Mi único objetivo ahora es hacer bien el siguiente abordaje.'}
+];
+let badApproachIdx = 0;
+let badApproachAprende = '';
+function startBadApproach(){ badApproachIdx=0; badApproachAprende=''; renderBadApproachStep(); }
+function renderBadApproachStep(){
+  const s = badApproachSteps[badApproachIdx];
+  const prefill = s.key==='aprende' ? badApproachAprende : '';
+  openTool('💥 Después de un mal abordaje', `
+    <div class="card" style="text-align:center;">
+      <div class="step-dots">${badApproachSteps.map((_,i)=>`<span class="${i<=badApproachIdx?'on':''}"></span>`).join('')}</div>
+      <p style="font-size:36px;">${s.l}</p>
+      <h3>${s.title}</h3>
+      <p class="desc">${s.desc}</p>
+      ${s.input ? `<textarea id="badApproachInput" placeholder="${s.ph}">${escapeHtml(prefill)}</textarea>` : ''}
+    </div>
+    <button class="btn btn-navy" onclick="nextBadApproach()">${badApproachIdx<badApproachSteps.length-1?'Siguiente':'Terminar'}</button>
+  `);
+}
+function nextBadApproach(){
+  const s = badApproachSteps[badApproachIdx];
+  if(s.input){ badApproachAprende = document.getElementById('badApproachInput').value.trim(); }
+  badApproachIdx++;
+  if(badApproachIdx>=badApproachSteps.length){ showToolDone('💥 Después de un mal abordaje', 'startBadApproach()'); return; }
+  renderBadApproachStep();
+}
+
 /* ---- Grounding 5-4-3-2-1 ---- */
 const groundingSteps = [
   {n:5, label:'cosas que puedes VER'},
@@ -2023,13 +2064,14 @@ function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
 
 const KIT_HERRAMIENTAS_FIJAS = [
   'Suspiro fisiológico','Parar y decidir','Grounding 5-4-3-2-1','Tense & Release',
-  'Recordatorio de confianza','Recordatorio visual','Antes de salir','Otro recurso personal'
+  'Después de un mal abordaje','Recordatorio de confianza','Recordatorio visual','Antes de salir','Otro recurso personal'
 ];
 const KIT_TOOL_EXACT = {
   'Suspiro fisiológico': ()=>startBreath(60),
   'Parar y decidir': ()=>startPauseDecision(),
   'Grounding 5-4-3-2-1': ()=>startGrounding(),
   'Tense & Release': ()=>startTense(),
+  'Después de un mal abordaje': ()=>startBadApproach(),
   'Recordatorio de confianza': ()=>openAnchor(),
   'Recordatorio visual': ()=>activarRecordatorioVisual(),
   'Antes de salir': ()=>startPreTurno()
