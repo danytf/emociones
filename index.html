@@ -3003,11 +3003,11 @@ function renderResetStep(){
         <button class="btn btn-green" onclick="incrementStop()">+1 parada probada</button>
       </div>
       <p class="desc" style="margin-top:10px;">Pruébalo durante <b>las próximas 10 oportunidades de parada</b>. Mantén el mismo ajuste y evita cambiar otras cosas al mismo tiempo.</p>
-      <p class="desc">No necesitas que todas las conversaciones salgan bien. <b>Observa cómo ejecutas el ajuste, cómo te sientes y cómo se desarrolla la conversación.</b></p>
+      <p class="desc">No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, cómo te sientes al hacerlo y qué ocurre en la conversación.</b></p>
       <p><b>🔎 Al terminar</b></p>
       <p class="desc">Pregúntate:</p>
-      <p class="desc"><b>¿He ejecutado mejor este ajuste?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
-      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Una mala conversación no invalida el ajuste. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
+      <p class="desc"><b>¿He podido aplicar el ajuste como quería?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Qué he observado en las conversaciones?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Una mala conversación no demuestra que el ajuste no sirva. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
       ${resetStops>=10 ? '<p class="desc" style="color:var(--success-green);font-weight:700;">✅ Test completado.</p>' : `<p class="desc">Te faltan <b>${10-resetStops}</b> paradas para poder continuar.</p>`}
       <button class="btn btn-primary" style="margin-top:8px;" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Continuar</button>
       <button class="btn btn-outline" style="margin-top:10px;" onclick="closeReset()">Cerrar y seguir luego</button>
