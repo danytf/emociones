@@ -448,6 +448,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <span id="qlKitSlot"></span>
       <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
       <button class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
+      <button class="ql-btn" onclick="startVolverCalle()"><span class="ql-em">🔄</span><span class="ql-lb">Volver a calle</span></button>
       <button class="ql-btn" onclick="startCierreTurno()"><span class="ql-em">🏠</span><span class="ql-lb">Cierre de turno</span></button>
       <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
       <div id="qlMoreWrap" class="ql-more-collapsed">
@@ -1903,6 +1904,38 @@ function finalizarCierreTurno(){
         <button class="btn btn-blue" onclick="startCierreTurno()">🔁 Repetir</button>
       </div>
       <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="closeTool();startGrounding();">🧠 Sigo dándole vueltas</button>
+    </div>
+  `);
+}
+
+/* ---- Volver a calle (retomar el turno tras una pausa) ---- */
+function startVolverCalle(){
+  openTool('🔄 Volver a calle', `
+    <div class="card" style="text-align:left;">
+      <p class="tool-meta">⏱️ 15–20 segundos</p>
+      <p class="desc">Dos preguntas rápidas para retomar el turno después de la pausa.</p>
+      <label>¿Cómo estoy?</label>
+      <textarea id="volverCalle1" placeholder="Una palabra o frase corta..."></textarea>
+      <label>¿Qué quiero hacer en el primer abordaje?</label>
+      <textarea id="volverCalle2" placeholder="Ej: sonreír, escuchar bien, ritmo tranquilo..."></textarea>
+      <button class="btn btn-navy" style="margin-top:6px;" onclick="finalizarVolverCalle()">✅ Vuelvo a calle</button>
+    </div>
+  `);
+}
+function finalizarVolverCalle(){
+  const como = document.getElementById('volverCalle1').value.trim();
+  const primero = document.getElementById('volverCalle2').value.trim();
+  clearToolTimers();
+  openTool('🔄 Volver a calle', `
+    <div class="card" style="text-align:left;">
+      <h3 style="text-align:center;">✅ Vuelvo a calle</h3>
+      <p class="desc"><b>¿Cómo estoy?</b><br>${escapeHtml(como)||'—'}</p>
+      <p class="desc"><b>Primer abordaje:</b><br>${escapeHtml(primero)||'—'}</p>
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"No necesito recuperar el día. Solo hacer el siguiente."</p>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button class="btn btn-blue" onclick="startVolverCalle()">🔁 Repetir</button>
+      </div>
     </div>
   `);
 }
