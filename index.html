@@ -448,6 +448,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
       <button class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
       <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mal abordaje</span></button>
+      <button class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em">🎯</span><span class="ql-lb">Presión por objetivo</span></button>
       <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
       <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
       <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
@@ -800,6 +801,13 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>soltar tensión física acumulada</b>, especialmente cuando notas rigidez en puños, brazos, hombros o piernas.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa de forma firme pero cómoda, sin dolor, y después suelta lentamente</b> diferentes grupos musculares: puños, brazos, hombros y piernas.</p>
           <button class="btn btn-blue" onclick="startTense()">Empezar</button>
+        </div>
+        <div class="card">
+          <h3>🎯 Resultado vs. Proceso</h3>
+          <p class="tool-meta">⏱️ 20 segundos</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>identificar si la presión por objetivo te ha hecho mirar el resultado</b> (socios, ratio, número del día) <b>en vez del proceso</b> (abordajes, apertura, escucha, técnica).</p>
+          <p class="desc"><b>¿Cómo se hace?</b><br>Responde <b>dónde estás mirando ahora mismo</b> y, si es el resultado, elige una conducta de proceso a la que volver.</p>
+          <button class="btn btn-blue" onclick="startResultadoProceso()">Empezar</button>
         </div>
       </div>
     </div>
@@ -1986,6 +1994,63 @@ function nextBadApproach(){
   badApproachIdx++;
   if(badApproachIdx>=badApproachSteps.length){ showToolDone('💥 Después de un mal abordaje', 'startBadApproach()'); return; }
   renderBadApproachStep();
+}
+
+/* ---- Resultado vs. Proceso ---- */
+const RP_PROCESO_OPCIONES = ['Escuchar hasta el final','Cuidar mi apertura','Adaptar mi respuesta','Mantener el ritmo','Probar un abordaje más'];
+function startResultadoProceso(){
+  openTool('🎯 Resultado vs. Proceso', `
+    <div class="card" style="text-align:left;">
+      <p class="desc">La presión por objetivo suele aparecer cuando dejamos de mirar el proceso y empezamos a mirar solo el resultado.</p>
+      <div class="compare-row">
+        <div class="compare-col"><b>🎯 RESULTADO</b><p>Socios · Ratio · Objetivo · Tiempo · Número del día</p></div>
+        <div class="compare-col"><b>🛠️ PROCESO</b><p>Abordajes · Apertura · Escucha · Adaptación · Persistencia · Técnica</p></div>
+      </div>
+      <p style="margin-top:14px;text-align:center;"><b>¿Dónde estoy mirando ahora mismo?</b></p>
+      <div class="btn-row" style="flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="selectRP('resultado')">🎯 Resultado</button>
+        <button class="btn btn-outline" onclick="selectRP('proceso')">🛠️ Proceso</button>
+      </div>
+    </div>
+  `);
+}
+function selectRP(val){
+  if(val==='proceso'){
+    openTool('🎯 Resultado vs. Proceso', `
+      <div class="card" style="text-align:center;">
+        <p style="font-size:36px;">🛠️</p>
+        <h3>Estás mirando el proceso</h3>
+        <p class="desc">Eso es justo lo que puedes controlar. Sigue así.</p>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+          <button class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
+        </div>
+      </div>
+    `);
+    return;
+  }
+  openTool('🎯 Resultado vs. Proceso', `
+    <div class="card" style="text-align:left;">
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Vuelve a una conducta que sí puedas ejecutar ahora.</p>
+      <p><b>Elige tu foco para el siguiente abordaje</b></p>
+      <div class="chip-group">
+        ${RP_PROCESO_OPCIONES.map(o=>`<div class="chip" onclick="finalizarRP('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
+      </div>
+    </div>
+  `);
+}
+function finalizarRP(foco){
+  openTool('🎯 Resultado vs. Proceso', `
+    <div class="card" style="text-align:center;">
+      <p style="font-size:36px;">🛠️</p>
+      <h3>Mi foco ahora</h3>
+      <p style="font-size:19px;font-weight:800;color:var(--wesser-navy);">«${escapeHtml(foco)}»</p>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
+      </div>
+    </div>
+  `);
 }
 
 /* ---- No sé qué necesito (router de 4 preguntas hacia una herramienta existente) ---- */
