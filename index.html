@@ -2516,7 +2516,7 @@ function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
 
 const KIT_HERRAMIENTAS_FIJAS = [
   'Suspiro fisiológico','Parar y decidir','Grounding 5-4-3-2-1','Tense & Release',
-  'Después de una mala interacción','Recordatorio de confianza','Recordatorio visual','Antes de salir','Otro recurso personal'
+  'Después de una mala interacción','Recordatorio de confianza','Recordatorio visual','Otro recurso personal'
 ];
 const KIT_TOOL_EXACT = {
   'Suspiro fisiológico': ()=>startBreath(60),
@@ -2525,8 +2525,7 @@ const KIT_TOOL_EXACT = {
   'Tense & Release': ()=>startTense(),
   'Después de una mala interacción': ()=>startBadApproach(),
   'Recordatorio de confianza': ()=>openAnchor(),
-  'Recordatorio visual': ()=>activarRecordatorioVisual(),
-  'Antes de salir': ()=>startPreTurno()
+  'Recordatorio visual': ()=>activarRecordatorioVisual()
 };
 /* Coincidencia por palabras clave: solo como respaldo para datos antiguos guardados como texto libre */
 const KIT_TOOL_MATCHERS = [
@@ -2713,7 +2712,7 @@ function renderResetStep(){
       <div class="card">
         <span class="badge amber">Kit de Emergencia</span>
         <h3>🎒 Prepara tu plan antes de necesitarlo</h3>
-        <p class="desc">Cuando aparezcan tus primeras señales de mala racha, <b>no improvises</b>. Decide de antemano qué harás, qué ajustarás y a quién pedirás ayuda.</p>
+        <p class="desc">Cuando aparezcan tus primeras señales de que algo empieza a ir mal, <b>no improvises</b>. Decide de antemano qué harás, qué ajustarás y a quién pedirás ayuda.</p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Primera señal → activo mi plan. No espero a estar al límite.</b></p>
       </div>
 
@@ -2740,12 +2739,12 @@ function renderResetStep(){
             <p>${escapeHtml(state.kitPersona) || '—'}${state.kitPedira ? ` · ${escapeHtml(state.kitPedira)}` : ''}</p>
           </div>
         </div>
-        ${state.kitHerramienta ? `<button class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa "Me regulo con" abajo para poder activar tu plan con un toque.</p>`}
+        ${state.kitHerramienta ? `<button class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
       </div>
 
       <div class="card">
         <p><b>🚨 Mis señales de alerta</b></p>
-        <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una mala dinámica.</p>
+        <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una dinámica que no te está ayudando.</p>
         <div class="chip-group" id="kitSenalChips">${CHECKIN_TITLES.map(s=>`<div class="chip ${state.kitSenales.includes(s)?'selected':''}" onclick="toggleKitSenal('${s.replace(/'/g,"\\'")}')">${s}</div>`).join('')}</div>
 
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
@@ -2759,7 +2758,7 @@ function renderResetStep(){
         </div>
 
         <p><b>2️⃣ 🎙️ Ajusto una cosa</b></p>
-        <p class="desc">Elige <b>un solo ajuste técnico</b>.</p>
+        <p class="desc">Elige <b>un solo ajuste técnico</b> para aplicar cuando actives tu plan.</p>
         <label>Mi ajuste</label>
         <input type="text" id="kitAjusteInput" value="${escapeHtml(state.kitAjuste)}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…" oninput="state.kitAjuste=this.value;save();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una sola variable. Una cosa cada vez.</b></p>
@@ -2769,13 +2768,14 @@ function renderResetStep(){
         <label>Mi persona de apoyo</label>
         <input type="text" id="kitPersonaInput" value="${escapeHtml(state.kitPersona)}" oninput="state.kitPersona=this.value;save();">
         <label>¿Qué pediré?</label>
-        <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: feedback rápido, observar una parada, acompañamiento…" oninput="state.kitPedira=this.value;save();">
+        <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: Quiero que observes dos paradas y me digas una cosa que estoy haciendo bien y una que pueda ajustar." oninput="state.kitPedira=this.value;save();">
 
         <p><b>🚨 ¿Cuándo pediré ayuda?</b></p>
-        <p class="desc"><b>Si después de regularme y aplicar mi ajuste sigo bloqueado, evitando paradas o trabajando en automático.</b></p>
+        <p class="desc"><b>Si, después de regularme y aplicar mi ajuste, sigo bloqueado, evitando paradas o trabajando en automático.</b></p>
 
         <p><b>🔑 Mi regla de emergencia</b></p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Si detecto mis señales → me regulo → aplico un ajuste → y pido apoyo si sigo atascado.</b></p>
+        <p class="desc">🎯 <b>No espero a estar al límite. Actúo cuando aparecen las primeras señales.</b></p>
       </div>
       <button class="btn btn-amber" onclick="saveKitPlan()">Guardar mi plan</button>
       <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
