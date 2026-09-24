@@ -407,6 +407,17 @@ details.help-item .help-body li{margin-bottom:6px;}
 details.help-item .help-body .compare-row{margin-bottom:14px;}
 details.help-item .help-body .flow-diagram{margin:14px 0;}
 
+/* WELLBEING ROUTE CARDS (¿Qué necesitas ahora? en Bienestar) */
+.wc-routes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:12px;margin-bottom:22px;}
+.wc-card{box-shadow:var(--shadow-lvl2);margin-bottom:0;}
+.wc-card summary{align-items:flex-start;padding:16px;}
+.wc-card summary::after{align-self:center;}
+.wc-card-head{display:flex;gap:12px;align-items:flex-start;}
+.wc-card-em{font-size:28px;line-height:1;flex-shrink:0;}
+.wc-card-title{font-size:16px;font-weight:800;color:var(--text-primary);margin-bottom:3px;}
+.wc-card-desc{font-size:13px;font-weight:400;color:var(--text-secondary);margin-bottom:5px;line-height:1.4;}
+.wc-card-cta{font-size:13.5px;font-weight:800;color:var(--wesser-red);}
+
 .flow-diagram{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-weight:700;justify-content:center;margin:8px 0;}
 .flow-diagram .fbox{background:var(--bg-main);border:1.5px solid var(--border-color);border-radius:10px;padding:8px 10px;}
 .flow-diagram .arrow{color:var(--text-secondary);}
@@ -713,7 +724,121 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <h2>🌱 Cuidar tu bienestar</h2>
     <p class="desc" style="margin-bottom:14px;"><b>Pequeños hábitos y prácticas para cuidar tu bienestar emocional, recuperar mejor y afrontar con más recursos los días exigentes.</b></p>
 
-    <h3>14 prácticas</h3>
+    <h3>🎯 ¿Qué necesitas ahora?</h3>
+    <p class="desc" style="margin-bottom:14px;"><b>Identifica qué te está pasando y entra directamente en el recurso que puede ayudarte.</b></p>
+
+    <div class="wc-routes">
+      <details class="help-item wc-card">
+        <summary>
+          <div class="wc-card-head">
+            <span class="wc-card-em">🔋</span>
+            <div>
+              <div class="wc-card-title">Estoy agotado</div>
+              <div class="wc-card-desc">Me falta energía, estoy saturado o me cuesta arrancar.</div>
+              <div class="wc-card-cta">→ Recuperar energía</div>
+            </div>
+          </div>
+        </summary>
+        <div class="help-body">
+          <ul>
+            <li>Haz una pausa real.</li>
+            <li>Bebe agua.</li>
+            <li>Come si lo necesitas.</li>
+            <li>Sal unos minutos al aire libre.</li>
+            <li>Desconecta brevemente.</li>
+            <li>Reduce la exigencia de ese tramo.</li>
+          </ul>
+          <p>Cuando estés preparado, utiliza <b>"Volver a calle"</b> para retomar.</p>
+          <p style="font-style:italic;">Esto no tiene por qué ser un problema emocional: es agotamiento o falta de energía, algo distinto de la activación.</p>
+        </div>
+      </details>
+
+      <details class="help-item wc-card">
+        <summary>
+          <div class="wc-card-head">
+            <span class="wc-card-em">😰</span>
+            <div>
+              <div class="wc-card-title">Estoy demasiado activado</div>
+              <div class="wc-card-desc">Nervioso, acelerado, tenso o irritado; me cuesta bajar revoluciones.</div>
+              <div class="wc-card-cta">→ Bajar activación</div>
+            </div>
+          </div>
+        </summary>
+        <div class="help-body">
+          <div class="btn-row" style="flex-wrap:wrap;">
+            <button class="btn btn-blue" style="width:auto;flex:1 1 150px;" onclick="startBreath(60)">🌬️ Suspiro fisiológico</button>
+            <button class="btn btn-blue" style="width:auto;flex:1 1 150px;" onclick="startTense()">💪 Tense &amp; Release</button>
+            <button class="btn btn-blue" style="width:auto;flex:1 1 150px;" onclick="startGrounding()">👀 Grounding</button>
+          </div>
+          <p style="margin-top:12px;font-style:italic;">No necesitas eliminar toda la activación. Necesitas bajarla cuando empieza a jugar en tu contra.</p>
+        </div>
+      </details>
+
+      <details class="help-item wc-card">
+        <summary>
+          <div class="wc-card-head">
+            <span class="wc-card-em">🔄</span>
+            <div>
+              <div class="wc-card-title">No paro de darle vueltas</div>
+              <div class="wc-card-desc">Llevo demasiado tiempo pensando en lo mismo y cada vez me engancho más.</div>
+              <div class="wc-card-cta">→ Cortar el bucle</div>
+            </div>
+          </div>
+        </summary>
+        <div class="help-body">
+          <ul>
+            <li>Cambia de foco de forma consciente.</li>
+            <li>Camina.</li>
+            <li>Escucha música.</li>
+            <li>Habla con alguien.</li>
+            <li>Concéntrate en una tarea concreta.</li>
+          </ul>
+          <button class="btn btn-outline" onclick="goto('diario')">📓 Abrir Diario S-E-P-A</button>
+        </div>
+      </details>
+
+      <details class="help-item wc-card">
+        <summary>
+          <div class="wc-card-head">
+            <span class="wc-card-em">💭</span>
+            <div>
+              <div class="wc-card-title">Estoy pensando fatal</div>
+              <div class="wc-card-desc">Saco conclusiones negativas o anticipo lo peor, y me está perjudicando.</div>
+              <div class="wc-card-cta">→ Revisar el pensamiento</div>
+            </div>
+          </div>
+        </summary>
+        <div class="help-body">
+          <p><b>¿Qué evidencias tengo?</b></p>
+          <p><b>¿Estoy sacando una conclusión demasiado rápido?</b></p>
+          <p><b>¿Hay otra forma más realista de interpretar lo ocurrido?</b></p>
+          <button class="btn btn-outline" onclick="goto('diario')">📓 Abrir Diario S-E-P-A</button>
+          <p style="font-style:italic;margin-top:12px;">No se trata de pensar en positivo. Se trata de pensar de forma más realista y útil.</p>
+        </div>
+      </details>
+
+      <details class="help-item wc-card">
+        <summary>
+          <div class="wc-card-head">
+            <span class="wc-card-em">🛡️</span>
+            <div>
+              <div class="wc-card-title">Tengo que afrontar algo difícil</div>
+              <div class="wc-card-desc">Una situación próxima me genera nervios, presión o incertidumbre.</div>
+              <div class="wc-card-cta">→ Prepararme</div>
+            </div>
+          </div>
+        </summary>
+        <div class="help-body">
+          <p><b>🎯 Visualiza y aterriza</b></p>
+          <p>¿Cómo quiero afrontar esta situación? ¿Qué obstáculo puede aparecer? ¿Qué haré cuando aparezca?</p>
+          <p><b>🛡️ Aprende a estar en lo incómodo</b></p>
+          <p>No todo malestar necesita desaparecer antes de actuar. Puedes seguir haciendo lo que es importante para ti aunque aparezcan nervios, frustración o incomodidad.</p>
+        </div>
+      </details>
+    </div>
+
+    <h3>🌿 Hábitos para estar mejor</h3>
+    <p class="desc" style="margin-bottom:14px;">No tienes que esperar a encontrarte mal. Estos hábitos pueden ayudarte a cuidar tu bienestar y recuperarte mejor a largo plazo.</p>
     <div class="accordion-block">
       <p class="chip-cat">🌿 Base y recuperación</p>
       <details class="help-item">
