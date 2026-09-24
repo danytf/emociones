@@ -453,7 +453,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
       <div id="qlMoreWrap" class="ql-more-collapsed">
         <button class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
-        <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mal parada</span></button>
+        <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mala interacción</span></button>
         <button class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em">🎯</span><span class="ql-lb">Presión por objetivo</span></button>
         <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
         <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
@@ -776,9 +776,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <p class="desc tool-desc">Herramientas para <b>bajar la activación, recuperar el control y volver a centrarte en 1–2 minutos</b>.</p>
       <div class="tool-cards">
         <div class="card">
-          <h3>💥 Después de una mala parada</h3>
+          <h3>💥 Después de una mala interacción</h3>
           <p class="tool-meta">⏱️ 30–45 segundos</p>
-          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>evitar que una parada que te ha dejado tocado contamine los siguientes</b>: un grito, una risa, un rechazo especialmente desagradable o una conversación que ha salido mal.</p>
+          <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>evitar que una interacción que te ha dejado tocado contamine las siguientes</b>: un grito, una risa, un rechazo especialmente desagradable o una conversación que ha salido mal.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br><b>Corta → Separa → Aprende → Suelta → Vuelve.</b></p>
           <button class="btn btn-blue" onclick="startBadApproach()">Empezar</button>
         </div>
@@ -2021,10 +2021,10 @@ function nextPause(){
   renderPauseStep();
 }
 
-/* ---- Después de una mala parada (Corta → Separa → Aprende → Suelta → Vuelve) ---- */
+/* ---- Después de una mala interacción (Corta → Separa → Aprende → Suelta → Vuelve) ---- */
 const badApproachSteps = [
-  {l:'✂️', title:'Corta', desc:'Ese parada ya ha terminado.'},
-  {l:'🔀', title:'Separa', desc:'Lo que ha pasado no determina cómo irá el siguiente.'},
+  {l:'✂️', title:'Corta', desc:'Esa interacción ya ha terminado.'},
+  {l:'🔀', title:'Separa', desc:'Lo que ha pasado no determina cómo irá la siguiente.'},
   {l:'🔎', title:'Aprende', desc:'¿Hay algo concreto que pueda revisar?', input:true, key:'aprende', ph:'Escribe algo breve si se te ocurre (opcional)...'},
   {l:'🌬️', title:'Suelta', desc:'Haz una respiración lenta: inhala por la nariz y exhala despacio por la boca.'},
   {l:'➡️', title:'Vuelve', desc:'Mi único objetivo ahora es hacer bien la siguiente parada.'}
@@ -2035,7 +2035,7 @@ function startBadApproach(){ badApproachIdx=0; badApproachAprende=''; renderBadA
 function renderBadApproachStep(){
   const s = badApproachSteps[badApproachIdx];
   const prefill = s.key==='aprende' ? badApproachAprende : '';
-  openTool('💥 Después de una mala parada', `
+  openTool('💥 Después de una mala interacción', `
     <div class="card" style="text-align:center;">
       <div class="step-dots">${badApproachSteps.map((_,i)=>`<span class="${i<=badApproachIdx?'on':''}"></span>`).join('')}</div>
       <p style="font-size:36px;">${s.l}</p>
@@ -2050,7 +2050,7 @@ function nextBadApproach(){
   const s = badApproachSteps[badApproachIdx];
   if(s.input){ badApproachAprende = document.getElementById('badApproachInput').value.trim(); }
   badApproachIdx++;
-  if(badApproachIdx>=badApproachSteps.length){ showToolDone('💥 Después de una mala parada', 'startBadApproach()'); return; }
+  if(badApproachIdx>=badApproachSteps.length){ showToolDone('💥 Después de una mala interacción', 'startBadApproach()'); return; }
   renderBadApproachStep();
 }
 
@@ -2476,14 +2476,14 @@ function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
 
 const KIT_HERRAMIENTAS_FIJAS = [
   'Suspiro fisiológico','Parar y decidir','Grounding 5-4-3-2-1','Tense & Release',
-  'Después de una mala parada','Recordatorio de confianza','Recordatorio visual','Antes de salir','Otro recurso personal'
+  'Después de una mala interacción','Recordatorio de confianza','Recordatorio visual','Antes de salir','Otro recurso personal'
 ];
 const KIT_TOOL_EXACT = {
   'Suspiro fisiológico': ()=>startBreath(60),
   'Parar y decidir': ()=>startPauseDecision(),
   'Grounding 5-4-3-2-1': ()=>startGrounding(),
   'Tense & Release': ()=>startTense(),
-  'Después de una mala parada': ()=>startBadApproach(),
+  'Después de una mala interacción': ()=>startBadApproach(),
   'Recordatorio de confianza': ()=>openAnchor(),
   'Recordatorio visual': ()=>activarRecordatorioVisual(),
   'Antes de salir': ()=>startPreTurno()
