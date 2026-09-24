@@ -443,6 +443,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <div class="ql-row" id="qlRow">
       <span id="qlKitSlot"></span>
       <button class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
+      <button class="ql-btn" onclick="startCierreTurno()"><span class="ql-em">🏠</span><span class="ql-lb">Cierre de turno</span></button>
       <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
       <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mal abordaje</span></button>
       <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
@@ -1733,6 +1734,44 @@ function finalizarPreTurno(){
         <button class="btn btn-outline" onclick="closeTool()">Volver</button>
         <button class="btn btn-blue" onclick="startPreTurno()">🔁 Repetir</button>
       </div>
+    </div>
+  `);
+}
+
+/* ---- Cierre de turno (transición trabajo -> casa) ---- */
+function startCierreTurno(){
+  openTool('🏠 Cierre de turno', `
+    <div class="card" style="text-align:left;">
+      <p class="tool-meta">⏱️ 30 segundos</p>
+      <p class="desc">Tres preguntas rápidas para cerrar el turno antes de volver a casa.</p>
+      <label>¿Qué dejo hoy en el trabajo?</label>
+      <textarea id="cierreTurno1" placeholder="Una palabra o frase corta..."></textarea>
+      <label>¿Qué quiero llevarme?</label>
+      <textarea id="cierreTurno2" placeholder="Ej: un aprendizaje, una buena conversación..."></textarea>
+      <label>¿Qué necesito hacer ahora para cambiar de contexto?</label>
+      <textarea id="cierreTurno3" placeholder="Ej: cambiarme de ropa, caminar, llamar a alguien..."></textarea>
+      <button class="btn btn-navy" style="margin-top:6px;" onclick="finalizarCierreTurno()">✅ Turno cerrado</button>
+    </div>
+  `);
+}
+function finalizarCierreTurno(){
+  const dejo = document.getElementById('cierreTurno1').value.trim();
+  const llevo = document.getElementById('cierreTurno2').value.trim();
+  const contexto = document.getElementById('cierreTurno3').value.trim();
+  clearToolTimers();
+  openTool('🏠 Cierre de turno', `
+    <div class="card" style="text-align:left;">
+      <h3 style="text-align:center;">✅ Turno cerrado</h3>
+      <p><b>Mi cierre de hoy</b></p>
+      <p class="desc"><b>Dejo en el trabajo:</b><br>${escapeHtml(dejo)||'—'}</p>
+      <p class="desc"><b>Me llevo:</b><br>${escapeHtml(llevo)||'—'}</p>
+      <p class="desc"><b>Para cambiar de contexto:</b><br>${escapeHtml(contexto)||'—'}</p>
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"El turno ha terminado. No necesito seguir resolviéndolo ahora."</p>
+      <div class="btn-row" style="margin-top:10px;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button class="btn btn-blue" onclick="startCierreTurno()">🔁 Repetir</button>
+      </div>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="closeTool();startGrounding();">🧠 Sigo dándole vueltas</button>
     </div>
   `);
 }
