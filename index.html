@@ -2894,7 +2894,7 @@ function renderResetStep(){
         <span class="badge amber">R · Reconoce</span>
         <h3>Reconoce lo que está pasando</h3>
         <p class="desc"><b>Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.</b></p>
-        <p class="desc">Reconocer lo que está ocurriendo <b>sin juzgarte por ello</b> es el primer paso para poder cambiarlo.</p>
+        <p class="desc">Reconocer lo que está ocurriendo <b>sin juzgarte por ello</b> es el primer paso para poder entender qué está cambiando y decidir qué ajustar.</p>
         <div class="breath-circle" id="resetBreathCircle">Inhala</div>
         <div class="timer-big" id="resetBreathTimer">30</div>
       </div>
@@ -2915,10 +2915,10 @@ function renderResetStep(){
       ${resetDots()}
       <div class="card">
         <span class="badge amber">E · Examina</span>
-        <h3>Separa el contexto de tu actuación</h3>
+        <h3>Separa el contexto de tu forma de trabajar</h3>
         <p class="desc">Cuando llevas varios días malos, distingue entre <b>lo que está ocurriendo a tu alrededor</b> y <b>lo que puedes revisar y ajustar en tu forma de trabajar</b>.</p>
         <p><b>🌍 El contexto</b></p>
-        <p class="desc">Factores que <b>no dependen directamente de ti</b>:</p>
+        <p class="desc">Factores que <b>no controlas directamente</b>:</p>
         <ul>
           <li>Flujo de gente</li>
           <li>Clima</li>
@@ -2926,20 +2926,20 @@ function renderResetStep(){
           <li>Prisa o situación de la persona</li>
           <li>Que alguien rechace</li>
         </ul>
-        <p><b>🎯 Mi actuación</b></p>
+        <p><b>🎯 Mi forma de trabajar</b></p>
         <p class="desc">Aspectos que <b>sí puedo revisar y ajustar</b>:</p>
         <ul>
           <li>Escucha</li>
-          <li>Ritmo de parada</li>
+          <li>Ritmo de la parada</li>
           <li>Adaptación del speech</li>
           <li>Gestión de objeciones</li>
           <li>Actitud y energía</li>
           <li>Forma de hacer la parada</li>
         </ul>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando pertenece al contexto y qué parte puedo ajustar yo?</b></p>
-        <label>El contexto (no depende de mí)</label>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando corresponde al contexto y qué parte puedo revisar y ajustar yo?</b></p>
+        <label>El contexto → no lo controlo directamente</label>
         <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgress();">${escapeHtml(resetExamResultado)}</textarea>
-        <label>Mi actuación (puedo ajustar)</label>
+        <label>Mi forma de trabajar → puedo revisarla y ajustarla</label>
         <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgress();">${escapeHtml(resetExamRendimiento)}</textarea>
       </div>
       <button class="btn btn-amber" onclick="if(!resetExamResultado.trim()||!resetExamRendimiento.trim()){ alert('Completa el contexto y tu actuación antes de continuar.'); return; } resetGoto(3);">Continuar</button>
