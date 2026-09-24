@@ -1874,25 +1874,41 @@ let nsqnAnswers = {};
 function startNoSeQueNecesito(){ nsqnAnswers = {}; renderNoSeQueNecesito(); }
 function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(); }
 /* Orden de prioridad: un patrón de varios días pesa más que un automatismo puntual,
-   que a su vez pesa más que la activación o la rumiación de este momento. */
-function nsqnRecommendation(){
-  if(nsqnAnswers.dias === true) return {title:'🆘 Puede ser una mala racha', desc:'Cuando la sensación se repite varios días, tiene sentido pasar por el modo Reset.', action:"closeTool();openReset();", cta:'Ir a Reset'};
-  if(nsqnAnswers.evitando === true) return {title:'🛑 Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:'startPauseDecision();', cta:'Empezar'};
-  if(nsqnAnswers.acelerado === true) return {title:'🌬️ Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:'startBreath(60);', cta:'Respirar 60s'};
-  if(nsqnAnswers.cabeza === true) return {title:'👀 Grounding 5-4-3-2-1', desc:'Puede ayudarte a salir de la rumiación y volver al presente.', action:'startGrounding();', cta:'Empezar'};
-  return null;
+   que a su vez pesa más que la activación o la rumiación de este momento.
+   Devuelve TODAS las recomendaciones que aplican, no solo la primera, para no dar
+   la sensación de que se ignoran las demás señales marcadas. */
+function nsqnRecommendations(){
+  const list = [];
+  if(nsqnAnswers.dias === true) list.push({title:'🆘 Puede ser una mala racha', desc:'Cuando la sensación se repite varios días, tiene sentido pasar por el modo Reset.', action:"closeTool();openReset();", cta:'Ir a Reset'});
+  if(nsqnAnswers.evitando === true) list.push({title:'🛑 Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:'startPauseDecision();', cta:'Empezar'});
+  if(nsqnAnswers.acelerado === true) list.push({title:'🌬️ Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:'startBreath(60);', cta:'Respirar 60s'});
+  if(nsqnAnswers.cabeza === true) list.push({title:'👀 Grounding 5-4-3-2-1', desc:'Puede ayudarte a salir de la rumiación y volver al presente.', action:'startGrounding();', cta:'Empezar'});
+  return list;
 }
 function renderNoSeQueNecesito(){
   const answered = Object.keys(nsqnAnswers).length;
-  const rec = nsqnRecommendation();
+  const recs = nsqnRecommendations();
   let resultHtml = '';
-  if(rec){
+  if(recs.length){
+    const [primary, ...rest] = recs;
     resultHtml = `
       <div class="card kit-summary">
-        <h3>${rec.title}</h3>
-        <p class="desc">${rec.desc}</p>
-        <button class="btn btn-primary" onclick="${rec.action}">${rec.cta}</button>
-      </div>`;
+        ${recs.length>1 ? `<p class="desc" style="font-style:italic;">Has marcado varias señales. Empieza por esta, es la más urgente ahora mismo:</p>` : ''}
+        <h3>${primary.title}</h3>
+        <p class="desc">${primary.desc}</p>
+        <button class="btn btn-primary" onclick="${primary.action}">${primary.cta}</button>
+      </div>
+      ${rest.length ? `
+        <div class="card">
+          <p><b>También podría ayudarte</b></p>
+          ${rest.map(r=>`
+            <div class="history-item" style="margin-bottom:8px;">
+              <p style="font-weight:700;">${r.title}</p>
+              <p class="desc">${r.desc}</p>
+              <button class="btn btn-outline btn-sm" onclick="${r.action}">${r.cta}</button>
+            </div>`).join('')}
+        </div>` : ''}
+    `;
   } else if(answered === NSQN_QUESTIONS.length){
     resultHtml = `
       <div class="card" style="text-align:center;">
