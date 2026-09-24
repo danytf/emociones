@@ -141,6 +141,9 @@ main{
 .ql-btn .ql-em{font-size:16px;}
 .ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
 .ql-btn.ql-success{background:var(--success-green);border-color:var(--success-green);color:#fff;}
+.ql-more-collapsed{display:none;}
+.ql-more-expanded{display:contents;}
+.ql-btn.ql-toggle{background:transparent;border-style:dashed;color:var(--text-secondary);justify-content:center;}
 #qlKitSlot{display:contents;}
 .ql-btn.ql-kit{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;}
 .view.active{
@@ -443,18 +446,21 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <div class="ql-title">¿Qué necesitas ahora?</div>
     <div class="ql-row" id="qlRow">
       <span id="qlKitSlot"></span>
+      <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
       <button class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
       <button class="ql-btn" onclick="startCierreTurno()"><span class="ql-em">🏠</span><span class="ql-lb">Cierre de turno</span></button>
-      <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
-      <button class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
-      <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mal abordaje</span></button>
-      <button class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em">🎯</span><span class="ql-lb">Presión por objetivo</span></button>
-      <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
-      <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
-      <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
-      <button class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em">👋</span><span class="ql-lb">Dudo en abordar</span></button>
-      <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
       <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
+      <div id="qlMoreWrap" class="ql-more-collapsed">
+        <button class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
+        <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mal abordaje</span></button>
+        <button class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em">🎯</span><span class="ql-lb">Presión por objetivo</span></button>
+        <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
+        <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
+        <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
+        <button class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em">👋</span><span class="ql-lb">Dudo en abordar</span></button>
+        <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
+      </div>
+      <button class="ql-btn ql-toggle" id="qlToggleBtn" onclick="toggleQlMore()"><span class="ql-em">▾</span><span class="ql-lb">Más situaciones</span></button>
     </div>
   </div>
 
@@ -1292,6 +1298,17 @@ function renderQlKitButton(){
     : '';
 }
 renderQlKitButton();
+
+let qlMoreExpanded = false;
+function toggleQlMore(){
+  qlMoreExpanded = !qlMoreExpanded;
+  const wrap = document.getElementById('qlMoreWrap');
+  const btn = document.getElementById('qlToggleBtn');
+  wrap.className = qlMoreExpanded ? 'ql-more-expanded' : 'ql-more-collapsed';
+  btn.innerHTML = qlMoreExpanded
+    ? '<span class="ql-em">▲</span><span class="ql-lb">Menos</span>'
+    : '<span class="ql-em">▾</span><span class="ql-lb">Más situaciones</span>';
+}
 
 /* ============ HELP OVERLAY ============ */
 function openHelp(){ document.getElementById('helpOverlay').classList.add('active'); }
