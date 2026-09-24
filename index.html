@@ -1154,7 +1154,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <summary>🆘 Modo Reset</summary>
       <div class="help-body">
         <p>Botón siempre visible en la cabecera para cuando sientes que has «chocado con la pared» (mala racha, desgaste, frustración acumulada).</p>
-        <p>La pantalla de inicio explica qué hacer en una mala racha (Normalizar, Rescatar, Regular, Pedir ayuda) y tu apartado <b>¿Qué está en mis manos?</b> (qué no controlas, qué puedes influir, qué puedes revisar). Desde ahí puedes hacer un <b>Check-in de señales</b> (17 señales de autoobservación, con historial guardado) antes de empezar el protocolo.</p>
+        <p>La pantalla de inicio explica qué hacer en una mala racha (Normalizar, Revisar, Rescatar, Regular, Pedir ayuda) y tu apartado <b>¿Qué está en mis manos?</b> (qué no controlas, qué puedes influir, qué puedes revisar). Desde ahí puedes hacer un <b>Check-in de señales</b> (17 señales de autoobservación, con historial guardado) antes de empezar el protocolo.</p>
         <p>El protocolo <b>R.E.S.E.T.</b>:</p>
         <ul>
           <li><b>R</b>econoce la mala racha, sin juzgarte, con una respiración guiada y tu señal de alerta principal.</li>
@@ -2583,11 +2583,11 @@ const CHECKIN_SECTIONS = [
     '<b>El "no" me afecta más de lo habitual</b><br>Cada rechazo me pesa, me irrita o me desanima más de lo normal.',
     '<b>Empiezo ya cansado</b><br>Llego a trabajar con pesadez física o mental, incluso antes de empezar.',
     '<b>Sigo dándole vueltas al turno</b><br>Después de terminar, sigo pensando mucho en los rechazos, los resultados o lo ocurrido en calle.',
-    '<b>Me engancho a la queja</b><br>Paso demasiado tiempo hablando de lo mal que está la situación o me alejo del equipo.'
+    '<b>Me quedo atrapado en la queja</b><br>Paso demasiado tiempo centrado en lo mal que está la situación o tiendo a alejarme del equipo.'
   ]},
   {title:'2️⃣ 🎯 Mi valor frente al resultado', items:[
     '<b>Mi valor depende del número</b><br>Empiezo a medir cómo de buen captador soy según los socios que consigo.',
-    '<b>Un turno a cero me arrastra</b><br>Un mal turno condiciona cómo veo el resto de la semana o del mes.',
+    '<b>Un turno a cero me arrastra</b><br>Un mal turno condiciona demasiado cómo veo el resto de la semana o del mes.',
     '<b>Me comparo demasiado con los demás</b><br>El resultado de otros captadores afecta demasiado a cómo valoro mi propio rendimiento.',
     '<b>Pienso que "ya debería saber hacerlo"</b><br>Me cuesta aceptar una mala racha porque siento que por mi experiencia no debería estar ocurriendo.',
     '<b>Me desgasto con lo que no controlo</b><br>Gasto mucha energía preocupándome por el tráfico, el clima, los permisos u otros factores externos.'
@@ -2597,7 +2597,7 @@ const CHECKIN_SECTIONS = [
     '<b>Me acelero y sobreexplico</b><br>Hablo más rápido, explico demasiado o me cuesta tolerar los silencios.',
     '<b>Dejo de escuchar</b><br>Mientras la otra persona habla, estoy pensando en qué responder en lugar de escuchar de verdad.',
     '<b>Hago menos paradas</b><br>Después de varios rechazos, reduzco el número de personas a las que intento parar.',
-    '<b>Cambio de método constantemente</b><br>Después de unos pocos rechazos, cambio mi forma de hacer la parada buscando una solución inmediata.'
+    '<b>Cambio de método constantemente</b><br>Después de unos pocos rechazos, cambio continuamente mi forma de hacer la parada buscando una solución inmediata.'
   ]},
   {title:'4️⃣ ⏱️ Fugas de energía y evitación', items:[
     '<b>Alargo los descansos</b><br>Empiezo a utilizar el café, el móvil u otras pausas para retrasar la siguiente parada.',
@@ -2821,8 +2821,8 @@ function renderResetStep(){
       <div class="card">
         <span class="badge amber">Check-in de señales</span>
         <h3>¿Qué señales estás notando?</h3>
-        <p class="desc">Marca todo aquello con lo que <b>te estés identificando ahora o hayas notado durante tus últimas rachas difíciles</b>.</p>
-        <p class="desc">No es un diagnóstico. Es una herramienta personal para <b>detectar cambios, entender qué te está pasando y decidir si necesitas hacer algún ajuste</b>.</p>
+        <p class="desc">Marca todo aquello con lo que <b>te identifiques ahora mismo o que hayas notado durante los últimos días o rachas difíciles</b>.</p>
+        <p class="desc">No es un diagnóstico. Es una herramienta personal para <b>detectar cambios, entender mejor qué te está pasando y decidir si necesitas hacer algún ajuste</b>.</p>
       </div>
       ${CHECKIN_SECTIONS.map((s,si)=>`
         <div class="card">
@@ -2836,9 +2836,9 @@ function renderResetStep(){
       `).join('')}
       <div class="card">
         <h3>🎯 ¿Qué busca este check-in?</h3>
-        <p class="desc">No se trata de contar "cuántas señales tienes".</p>
-        <p class="desc">Se trata de detectar <b>qué está empezando a cambiar en ti</b> para poder actuar antes de que la mala racha termine afectando a tu rendimiento, tu bienestar o tu vida fuera del trabajo.</p>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🔑 <b>Detectarlo pronto te da más margen para corregirlo.</b></p>
+        <p class="desc">No se trata de contar «cuántas señales tienes» ni de ponerte una etiqueta.</p>
+        <p class="desc">Se trata de detectar <b>qué está empezando a cambiar en ti</b> para poder decidir antes <b>qué necesitas ajustar, practicar o hablar con alguien</b>.</p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🔑 <b>Detectarlo pronto te da más margen para actuar.</b></p>
       </div>
       <button class="btn btn-amber" onclick="saveCheckin()">Guardar check-in y continuar</button>
       <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
