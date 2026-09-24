@@ -2,8 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#D32F2F">
+<meta name="description" content="Herramientas prácticas de gestión emocional para captadores Wesser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23D32F2F'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Arial,sans-serif' font-weight='800' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
 <title>Wesser · Gestión Emocional</title>
 <style>
 :root{
@@ -188,14 +190,16 @@ main{
    centered at a comfortable reading width instead of stretching edge to edge */
 #view-diario.active{display:block;max-width:760px;margin:0 auto;}
 
-/* Herramientas breaks out of the content-wrap max-width to use the full screen */
+/* Herramientas breaks out of the content-wrap max-width to use more of the screen,
+   but on very wide desktops the visible content area is capped at 1440px via padding
+   (not width) so the box stays viewport-wide and margin math stays simple. */
 #view-herramientas.active{
   max-width:none;
   width:100vw;
   margin-left:calc(50% - 50vw);
   margin-right:calc(50% - 50vw);
-  padding-left:28px;
-  padding-right:28px;
+  padding-left:max(28px, calc((100vw - 1440px) / 2 + 28px));
+  padding-right:max(28px, calc((100vw - 1440px) / 2 + 28px));
 }
 
 .card{
@@ -321,6 +325,9 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
   display:flex;flex-direction:column;align-items:center;gap:6px;min-height:96px;justify-content:center;
 }
 .wheel-btn .em{font-size:26px;}
+@media (max-width:520px){
+  .wheel-grid{grid-template-columns:repeat(2, minmax(0, 1fr));}
+}
 
 .modal-back{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:250;display:none;align-items:flex-end;justify-content:center;}
 .modal-back.active{display:flex;}
@@ -332,8 +339,8 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 
 .slider-wrap{margin-bottom:12px;}
 input[type=range]{width:100%;accent-color:var(--wesser-red);}
-.range-val{text-align:center;font-weight:800;font-size:20px;color:var(--wesser-red);}
-.range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:-4px;}
+.range-val{text-align:center;font-weight:800;font-size:20px;color:var(--wesser-red);margin-top:-6px;}
+.range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:2px;}
 
 .prompt-text{font-size:20px;font-weight:700;text-align:center;padding:30px 10px;color:var(--wesser-navy);}
 :root[data-theme="dark"] .prompt-text{color:#fff;}
@@ -782,14 +789,14 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <p class="desc tool-desc"><b>Prepara un recurso antes de que lo necesites.</b></p>
       <div class="tool-cards">
         <div class="card">
-          <h3>🏆 Anclaje de confianza</h3>
+          <h3>🏆 Recordatorio de confianza</h3>
           <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte un estado de seguridad y confianza antes de una conversación difícil</b> o después de un momento de inseguridad.</p>
           <p class="desc"><b>¿Cómo se prepara?</b><br>Elige un gesto discreto —por ejemplo, <b>juntar pulgar e índice</b>— mientras recuerdas una situación en la que te sentiste <b>seguro, concentrado o satisfecho con tu trabajo</b>. Después puedes utilizar ese gesto como <b>recordatorio de ese estado</b>.</p>
           <button class="btn btn-green" onclick="openAnchor()">Configurar / Usar</button>
         </div>
         <div class="card">
-          <h3>👁️ Anclaje visual</h3>
+          <h3>👁️ Recordatorio visual</h3>
           <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte cómo quieres afrontar una situación</b> cuando aparezca tensión, desánimo o dudas.</p>
           <p class="desc"><b>¿Cómo se prepara?</b><br>Guarda una <b>frase, imagen o recordatorio</b> que puedas consultar rápidamente. La idea no es obligarte a pensar en positivo, sino <b>volver a tu objetivo y a la actitud que quieres mantener</b>.</p>
@@ -1020,7 +1027,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         </ul>
         <p><b>Anclajes</b> (prepáralos antes de necesitarlos):</p>
         <ul>
-          <li><b>Anclaje de confianza</b>: guarda uno o varios gestos, palabras clave y recuerdos de seguridad, y elige cuál usar antes de una conversación difícil.</li>
+          <li><b>Recordatorio de confianza</b>: guarda uno o varios gestos, palabras clave y recuerdos de seguridad, y elige cuál usar antes de una conversación difícil.</li>
           <li><b>Anclaje Visual</b>: guarda frases inspiradoras para releer cuando lo necesites.</li>
         </ul>
         <p><b>Seguimiento del turno</b>:</p>
@@ -1073,7 +1080,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <details class="help-item">
       <summary>💾 Mis datos</summary>
       <div class="help-body">
-        <p class="desc">Tus datos se guardan solo en este dispositivo y no se envían a ningún sitio. Eso significa que <b>no hay copia de seguridad automática</b>: si borras los datos del navegador o cambias de móvil/tablet, se pierden.</p>
+        <p class="desc">Tus datos se guardan solo en este dispositivo y no se envían a ningún sitio. Eso significa que <b>no hay copia de seguridad automática</b>: si borras los datos del navegador o cambias de móvil/tablet, se pierden. Puedes exportarlos desde aquí abajo para guardarlos a salvo.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button class="btn btn-navy" onclick="exportarDatos()">⬇️ Exportar datos</button>
           <button class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
@@ -1156,6 +1163,7 @@ function exportarDatos(){
   a.download = `wesser-datos-${new Date().toISOString().slice(0,10)}.json`;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  alert('✅ Datos exportados.');
 }
 function importarDatos(input){
   const file = input.files[0];
@@ -1559,13 +1567,13 @@ function openCheckpoint(editId){
   openTool('Checkpoint Mental', `
     <div class="card">
       <label>Nivel de fatiga física/mental (1‑10)</label>
-      <input type="range" id="cpFatiga" min="1" max="10" value="${fatiga}" oninput="document.getElementById('cpFatigaVal').textContent=this.value">
+      <input type="range" id="cpFatiga" min="1" max="10" value="${fatiga}" oninput="document.getElementById('cpFatigaVal').textContent=this.value+'/10'">
+      <div class="range-val" id="cpFatigaVal">${fatiga}/10</div>
       <div class="range-labels"><span>1 = nada</span><span>10 = mucha</span></div>
-      <div class="range-val" id="cpFatigaVal">${fatiga}</div>
       <label style="margin-top:14px;">Activación emocional (1‑10)</label>
-      <input type="range" id="cpEmocional" min="1" max="10" value="${emocional}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value">
+      <input type="range" id="cpEmocional" min="1" max="10" value="${emocional}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value+'/10'">
+      <div class="range-val" id="cpEmocionalVal">${emocional}/10</div>
       <div class="range-labels"><span>1 = baja</span><span>10 = alta</span></div>
-      <div class="range-val" id="cpEmocionalVal">${emocional}</div>
       <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
       <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
       <button class="btn btn-green" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
@@ -1770,7 +1778,7 @@ function openAnchor(){
   renderAnchorTool();
 }
 function renderAnchorTool(){
-  openTool('Anclaje de confianza', `
+  openTool('Recordatorio de confianza', `
     <div class="card">
       <label>Palabra clave</label>
       <input type="text" id="anchorWordInput" placeholder='Ej: "Confianza", "Calma", "Seguridad"'>
@@ -1804,7 +1812,7 @@ function delConfidenceAnchor(i){
 }
 function runAnchorGuide(i){
   const a = state.confidenceAnchors[i];
-  openTool('Anclaje de confianza', `
+  openTool('Recordatorio de confianza', `
     <div class="card" style="text-align:center;">
       <p class="desc">Repite tu gesto mientras recuerdas:</p>
       <p style="font-weight:700;font-size:17px;">«${escapeHtml(a.memory)}»</p>
@@ -1818,7 +1826,7 @@ function runAnchorGuide(i){
   const el = document.getElementById('anchorTimer');
   const t = setInterval(()=>{
     remaining--; el.textContent = remaining;
-    if(remaining<=0){ clearToolTimers(); closeTool(); }
+    if(remaining<=0){ clearInterval(t); showToolDone('Recordatorio de confianza', `runAnchorGuide(${i})`); }
   },1000);
   toolTimers.push(t);
 }
@@ -1865,9 +1873,9 @@ function openVisualAnchor(){
 }
 function renderVisualAnchorModal(){
   openModal(`
-    <h2>Anclaje Visual</h2>
-    <label>Nueva frase inspiradora</label>
-    <input type="text" id="newVisualPhrase" placeholder="Ej: Cada intento me acerca más al SÍ">
+    <h2>Recordatorio visual</h2>
+    <label>Nueva frase de enfoque</label>
+    <input type="text" id="newVisualPhrase" placeholder="Ej: Me centro en hacer bien el siguiente abordaje">
     <button class="btn btn-navy" onclick="addVisualAnchor()">Guardar frase</button>
     <div style="margin-top:16px;">
       ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
@@ -1911,16 +1919,17 @@ function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
 
 const KIT_HERRAMIENTAS_FIJAS = [
   'Suspiro fisiológico','Parar y decidir','Grounding 5-4-3-2-1','Tense & Release',
-  'Anclaje de confianza','Anclaje visual','Checkpoint Mental','Otro recurso personal'
+  'Recordatorio de confianza','Recordatorio visual','Checkpoint Mental','Antes de salir','Otro recurso personal'
 ];
 const KIT_TOOL_EXACT = {
   'Suspiro fisiológico': ()=>startBreath(60),
   'Parar y decidir': ()=>startPauseDecision(),
   'Grounding 5-4-3-2-1': ()=>startGrounding(),
   'Tense & Release': ()=>startTense(),
-  'Anclaje de confianza': ()=>openAnchor(),
-  'Anclaje visual': ()=>openVisualAnchor(),
-  'Checkpoint Mental': ()=>openCheckpoint()
+  'Recordatorio de confianza': ()=>openAnchor(),
+  'Recordatorio visual': ()=>openVisualAnchor(),
+  'Checkpoint Mental': ()=>openCheckpoint(),
+  'Antes de salir': ()=>startPreTurno()
 };
 /* Coincidencia por palabras clave: solo como respaldo para datos antiguos guardados como texto libre */
 const KIT_TOOL_MATCHERS = [
@@ -2457,6 +2466,7 @@ function renderResetStep(){
 function finalizarReset(){
   const pactoEl = document.getElementById('resetPactoInput');
   if(pactoEl) resetPacto = pactoEl.value.trim();
+  if(!resetPacto){ alert('Escribe tu pacto de permanencia antes de finalizar.'); return; }
   state.resetHistory.unshift({
     id: Date.now(), fecha: new Date().toLocaleString('es-ES'),
     senal: resetSenal, examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
