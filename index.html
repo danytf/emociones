@@ -137,7 +137,7 @@ main{
   flex:0 0 auto;display:flex;align-items:center;gap:7px;
   background:var(--card-bg);border:1px solid var(--border-color);border-radius:99px;
   padding:8px 14px 8px 10px;font-size:13.5px;font-weight:700;color:var(--text-primary);
-  white-space:nowrap;box-shadow:var(--shadow-lvl2);
+  white-space:nowrap;box-shadow:var(--shadow);
 }
 .ql-btn .ql-em{font-size:16px;}
 .ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
@@ -164,6 +164,9 @@ main{
 .view.active > #checkinHistorial{
   grid-column:1 / -1;
 }
+/* The grid's own gap already separates direct card children; without this,
+   .card's margin-bottom would add on top of the gap and double the spacing. */
+.view.active > .card{margin-bottom:0;}
 .accordion-block{width:100%;}
 .accordion-block details.help-item{background:var(--card-bg);}
 
