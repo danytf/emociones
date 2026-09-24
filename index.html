@@ -1058,7 +1058,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 
       <p class="desc" style="font-weight:700;margin-bottom:4px;">🔴 Ejemplo automático</p>
       <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«Esta zona es horrible. No vale la pena ni intentar parar.»</p>
-      <p class="desc">Puede llevar a <b>paradas sin energía, postura cerrada y abandono prematuro</b>.</p>
+      <p class="desc">Este pensamiento puede llevar a <b>hacer las paradas con menos energía, mostrar una postura más cerrada o abandonar antes de tiempo</b>.</p>
 
       <p class="desc" style="font-weight:700;margin-bottom:4px;">🟢 Ejemplo útil</p>
       <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«El flujo es menor, pero puedo adaptar mi entrada, mantener la calma y centrarme en hacer buenas conversaciones.»</p>
@@ -1078,7 +1078,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <option>Comparación con compañeros</option>
         <option>Presión por el objetivo</option>
         <option>Cambio de zona o ubicación</option>
-        <option>Otra</option>
+        <option>Otra…</option>
       </select>
       <div id="sepaSituacionOtraWrap" style="display:none;">
         <input type="text" id="sepaSituacionOtra" placeholder="Describe brevemente la situación">
@@ -1095,14 +1095,14 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <label>P · Pensamiento automático</label>
       <p class="desc" style="margin-top:-6px;">¿Qué me estoy diciendo?</p>
       <select id="sepaPensDestructivo" onchange="toggleSepaPensOtro()">
-        <option>No podré</option>
+        <option>No voy a poder</option>
         <option>Esta zona está quemada</option>
         <option>Nadie quiere colaborar</option>
         <option>Es culpa del responsable</option>
         <option>Siempre hace lo mismo</option>
         <option>No vale la pena</option>
         <option>¿Y si me voy a 0?</option>
-        <option>Otro</option>
+        <option>Otro…</option>
       </select>
       <div id="sepaPensOtroWrap" style="display:none;">
         <textarea id="sepaPensDestructivoLibre" placeholder="Escribe tu pensamiento..."></textarea>
@@ -1118,10 +1118,10 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <div class="chip-group">
         <div class="chip" onclick="insertAccion('Pausa consciente')">⏸️ Pausa consciente</div>
         <div class="chip" onclick="insertAccion('Respiración lenta')">🌬️ Respiración lenta</div>
-        <div class="chip" onclick="insertAccion('Regular el ritmo')">🎯 Regular el ritmo</div>
+        <div class="chip" onclick="insertAccion('Ajustar el ritmo')">🎯 Ajustar el ritmo</div>
         <div class="chip" onclick="insertAccion('Revisar mi técnica')">🔍 Revisar mi técnica</div>
         <div class="chip" onclick="insertAccion('Adaptar el speech')">🗣️ Adaptar el speech</div>
-        <div class="chip" onclick="insertAccion('Cambiar el enfoque o ubicación')">🚶 Cambiar el enfoque o ubicación</div>
+        <div class="chip" onclick="insertAccion('Cambiar el enfoque o la ubicación')">🚶 Cambiar el enfoque o la ubicación</div>
         <div class="chip" onclick="insertAccion('Pedir apoyo')">🤝 Pedir apoyo</div>
       </div>
       <textarea id="sepaAccion" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
@@ -1144,7 +1144,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     </div>
 
     <h3>📚 Historial</h3>
-    <p class="desc" style="margin-bottom:10px;">Revisa tus registros S-E-P-A para <b>detectar patrones, ver qué situaciones se repiten y descubrir qué respuestas te funcionan mejor</b>.</p>
+    <p class="desc" style="margin-bottom:10px;">Revisa tus registros S-E-P-A para <b>detectar situaciones que se repiten, observar tus patrones y descubrir qué respuestas te funcionan mejor</b>.</p>
     <div id="sepaHistorial"></div>
   </section>
 
@@ -1574,7 +1574,7 @@ renderWheel();
 /* ============ SEPA DIARY ============ */
 let selectedEmociones = [];
 let patronesRango = 7;
-const ACCION_LABELS = ['Pausa consciente','Respiración lenta','Regular el ritmo','Revisar mi técnica','Adaptar el speech','Cambiar el enfoque o ubicación','Pedir apoyo'];
+const ACCION_LABELS = ['Pausa consciente','Respiración lenta','Ajustar el ritmo','Revisar mi técnica','Adaptar el speech','Cambiar el enfoque o la ubicación','Pedir apoyo'];
 function renderEmocionChips(){
   const c = document.getElementById('sepaEmocionChips');
   c.innerHTML = EMOTIONS.map(e=>`<div class="chip" data-id="${e.id}">${emoji(e.id)} ${e.nombre} <span onclick="event.stopPropagation();showEmotion('${e.id}')" title="Ver ficha">ℹ️</span></div>`).join('');
