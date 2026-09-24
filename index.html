@@ -1644,7 +1644,33 @@ function showToolDone(title, repeatOnclick){
 
 /* ---- Antes de salir (pre-turno) ---- */
 function startPreTurno(){
+  const tienePlan = state.kitHerramienta && (state.kitSenales.length || state.kitAjuste);
   openTool('🚀 Antes de salir', `
+    ${tienePlan ? `
+      <div class="card kit-summary">
+        <h3>📋 Tu plan para hoy</h3>
+        <div class="kit-flow">
+          ${state.kitSenales.length ? `
+            <div class="kit-flow-step">
+              <span class="kit-flow-label">SI APARECE</span>
+              <p>${state.kitSenales.map(escapeHtml).join(' · ')}</p>
+            </div>
+            <div class="kit-flow-arrow">↓</div>
+          ` : ''}
+          <div class="kit-flow-step">
+            <span class="kit-flow-label">ME REGULO CON</span>
+            <p>${escapeHtml(state.kitHerramienta)}</p>
+          </div>
+          ${state.kitAjuste ? `
+            <div class="kit-flow-arrow">↓</div>
+            <div class="kit-flow-step">
+              <span class="kit-flow-label">AJUSTO</span>
+              <p>${escapeHtml(state.kitAjuste)}</p>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    ` : ''}
     <div class="card" style="text-align:left;">
       <p class="tool-meta">⏱️ 30–45 segundos</p>
       <p class="desc">Tres preguntas rápidas antes de empezar el turno.</p>
