@@ -106,12 +106,14 @@ header{
 .header-tabs button{
   flex:0 0 auto;background:rgba(255,255,255,.12);border:none;
   color:rgba(255,255,255,.85);font-weight:700;font-size:13px;
-  padding:9px 14px;border-radius:10px;white-space:nowrap;
+  padding:9px 14px;border-radius:10px;white-space:nowrap;min-height:44px;
   display:flex;align-items:center;gap:6px;
 }
 .header-tabs button .ic{font-size:15px;}
 .header-tabs button.active{background:#fff;color:var(--wesser-red);box-shadow:inset 0 -3px 0 var(--wesser-red-dark);}
 .header-tabs button.tab-reset{background:var(--reset-amber);color:#1A2B4C;}
+/* Reset a medias: punto visible (y aria-label descriptivo, ver renderResetTab) */
+.header-tabs button.tab-reset.pending::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--wesser-red-dark);box-shadow:0 0 0 2px #fff;}
 
 /* MAIN */
 main{
@@ -136,7 +138,7 @@ main{
   display:flex;align-items:center;gap:6px;text-align:left;
   background:var(--card-bg);border:1px solid var(--border-color);border-radius:14px;
   padding:9px 10px;font-size:13.5px;font-weight:700;color:var(--text-primary);
-  line-height:1.2;box-shadow:var(--shadow);
+  line-height:1.2;box-shadow:var(--shadow);min-height:48px;
 }
 .ql-btn .ql-em{font-size:16px;}
 .ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
@@ -253,6 +255,12 @@ main{
     transition-duration:0.01ms !important;
     scroll-behavior:auto !important;
   }
+  .view{animation:none;}
+  .btn:hover, .ql-btn:hover, .wheel-btn:hover, .chip:hover, .icon-btn:hover,
+  .btn:active, .reset-btn:active{transform:none !important;}
+  /* Respiración: el círculo no cambia de tamaño; la fase se indica con el texto (y el borde) */
+  .breath-circle, .breath-circle.grow{transform:none !important;}
+  .breath-circle.grow{box-shadow:0 0 0 6px rgba(14,165,233,.35), 0 8px 24px rgba(14,165,233,.35);}
 }
 .btn-primary{background:var(--wesser-red);color:#fff;}
 .btn-amber{background:var(--reset-amber);color:#1A2B4C;}
@@ -260,7 +268,7 @@ main{
 .btn-green{background:var(--success-green);color:#fff;}
 .btn-navy{background:var(--wesser-navy);color:#fff;}
 .btn-outline{background:transparent;color:var(--text-primary);border:1.5px solid var(--border-color);}
-.btn-sm{padding:10px 14px;min-height:40px;font-size:14px;width:auto;}
+.btn-sm{padding:10px 14px;min-height:44px;font-size:14px;width:auto;}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;}
 .btn-row .btn{flex:1 1 160px;}
 .btn[disabled]{opacity:.5;}
@@ -274,13 +282,25 @@ textarea{min-height:70px;resize:vertical;}
 label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
 
 .chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+/* Chips: <button type="button"> reales; los que seleccionan llevan aria-pressed */
 .chip{
-  padding:9px 13px;border-radius:99px;border:1.5px solid var(--border-color);
-  background:var(--card-bg);color:var(--text-primary);font-size:13px;font-weight:600;
-  cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;min-height:44px;
+  padding:9px 14px;border-radius:22px;border:1.5px solid var(--border-color);
+  background:var(--card-bg);color:var(--text-primary);font:inherit;font-size:13px;font-weight:600;
+  line-height:1.3;text-align:left;cursor:pointer;
 }
-.chip.selected{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;}
-.chip:focus-visible, button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible{outline:2.5px solid var(--wesser-red);outline-offset:2px;}
+/* Chip con título y descripción (señal principal del Reset): texto en bloque, no en columnas */
+.chip.chip-block{display:block;border-radius:14px;padding:10px 14px;}
+.chip.selected, .chip[aria-pressed="true"]{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;}
+/* Emoción del Diario: el chip selecciona y el botón ℹ️, independiente y separado, abre la ficha */
+.emo-pair{display:inline-flex;align-items:center;gap:6px;}
+.chip-info{
+  width:44px;height:44px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--border-color);
+  background:var(--card-bg);font-size:16px;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.chip:focus-visible, button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible{outline:2.5px solid var(--wesser-red);outline-offset:2px;}
+/* Sobre las cabeceras de color el contorno rojo no se vería: se usa blanco */
+header :focus-visible, .overlay-header :focus-visible{outline-color:#fff;}
 .chip-cat{font-size:12px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.3px;margin:22px 0 8px;}
 .chip-cat:first-child{margin-top:2px;}
 
@@ -308,11 +328,11 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 }
 .overlay-body{padding:24px 28px;max-width:900px;margin:0 auto;width:100%;flex:1;}
 .overlay-body.center-short{display:flex;flex-direction:column;justify-content:center;}
-.close-x{background:rgba(255,255,255,.2);border:none;color:#fff;width:38px;height:38px;border-radius:10px;font-size:18px;flex-shrink:0;}
-.close-x.labeled{width:auto;height:38px;padding:0 12px;display:flex;align-items:center;gap:6px;}
+.close-x{background:rgba(255,255,255,.2);border:none;color:#fff;width:44px;height:44px;border-radius:10px;font-size:18px;flex-shrink:0;}
+.close-x.labeled{width:auto;height:44px;padding:0 12px;display:flex;align-items:center;gap:6px;}
 .close-x.labeled .lbl{font-size:12.5px;font-weight:700;white-space:nowrap;}
 @media (max-width:600px){
-  .close-x.labeled{width:38px;padding:0;justify-content:center;}
+  .close-x.labeled{width:44px;padding:0;justify-content:center;}
   .close-x.labeled .lbl{display:none;}
 }
 .step-dots{display:flex;gap:6px;justify-content:center;margin:14px 0 4px;}
@@ -329,15 +349,17 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 .breath-circle.grow{transform:scale(1.3);}
 .timer-big{font-size:44px;font-weight:800;text-align:center;margin:8px 0;color:var(--wesser-navy);}
 :root[data-theme="dark"] .timer-big{color:#fff;}
-.check-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:10px;cursor:pointer;}
+/* Cada señal del check-in es un <label> con su casilla nativa: se anula el estilo global de label */
+.check-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:10px;cursor:pointer;
+  font-size:14px;font-weight:400;color:var(--text-primary);text-transform:none;letter-spacing:normal;}
 .check-item.checked{background:rgba(16,185,129,.08);border-color:var(--success-green);}
-.check-item input{width:20px;height:20px;margin-top:2px;flex-shrink:0;}
+.check-item input{width:24px;height:24px;margin:0;flex-shrink:0;}
 
 /* HISTORY */
 .history-item{border-left:4px solid var(--wesser-red);padding:10px 12px;margin-bottom:10px;background:var(--bg-main);border-radius:0 10px 10px 0;}
 .history-item .meta{font-size:12px;color:var(--text-secondary);margin-bottom:4px;}
-.history-item .del, .help-body .del{float:right;background:none;border:none;color:var(--alert-coral);font-size:13px;font-weight:700;}
-.history-item .edit, .help-body .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:13px;font-weight:700;margin-right:14px;}
+.history-item .del, .help-body .del{float:right;background:none;border:none;color:var(--alert-coral);font-size:13px;font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px -6px 0 0;}
+.history-item .edit, .help-body .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:13px;font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px 4px 0 0;}
 :root[data-theme="dark"] .history-item .edit, :root[data-theme="dark"] .help-body .edit{color:#cbd5e1;}
 
 /* WHEEL */
@@ -400,8 +422,8 @@ details.help-item summary{
   display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
 details.help-item summary::-webkit-details-marker{display:none;}
-details.help-item summary::after{content:'+';font-size:20px;color:var(--text-secondary);font-weight:400;flex-shrink:0;}
-details.help-item[open] summary::after{content:'–';}
+details.help-item summary::after{content:'+';content:'+' / '';font-size:20px;color:var(--text-secondary);font-weight:400;flex-shrink:0;}
+details.help-item[open] summary::after{content:'–';content:'–' / '';}
 details.help-item .help-body{padding:0 14px 16px;font-size:14px;color:var(--text-secondary);}
 details.help-item .help-body details.help-item{background:var(--card-bg);margin-top:12px;margin-bottom:12px;}
 details.help-item .help-body details.help-item summary{font-size:14px;}
@@ -423,6 +445,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 </style>
 </head>
 <body>
+<!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
+<div id="srStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <header>
   <h1 class="sr-only">Wesser · Gestión Emocional</h1>
@@ -439,7 +463,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button data-view="bienestar"><span class="ic">🌱</span><span class="lb">Bienestar</span></button>
       <button data-view="herramientas"><span class="ic">🧰</span><span class="lb">Herramientas</span></button>
       <button data-view="diario"><span class="ic">📓</span><span class="lb">Diario</span></button>
-      <button class="tab-reset" onclick="openReset()"><span class="ic">🆘</span><span class="lb">Reset</span></button>
+      <button type="button" class="tab-reset" id="tabReset" aria-haspopup="dialog" onclick="openReset()"><span class="ic" aria-hidden="true">🆘</span><span class="lb">Reset</span></button>
     </div>
     <div class="tabs-fade" aria-hidden="true"></div>
   </nav>
@@ -457,7 +481,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
       <button class="ql-btn" onclick="startVolverCalle()"><span class="ql-em">🔄</span><span class="ql-lb">Volver a calle</span></button>
       <button class="ql-btn" onclick="startCierreTurno()"><span class="ql-em">🏠</span><span class="ql-lb">Cierre de turno</span></button>
-      <button class="ql-btn ql-reset" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
+      <button class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
       <div id="qlMoreWrap" class="ql-more-collapsed">
         <button class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
         <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mala interacción</span></button>
@@ -468,7 +492,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <button class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em">👋</span><span class="ql-lb">Dudo en la parada</span></button>
         <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
       </div>
-      <button class="ql-btn ql-toggle" id="qlToggleBtn" onclick="toggleQlMore()"><span class="ql-em">▾</span><span class="ql-lb">Más situaciones</span></button>
+      <button class="ql-btn ql-toggle" id="qlToggleBtn" aria-expanded="false" aria-controls="qlMoreWrap" onclick="toggleQlMore()"><span class="ql-em">▾</span><span class="ql-lb">Más situaciones</span></button>
     </div>
   </div>
 
@@ -964,9 +988,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <input type="text" id="sepaSituacionOtra" placeholder="Describe brevemente la situación">
       </div>
 
-      <label>E · Emoción</label>
+      <label id="sepaEmocionLabel">E · Emoción</label>
       <p class="desc" style="margin-top:-6px;">¿Qué estoy sintiendo?</p>
-      <div class="chip-group" id="sepaEmocionChips"></div>
+      <div class="chip-group" id="sepaEmocionChips" role="group" aria-labelledby="sepaEmocionLabel"></div>
       <p class="desc" style="font-size:12.5px;">Puedes marcar más de una si has sentido varias a la vez.</p>
     </div>
 
@@ -993,16 +1017,16 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="btn btn-outline btn-sm" style="margin-bottom:10px;" onclick="sugerirReencuadre()">💡 Sugerir reencuadre</button>
       <textarea id="sepaPensConstructivo" placeholder="Es una zona difícil, pero todavía puedo aplicar técnica y centrarme en hacer buenas conversaciones..."></textarea>
 
-      <label>A · Acción inmediata</label>
+      <label for="sepaAccion">A · Acción inmediata</label>
       <p class="desc" style="margin-top:-6px;">¿Qué voy a hacer ahora?</p>
-      <div class="chip-group">
-        <div class="chip" onclick="insertAccion('Pausa consciente')">⏸️ Pausa consciente</div>
-        <div class="chip" onclick="insertAccion('Respiración lenta')">🌬️ Respiración lenta</div>
-        <div class="chip" onclick="insertAccion('Ajustar el ritmo')">🎯 Ajustar el ritmo</div>
-        <div class="chip" onclick="insertAccion('Revisar mi técnica')">🔍 Revisar mi técnica</div>
-        <div class="chip" onclick="insertAccion('Adaptar el speech')">🗣️ Adaptar el speech</div>
-        <div class="chip" onclick="insertAccion('Cambiar el enfoque o la ubicación')">🚶 Cambiar el enfoque o la ubicación</div>
-        <div class="chip" onclick="insertAccion('Pedir apoyo')">🤝 Pedir apoyo</div>
+      <div class="chip-group" role="group" aria-label="Acciones rápidas (se añaden al texto)">
+        <button type="button" class="chip" onclick="insertAccion('Pausa consciente')">⏸️ Pausa consciente</button>
+        <button type="button" class="chip" onclick="insertAccion('Respiración lenta')">🌬️ Respiración lenta</button>
+        <button type="button" class="chip" onclick="insertAccion('Ajustar el ritmo')">🎯 Ajustar el ritmo</button>
+        <button type="button" class="chip" onclick="insertAccion('Revisar mi técnica')">🔍 Revisar mi técnica</button>
+        <button type="button" class="chip" onclick="insertAccion('Adaptar el speech')">🗣️ Adaptar el speech</button>
+        <button type="button" class="chip" onclick="insertAccion('Cambiar el enfoque o la ubicación')">🚶 Cambiar el enfoque o la ubicación</button>
+        <button type="button" class="chip" onclick="insertAccion('Pedir apoyo')">🤝 Pedir apoyo</button>
       </div>
       <textarea id="sepaAccion" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
 
@@ -1500,6 +1524,27 @@ document.addEventListener('click', e=>{
   if(Object.prototype.hasOwnProperty.call(ACTIONS, name)) ACTIONS[name](el, e);
 });
 const dataId = el => Number(el.dataset.id);
+
+/* ============ UTILIDADES DE ACCESIBILIDAD ============ */
+const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+function motionOK(){ return !reducedMotionQuery.matches; }
+/* aria-pressed y la clase visual siempre juntos */
+function setPressed(el, on){ el.classList.toggle('selected', on); el.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+function chipAttrs(on){ return `class="chip${on ? ' selected' : ''}" aria-pressed="${on ? 'true' : 'false'}"`; }
+/* Anuncios para lector de pantalla por la región viva #srStatus. Solo cambios relevantes
+   (inicio, fase nueva, fin), nunca cada segundo. Los mensajes seguidos se agrupan en uno. */
+let announceTimer = null, announceBuf = [];
+function announce(msg){
+  announceBuf.push(msg);
+  clearTimeout(announceTimer);
+  announceTimer = setTimeout(()=>{
+    const el = document.getElementById('srStatus');
+    const text = announceBuf.join(' ');
+    announceBuf = [];
+    el.textContent = '';
+    setTimeout(()=>{ el.textContent = text; }, 40);  // vaciar antes asegura que se repita un mismo texto («Inhala»)
+  }, 60);
+}
 const dataIdx = el => Number(el.dataset.idx);
 
 /* ============ MIS DATOS: exportar / importar / borrar ============ */
@@ -1586,8 +1631,13 @@ function goto(view){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+view).classList.add('active');
   const activeBtn = document.querySelector(`#headerTabs button[data-view="${view}"]`);
-  document.querySelectorAll('#headerTabs button').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
-  if(activeBtn) activeBtn.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  // Navegación sencilla (no tabs ARIA): la sección activa se marca con aria-current
+  document.querySelectorAll('#headerTabs button[data-view]').forEach(b=>{
+    const on = b.dataset.view===view;
+    b.classList.toggle('active', on);
+    if(on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  if(activeBtn) activeBtn.scrollIntoView({behavior:motionOK() ? 'smooth' : 'auto', inline:'center', block:'nearest'});
   document.querySelector('main').scrollTo(0,0);
 }
 document.getElementById('headerTabs').addEventListener('click', e=>{
@@ -1619,6 +1669,7 @@ function toggleQlMore(){
   const wrap = document.getElementById('qlMoreWrap');
   const btn = document.getElementById('qlToggleBtn');
   wrap.className = qlMoreExpanded ? 'ql-more-expanded' : 'ql-more-collapsed';
+  btn.setAttribute('aria-expanded', qlMoreExpanded ? 'true' : 'false');
   btn.innerHTML = qlMoreExpanded
     ? '<span class="ql-em">▲</span><span class="ql-lb">Menos</span>'
     : '<span class="ql-em">▾</span><span class="ql-lb">Más situaciones</span>';
@@ -1731,20 +1782,18 @@ let patronesRango = 7;
 const ACCION_LABELS = ['Pausa consciente','Respiración lenta','Ajustar el ritmo','Revisar mi técnica','Adaptar el speech','Cambiar el enfoque o la ubicación','Pedir apoyo'];
 function renderEmocionChips(){
   const c = document.getElementById('sepaEmocionChips');
-  c.innerHTML = EMOTIONS.map(e=>`<div class="chip" data-id="${e.id}">${emoji(e.id)} ${e.nombre} <span class="chip-info" role="button" tabindex="0" data-action="showEmotion" data-value="${escapeHtml(e.id)}" title="Ver ficha" aria-label="Ver ficha de ${escapeHtml(e.nombre)}">ℹ️</span></div>`).join('');
-  c.querySelectorAll('.chip').forEach(ch=>{
-    ch.onclick = (ev)=>{
-      if(ev.target.closest('[data-action]')) return; // el ℹ️ abre la ficha, no selecciona
-      const id = ch.dataset.id;
-      if(selectedEmociones.includes(id)){
-        selectedEmociones = selectedEmociones.filter(x=>x!==id);
-        ch.classList.remove('selected');
-      } else {
-        selectedEmociones.push(id);
-        ch.classList.add('selected');
-      }
-    };
-  });
+  // Dos botones hermanos (no anidados): el chip marca/desmarca y ℹ️ abre la ficha
+  c.innerHTML = EMOTIONS.map(e=>`<span class="emo-pair">`
+    + `<button type="button" ${chipAttrs(false)} data-action="toggleEmocion" data-id="${escapeHtml(e.id)}"><span aria-hidden="true">${emoji(e.id)}</span> ${escapeHtml(e.nombre)}</button>`
+    + `<button type="button" class="chip-info" data-action="showEmotion" data-value="${escapeHtml(e.id)}" title="Ver ficha de ${escapeHtml(e.nombre)}" aria-label="Ver ficha de ${escapeHtml(e.nombre)}" aria-haspopup="dialog">ℹ️</button>`
+    + `</span>`).join('');
+}
+function syncEmocionChips(){
+  document.querySelectorAll('#sepaEmocionChips [data-action="toggleEmocion"]').forEach(ch=>setPressed(ch, selectedEmociones.includes(ch.dataset.id)));
+}
+function toggleEmocion(id){
+  selectedEmociones = selectedEmociones.includes(id) ? selectedEmociones.filter(x=>x!==id) : [...selectedEmociones, id];
+  syncEmocionChips();
 }
 renderEmocionChips();
 
@@ -1800,7 +1849,7 @@ function guardarSepa(){
   }
   save();
   selectedEmociones = [];
-  document.querySelectorAll('#sepaEmocionChips .chip').forEach(x=>x.classList.remove('selected'));
+  syncEmocionChips();
   document.getElementById('sepaSituacionOtra').value='';
   toggleSituacionOtra();
   document.getElementById('sepaPensDestructivoLibre').value='';
@@ -1819,9 +1868,7 @@ function editarSepa(id){
   document.getElementById('sepaSituacionOtra').value = situacionMatches ? '' : (e.situacion||'');
   toggleSituacionOtra();
   selectedEmociones = [...(e.emociones||[])];
-  document.querySelectorAll('#sepaEmocionChips .chip').forEach(ch=>{
-    ch.classList.toggle('selected', selectedEmociones.includes(ch.dataset.id));
-  });
+  syncEmocionChips();
   const pensSelect = document.getElementById('sepaPensDestructivo');
   const matchesOption = Array.from(pensSelect.options).some(o=>o.value===e.pensD && o.value!=='Otro');
   pensSelect.value = matchesOption ? e.pensD : 'Otro';
@@ -1831,7 +1878,7 @@ function editarSepa(id){
   document.getElementById('sepaAccion').value = e.accion||'';
   document.getElementById('sepaSaveBtn').textContent = 'Actualizar registro';
   document.getElementById('sepaCancelBtn').style.display = 'block';
-  document.getElementById('sepaSituacion').scrollIntoView({behavior:'smooth', block:'center'});
+  document.getElementById('sepaSituacion').scrollIntoView({behavior:motionOK() ? 'smooth' : 'auto', block:'center'});
 }
 function cancelarEdicionSepa(){
   editingSepaId = null;
@@ -1979,8 +2026,8 @@ function openCheckpoint(editId){
       <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
       <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
       <p style="margin-top:14px;"><b>¿Qué hago ahora?</b></p>
-      <div class="btn-row" id="cpDecisionRow" style="flex-wrap:wrap;">
-        ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" data-decision="${escapeHtml(o.v)}" data-action="setCpDecision" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
+      <div class="btn-row" id="cpDecisionRow" role="group" aria-label="¿Qué hago ahora?" style="flex-wrap:wrap;">
+        ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" aria-pressed="${decision===o.v}" data-decision="${escapeHtml(o.v)}" data-action="setCpDecision" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
       </div>
       <input type="hidden" id="cpDecision" value="${escapeHtml(decision)}">
       <button class="btn btn-green" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
@@ -1991,6 +2038,7 @@ function setCpDecision(v){
   document.getElementById('cpDecision').value = v;
   document.querySelectorAll('#cpDecisionRow button').forEach(b=>{
     b.className = 'btn ' + (b.dataset.decision===v ? 'btn-amber' : 'btn-outline');
+    b.setAttribute('aria-pressed', b.dataset.decision===v ? 'true' : 'false');
   });
 }
 function guardarCheckpoint(){
@@ -2042,10 +2090,10 @@ function renderExito(){
   openTool('🟢 ¿Qué ha funcionado?', `
     <div class="card" style="text-align:left;">
       <p class="desc">Piensa en una conversación que haya ido bien. No es para puntuarte, es para quedarte con lo que funciona.</p>
-      <p><b>¿Qué ha funcionado?</b></p>
-      <div class="chip-group">
-        ${EXITO_OPCIONES.map(o=>`<div class="chip ${exitoConducta===o?'selected':''}" data-action="selectExitoConducta" data-value="${escapeHtml(o)}">${escapeHtml(o)}</div>`).join('')}
-        <div class="chip ${exitoConducta==='Otra'?'selected':''}" data-action="selectExitoConducta" data-value="Otra">Otra</div>
+      <p id="exitoLabel"><b>¿Qué ha funcionado?</b></p>
+      <div class="chip-group" role="group" aria-labelledby="exitoLabel">
+        ${EXITO_OPCIONES.map(o=>`<button type="button" ${chipAttrs(exitoConducta===o)} data-action="selectExitoConducta" data-value="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join('')}
+        <button type="button" ${chipAttrs(exitoConducta==='Otra')} data-action="selectExitoConducta" data-value="Otra">Otra</button>
       </div>
       <div id="exitoOtraWrap" style="${exitoConducta==='Otra'?'':'display:none;'}">
         <textarea id="exitoOtraInput" placeholder="Escribe qué ha funcionado..." oninput="exitoOtraTexto=this.value;">${escapeHtml(exitoOtraTexto)}</textarea>
@@ -2115,6 +2163,7 @@ let toolRepeatFn = null;
 function showToolDone(title, repeatFn){
   clearToolTimers();
   toolRepeatFn = repeatFn;
+  announce(`${title}: completado.`);
   openTool(title, `
     <div class="card" style="text-align:center;">
       <p style="font-size:40px;">✅</p>
@@ -2269,6 +2318,7 @@ const BREATH_SEQUENCE = [
 function stepBreathCycle(circleEl, idx){
   const step = BREATH_SEQUENCE[idx % BREATH_SEQUENCE.length];
   circleEl.textContent = step.label;
+  announce(step.label + '.');
   circleEl.classList.toggle('grow', step.label !== 'Exhala lento');
   const t = setTimeout(()=>stepBreathCycle(circleEl, idx+1), step.ms);
   toolTimers.push(t);
@@ -2278,10 +2328,11 @@ function startBreath(seconds){
     <div class="card" style="text-align:center;">
       <p class="desc">Inhala profundo por la nariz (2-3s), una segunda inhalación corta (1s), y exhala lentamente por la boca (6-8s) hasta vaciar los pulmones.</p>
       <div class="breath-circle" id="breathCircle">Inhala</div>
-      <div class="timer-big" id="breathTimer">${seconds}</div>
+      <div class="timer-big" role="timer" id="breathTimer">${seconds}</div>
       <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
     </div>
   `);
+  announce(`Suspiro fisiológico: ${seconds} segundos. Sigue las fases que se van indicando.`);
   let remaining = seconds;
   const circle = document.getElementById('breathCircle');
   const timerEl = document.getElementById('breathTimer');
@@ -2410,9 +2461,9 @@ function selectRP(val){
   openTool('🎯 Resultado vs. Proceso', `
     <div class="card" style="text-align:left;">
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Vuelve a una conducta que sí puedas ejecutar ahora.</p>
-      <p><b>Elige tu foco para la siguiente parada</b></p>
-      <div class="chip-group">
-        ${RP_PROCESO_OPCIONES.map(o=>`<div class="chip" data-action="finalizarRP" data-value="${escapeHtml(o)}">${escapeHtml(o)}</div>`).join('')}
+      <p id="rpLabel"><b>Elige tu foco para la siguiente parada</b></p>
+      <div class="chip-group" role="group" aria-labelledby="rpLabel">
+        ${RP_PROCESO_OPCIONES.map(o=>`<button type="button" class="chip" data-action="finalizarRP" data-value="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join('')}
       </div>
     </div>
   `);
@@ -2530,10 +2581,10 @@ function renderNoSeQueNecesito(){
     <div class="card" style="text-align:left;">
       <p class="desc">Responde estas 4 preguntas rápidas y te sugerimos una herramienta.</p>
       ${NSQN_QUESTIONS.map(q=>`
-        <p style="margin-top:14px;"><b>${q.q}</b></p>
-        <div class="btn-row">
-          <button class="btn btn-sm ${nsqnAnswers[q.key]===true?'btn-navy':'btn-outline'}" style="flex:1 1 80px;" data-action="nsqnAnswer" data-value="${escapeHtml(q.key)}" data-answer="1">Sí</button>
-          <button class="btn btn-sm ${nsqnAnswers[q.key]===false?'btn-navy':'btn-outline'}" style="flex:1 1 80px;" data-action="nsqnAnswer" data-value="${escapeHtml(q.key)}" data-answer="0">No</button>
+        <p style="margin-top:14px;" id="nsqn-${q.key}"><b>${q.q}</b></p>
+        <div class="btn-row" role="group" aria-labelledby="nsqn-${q.key}">
+          <button type="button" class="btn btn-sm ${nsqnAnswers[q.key]===true?'btn-navy':'btn-outline'}" aria-pressed="${nsqnAnswers[q.key]===true}" style="flex:1 1 80px;" data-action="nsqnAnswer" data-value="${escapeHtml(q.key)}" data-answer="1">Sí</button>
+          <button type="button" class="btn btn-sm ${nsqnAnswers[q.key]===false?'btn-navy':'btn-outline'}" aria-pressed="${nsqnAnswers[q.key]===false}" style="flex:1 1 80px;" data-action="nsqnAnswer" data-value="${escapeHtml(q.key)}" data-answer="0">No</button>
         </div>
       `).join('')}
     </div>
@@ -2617,10 +2668,11 @@ function runAnchorGuide(i){
       <p style="font-weight:700;font-size:17px;">«${escapeHtml(a.memory)}»</p>
       <p class="desc" style="margin-top:14px;">Repite tu palabra clave:</p>
       <p style="font-size:26px;font-weight:800;color:var(--success-green);">${escapeHtml(a.word)}</p>
-      <div class="timer-big" id="anchorTimer">30</div>
+      <div class="timer-big" role="timer" id="anchorTimer">30</div>
       <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
     </div>
   `);
+  announce('Recordatorio de confianza: 30 segundos. Repite tu gesto mientras recuerdas ese momento y di tu palabra clave.');
   let remaining = 30;
   const el = document.getElementById('anchorTimer');
   const t = setInterval(()=>{
@@ -2635,7 +2687,7 @@ const tenseGroups = [
   {name:'Puños', emoji:'✊'}, {name:'Brazos', emoji:'💪'}, {name:'Hombros', emoji:'🤷'}, {name:'Piernas', emoji:'🦵'}
 ];
 let tenseIdx = 0, tensePhase = 'tense';
-function startTense(){ tenseIdx=0; runTensePhase('tense',5); }
+function startTense(){ tenseIdx=0; announce(`Tense & Release: ${tenseGroups.length} grupos musculares, 5 segundos de tensión y 5 de relajación cada uno.`); runTensePhase('tense',5); }
 function runTensePhase(phase, secs){
   tensePhase = phase;
   const g = tenseGroups[tenseIdx];
@@ -2645,10 +2697,11 @@ function runTensePhase(phase, secs){
       <p style="font-size:40px;">${g.emoji}</p>
       <h3>${g.name}</h3>
       <p class="desc">${phase==='tense' ? 'Tensa de forma firme pero cómoda, sin dolor...' : 'Suelta lentamente y nota la liberación...'}</p>
-      <div class="timer-big" id="tenseTimer">${secs}</div>
+      <div class="timer-big" role="timer" id="tenseTimer">${secs}</div>
     </div>
   `);
   clearToolTimers();
+  announce(`${g.name}: ${phase==='tense' ? 'tensa' : 'suelta'}.`);
   let remaining = secs;
   const el = document.getElementById('tenseTimer');
   const t = setInterval(()=>{
@@ -2733,10 +2786,10 @@ function renderPedirFeedback(){
   openTool('🗣️ Pide feedback', `
     <div class="card" style="text-align:left;">
       <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Necesito una observación, no que me digas si lo hago bien o mal."</p>
-      <p><b>Elige una sola petición concreta</b></p>
-      <div class="chip-group">
-        ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<div class="chip ${pedirFeedbackSel===o.v?'selected':''}" data-action="selectPedirFeedback" data-value="${escapeHtml(o.v)}">${o.em} ${escapeHtml(o.v)}</div>`).join('')}
-        <div class="chip ${pedirFeedbackSel==='Otro'?'selected':''}" data-action="selectPedirFeedback" data-value="Otro">✍️ Otra petición</div>
+      <p id="pedirLabel"><b>Elige una sola petición concreta</b></p>
+      <div class="chip-group" role="group" aria-labelledby="pedirLabel">
+        ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<button type="button" ${chipAttrs(pedirFeedbackSel===o.v)} data-action="selectPedirFeedback" data-value="${escapeHtml(o.v)}"><span aria-hidden="true">${o.em}</span> ${escapeHtml(o.v)}</button>`).join('')}
+        <button type="button" ${chipAttrs(pedirFeedbackSel==='Otro')} data-action="selectPedirFeedback" data-value="Otro"><span aria-hidden="true">✍️</span> Otra petición</button>
       </div>
       <div id="pedirFeedbackOtroWrap" style="${pedirFeedbackSel==='Otro'?'':'display:none;'}">
         <textarea id="pedirFeedbackOtroInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe qué quieres pedir...">${escapeHtml(pedirFeedbackOtro)}</textarea>
@@ -2893,6 +2946,9 @@ const CHECKIN_TITLES = CHECKIN_SECTIONS.flatMap(s=>s.items.map(i=>i.match(/<b>(.
    exactamente con una etiqueta de la app; cualquier otra (datos antiguos o importados) se
    muestra como texto plano, sin etiquetas. */
 const CHECKIN_LABELS = new Set(CHECKIN_SECTIONS.flatMap(s=>s.items));
+/* Espacio tras el salto de línea: sin él, el nombre accesible junta título y descripción («cansadoLlego») */
+function a11yLabel(label){ return label.replace(/<br>/g, '<br> '); }
+function checkinTitle(label){ const m = String(label).match(/<b>(.*?)<\/b>/); return m ? m[1] : String(label).replace(/<[^>]*>/g, ''); }
 function checkinItemHtml(item){
   if(CHECKIN_LABELS.has(item)) return item;
   return escapeHtml(String(item).replace(/<br\s*\/?>/gi, ' — ').replace(/<[^>]*>/g, ''));
@@ -2925,7 +2981,16 @@ function syncResetProgress(){
 }
 function saveResetProgress(){ if(syncResetProgress()) save(); }
 function saveResetProgressSoon(){ if(syncResetProgress()) saveSoon(); }
-function clearResetProgress(){ state.resetProgress = null; save(); }
+function clearResetProgress(){ state.resetProgress = null; save(); renderResetTab(); }
+/* El botón Reset abre un diálogo (no es una sección) y avisa si hay un Reset a medias */
+function renderResetTab(){
+  const b = document.getElementById('tabReset');
+  if(!b) return;
+  const pending = !!state.resetProgress;
+  b.classList.toggle('pending', pending);
+  b.setAttribute('aria-label', pending ? 'Reset: tienes uno a medias. Abre el Modo Reset' : 'Reset: abre el Modo Reset');
+  b.title = pending ? 'Tienes un Reset a medias' : 'Abrir el Modo Reset';
+}
 
 function openReset(){
   Overlays.open('reset');
@@ -3038,7 +3103,7 @@ function renderResetStep(){
       <div class="card">
         <p><b>🚨 Mis señales de alerta</b></p>
         <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una dinámica que no te está ayudando.</p>
-        <div class="chip-group" id="kitSenalChips">${CHECKIN_TITLES.map(s=>`<div class="chip ${state.kitSenales.includes(s)?'selected':''}" data-action="toggleKitSenal" data-value="${escapeHtml(s)}">${escapeHtml(s)}</div>`).join('')}</div>
+        <div class="chip-group" id="kitSenalChips" role="group" aria-label="Mis señales de alerta (máximo 3)">${CHECKIN_TITLES.map(s=>`<button type="button" ${chipAttrs(state.kitSenales.includes(s))} data-action="toggleKitSenal" data-value="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('')}</div>
 
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
         <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
@@ -3121,10 +3186,10 @@ function renderResetStep(){
         <div class="card">
           <h3>${s.title}</h3>
           ${s.items.map((label,ii)=>`
-            <div class="check-item ${checkinState[si][ii]?'checked':''}" data-action="toggleCheckinItem" data-si="${si}" data-ii="${ii}">
-              <input type="checkbox" ${checkinState[si][ii]?'checked':''}>
-              <span>${label}</span>
-            </div>`).join('')}
+            <label class="check-item ${checkinState[si][ii]?'checked':''}">
+              <input type="checkbox" ${checkinState[si][ii]?'checked':''} data-action="toggleCheckinItem" data-si="${si}" data-ii="${ii}">
+              <span>${a11yLabel(label)}</span>
+            </label>`).join('')}
         </div>
       `).join('')}
       <div class="card">
@@ -3176,7 +3241,7 @@ function renderResetStep(){
   else if(resetStep===1){
     const chips = resetCheckinItems.length ? `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>De lo marcado en tu check-in, elige la principal.</p>
-      <div class="chip-group">${resetCheckinItems.map(s=>`<div class="chip ${resetSenal===s?'selected':''}" data-action="selectSenal">${s}</div>`).join('')}</div>
+      <div class="chip-group" role="group" aria-label="Señal principal">${resetCheckinItems.map(s=>`<button type="button" ${chipAttrs(resetSenal===checkinTitle(s)).replace('class="chip', 'class="chip chip-block')} data-action="selectSenal" data-value="${escapeHtml(checkinTitle(s))}">${a11yLabel(s)}</button>`).join('')}</div>
     ` : `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el «no», cansancio previo, hacer menos paradas, trabajar en automático…</p>
       <textarea id="resetSenalInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe tu señal principal..." oninput="resetSenal=this.value;saveResetProgressSoon();">${escapeHtml(resetSenal)}</textarea>
@@ -3189,17 +3254,23 @@ function renderResetStep(){
         <p class="desc"><b>Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.</b></p>
         <p class="desc">Reconocer lo que está ocurriendo <b>sin juzgarte por ello</b> es el primer paso para entender qué puede estar cambiando y decidir qué ajustar.</p>
         <div class="breath-circle" id="resetBreathCircle">Inhala</div>
-        <div class="timer-big" id="resetBreathTimer">30</div>
+        <div class="timer-big" role="timer" id="resetBreathTimer">30</div>
       </div>
       <div class="card" style="text-align:left;">${chips}</div>
       <button class="btn btn-amber" onclick="if(document.getElementById('resetSenalInput')) resetSenal=document.getElementById('resetSenalInput').value.trim(); if(!resetSenal||!resetSenal.trim()){ alert('Indica tu señal principal antes de continuar.'); return; } resetGoto(2);">Continuar</button>`;
     let remaining=30;
     const circle = document.getElementById('resetBreathCircle');
     const timerEl = document.getElementById('resetBreathTimer');
+    announce('Respiración guiada de 30 segundos.');
     stepBreathCycle(circle, 0);
     const t2 = setInterval(()=>{
       remaining--; timerEl.textContent = Math.max(remaining,0);
-      if(remaining<=0){ clearToolTimers(); }
+      if(remaining<=0){
+        clearToolTimers();
+        circle.textContent = 'Hecho';
+        circle.classList.remove('grow');
+        announce('Respiración completada. Indica tu señal principal y continúa.');
+      }
     },1000);
     toolTimers.push(t2);
   }
@@ -3270,9 +3341,9 @@ function renderResetStep(){
         <h3>🎯 Elige 1 ajuste</h3>
         <p class="desc">Selecciona <b>una conducta concreta que puedas aplicar durante las próximas 10 paradas</b>.</p>
         ${Object.entries(MICROAUDITORIA).map(([cat,items])=>`
-          <div class="chip-cat">${cat}</div>
-          <div class="chip-group">
-            ${items.map(m=>`<div class="chip ${resetMicro===m?'selected':''}" data-action="selectMicro" data-value="${escapeHtml(m)}">${escapeHtml(m)}</div>`).join('')}
+          <div class="chip-cat" aria-hidden="true">${cat}</div>
+          <div class="chip-group" role="group" aria-label="${escapeHtml(cat.replace(/^\S+\s/, ''))}">
+            ${items.map(m=>`<button type="button" ${chipAttrs(resetMicro===m)} data-action="selectMicro" data-value="${escapeHtml(m)}">${escapeHtml(m)}</button>`).join('')}
           </div>
         `).join('')}
       </div>
@@ -3319,7 +3390,7 @@ function renderResetStep(){
         <h3>🔎 ¿Qué he aprendido?</h3>
         <p class="desc">Después de probar el ajuste durante 10 paradas, ¿qué quieres hacer con él?</p>
         <div class="btn-row" style="flex-wrap:wrap;">
-          ${opciones.map(o=>`<button class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" data-action="setAprendizaje" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
+          ${opciones.map(o=>`<button type="button" class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" aria-pressed="${resetAprendizaje===o.v}" data-action="setAprendizaje" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
         </div>
         <label style="margin-top:14px;">¿Qué has observado? (opcional)</label>
         <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgressSoon();">${escapeHtml(resetObservacion)}</textarea>
@@ -3393,41 +3464,27 @@ function repetirAjuste(id){
   Overlays.open('reset');
   renderResetStep();
 }
-function selectSenal(el){ resetSenal = cleanStr(el.textContent, LIMITS.shortStr); saveResetProgress(); renderResetStep(); }
+/* Sin re-render: re-pintar el paso reiniciaría la respiración guiada de 30 s */
+function selectSenal(el){
+  resetSenal = cleanStr(el.dataset.value, LIMITS.shortStr);
+  el.parentElement.querySelectorAll('[data-action="selectSenal"]').forEach(b=>setPressed(b, b === el));
+  saveResetProgress();
+}
 function selectMicro(m){ resetMicro = m; saveResetProgress(); renderResetStep(); }
 function resetGoto(step){ resetStep = step; saveResetProgress(); renderResetStep(); }
 function incrementStop(){ if(resetStops<10) resetStops++; saveResetProgress(); renderResetStep(); }
 
 
-function enhanceChip(el){
-  if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
-  if(!el.hasAttribute('role')) el.setAttribute('role','button');
-  el.setAttribute('aria-pressed', el.classList.contains('selected') ? 'true' : 'false');
-}
-function enhanceAllChips(root){
-  (root||document).querySelectorAll('.chip').forEach(enhanceChip);
-}
 /* Límite de longitud en todos los campos de texto (también los creados dinámicamente),
    alineado con los límites de saneamiento. Respeta un maxlength ya puesto a mano. */
 function applyInputLimits(root){
   (root||document).querySelectorAll('textarea:not([maxlength])').forEach(el=>el.setAttribute('maxlength', LIMITS.longStr));
   (root||document).querySelectorAll('input[type="text"]:not([maxlength])').forEach(el=>el.setAttribute('maxlength', LIMITS.shortStr));
 }
-const chipObserver = new MutationObserver((mutations)=>{
-  for(const m of mutations){
-    if(m.type==='childList'){
-      m.addedNodes.forEach(node=>{
-        if(node.nodeType!==1) return;
-        if(node.classList && node.classList.contains('chip')) enhanceChip(node);
-        if(node.querySelectorAll){ node.querySelectorAll('.chip').forEach(enhanceChip); applyInputLimits(node); }
-      });
-    } else if(m.type==='attributes' && m.target.classList && m.target.classList.contains('chip')){
-      enhanceChip(m.target);
-    }
-  }
+const inputLimitObserver = new MutationObserver((mutations)=>{
+  for(const m of mutations) m.addedNodes.forEach(node=>{ if(node.nodeType===1 && node.querySelectorAll) applyInputLimits(node); });
 });
-chipObserver.observe(document.body, {childList:true, subtree:true, attributes:true, attributeFilter:['class']});
-enhanceAllChips();
+inputLimitObserver.observe(document.body, {childList:true, subtree:true});
 applyInputLimits();
 
 /* ============ GESTOR DE OVERLAYS ============
@@ -3444,7 +3501,7 @@ applyInputLimits();
 const Overlays = (()=>{
   const DEFS = {
     reset: { root:'resetOverlay', dialog:'resetOverlay', level:1, persistent:true,
-             onClose(){ clearToolTimers(); flushSave(); } },   // el progreso del Reset y el Kit se guardan solos
+             onClose(){ clearToolTimers(); flushSave(); renderResetTab(); } },   // el progreso del Reset y el Kit se guardan solos
     help:  { root:'helpOverlay',  dialog:'helpOverlay',  level:1 },
     tool:  { root:'toolOverlay',  dialog:'toolOverlay',  level:2, onClose(){ clearToolTimers(); } },
     modal: { root:'modalBack',    dialog:'modalSheet',   level:3 }
@@ -3461,7 +3518,7 @@ const Overlays = (()=>{
     const t = top();
     const topRoot = t ? root(t) : null;
     for(const el of document.body.children){
-      if(el.tagName === 'SCRIPT') continue;
+      if(el.tagName === 'SCRIPT' || el.id === 'srStatus') continue;
       const blocked = !!t && el !== topRoot;
       el.inert = blocked;
       if(blocked) el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
@@ -3572,14 +3629,6 @@ const Overlays = (()=>{
   return { open, close, requestClose, isOpen, top };
 })();
 
-/* ============ ACCESIBILIDAD ============ */
-document.addEventListener('keydown', (e)=>{
-  // Chips y demás elementos role="button" no nativos se activan con Enter/Espacio como un botón
-  if((e.key==='Enter' || e.key===' ') && e.target.matches && e.target.matches('.chip, [role="button"]:not(button)')){
-    e.preventDefault();
-    e.target.click();
-  }
-});
 
 /* ============ REGISTRO DE ACCIONES ============ */
 Object.assign(ACTIONS, {
@@ -3604,13 +3653,18 @@ Object.assign(ACTIONS, {
   toggleKitSenal: el => toggleKitSenal(el.dataset.value),
   borrarResetHistorial: el => borrarResetHistorial(dataId(el)),
   repetirAjuste: el => repetirAjuste(dataId(el)),
-  toggleCheckinItem: el => toggleCheckinItem(Number(el.dataset.si), Number(el.dataset.ii)),
+  toggleCheckinItem: el => {
+    checkinState[Number(el.dataset.si)][Number(el.dataset.ii)] = el.checked;
+    el.closest('.check-item').classList.toggle('checked', el.checked);
+  },
+  toggleEmocion: el => toggleEmocion(el.dataset.id),
   selectSenal: el => selectSenal(el),
   selectMicro: el => selectMicro(el.dataset.value),
   setAprendizaje: el => { resetAprendizaje = el.dataset.value; saveResetProgress(); renderResetStep(); }
 });
 
 /* ============ INIT ============ */
+renderResetTab();
 goto('aprender');
 </script>
 </body>
