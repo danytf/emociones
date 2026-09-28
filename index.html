@@ -2947,7 +2947,7 @@ function renderResetStep(){
         <label>Mi forma de trabajar → puedo revisarla y ajustarla</label>
         <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgress();">${escapeHtml(resetExamRendimiento)}</textarea>
       </div>
-      <button class="btn btn-amber" onclick="if(!resetExamResultado.trim()||!resetExamRendimiento.trim()){ alert('Completa el contexto y tu actuación antes de continuar.'); return; } resetGoto(3);">Continuar</button>
+      <button class="btn btn-amber" onclick="if(!resetExamResultado.trim()||!resetExamRendimiento.trim()){ alert('Completa el contexto y tu forma de trabajar antes de continuar.'); return; } resetGoto(3);">Continuar</button>
     `;
   }
   else if(resetStep===3){
