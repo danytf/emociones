@@ -142,7 +142,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await page.locator('button[aria-label="Abrir ayuda"]').focus();
   await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Tab');
   const oc = await page.evaluate(() => getComputedStyle(document.activeElement).outlineColor);
-  ok(oc === 'rgb(211, 47, 47)', 'foco visible en rojo de marca sobre la cabecera: ' + oc);
+  ok(oc === 'rgb(204, 46, 52)', 'foco visible en rojo de marca sobre la cabecera: ' + oc);
 
   ok(errors.length === 0, 'sin errores de JS: ' + errors.join(' | '));
   await browser.close();

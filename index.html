@@ -10,9 +10,11 @@
 <style>
 :root{
   color-scheme:light;  /* controles nativos (selects, barras de desplazamiento…) acordes al tema */
-  --wesser-red:#D32F2F;
-  --wesser-red-dark:#B71C1C;
-  --wesser-navy:#1A2B4C;
+  /* Paleta corporativa Wesser (wesser.es): rojo #CC2E34, negro, antracita #292C2F,
+     gris verdoso #44514E y fondo #F2F4F4. El antiguo «navy» pasa a antracita. */
+  --wesser-red:#CC2E34;
+  --wesser-red-dark:#A8242A;
+  --wesser-navy:#292C2F;
   --reset-amber:#F59E0B;
   --reset-amber-dark:#B45309;
   --calm-blue:#0369A1;
@@ -22,24 +24,24 @@
   --ok-text:#047857;
   --danger:#B91C1C;
   --asco-purple:#6D28D9;
-  --bg-main:#F8FAFC;
+  --bg-main:#F2F4F4;
   --card-bg:#FFFFFF;
-  --text-primary:#0F172A;
-  --text-secondary:#475569;
-  --border-color:#CBD5E1;
-  --shadow:0 2px 8px rgba(15,23,42,0.08);
-  --shadow-lvl2:0 6px 20px rgba(15,23,42,0.12);
+  --text-primary:#1C1F21;
+  --text-secondary:#4A5250;
+  --border-color:#D5DADA;
+  --shadow:0 2px 8px rgba(28,31,33,0.07);
+  --shadow-lvl2:0 6px 20px rgba(28,31,33,0.12);
   --radius:16px;
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
   --error-text:#FCA5A5;
   --ok-text:#6EE7B7;
-  --bg-main:#0B1120;
-  --card-bg:#141B2E;
-  --text-primary:#F1F5F9;
-  --text-secondary:#94A3B8;
-  --border-color:#243047;
+  --bg-main:#1B1D1F;
+  --card-bg:#292C2F;
+  --text-primary:#F2F4F4;
+  --text-secondary:#B4BCB9;
+  --border-color:#3C4145;
   --shadow:0 2px 10px rgba(0,0,0,0.4);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -90,7 +92,7 @@ header{
 }
 .reset-btn{
   background:var(--reset-amber);
-  color:#1A2B4C;font-weight:800;
+  color:#292C2F;font-weight:800;
   border:none;border-radius:12px;
   padding:0 14px;height:42px;font-size:14px;
   display:flex;align-items:center;gap:6px;
@@ -141,7 +143,7 @@ header{
   .header-tabs{margin-top:0;}
   .tabs-fade{top:0;}
 }
-.header-tabs button.tab-reset{background:var(--reset-amber);color:#1A2B4C;}
+.header-tabs button.tab-reset{background:var(--reset-amber);color:#292C2F;}
 /* Reset a medias: punto visible (y aria-label descriptivo, ver renderResetTab) */
 .header-tabs button.tab-reset.pending::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--wesser-red-dark);box-shadow:0 0 0 2px #fff;}
 
@@ -171,7 +173,7 @@ main{
   line-height:1.2;box-shadow:var(--shadow);min-height:48px;
 }
 .ql-btn .ql-em{font-size:16px;}
-.ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#1A2B4C;}
+.ql-btn.ql-reset{background:var(--reset-amber);border-color:var(--reset-amber);color:#292C2F;}
 .ql-btn.ql-success{background:var(--success-green);border-color:var(--success-green);color:#fff;}
 .ql-more-collapsed{display:none;}
 .ql-more-expanded{display:contents;}
@@ -316,7 +318,7 @@ main{
   .breath-circle.grow{box-shadow:0 0 0 6px rgba(14,165,233,.35), 0 8px 24px rgba(14,165,233,.35);}
 }
 .btn-primary{background:var(--wesser-red);color:#fff;}
-.btn-amber{background:var(--reset-amber);color:#1A2B4C;}
+.btn-amber{background:var(--reset-amber);color:#292C2F;}
 .btn-blue{background:var(--calm-blue);color:#fff;}
 .btn-green{background:var(--success-green);color:#fff;}
 .btn-navy{background:var(--wesser-navy);color:#fff;}
@@ -546,24 +548,25 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   /* Espaciado en múltiplos de 4/8 */
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px; --sp-10:40px;
   /* Superficies y tinta */
-  --ds-surface:#FFFFFF; --ds-canvas:#F6F7F9; --ds-line:#E4E7EC; --ds-line-strong:#D0D5DD;
-  --ds-ink:#101828; --ds-ink-2:#475467; --ds-ink-3:#667085;
+  --ds-surface:#FFFFFF; --ds-canvas:#F2F4F4; --ds-line:#E1E5E5; --ds-line-strong:#CDD3D2;
+  --ds-ink:#1C1F21; --ds-ink-2:#4A5250; --ds-ink-3:#646C69;
   --ds-radius-lg:20px; --ds-radius-md:14px; --ds-radius-sm:10px;
-  --ds-shadow:0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05);
-  /* Tonos por grupo: color de acento + tinta legible sobre su fondo tintado */
-  --tone-relief:#0369A1; --tone-relief-ink:#075985;
-  --tone-focus:#4F46E5;  --tone-focus-ink:#3730A3;
-  --tone-anchor:#047857; --tone-anchor-ink:#065F46;
-  --tone-track:#D97706;  --tone-track-ink:#92400E;
+  --ds-shadow:0 1px 2px rgba(28,31,33,.04), 0 6px 20px rgba(28,31,33,.05);
+  /* Tonos por grupo: funcionales (distinguen grupos), algo apagados para convivir con el
+     rojo y el antracita corporativos sin competir. Tinta ≥4,5:1 sobre su fondo tintado. */
+  --tone-relief:#2F7494; --tone-relief-ink:#215670;
+  --tone-focus:#5A5FA8;  --tone-focus-ink:#43477F;
+  --tone-anchor:#3C8158; --tone-anchor-ink:#2C6143;
+  --tone-track:#B7791F;  --tone-track-ink:#7A4F12;
 }
 :root[data-theme="dark"]{
-  --ds-surface:#141B2E; --ds-canvas:#0B1120; --ds-line:#243047; --ds-line-strong:#33415C;
-  --ds-ink:#F1F5F9; --ds-ink-2:#B6C2D4; --ds-ink-3:#94A3B8;
+  --ds-surface:#292C2F; --ds-canvas:#1B1D1F; --ds-line:#3C4145; --ds-line-strong:#4D5357;
+  --ds-ink:#F2F4F4; --ds-ink-2:#C4CAC8; --ds-ink-3:#A3ABA8;
   --ds-shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
-  --tone-relief:#38BDF8; --tone-relief-ink:#7DD3FC;
-  --tone-focus:#818CF8;  --tone-focus-ink:#C7D2FE;
-  --tone-anchor:#34D399; --tone-anchor-ink:#6EE7B7;
-  --tone-track:#FBBF24;  --tone-track-ink:#FCD34D;
+  --tone-relief:#7FB8D4; --tone-relief-ink:#A8D3E8;
+  --tone-focus:#A3A7E0;  --tone-focus-ink:#C8CAF0;
+  --tone-anchor:#86C7A0; --tone-anchor-ink:#AEDDC0;
+  --tone-track:#E2B25C;  --tone-track-ink:#F0CB85;
 }
 
 /* Iconos: SVG de línea, heredan el color del texto */
@@ -617,17 +620,17 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 header{background:var(--ds-surface);color:var(--ds-ink);box-shadow:none;border-bottom:1px solid var(--ds-line);}
 .brand b{color:var(--wesser-red);letter-spacing:.08em;font-weight:800;}
 .brand span{color:var(--ds-ink-3);opacity:1;}
-:root[data-theme="dark"] .brand b{color:#F87171;}
+:root[data-theme="dark"] .brand b{color:#EF6A6E;}
 .icon-btn{background:transparent;color:var(--ds-ink-2);border:1px solid var(--ds-line);}
 .icon-btn .ic{width:20px;height:20px;}
 @media (hover:hover){ .icon-btn:hover{background:var(--ds-canvas);} }
 .header-tabs button{background:transparent;color:var(--ds-ink-2);font-weight:650;}
 .header-tabs button .ic{width:18px;height:18px;font-size:inherit;}
 @media (hover:hover){ .header-tabs button:hover{background:var(--ds-canvas);} }
-.header-tabs button.active{background:color-mix(in srgb, var(--wesser-red) 10%, transparent);color:#B91C1C;box-shadow:none;}
-:root[data-theme="dark"] .header-tabs button.active{background:color-mix(in srgb, #F87171 16%, transparent);color:#FCA5A5;}
-.header-tabs button.tab-reset{background:color-mix(in srgb, var(--reset-amber) 18%, transparent);color:#92400E;}
-:root[data-theme="dark"] .header-tabs button.tab-reset{background:color-mix(in srgb, #FBBF24 16%, transparent);color:#FCD34D;}
+.header-tabs button.active{background:color-mix(in srgb, var(--wesser-red) 10%, transparent);color:#A8242A;box-shadow:none;}
+:root[data-theme="dark"] .header-tabs button.active{background:color-mix(in srgb, #EF6A6E 16%, transparent);color:#F4A3A6;}
+.header-tabs button.tab-reset{background:color-mix(in srgb, #E0A030 18%, transparent);color:#7A4F12;}
+:root[data-theme="dark"] .header-tabs button.tab-reset{background:color-mix(in srgb, #F0CB85 16%, transparent);color:#F0CB85;}
 .header-tabs button.tab-reset.pending::after{background:var(--wesser-red);box-shadow:0 0 0 2px var(--ds-surface);}
 .tabs-fade{background:linear-gradient(to right, transparent, var(--ds-surface));}
 header :focus-visible{outline-color:var(--wesser-red);}
@@ -1364,7 +1367,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
 
 <!-- HELP OVERLAY -->
 <div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-label="Ayuda" tabindex="-1">
-  <div class="overlay-header" style="background:linear-gradient(135deg,var(--wesser-navy),#0b1120);">
+  <div class="overlay-header" style="background:linear-gradient(135deg,#44514E,#292C2F);">
     <b>❓ Ayuda</b>
     <button type="button" class="close-x" onclick="Overlays.requestClose('help')" aria-label="Cerrar ayuda">✕</button>
   </div>
@@ -2014,7 +2017,7 @@ function applyTheme(){
   btn.innerHTML = `<svg class="ic" aria-hidden="true"><use href="#i-${t === 'dark' ? 'sun' : 'moon'}"/></svg>`;
   // La barra del navegador acompaña a la cabecera (ya no es roja)
   const meta = document.querySelector('meta[name="theme-color"]');
-  if(meta) meta.setAttribute('content', t === 'dark' ? '#141B2E' : '#FFFFFF');
+  if(meta) meta.setAttribute('content', t === 'dark' ? '#292C2F' : '#FFFFFF');
   btn.setAttribute('aria-label', t === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
 }
 applyTheme();
