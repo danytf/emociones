@@ -3266,6 +3266,7 @@ function clearResetSession(){
   resetAspecto1 = ''; resetAspecto2 = ''; resetPacto = '';
   resetAprendizaje = ''; resetObservacion = '';
   resetCheckinItems = [];
+  resetStopsUndo = [];
 }
 function openReset(){
   Overlays.open('reset');
@@ -3289,6 +3290,7 @@ function resumeReset(){
   resetPacto = p.pacto || '';
   resetAprendizaje = p.aprendizaje || '';
   resetObservacion = p.observacion || '';
+  resetStopsUndo = [];
   renderResetStep();
 }
 function startFreshReset(){
@@ -3619,9 +3621,11 @@ function renderResetStep(){
       <p class="desc"><b>Microcambio elegido:</b><br><b>${escapeHtml(resetMicro)}</b></p>
       <div class="timer-big">${escapeHtml(resetStops)} / 10</div>
       <div class="btn-row">
-        <button type="button" class="btn btn-green" id="incrementStopBtn" onclick="incrementStop()">+1 parada probada</button>
+        <button type="button" class="btn btn-green" id="incrementStopBtn" onclick="incrementStop(1)">+1 parada probada</button>
+        ${resetStops<=7 ? '<button type="button" class="btn btn-green" id="incrementStop3Btn" onclick="incrementStop(3)">+3 paradas</button>' : ''}
         ${resetStops>0 ? '<button type="button" class="btn btn-outline" id="decrementStopBtn" onclick="decrementStop()">↩ Deshacer última</button>' : ''}
       </div>
+      ${resetStops<10 ? '<button type="button" class="btn btn-outline btn-sm" id="allStopsBtn" style="margin-top:10px;" onclick="marcarTodasParadas()">✔️ Ya he hecho las 10</button>' : ''}
       <p class="desc" style="margin-top:10px;">Pruébalo durante <b>las próximas 10 oportunidades de parada</b>. Mantén el mismo ajuste y evita cambiar otras cosas al mismo tiempo.</p>
       <p class="desc">No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, cómo te sientes al hacerlo y qué ocurre en las conversaciones.</b></p>
       <p><b>🔎 Al terminar</b></p>
@@ -3746,13 +3750,34 @@ function selectSenal(el){
 }
 function selectMicro(m){ resetMicro = m; saveResetProgress(); renderResetStep(); }
 function resetGoto(step){ resetStep = step; saveResetProgress(); renderResetStep(); }
-function incrementStop(){ if(resetStops<10) resetStops++; saveResetProgress(); renderResetStep(); announce(`${resetStops} de 10 paradas.`); }
-/* Corrige un +1 pulsado por error; nunca baja de 0. Si el botón desaparece (0), el foco pasa a «+1». */
+/* Cuánto sumó cada pulsación (+1 / +3), para que «Deshacer última» revierta la última acción
+   completa. Es solo de esta sesión: tras recargar, deshacer resta de 1 en 1. */
+let resetStopsUndo = [];
+function incrementStop(n){
+  const add = Math.min(n || 1, 10 - resetStops);
+  if(add <= 0) return;
+  resetStops += add; resetStopsUndo.push(add);
+  saveResetProgress(); renderResetStep();
+  announce(`${resetStops} de 10 paradas.`);
+}
+/* Corrige una pulsación por error; nunca baja de 0. Si el botón desaparece (0), el foco pasa a «+1». */
 function decrementStop(){
   if(resetStops<=0) return;
-  resetStops--; saveResetProgress(); renderResetStep();
+  resetStops = Math.max(0, resetStops - (resetStopsUndo.pop() || 1));
+  saveResetProgress(); renderResetStep();
   if(resetStops===0){ const b = document.getElementById('incrementStopBtn'); if(b) b.focus(); }
   announce(`${resetStops} de 10 paradas.`);
+}
+/* Atajo para quien no ha ido contando parada a parada: confirma y pasa a «¿Qué he aprendido?» */
+async function marcarTodasParadas(){
+  const ok = await confirmDialog({
+    title:'¿Has hecho ya las 10 paradas?',
+    message:'Se marcarán las 10 y pasarás a «¿Qué he aprendido?». Úsalo solo si ya has probado el ajuste.',
+    confirmText:'Sí, las he hecho', cancelText:'Seguir contando'
+  });
+  if(!ok) return;
+  resetStops = 10; resetStopsUndo = [];
+  resetGoto(6);
 }
 
 
