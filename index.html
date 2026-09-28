@@ -1025,7 +1025,10 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <h2>📓 Registro S‑E‑P‑A</h2>
     <p class="desc" style="margin-bottom:16px;"><b>Situación → Emoción → Pensamiento → Acción</b></p>
 
-    <div class="card card-full">
+    <!-- Explicación plegable: abierta la primera vez; la app recuerda si la cierras (ver initSepaIntro) -->
+    <details class="help-item" id="sepaIntro" open style="background:var(--card-bg);margin-bottom:16px;">
+      <summary>💡 ¿Cómo funciona el S-E-P-A?</summary>
+      <div class="help-body">
       <p class="desc">El S-E-P-A te ayuda a <b>parar, entender qué te está pasando y elegir una respuesta más útil</b>.</p>
 
       <p class="desc" style="font-weight:700;margin-bottom:4px;">💡 ¿Cómo funciona?</p>
@@ -1041,7 +1044,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <p class="desc" style="font-weight:700;margin-bottom:4px;">🟢 Ejemplo útil</p>
       <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«El flujo es menor, pero puedo adaptar mi entrada, mantener la calma y centrarme en hacer buenas conversaciones.»</p>
       <p class="desc">→ <b>Me centro en lo que sí puedo hacer:</b> cuidar mi técnica, mi actitud y la calidad de la interacción.</p>
-    </div>
+      </div>
+    </details>
 
     <div class="card">
       <h3>1. Contexto</h3>
@@ -3934,6 +3938,13 @@ Object.assign(ACTIONS, {
 
 /* ============ INIT ============ */
 renderResetTab();
+/* Preferencia de interfaz (no es un dato del usuario): recordar si la explicación del Diario está plegada */
+(function initSepaIntro(){
+  const d = document.getElementById('sepaIntro');
+  if(!d) return;
+  try{ if(localStorage.getItem('wesserSepaIntro') === 'closed') d.open = false; }catch(e){}
+  d.addEventListener('toggle', ()=>{ try{ localStorage.setItem('wesserSepaIntro', d.open ? 'open' : 'closed'); }catch(e){} });
+})();
 // Aviso pendiente tras una recarga (p. ej. después de importar datos)
 try{
   const pendingNotice = sessionStorage.getItem('wesserNotice');
