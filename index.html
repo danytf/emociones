@@ -1217,6 +1217,11 @@ function normalizeState(s){
   if(!s || typeof s !== 'object' || Array.isArray(s)) s = {};
   if(!Array.isArray(s.checkins)) s.checkins = [];
   if(!Array.isArray(s.kitSenales)) s.kitSenales = [];
+  // Títulos de señales pasaron de comillas rectas a «»: migra los guardados para que sigan coincidiendo
+  const fixQuotes = x => typeof x === 'string' ? x.replace(/"([^"]*)"/g, '«$1»') : x;
+  s.kitSenales = s.kitSenales.map(fixQuotes);
+  if(Array.isArray(s.resetHistory)) s.resetHistory.forEach(r => { if(r && r.senal) r.senal = fixQuotes(r.senal); });
+  if(s.resetProgress && s.resetProgress.senal) s.resetProgress.senal = fixQuotes(s.resetProgress.senal);
   if(typeof s.kitHerramienta !== 'string') s.kitHerramienta = '';
   if(typeof s.kitAjuste !== 'string') s.kitAjuste = '';
   if(typeof s.kitPersona !== 'string') s.kitPersona = '';
@@ -2578,8 +2583,8 @@ const MICROAUDITORIA = {
 
 const CHECKIN_SECTIONS = [
   {title:'1️⃣ 🔄 La espiral de la mala racha', items:[
-    '<b>Anticipo el rechazo</b><br>Doy por hecho que la persona dirá que "no" antes de terminar siquiera el saludo.',
-    '<b>El "no" me afecta más de lo habitual</b><br>Cada rechazo me pesa, me irrita o me desanima más de lo normal.',
+    '<b>Anticipo el rechazo</b><br>Doy por hecho que la persona dirá que «no» antes de terminar siquiera el saludo.',
+    '<b>El «no» me afecta más de lo habitual</b><br>Cada rechazo me pesa, me irrita o me desanima más de lo normal.',
     '<b>Empiezo ya cansado</b><br>Llego a trabajar con pesadez física o mental, incluso antes de empezar.',
     '<b>Sigo dándole vueltas al turno</b><br>Después de terminar, sigo pensando mucho en los rechazos, los resultados o lo ocurrido en calle.',
     '<b>Me quedo atrapado en la queja</b><br>Paso demasiado tiempo centrado en lo mal que está la situación o tiendo a alejarme del equipo.'
@@ -2587,8 +2592,8 @@ const CHECKIN_SECTIONS = [
   {title:'2️⃣ 🎯 Mi valor frente al resultado', items:[
     '<b>Mi valor depende del número</b><br>Empiezo a medir cómo de buen captador soy según los socios que consigo.',
     '<b>Un turno a cero me arrastra</b><br>Un mal turno condiciona demasiado cómo veo el resto de la semana o del mes.',
-    '<b>Me comparo demasiado con los demás</b><br>El resultado de otros captadores afecta demasiado a cómo valoro mi propio rendimiento.',
-    '<b>Pienso que "ya debería saber hacerlo"</b><br>Me cuesta aceptar una mala racha porque siento que por mi experiencia no debería estar ocurriendo.',
+    '<b>Me comparo demasiado con los demás</b><br>El resultado de otros captadores influye demasiado en cómo valoro mi propio trabajo.',
+    '<b>Pienso que «ya debería saber hacerlo»</b><br>Me cuesta aceptar una mala racha porque siento que, por mi experiencia, esto no debería estar ocurriendo.',
     '<b>Me desgasto con lo que no controlo</b><br>Gasto mucha energía preocupándome por el tráfico, el clima, los permisos u otros factores externos.'
   ]},
   {title:'3️⃣ 🎙️ Cambios en mi forma de captar', items:[
@@ -2600,7 +2605,7 @@ const CHECKIN_SECTIONS = [
   ]},
   {title:'4️⃣ ⏱️ Fugas de energía y evitación', items:[
     '<b>Alargo los descansos</b><br>Empiezo a utilizar el café, el móvil u otras pausas para retrasar la siguiente parada.',
-    '<b>Evito pedir ayuda</b><br>No pido un feedback rápido o apoyo aunque sé que podría ayudarme.'
+    '<b>Evito pedir ayuda</b><br>No pido feedback rápido o apoyo aunque sé que podría ayudarme.'
   ]}
 ];
 const CHECKIN_TITLES = CHECKIN_SECTIONS.flatMap(s=>s.items.map(i=>i.match(/<b>(.*?)<\/b>/)[1]));
@@ -2821,7 +2826,7 @@ function renderResetStep(){
       <div class="card">
         <span class="badge amber">Check-in de señales</span>
         <h3>¿Qué señales estás notando?</h3>
-        <p class="desc">Marca todo aquello con lo que <b>te identifiques ahora mismo o que hayas notado durante los últimos días o rachas difíciles</b>.</p>
+        <p class="desc">Marca todo aquello con lo que <b>te identifiques ahora mismo o que hayas notado durante los últimos días o en rachas difíciles</b>.</p>
         <p class="desc">No es un diagnóstico. Es una herramienta personal para <b>detectar cambios, entender mejor qué te está pasando y decidir si necesitas hacer algún ajuste</b>.</p>
       </div>
       ${CHECKIN_SECTIONS.map((s,si)=>`
