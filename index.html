@@ -933,7 +933,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         </div>
         <div class="card">
           <h3>💪 Tense &amp; Release</h3>
-          <p class="tool-meta">⏱️ ~2 minutos</p>
+          <p class="tool-meta">⏱️ ~40 segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>soltar tensión física acumulada</b>, especialmente cuando notas rigidez en puños, brazos, hombros o piernas.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa de forma firme pero cómoda, sin dolor, mantén unos segundos y después suelta</b>. Repite con diferentes grupos musculares: puños, brazos, hombros y piernas.</p>
           <button type="button" class="btn btn-blue" onclick="startTense()">Empezar</button>
@@ -1003,7 +1003,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           🧠 <b>Cabeza:</b> ¿estoy concentrado o funcionando en automático?<br>
           💭 <b>Emoción:</b> ¿qué estoy sintiendo?<br>
           🎯 <b>Estrategia:</b> ¿necesito cambiar algo?</p>
-          <p class="desc">Termina con una decisión concreta: <b>seguir igual · hacer una pausa · ajustar la estrategia</b>.</p>
+          <p class="desc">Anota tu nivel de <b>fatiga</b> y de <b>activación</b> (1-10) y un ajuste para el tramo final, y termina con una decisión concreta: <b>seguir igual · hacer una pausa · ajustar la estrategia</b>.</p>
           <p class="desc">Se guarda en tu historial para que puedas <b>revisar cómo llegas a mitad de turno y detectar patrones con el tiempo</b>.</p>
           <button type="button" class="btn btn-amber" onclick="openCheckpoint()">Hacer checkpoint</button>
           <div id="checkpointHistorial" style="margin-top:12px;"></div>
@@ -2214,8 +2214,13 @@ function openCheckpoint(editId){
   const emocional = existing ? existing.emocional : 5;
   const nota = existing ? (existing.nota||'') : '';
   const decision = existing ? (existing.decision||'') : '';
-  openTool('Checkpoint Mental', `
+  openTool('⏱️ Checkpoint de mitad de turno', `
     <div class="card">
+      <p class="desc"><b>Tómate un momento y pregúntate:</b></p>
+      <p class="desc">🫀 <b>Cuerpo:</b> ¿estoy tenso, cansado o acelerado?<br>
+      🧠 <b>Cabeza:</b> ¿estoy concentrado o funcionando en automático?<br>
+      💭 <b>Emoción:</b> ¿qué estoy sintiendo?<br>
+      🎯 <b>Estrategia:</b> ¿necesito cambiar algo?</p>
       <label for="cpFatiga">Nivel de fatiga física/mental (1‑10)</label>
       <input type="range" id="cpFatiga" min="1" max="10" value="${escapeHtml(fatiga)}" oninput="document.getElementById('cpFatigaVal').textContent=this.value+'/10'">
       <div class="range-val" id="cpFatigaVal">${escapeHtml(fatiga)}/10</div>
