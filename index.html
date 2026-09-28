@@ -3131,6 +3131,10 @@ const CHECKIN_LABELS = new Set(CHECKIN_SECTIONS.flatMap(s=>s.items));
 /* Espacio tras el salto de línea: sin él, el nombre accesible junta título y descripción («cansadoLlego») */
 function a11yLabel(label){ return label.replace(/<br>/g, '<br> '); }
 function checkinTitle(label){ const m = String(label).match(/<b>(.*?)<\/b>/); return m ? m[1] : String(label).replace(/<[^>]*>/g, ''); }
+/* En el historial basta el título de cada señal (la descripción alarga mucho la lista) */
+function checkinItemTitleHtml(item){
+  return CHECKIN_LABELS.has(item) ? checkinTitle(item) : checkinItemHtml(item);
+}
 function checkinItemHtml(item){
   if(CHECKIN_LABELS.has(item)) return item;
   return escapeHtml(String(item).replace(/<br\s*\/?>/gi, ' — ').replace(/<[^>]*>/g, ''));
@@ -3148,6 +3152,13 @@ let checkinState = [];
 let resetCheckinItems = [];
 let resetHistorialLimit = 5;
 function verMasReset(){ resetHistorialLimit += 5; renderResetStep(); }
+let checkinHistorialLimit = 5;
+function verMasCheckins(){ checkinHistorialLimit += 5; renderResetStep(); }
+async function borrarCheckin(id){
+  if(!(await confirmDelete('este check-in'))) return;
+  state.checkins = state.checkins.filter(x=>x.id!==id);
+  save(); renderResetStep();
+}
 
 /* Copia en memoria el progreso del Reset; persistirlo es aparte (inmediato o diferido) */
 function syncResetProgress(){
@@ -3333,8 +3344,8 @@ function renderResetStep(){
           <div class="help-body">
             <button class="del" data-action="borrarResetHistorial" data-id="${escapeHtml(r.id)}">Eliminar</button>
             <p><b>Señal principal:</b> ${escapeHtml(r.senal)||'—'}</p>
-            <p><b>Contexto (no depende de mí):</b> ${escapeHtml(r.examResultado)||'—'}</p>
-            <p><b>Mi actuación:</b> ${escapeHtml(r.examRendimiento)||'—'}</p>
+            <p><b>El contexto:</b> ${escapeHtml(r.examResultado)||'—'}</p>
+            <p><b>Mi forma de trabajar:</b> ${escapeHtml(r.examRendimiento)||'—'}</p>
             <p><b>Lo que sigue funcionando:</b> ${[r.aspecto1,r.aspecto2].filter(Boolean).map(escapeHtml).join(' · ')||'—'}</p>
             <p><b>Ajuste elegido:</b> ${escapeHtml(r.micro)||'—'}</p>
             <p><b>Paradas testeadas:</b> ${escapeHtml(r.stops||0)} / 10</p>
@@ -3343,16 +3354,19 @@ function renderResetStep(){
             <p><b>Pacto de permanencia:</b> ${escapeHtml(r.pacto)||'—'}</p>
             ${r.micro ? `<button class="btn btn-outline" style="margin-top:8px;" data-action="repetirAjuste" data-id="${escapeHtml(r.id)}">🔁 Repetir este ajuste</button>` : ''}
           </div>
-        </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : '<div class="card empty-state">Aún no has completado ninguna sesión de Reset.</div>'}
+        </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has completado ninguna sesión de Reset.
+          <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="resetGoto(1)">🆘 Empezar un Reset</button></div></div>`}
 
       <div class="card">
         <h3>📋 Historial de check-ins</h3>
       </div>
-      ${state.checkins.length ? state.checkins.map(c=>`
+      ${state.checkins.length ? state.checkins.slice(0, checkinHistorialLimit).map(c=>`
         <div class="card history-item">
+          <button class="del" data-action="borrarCheckin" data-id="${escapeHtml(c.id)}">Eliminar</button>
           <div class="meta">${escapeHtml(fechaDe(c))} · ${escapeHtml(c.total)} ${c.total===1?'señal marcada':'señales marcadas'}</div>
-          ${c.items.length? `<ul>${c.items.map(i=>`<li>${checkinItemHtml(i)}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
-        </div>`).join('') : '<div class="card empty-state">Aún no has hecho ningún check-in.</div>'}
+          ${c.items.length? `<ul>${c.items.map(i=>`<li>${checkinItemTitleHtml(i)}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
+        </div>`).join('') + (state.checkins.length > checkinHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasCheckins()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has hecho ningún check-in.
+          <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="startCheckin()">🚦 Hacer un check-in</button></div></div>`}
       <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
     `;
   }
@@ -3853,6 +3867,7 @@ Object.assign(ACTIONS, {
   guardarPedirFeedbackEnKit: () => guardarPedirFeedbackEnKit(),
   toggleKitSenal: el => toggleKitSenal(el.dataset.value),
   borrarResetHistorial: el => borrarResetHistorial(dataId(el)),
+  borrarCheckin: el => borrarCheckin(dataId(el)),
   repetirAjuste: el => repetirAjuste(dataId(el)),
   toggleCheckinItem: el => {
     checkinState[Number(el.dataset.si)][Number(el.dataset.ii)] = el.checked;
