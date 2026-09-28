@@ -17,6 +17,8 @@
   --calm-blue:#0369A1;
   --success-green:#047857;
   --alert-coral:#B91C1C;
+  --error-text:#B91C1C;
+  --ok-text:#047857;
   --danger:#B91C1C;
   --asco-purple:#6D28D9;
   --bg-main:#F8FAFC;
@@ -29,6 +31,8 @@
   --radius:16px;
 }
 :root[data-theme="dark"]{
+  --error-text:#FCA5A5;
+  --ok-text:#6EE7B7;
   --bg-main:#0B1120;
   --card-bg:#141B2E;
   --text-primary:#F1F5F9;
@@ -379,6 +383,33 @@ header :focus-visible, .overlay-header :focus-visible{outline-color:#fff;}
   background:var(--card-bg);width:100%;max-width:760px;border-radius:20px 20px 0 0;
   padding:24px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lvl2);
 }
+/* Mensajes en línea de formularios y de «Mis datos» */
+.field-error, .field-ok{font-size:13.5px;font-weight:700;margin:-4px 0 12px;line-height:1.45;}
+.field-error{color:var(--error-text);}
+.field-error::before{content:'⚠️ ';content:'⚠️ ' / '';}
+.field-ok{color:var(--ok-text);}
+[aria-invalid="true"]{border-color:var(--error-text) !important;}
+.chip-group.has-error{outline:2px solid var(--error-text);outline-offset:6px;border-radius:12px;}
+/* Confirmación accesible (alertdialog), por encima de cualquier otro overlay */
+.confirm-back{z-index:300;align-items:center;padding:16px;}
+.confirm-box{
+  background:var(--card-bg);color:var(--text-primary);width:100%;max-width:440px;border-radius:18px;
+  padding:22px;box-shadow:var(--shadow-lvl2);
+}
+.confirm-box:focus{outline:none;}
+.confirm-box h2{font-size:19px;margin:0 0 8px;}
+.confirm-box .desc{margin:0 0 18px;}
+.btn-danger{background:var(--danger);color:#fff;}
+/* Aviso breve no modal (p. ej. error al guardar) */
+.toast{
+  position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  z-index:400;width:min(560px, calc(100% - 32px));display:none;align-items:flex-start;gap:10px;
+  background:var(--wesser-navy);color:#fff;border-radius:14px;padding:12px 12px 12px 16px;box-shadow:var(--shadow-lvl2);
+  font-size:14px;font-weight:600;line-height:1.45;
+}
+.toast.show{display:flex;}
+.toast.error{background:var(--danger);}
+.toast button{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:10px;min-width:44px;min-height:44px;font-size:16px;flex-shrink:0;cursor:pointer;}
 .modal-sheet .handle{width:40px;height:4px;background:var(--border-color);border-radius:99px;margin:0 auto 14px;}
 
 .slider-wrap{margin-bottom:12px;}
@@ -447,6 +478,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <body>
 <!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
 <div id="srStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+<!-- Aviso breve no modal: lo lee el lector de pantalla por #srStatus, aquí solo se muestra -->
+<div id="toast" class="toast" aria-hidden="true"><span id="toastMsg"></span><button type="button" data-action="toastClose" aria-label="Cerrar aviso">✕</button></div>
 
 <header>
   <h1 class="sr-only">Wesser · Gestión Emocional</h1>
@@ -1060,6 +1093,18 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <div class="modal-sheet" id="modalSheet" role="dialog" aria-modal="true" tabindex="-1"></div>
 </div>
 
+<!-- CONFIRMACIÓN ACCESIBLE (sustituye a confirm()) -->
+<div class="modal-back confirm-back" id="confirmBack" onclick="if(event.target===this)Overlays.requestClose('confirm')">
+  <div class="confirm-box" id="confirmBox" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMsg" tabindex="-1">
+    <h2 id="confirmTitle"></h2>
+    <p class="desc" id="confirmMsg"></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn-outline" id="confirmCancel" data-action="confirmCancel" data-autofocus>Cancelar</button>
+      <button type="button" class="btn btn-danger" id="confirmOk" data-action="confirmOk">Aceptar</button>
+    </div>
+  </div>
+</div>
+
 <!-- RESET FLOW OVERLAY -->
 <div class="overlay" id="resetOverlay" role="dialog" aria-modal="true" aria-label="Modo Reset" tabindex="-1">
   <div class="overlay-header">
@@ -1218,6 +1263,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <button class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
           <button class="btn btn-outline" style="color:var(--alert-coral);" onclick="borrarTodosDatos()">🗑️ Borrar todos los datos</button>
         </div>
+        <p id="datosMsg" class="field-ok" role="status" style="margin-top:12px;"></p>
         <input type="file" id="importDatosInput" accept="application/json" style="display:none;" onchange="importarDatos(this)">
       </div>
     </details>
@@ -1502,7 +1548,11 @@ function save(){
     localStorage.setItem(LS_KEY, JSON.stringify(state));
   }catch(e){
     console.error('No se pudo guardar en localStorage', e);
-    alert('No se ha podido guardar. Puede que el almacenamiento del navegador esté lleno o desactivado (por ejemplo, en navegación privada).');
+    // Aviso no modal; con guardado diferido se evita repetirlo en cada intento seguido
+    if(!save.lastErrorAt || Date.now() - save.lastErrorAt > 15000){
+      save.lastErrorAt = Date.now();
+      notify('No se ha podido guardar. Puede que el almacenamiento del navegador esté lleno o desactivado (por ejemplo, en navegación privada).', 'error');
+    }
   }
 }
 function escapeHtml(str){
@@ -1524,6 +1574,101 @@ document.addEventListener('click', e=>{
   if(Object.prototype.hasOwnProperty.call(ACTIONS, name)) ACTIONS[name](el, e);
 });
 const dataId = el => Number(el.dataset.id);
+
+/* ============ MENSAJES EN LÍNEA ============
+   fieldError() muestra el error debajo del campo (o del grupo de chips), lo enlaza con
+   aria-describedby, marca aria-invalid en los campos y lleva el foco al primero con error.
+   El mensaje se retira en cuanto el usuario corrige ese campo. */
+let fieldErrorSeq = 0;
+function fieldError(target, msg, opts){
+  const el = typeof target === 'string' ? document.getElementById(target) : target;
+  if(!el) return false;
+  clearFieldError(el);
+  const p = document.createElement('p');
+  p.className = 'field-error';
+  p.id = 'fe-' + (++fieldErrorSeq);
+  p.setAttribute('role', 'alert');
+  p.textContent = msg;
+  el.insertAdjacentElement('afterend', p);
+  const isControl = el.matches('input, textarea, select');
+  if(isControl) el.setAttribute('aria-invalid', 'true'); else el.classList.add('has-error');
+  el.setAttribute('aria-describedby', ((el.getAttribute('aria-describedby') || '') + ' ' + p.id).trim());
+  el.dataset.errorId = p.id;
+  if(!opts || opts.focus !== false){
+    const f = isControl ? el : el.querySelector('button, input, textarea, select');
+    if(f) f.focus();
+  }
+  return false;
+}
+function clearFieldError(el){
+  const id = el && el.dataset.errorId;
+  if(!id) return;
+  const p = document.getElementById(id);
+  if(p) p.remove();
+  el.removeAttribute('aria-invalid');
+  el.classList.remove('has-error');
+  const rest = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(x => x && x !== id).join(' ');
+  if(rest) el.setAttribute('aria-describedby', rest); else el.removeAttribute('aria-describedby');
+  delete el.dataset.errorId;
+}
+/* Varios errores a la vez: se muestran todos y el foco va al primero */
+function showFieldErrors(list){
+  list.forEach(([el, msg], i) => fieldError(el, msg, {focus: i === 0}));
+  return list.length === 0;
+}
+['input', 'change'].forEach(type => document.addEventListener(type, e=>{
+  if(e.target.dataset && e.target.dataset.errorId) clearFieldError(e.target);
+}));
+// En captura: limpia el error del grupo ANTES de que la acción del clic pueda volver a mostrar uno
+document.addEventListener('click', e=>{
+  const g = e.target.closest && e.target.closest('.has-error');
+  if(g) clearFieldError(g);
+}, true);
+
+/* ============ AVISOS ============
+   notify(): aviso breve no modal para lo que no pertenece a un campo concreto. Se lee por la
+   región viva y se cierra solo (los errores duran más) o con su botón. */
+let toastTimer = null;
+function notify(msg, type){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.toggle('error', type === 'error');
+  t.classList.add('show');
+  announce(msg);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, type === 'error' ? 12000 : 6000);
+}
+function hideToast(){ document.getElementById('toast').classList.remove('show'); }
+/* Mensajes de «Mis datos», junto a sus botones */
+function datosMsg(msg, type){
+  const el = document.getElementById('datosMsg');
+  el.className = type === 'error' ? 'field-error' : 'field-ok';
+  el.textContent = msg;
+}
+
+/* ============ CONFIRMACIÓN ACCESIBLE ============
+   confirmDialog() sustituye a confirm(): mismo resultado (true/false), pero en un alertdialog
+   gestionado por Overlays (foco en «Cancelar», Escape y fondo cancelan, foco restaurado). */
+let confirmResolve = null;
+function confirmDialog({title, message, confirmText, cancelText, danger}){
+  if(confirmResolve) settleConfirm(false);
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = message || '';
+  const ok = document.getElementById('confirmOk');
+  ok.textContent = confirmText || 'Aceptar';
+  ok.className = 'btn ' + (danger ? 'btn-danger' : 'btn-navy');
+  document.getElementById('confirmCancel').textContent = cancelText || 'Cancelar';
+  return new Promise(resolve=>{ confirmResolve = resolve; Overlays.open('confirm'); });
+}
+function settleConfirm(value){
+  const resolve = confirmResolve;
+  confirmResolve = null;
+  Overlays.close('confirm');
+  if(resolve) resolve(value);
+}
+function confirmDelete(what){
+  return confirmDialog({title:`¿Eliminar ${what}?`, message:'No se puede deshacer.', confirmText:'Eliminar', danger:true});
+}
 
 /* ============ UTILIDADES DE ACCESIBILIDAD ============ */
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -1570,43 +1715,54 @@ function exportarDatos(){
     const toRevoke = url;
     setTimeout(()=>URL.revokeObjectURL(toRevoke), 30000);
     const n = (arr, uno, varios) => `${arr.length} ${arr.length===1 ? uno : varios}`;
-    alert(`✅ Copia de seguridad descargada: ${filename}\n\n`
+    datosMsg(`✅ Copia de seguridad descargada: ${filename}. `
       + `Incluye ${n(state.sepaEntries,'registro del Diario','registros del Diario')}, `
       + `${n(state.resetHistory,'sesión de Reset','sesiones de Reset')}, `
       + `${n(state.checkins,'check-in','check-ins')}, `
-      + `${n(state.checkpoints,'checkpoint','checkpoints')} y tu Kit de Emergencia.\n\n`
+      + `${n(state.checkpoints,'checkpoint','checkpoints')} y tu Kit de Emergencia. `
       + 'Guárdala en un lugar seguro. Para recuperarla, usa «Importar datos».');
   }catch(e){
     console.error('No se pudo exportar', e);
     if(url) URL.revokeObjectURL(url);
-    alert('No se ha podido exportar la copia de seguridad. Tus datos siguen guardados en este dispositivo; inténtalo de nuevo o prueba con otro navegador.');
+    datosMsg('No se ha podido exportar la copia de seguridad. Tus datos siguen guardados en este dispositivo; inténtalo de nuevo o prueba con otro navegador.', 'error');
   }
 }
 function importarDatos(input){
   const file = input.files[0];
   if(!file) return;
-  if(file.size > LIMITS.importBytes){ alert('El archivo es demasiado grande para ser un archivo de datos de la app.'); input.value=''; return; }
+  if(file.size > LIMITS.importBytes){ datosMsg('El archivo es demasiado grande para ser un archivo de datos de la app.', 'error'); input.value=''; return; }
   const reader = new FileReader();
-  reader.onload = (e)=>{
+  reader.onload = async (e)=>{
     let imported;
     try{ imported = JSON.parse(e.target.result); }
-    catch(err){ alert('El archivo no es un JSON válido.'); input.value=''; return; }
+    catch(err){ datosMsg('El archivo no es un JSON válido.', 'error'); input.value=''; return; }
     const error = validateImport(imported);
     if(error){
-      alert('Este archivo no parece un archivo de datos válido de Wesser.\n\n' + error);
+      datosMsg('Este archivo no parece un archivo de datos válido de Wesser. ' + error, 'error');
       input.value='';
       return;
     }
-    if(!confirm('Esto reemplazará todos tus datos actuales por los del archivo importado. ¿Continuar?')){ input.value=''; return; }
+    const ok = await confirmDialog({
+      title:'¿Reemplazar tus datos?',
+      message:'Esto reemplazará todos tus datos actuales por los del archivo importado.',
+      confirmText:'Reemplazar datos', danger:true
+    });
+    if(!ok){ input.value=''; return; }
     state = normalizeState(imported);
     save();
-    alert('Datos importados correctamente. La página se recargará.');
+    // El aviso de éxito se muestra después de recargar
+    try{ sessionStorage.setItem('wesserNotice', 'Datos importados correctamente.'); }catch(err){}
     location.reload();
   };
   reader.readAsText(file);
 }
-function borrarTodosDatos(){
-  if(!confirm('Esto borrará TODOS tus datos guardados en este dispositivo (diario, checkpoints, historial de Reset, kit, anclajes...). Esta acción no se puede deshacer. ¿Seguro que quieres continuar?')) return;
+async function borrarTodosDatos(){
+  const ok = await confirmDialog({
+    title:'¿Borrar todos tus datos?',
+    message:'Esto borrará TODOS tus datos guardados en este dispositivo (diario, checkpoints, historial de Reset, kit, anclajes...). Esta acción no se puede deshacer.',
+    confirmText:'Borrar todo', danger:true
+  });
+  if(!ok) return;
   localStorage.removeItem(LS_KEY);
   location.reload();
 }
@@ -1824,16 +1980,20 @@ let editingSepaId = null;
 function guardarSepa(){
   const situacionSel = document.getElementById('sepaSituacion').value;
   const situacionOtra = document.getElementById('sepaSituacionOtra').value.trim();
-  if(situacionSel==='Otra' && !situacionOtra){ alert('Describe brevemente la situación.'); return; }
   const situacion = (situacionSel==='Otra' && situacionOtra) ? situacionOtra : situacionSel;
   const pDLista = document.getElementById('sepaPensDestructivo').value;
   const pDLibre = document.getElementById('sepaPensDestructivoLibre').value.trim();
-  if(pDLista==='Otro' && !pDLibre){ alert('Escribe tu pensamiento automático.'); return; }
   const pensD = (pDLista==='Otro' && pDLibre) ? pDLibre : pDLista;
   const pensC = document.getElementById('sepaPensConstructivo').value.trim();
   const accion = document.getElementById('sepaAccion').value.trim();
-  if(!selectedEmociones.length){ alert('Selecciona al menos una emoción sentida.'); return; }
-  if(!pensC || !accion){ alert('Completa el pensamiento útil y la acción.'); return; }
+  // Mismas condiciones que antes, pero se indican todas a la vez junto a cada campo
+  const errores = [];
+  if(situacionSel==='Otra' && !situacionOtra) errores.push(['sepaSituacionOtra', 'Describe brevemente la situación.']);
+  if(!selectedEmociones.length) errores.push(['sepaEmocionChips', 'Selecciona al menos una emoción sentida.']);
+  if(pDLista==='Otro' && !pDLibre) errores.push(['sepaPensDestructivoLibre', 'Escribe tu pensamiento automático.']);
+  if(!pensC) errores.push(['sepaPensConstructivo', 'Escribe un pensamiento útil (o pulsa «Sugerir reencuadre»).']);
+  if(!accion) errores.push(['sepaAccion', 'Indica qué vas a hacer ahora.']);
+  if(!showFieldErrors(errores)) return;
   if(editingSepaId){
     const entry = state.sepaEntries.find(x=>x.id===editingSepaId);
     if(entry){
@@ -1885,8 +2045,8 @@ function cancelarEdicionSepa(){
   document.getElementById('sepaSaveBtn').textContent = 'Guardar registro';
   document.getElementById('sepaCancelBtn').style.display = 'none';
 }
-function borrarSepa(id){
-  if(!confirm('¿Eliminar este registro del Diario? No se puede deshacer.')) return;
+async function borrarSepa(id){
+  if(!(await confirmDelete('este registro del Diario'))) return;
   state.sepaEntries = state.sepaEntries.filter(x=>x.id!==id);
   if(editingSepaId===id) cancelarEdicionSepa();
   save(); renderSepaHistorial();
@@ -2055,8 +2215,8 @@ function guardarCheckpoint(){
   }
   save(); closeTool(); renderCheckpointHistorial();
 }
-function borrarCheckpoint(id){
-  if(!confirm('¿Eliminar este checkpoint? No se puede deshacer.')) return;
+async function borrarCheckpoint(id){
+  if(!(await confirmDelete('este checkpoint'))) return;
   state.checkpoints = state.checkpoints.filter(x=>x.id!==id);
   save(); renderCheckpointHistorial();
 }
@@ -2091,7 +2251,7 @@ function renderExito(){
     <div class="card" style="text-align:left;">
       <p class="desc">Piensa en una conversación que haya ido bien. No es para puntuarte, es para quedarte con lo que funciona.</p>
       <p id="exitoLabel"><b>¿Qué ha funcionado?</b></p>
-      <div class="chip-group" role="group" aria-labelledby="exitoLabel">
+      <div class="chip-group" id="exitoChips" role="group" aria-labelledby="exitoLabel">
         ${EXITO_OPCIONES.map(o=>`<button type="button" ${chipAttrs(exitoConducta===o)} data-action="selectExitoConducta" data-value="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join('')}
         <button type="button" ${chipAttrs(exitoConducta==='Otra')} data-action="selectExitoConducta" data-value="Otra">Otra</button>
       </div>
@@ -2109,9 +2269,9 @@ function guardarExito(){
   let conducta = exitoConducta;
   if(conducta==='Otra'){
     conducta = document.getElementById('exitoOtraInput').value.trim();
-    if(!conducta){ alert('Escribe qué ha funcionado.'); return; }
+    if(!conducta){ fieldError('exitoOtraInput', 'Indica qué ha funcionado antes de guardar.'); return; }
   }
-  if(!conducta){ alert('Elige o escribe qué ha funcionado.'); return; }
+  if(!conducta){ fieldError('exitoChips', 'Elige o escribe qué ha funcionado antes de guardar.'); return; }
   const repetir = document.getElementById('exitoRepetirInput').value.trim();
   state.exitos.unshift(newRecord({conducta, repetir}));
   save();
@@ -2141,8 +2301,8 @@ function renderExitoHistorial(){
       ${e.repetir?`<p class="desc">Repetir: ${escapeHtml(e.repetir)}</p>`:''}
     </div>`).join('');
 }
-function borrarExito(id){
-  if(!confirm('¿Eliminar este registro? No se puede deshacer.')) return;
+async function borrarExito(id){
+  if(!(await confirmDelete('este registro'))) return;
   state.exitos = state.exitos.filter(x=>x.id!==id);
   save(); renderExitoHistorial(); renderPatrones();
 }
@@ -2649,13 +2809,16 @@ function renderAnchorTool(){
 function addConfidenceAnchor(){
   const word = document.getElementById('anchorWordInput').value.trim();
   const memory = document.getElementById('anchorMemoryInput').value.trim();
-  if(!word || !memory){ alert('Rellena la palabra clave y el recuerdo.'); return; }
+  const errores = [];
+  if(!word) errores.push(['anchorWordInput', 'Escribe una palabra clave.']);
+  if(!memory) errores.push(['anchorMemoryInput', 'Describe el recuerdo de seguridad o confianza.']);
+  if(!showFieldErrors(errores)) return;
   state.confidenceAnchors.unshift({word, memory});
   save();
   renderAnchorTool();
 }
-function delConfidenceAnchor(i){
-  if(!confirm('¿Eliminar este anclaje? No se puede deshacer.')) return;
+async function delConfidenceAnchor(i){
+  if(!(await confirmDelete('este anclaje'))) return;
   state.confidenceAnchors.splice(i,1); save();
   renderAnchorTool();
 }
@@ -2746,8 +2909,8 @@ function addVisualAnchor(){
   state.visualAnchors.unshift(v); save();
   renderVisualAnchorModal();
 }
-function delVisualAnchor(i){
-  if(!confirm('¿Eliminar este recordatorio? No se puede deshacer.')) return;
+async function delVisualAnchor(i){
+  if(!(await confirmDelete('este recordatorio'))) return;
   state.visualAnchors.splice(i,1); save();
   renderVisualAnchorModal();
 }
@@ -2787,7 +2950,7 @@ function renderPedirFeedback(){
     <div class="card" style="text-align:left;">
       <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Necesito una observación, no que me digas si lo hago bien o mal."</p>
       <p id="pedirLabel"><b>Elige una sola petición concreta</b></p>
-      <div class="chip-group" role="group" aria-labelledby="pedirLabel">
+      <div class="chip-group" id="pedirChips" role="group" aria-labelledby="pedirLabel">
         ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<button type="button" ${chipAttrs(pedirFeedbackSel===o.v)} data-action="selectPedirFeedback" data-value="${escapeHtml(o.v)}"><span aria-hidden="true">${o.em}</span> ${escapeHtml(o.v)}</button>`).join('')}
         <button type="button" ${chipAttrs(pedirFeedbackSel==='Otro')} data-action="selectPedirFeedback" data-value="Otro"><span aria-hidden="true">✍️</span> Otra petición</button>
       </div>
@@ -2802,9 +2965,9 @@ function finalizarPedirFeedback(){
   let peticion = pedirFeedbackSel;
   if(pedirFeedbackSel === 'Otro'){
     peticion = document.getElementById('pedirFeedbackOtroInput').value.trim();
-    if(!peticion){ alert('Escribe qué quieres pedir.'); return; }
+    if(!peticion){ fieldError('pedirFeedbackOtroInput', 'Escribe qué quieres pedir.'); return; }
   }
-  if(!peticion){ alert('Elige una petición.'); return; }
+  if(!peticion){ fieldError('pedirChips', 'Elige una petición.'); return; }
   pedirFeedbackFinal = peticion;
   openTool('🗣️ Pide feedback', `
     <div class="card" style="text-align:center;">
@@ -2823,7 +2986,15 @@ function guardarPedirFeedbackEnKit(){
   if(!pedirFeedbackFinal) return;
   state.kitPedira = cleanStr(pedirFeedbackFinal, LIMITS.shortStr);
   save();
-  alert('Guardado en tu Kit: «¿Qué pediré?»');
+  // Confirmación junto al botón, sin diálogo
+  const btn = document.querySelector('[data-action="guardarPedirFeedbackEnKit"]');
+  let msg = document.getElementById('pedirKitMsg');
+  if(btn && !msg){
+    msg = document.createElement('p');
+    msg.id = 'pedirKitMsg'; msg.className = 'field-ok'; msg.setAttribute('role', 'status'); msg.style.marginTop = '10px';
+    btn.insertAdjacentElement('afterend', msg);
+  }
+  if(msg) msg.textContent = '✅ Guardado en tu Kit como «¿Qué pediré?».';
 }
 
 /* ============ KIT DE EMERGENCIA DEL CAPTADOR ============ */
@@ -2833,7 +3004,7 @@ function toggleKitSenal(s){
     state.kitSenales = state.kitSenales.filter(x=>x!==s);
   } else {
     if(state.kitSenales.length >= 3){
-      alert('Tu protocolo debe ser fácil de recordar. Elige como máximo 3 señales.');
+      fieldError('kitSenalChips', 'Tu protocolo debe ser fácil de recordar. Elige como máximo 3 señales (desmarca una para cambiarla).', {focus:false});
       return;
     }
     state.kitSenales.push(s);
@@ -3241,7 +3412,7 @@ function renderResetStep(){
   else if(resetStep===1){
     const chips = resetCheckinItems.length ? `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>De lo marcado en tu check-in, elige la principal.</p>
-      <div class="chip-group" role="group" aria-label="Señal principal">${resetCheckinItems.map(s=>`<button type="button" ${chipAttrs(resetSenal===checkinTitle(s)).replace('class="chip', 'class="chip chip-block')} data-action="selectSenal" data-value="${escapeHtml(checkinTitle(s))}">${a11yLabel(s)}</button>`).join('')}</div>
+      <div class="chip-group" id="resetSenalChips" role="group" aria-label="Señal principal">${resetCheckinItems.map(s=>`<button type="button" ${chipAttrs(resetSenal===checkinTitle(s)).replace('class="chip', 'class="chip chip-block')} data-action="selectSenal" data-value="${escapeHtml(checkinTitle(s))}">${a11yLabel(s)}</button>`).join('')}</div>
     ` : `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el «no», cansancio previo, hacer menos paradas, trabajar en automático…</p>
       <textarea id="resetSenalInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe tu señal principal..." oninput="resetSenal=this.value;saveResetProgressSoon();">${escapeHtml(resetSenal)}</textarea>
@@ -3257,7 +3428,7 @@ function renderResetStep(){
         <div class="timer-big" role="timer" id="resetBreathTimer">30</div>
       </div>
       <div class="card" style="text-align:left;">${chips}</div>
-      <button class="btn btn-amber" onclick="if(document.getElementById('resetSenalInput')) resetSenal=document.getElementById('resetSenalInput').value.trim(); if(!resetSenal||!resetSenal.trim()){ alert('Indica tu señal principal antes de continuar.'); return; } resetGoto(2);">Continuar</button>`;
+      <button class="btn btn-amber" onclick="continuarReconoce()">Continuar</button>`;
     let remaining=30;
     const circle = document.getElementById('resetBreathCircle');
     const timerEl = document.getElementById('resetBreathTimer');
@@ -3306,7 +3477,7 @@ function renderResetStep(){
         <label>Mi forma de trabajar → puedo revisarla y ajustarla</label>
         <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgressSoon();">${escapeHtml(resetExamRendimiento)}</textarea>
       </div>
-      <button class="btn btn-amber" onclick="if(!resetExamResultado.trim()||!resetExamRendimiento.trim()){ alert('Completa el contexto y tu forma de trabajar antes de continuar.'); return; } resetGoto(3);">Continuar</button>
+      <button class="btn btn-amber" onclick="continuarExamina()">Continuar</button>
     `;
   }
   else if(resetStep===3){
@@ -3428,7 +3599,7 @@ function renderResetStep(){
 function finalizarReset(){
   const pactoEl = document.getElementById('resetPactoInput');
   if(pactoEl) resetPacto = pactoEl.value.trim();
-  if(!resetPacto){ alert('Escribe tu pacto de permanencia antes de finalizar.'); return; }
+  if(!resetPacto){ fieldError('resetPactoInput', 'Escribe tu pacto de permanencia antes de finalizar.'); return; }
   state.resetHistory.unshift(newRecord({
     senal: resetSenal, examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
     aspecto1: resetAspecto1, aspecto2: resetAspecto2, micro: resetMicro, stops: resetStops, pacto: resetPacto,
@@ -3439,16 +3610,35 @@ function finalizarReset(){
   closeReset();
   renderPatrones();
 }
-function borrarResetHistorial(id){
-  if(!confirm('¿Eliminar esta sesión de Reset del historial? No se puede deshacer.')) return;
+async function borrarResetHistorial(id){
+  if(!(await confirmDelete('esta sesión de Reset del historial'))) return;
   state.resetHistory = state.resetHistory.filter(x=>x.id!==id);
   save(); renderResetStep();
   renderPatrones();
 }
+function continuarReconoce(){
+  const input = document.getElementById('resetSenalInput');
+  if(input) resetSenal = input.value.trim();
+  if(!resetSenal || !resetSenal.trim()){
+    fieldError(input || document.getElementById('resetSenalChips'), 'Indica tu señal principal antes de continuar.');
+    return;
+  }
+  resetGoto(2);
+}
+function continuarExamina(){
+  const errores = [];
+  if(!resetExamResultado.trim()) errores.push(['resetExamResultadoInput', 'Describe qué parte corresponde al contexto.']);
+  if(!resetExamRendimiento.trim()) errores.push(['resetExamRendimientoInput', 'Describe qué parte puedes revisar en tu forma de trabajar.']);
+  if(!showFieldErrors(errores)) return;
+  resetGoto(3);
+}
 function guardarSepara(){
   resetAspecto1 = document.getElementById('resetAspecto1Input').value.trim();
   resetAspecto2 = document.getElementById('resetAspecto2Input').value.trim();
-  if(!resetAspecto1 || !resetAspecto2){ alert('Escribe los 2 aspectos que sigues haciendo bien.'); return; }
+  const errores = [];
+  if(!resetAspecto1) errores.push(['resetAspecto1Input', 'Escribe una conducta que sigues haciendo bien.']);
+  if(!resetAspecto2) errores.push(['resetAspecto2Input', 'Escribe una segunda conducta que sigues haciendo bien.']);
+  if(!showFieldErrors(errores)) return;
   resetGoto(4);
 }
 function repetirAjuste(id){
@@ -3504,7 +3694,9 @@ const Overlays = (()=>{
              onClose(){ clearToolTimers(); flushSave(); renderResetTab(); } },   // el progreso del Reset y el Kit se guardan solos
     help:  { root:'helpOverlay',  dialog:'helpOverlay',  level:1 },
     tool:  { root:'toolOverlay',  dialog:'toolOverlay',  level:2, onClose(){ clearToolTimers(); } },
-    modal: { root:'modalBack',    dialog:'modalSheet',   level:3 }
+    modal: { root:'modalBack',    dialog:'modalSheet',   level:3 },
+    // Confirmación: siempre encima; cerrarla por cualquier vía equivale a «Cancelar»
+    confirm: { root:'confirmBack', dialog:'confirmBox',   level:4, onClose(){ if(confirmResolve) settleConfirm(false); } }
   };
   const stack = [];          // nombres abiertos, de abajo arriba
   const openers = {};        // elemento con el foco al abrir cada overlay
@@ -3518,7 +3710,7 @@ const Overlays = (()=>{
     const t = top();
     const topRoot = t ? root(t) : null;
     for(const el of document.body.children){
-      if(el.tagName === 'SCRIPT' || el.id === 'srStatus') continue;
+      if(el.tagName === 'SCRIPT' || el.id === 'srStatus' || el.id === 'toast') continue;
       const blocked = !!t && el !== topRoot;
       el.inert = blocked;
       if(blocked) el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
@@ -3575,10 +3767,17 @@ const Overlays = (()=>{
     if(DEFS[n].persistent || !typed[n]) return false;
     return [...dialog(n).querySelectorAll('textarea, input[type="text"]')].some(f => f.value.trim() !== '');
   }
-  function requestClose(n){
+  async function requestClose(n){
     n = n || top();
     if(!n || !isOpen(n)) return;
-    if(isDirty(n) && !confirm('Has escrito algo que todavía no has guardado. ¿Quieres cerrar de todos modos?')) return;
+    if(isDirty(n)){
+      const ok = await confirmDialog({
+        title:'¿Cerrar sin guardar?',
+        message:'Has escrito algo que todavía no has guardado. Si cierras, se perderá.',
+        confirmText:'Cerrar sin guardar', cancelText:'Seguir escribiendo', danger:true
+      });
+      if(!ok) return;
+    }
     close(n);
   }
 
@@ -3658,6 +3857,9 @@ Object.assign(ACTIONS, {
     el.closest('.check-item').classList.toggle('checked', el.checked);
   },
   toggleEmocion: el => toggleEmocion(el.dataset.id),
+  confirmOk: () => settleConfirm(true),
+  confirmCancel: () => settleConfirm(false),
+  toastClose: () => hideToast(),
   selectSenal: el => selectSenal(el),
   selectMicro: el => selectMicro(el.dataset.value),
   setAprendizaje: el => { resetAprendizaje = el.dataset.value; saveResetProgress(); renderResetStep(); }
@@ -3665,6 +3867,11 @@ Object.assign(ACTIONS, {
 
 /* ============ INIT ============ */
 renderResetTab();
+// Aviso pendiente tras una recarga (p. ej. después de importar datos)
+try{
+  const pendingNotice = sessionStorage.getItem('wesserNotice');
+  if(pendingNotice){ sessionStorage.removeItem('wesserNotice'); notify(pendingNotice); }
+}catch(e){}
 goto('aprender');
 </script>
 </body>
