@@ -291,6 +291,10 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
   display:none;flex-direction:column;overflow-y:auto;
 }
 .overlay.active{display:flex;}
+/* Orden de apilado = niveles del gestor de overlays: Reset/Ayuda < Herramienta < Modal */
+#toolOverlay{z-index:210;}
+/* El contenedor del diálogo recibe el foco inicial (tabindex=-1) para que el lector de pantalla lo anuncie */
+.overlay:focus, .modal-sheet:focus{outline:none;}
 .overlay-header{
   padding:calc(16px + env(safe-area-inset-top,0px)) 16px 14px;
   background:linear-gradient(135deg,var(--reset-amber-dark),var(--wesser-red-dark));
@@ -1028,12 +1032,12 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 </main>
 
 <!-- MODAL SHEET (generic, used by emotion wheel, anchor, visual anchor, kit) -->
-<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()" role="dialog" aria-modal="true">
-  <div class="modal-sheet" id="modalSheet"></div>
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)Overlays.requestClose('modal')">
+  <div class="modal-sheet" id="modalSheet" role="dialog" aria-modal="true" tabindex="-1"></div>
 </div>
 
 <!-- RESET FLOW OVERLAY -->
-<div class="overlay" id="resetOverlay" role="dialog" aria-modal="true" aria-label="Modo Reset">
+<div class="overlay" id="resetOverlay" role="dialog" aria-modal="true" aria-label="Modo Reset" tabindex="-1">
   <div class="overlay-header">
     <b>🆘 MODO RESET</b>
     <div class="oh-actions">
@@ -1041,26 +1045,26 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <button class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset" aria-label="Iniciar Modo Reset">🆘<span class="lbl">Iniciar</span></button>
       <button class="close-x labeled" onclick="openKit()" title="Kit de Emergencia" aria-label="Kit de Emergencia">🎒<span class="lbl">Kit</span></button>
       <button class="close-x labeled" onclick="openCheckinHistorial()" title="Historial" aria-label="Ver historial">📚<span class="lbl">Historial</span></button>
-      <button class="close-x" onclick="closeReset()" title="Cerrar" aria-label="Cerrar Modo Reset">✕</button>
+      <button class="close-x" onclick="Overlays.requestClose('reset')" title="Cerrar" aria-label="Cerrar Modo Reset">✕</button>
     </div>
   </div>
   <div class="overlay-body" id="resetBody"></div>
 </div>
 
 <!-- GENERIC TOOL OVERLAY -->
-<div class="overlay" id="toolOverlay" role="dialog" aria-modal="true" aria-labelledby="toolTitle">
+<div class="overlay" id="toolOverlay" role="dialog" aria-modal="true" aria-labelledby="toolTitle" tabindex="-1">
   <div class="overlay-header" style="background:linear-gradient(135deg,var(--calm-blue),var(--wesser-navy));">
     <b id="toolTitle">Herramienta</b>
-    <button class="close-x" onclick="closeTool()" aria-label="Cerrar herramienta">✕</button>
+    <button class="close-x" onclick="Overlays.requestClose('tool')" aria-label="Cerrar herramienta">✕</button>
   </div>
   <div class="overlay-body" id="toolBody"></div>
 </div>
 
 <!-- HELP OVERLAY -->
-<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-label="Ayuda">
+<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-label="Ayuda" tabindex="-1">
   <div class="overlay-header" style="background:linear-gradient(135deg,var(--wesser-navy),#0b1120);">
     <b>❓ Ayuda</b>
-    <button class="close-x" onclick="closeHelp()" aria-label="Cerrar ayuda">✕</button>
+    <button class="close-x" onclick="Overlays.requestClose('help')" aria-label="Cerrar ayuda">✕</button>
   </div>
   <div class="overlay-body">
     <p class="desc" style="margin-bottom:4px;">Qué hace cada parte de la app y cuándo usarla. Todo lo que registres <b>se guarda solo en este dispositivo y no se envía a ningún sitio</b>.</p>
@@ -1621,15 +1625,20 @@ function toggleQlMore(){
 }
 
 /* ============ HELP OVERLAY ============ */
-function openHelp(){ document.getElementById('helpOverlay').classList.add('active'); }
-function closeHelp(){ document.getElementById('helpOverlay').classList.remove('active'); }
+function openHelp(){ Overlays.open('help'); }
+function closeHelp(){ Overlays.close('help'); }
 
 /* ============ MODAL HELPERS ============ */
 function openModal(html){
-  document.getElementById('modalSheet').innerHTML = '<div class="handle"></div>'+html;
-  document.getElementById('modalBack').classList.add('active');
+  const sheet = document.getElementById('modalSheet');
+  sheet.innerHTML = '<div class="handle"></div>'+html;
+  // El diálogo se nombra con su primer título
+  const heading = sheet.querySelector('h2, h3');
+  if(heading){ heading.id = 'modalTitle'; sheet.setAttribute('aria-labelledby', 'modalTitle'); }
+  else sheet.removeAttribute('aria-labelledby');
+  Overlays.open('modal');
 }
-function closeModal(){ document.getElementById('modalBack').classList.remove('active'); }
+function closeModal(){ Overlays.close('modal'); }
 
 /* ============ DATA: EMOTIONS (enfoque autogestión del captador) ============ */
 const EMOTIONS = [
@@ -1722,7 +1731,7 @@ let patronesRango = 7;
 const ACCION_LABELS = ['Pausa consciente','Respiración lenta','Ajustar el ritmo','Revisar mi técnica','Adaptar el speech','Cambiar el enfoque o la ubicación','Pedir apoyo'];
 function renderEmocionChips(){
   const c = document.getElementById('sepaEmocionChips');
-  c.innerHTML = EMOTIONS.map(e=>`<div class="chip" data-id="${e.id}">${emoji(e.id)} ${e.nombre} <span data-action="showEmotion" data-value="${escapeHtml(e.id)}" title="Ver ficha">ℹ️</span></div>`).join('');
+  c.innerHTML = EMOTIONS.map(e=>`<div class="chip" data-id="${e.id}">${emoji(e.id)} ${e.nombre} <span class="chip-info" role="button" tabindex="0" data-action="showEmotion" data-value="${escapeHtml(e.id)}" title="Ver ficha" aria-label="Ver ficha de ${escapeHtml(e.nombre)}">ℹ️</span></div>`).join('');
   c.querySelectorAll('.chip').forEach(ch=>{
     ch.onclick = (ev)=>{
       if(ev.target.closest('[data-action]')) return; // el ℹ️ abre la ficha, no selecciona
@@ -2099,12 +2108,9 @@ function openTool(title, html){
   const body = document.getElementById('toolBody');
   body.innerHTML = html;
   body.classList.add('center-short');
-  document.getElementById('toolOverlay').classList.add('active');
+  Overlays.open('tool');
 }
-function closeTool(){
-  clearToolTimers();
-  document.getElementById('toolOverlay').classList.remove('active');
-}
+function closeTool(){ Overlays.close('tool'); }
 let toolRepeatFn = null;
 function showToolDone(title, repeatFn){
   clearToolTimers();
@@ -2922,7 +2928,7 @@ function saveResetProgressSoon(){ if(syncResetProgress()) saveSoon(); }
 function clearResetProgress(){ state.resetProgress = null; save(); }
 
 function openReset(){
-  document.getElementById('resetOverlay').classList.add('active');
+  Overlays.open('reset');
   if(state.resetProgress && state.resetProgress.step>=1){
     resetStep = 'resume';
   } else {
@@ -2956,10 +2962,7 @@ function startFreshReset(){
   resetCheckinItems = [];
   renderResetStep();
 }
-function closeReset(){
-  clearToolTimers();
-  document.getElementById('resetOverlay').classList.remove('active');
-}
+function closeReset(){ Overlays.close('reset'); }
 function resetDots(){
   return `<div class="step-dots">${[1,2,3,4,5,6,7].map(i=>`<span class="${i<=resetStep?'on':''}"></span>`).join('')}</div>`;
 }
@@ -3387,7 +3390,7 @@ function repetirAjuste(id){
   resetAprendizaje=''; resetObservacion='';
   resetStep = 5;
   saveResetProgress();
-  document.getElementById('resetOverlay').classList.add('active');
+  Overlays.open('reset');
   renderResetStep();
 }
 function selectSenal(el){ resetSenal = cleanStr(el.textContent, LIMITS.shortStr); saveResetProgress(); renderResetStep(); }
@@ -3395,32 +3398,6 @@ function selectMicro(m){ resetMicro = m; saveResetProgress(); renderResetStep();
 function resetGoto(step){ resetStep = step; saveResetProgress(); renderResetStep(); }
 function incrementStop(){ if(resetStops<10) resetStops++; saveResetProgress(); renderResetStep(); }
 
-/* ============ ACCESIBILIDAD ============ */
-let lastFocusedEl = null;
-function focusOverlay(el){
-  const target = el.querySelector('.close-x') || el.querySelector('button, [tabindex]');
-  if(target) target.focus();
-}
-['resetOverlay','toolOverlay','helpOverlay','modalBack'].forEach(id=>{
-  const el = document.getElementById(id);
-  if(!el) return;
-  const obs = new MutationObserver(()=>{
-    if(el.classList.contains('active')){
-      lastFocusedEl = document.activeElement;
-      focusOverlay(el);
-    } else if(lastFocusedEl && document.body.contains(lastFocusedEl)){
-      lastFocusedEl.focus();
-      lastFocusedEl = null;
-    }
-  });
-  obs.observe(el, {attributes:true, attributeFilter:['class']});
-});
-function closeTopOverlay(){
-  if(document.getElementById('modalBack').classList.contains('active')) closeModal();
-  else if(document.getElementById('toolOverlay').classList.contains('active')) closeTool();
-  else if(document.getElementById('resetOverlay').classList.contains('active')) closeReset();
-  else if(document.getElementById('helpOverlay').classList.contains('active')) closeHelp();
-}
 
 function enhanceChip(el){
   if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
@@ -3453,23 +3430,152 @@ chipObserver.observe(document.body, {childList:true, subtree:true, attributes:tr
 enhanceAllChips();
 applyInputLimits();
 
-function getActiveOverlayEl(){
-  const ids = ['modalBack','toolOverlay','resetOverlay','helpOverlay'];
-  for(const id of ids){
-    const el = document.getElementById(id);
-    if(el && el.classList.contains('active')) return el;
+/* ============ GESTOR DE OVERLAYS ============
+   Único punto que abre y cierra Modal, Herramienta, Reset y Ayuda.
+   - Niveles: Reset y Ayuda (1) se excluyen entre sí; una Herramienta (2) puede abrirse sobre
+     el Reset (p. ej. «Activar mi plan»); el Modal (3) va siempre encima. Abrir un overlay cierra
+     los del mismo nivel o superior; cerrar uno cierra también los que tenga encima.
+   - Todo lo que queda por debajo del overlay superior se marca inert + aria-hidden: no se puede
+     tabular, pulsar ni leer con lector de pantalla.
+   - Foco: al abrir va al contenedor del diálogo; al cerrar vuelve a quien lo abrió (o al overlay
+     que quede debajo); Tab/Mayús+Tab circulan solo dentro del diálogo superior.
+   - Cierres del usuario (✕, Escape, fondo del modal) pasan por requestClose(): si hay texto
+     escrito sin guardar, se pide confirmación. Los cierres del propio código no preguntan. */
+const Overlays = (()=>{
+  const DEFS = {
+    reset: { root:'resetOverlay', dialog:'resetOverlay', level:1, persistent:true,
+             onClose(){ clearToolTimers(); flushSave(); } },   // el progreso del Reset y el Kit se guardan solos
+    help:  { root:'helpOverlay',  dialog:'helpOverlay',  level:1 },
+    tool:  { root:'toolOverlay',  dialog:'toolOverlay',  level:2, onClose(){ clearToolTimers(); } },
+    modal: { root:'modalBack',    dialog:'modalSheet',   level:3 }
+  };
+  const stack = [];          // nombres abiertos, de abajo arriba
+  const openers = {};        // elemento con el foco al abrir cada overlay
+  const typed = {};          // el usuario ha escrito algo en este overlay desde que se abrió
+  const root = n => document.getElementById(DEFS[n].root);
+  const dialog = n => document.getElementById(DEFS[n].dialog);
+  const top = () => stack[stack.length-1] || null;
+  const isOpen = n => stack.includes(n);
+
+  function sync(){
+    const t = top();
+    const topRoot = t ? root(t) : null;
+    for(const el of document.body.children){
+      if(el.tagName === 'SCRIPT') continue;
+      const blocked = !!t && el !== topRoot;
+      el.inert = blocked;
+      if(blocked) el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
+    }
   }
-  return null;
-}
-/* Focus trap sencillo: si el foco se escapa del overlay activo por cualquier vía, lo devolvemos dentro */
-document.addEventListener('focusin', (e)=>{
-  const overlay = getActiveOverlayEl();
-  if(!overlay) return;
-  if(!overlay.contains(e.target)) focusOverlay(overlay);
-});
+  /* Tabulable de verdad: visible y no dentro de un <details> cerrado (salvo su propio <summary>).
+     El contenido de un <details> cerrado puede seguir teniendo dimensiones, así que se comprueba aparte. */
+  function isTabbable(el){
+    if(el.disabled || el.closest('[inert]')) return false;
+    for(let d = el.parentElement && el.parentElement.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')){
+      if(!d.open && !(el.tagName === 'SUMMARY' && el.parentElement === d)) return false;
+    }
+    return typeof el.checkVisibility === 'function' ? el.checkVisibility() : el.getClientRects().length > 0;
+  }
+  function focusables(n){
+    return [...dialog(n).querySelectorAll('a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])')].filter(isTabbable);
+  }
+  function focusInitial(n){
+    const d = dialog(n);
+    const target = d.querySelector('[data-autofocus]') || d;
+    target.focus({preventScroll:true});
+  }
+  function open(n){
+    // Cierra lo incompatible: overlays del mismo nivel o superior
+    [...stack].reverse().forEach(o=>{ if(o !== n && DEFS[o].level >= DEFS[n].level) close(o, {restoreFocus:false}); });
+    const fresh = !isOpen(n);
+    if(fresh){
+      openers[n] = document.activeElement;
+      typed[n] = false;
+      lastFocus[n] = null;
+      stack.push(n);
+      root(n).classList.add('active');
+    }
+    sync();
+    if(fresh || !dialog(n).contains(document.activeElement)) focusInitial(n);
+  }
+  function close(n, opts){
+    if(!isOpen(n)) return;
+    const restoreFocus = !opts || opts.restoreFocus !== false;
+    // Primero lo que tenga encima
+    stack.slice(stack.indexOf(n)+1).reverse().forEach(o=>close(o, {restoreFocus:false}));
+    stack.splice(stack.indexOf(n), 1);
+    root(n).classList.remove('active');
+    if(DEFS[n].onClose) DEFS[n].onClose();
+    sync();
+    const opener = openers[n];
+    openers[n] = null;
+    if(!restoreFocus) return;
+    const t = top();
+    if(opener && document.contains(opener) && !opener.closest('[inert]') && (!t || dialog(t).contains(opener))) opener.focus({preventScroll:true});
+    else if(t) focusInitial(t);
+  }
+  function isDirty(n){
+    if(DEFS[n].persistent || !typed[n]) return false;
+    return [...dialog(n).querySelectorAll('textarea, input[type="text"]')].some(f => f.value.trim() !== '');
+  }
+  function requestClose(n){
+    n = n || top();
+    if(!n || !isOpen(n)) return;
+    if(isDirty(n) && !confirm('Has escrito algo que todavía no has guardado. ¿Quieres cerrar de todos modos?')) return;
+    close(n);
+  }
+
+  // Marca «escrito» el overlay donde el usuario teclea
+  document.addEventListener('input', e=>{
+    const n = stack.find(o => root(o).contains(e.target));
+    if(n && e.target.matches('textarea, input[type="text"]')) typed[n] = true;
+  });
+  /* Si el contenido se re-renderiza (p. ej. al marcar un chip) y el elemento con foco desaparece,
+     el foco vuelve al control equivalente del nuevo contenido; si no existe, al diálogo. */
+  const lastFocus = {};
+  function focusKey(el){
+    if(el.id) return '#' + CSS.escape(el.id);
+    if(el.dataset.action){
+      let sel = `[data-action="${CSS.escape(el.dataset.action)}"]`;
+      ['value','id','idx','si','ii','answer'].forEach(k=>{ if(el.dataset[k] !== undefined) sel += `[data-${k}="${CSS.escape(el.dataset[k])}"]`; });
+      return sel;
+    }
+    return null;
+  }
+  Object.keys(DEFS).forEach(n=>{
+    new MutationObserver(()=>{
+      if(top() !== n || dialog(n).contains(document.activeElement)) return;
+      const same = lastFocus[n] && dialog(n).querySelector(lastFocus[n]);
+      if(same) same.focus({preventScroll:true}); else focusInitial(n);
+    }).observe(dialog(n), {childList:true, subtree:true});
+  });
+  // Red de seguridad: el foco nunca se queda fuera del diálogo superior
+  document.addEventListener('focusin', e=>{
+    const t = top();
+    if(!t) return;
+    if(!dialog(t).contains(e.target)){ focusInitial(t); return; }
+    lastFocus[t] = focusKey(e.target);
+  });
+  document.addEventListener('keydown', e=>{
+    const t = top();
+    if(!t) return;
+    if(e.key === 'Escape'){ e.preventDefault(); requestClose(t); return; }
+    if(e.key !== 'Tab') return;
+    // Focus trap: Tab y Mayús+Tab dan la vuelta dentro del diálogo superior
+    const items = focusables(t);
+    if(!items.length){ e.preventDefault(); dialog(t).focus(); return; }
+    const first = items[0], last = items[items.length-1], active = document.activeElement;
+    if(e.shiftKey && (active === first || active === dialog(t))){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && active === last){ e.preventDefault(); first.focus(); }
+  });
+
+  return { open, close, requestClose, isOpen, top };
+})();
+
+/* ============ ACCESIBILIDAD ============ */
 document.addEventListener('keydown', (e)=>{
-  if(e.key==='Escape'){ closeTopOverlay(); return; }
-  if((e.key==='Enter' || e.key===' ') && e.target.classList && e.target.classList.contains('chip')){
+  // Chips y demás elementos role="button" no nativos se activan con Enter/Espacio como un botón
+  if((e.key==='Enter' || e.key===' ') && e.target.matches && e.target.matches('.chip, [role="button"]:not(button)')){
     e.preventDefault();
     e.target.click();
   }
