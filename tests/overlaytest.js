@@ -125,6 +125,19 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   ok(!clicked, 'no se puede enfocar nada del fondo');
   await page.evaluate(() => closeHelp());
 
+  // Rutinas rápidas que no guardan: el aviso no sugiere que falte guardar
+  await page.evaluate(() => { Overlays.close('confirm'); Overlays.close('modal'); Overlays.close('tool'); Overlays.close('reset'); Overlays.close('help'); startCierreTurno(); });
+  await page.fill('#cierreTurno1', 'Un turno duro');
+  await page.keyboard.press('Escape'); await page.waitForTimeout(150);
+  const efimero = await page.evaluate(() => [document.getElementById('confirmTitle').textContent, document.getElementById('confirmMsg').textContent]);
+  ok(efimero[0] === '¿Cerrar?' && efimero[1].includes('no se guarda'), 'Cierre de turno a medias: «¿Cerrar? Lo que has escrito aquí no se guarda»');
+  await page.locator('#confirmOk').click();
+  await page.evaluate(() => { openCheckpoint(); });
+  await page.fill('#cpNota', 'Beber agua');
+  await page.keyboard.press('Escape'); await page.waitForTimeout(150);
+  ok(await page.evaluate(() => document.getElementById('confirmTitle').textContent) === '¿Cerrar sin guardar?', 'herramienta que sí guarda: mantiene «¿Cerrar sin guardar?»');
+  await page.locator('#confirmOk').click();
+
   ok(errors.length === 0, 'sin errores de JS: ' + errors.join(' | '));
   await browser.close();
 })();

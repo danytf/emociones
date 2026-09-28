@@ -2971,7 +2971,7 @@ function startPreTurno(){
     ` : ''}
     <div class="card" style="text-align:left;">
       <p class="tool-meta">30–45 segundos</p>
-      <p class="desc">Tres preguntas rápidas antes de empezar el turno. No se guardan: son solo para ordenar tus ideas ahora.</p>
+      <p class="desc" data-no-guarda>Tres preguntas rápidas antes de empezar el turno. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label for="preTurno1">¿Cómo llego hoy?</label>
       <textarea id="preTurno1" placeholder="Una palabra o frase corta..."></textarea>
       <label for="preTurno2">¿Qué quiero cuidar en mi forma de captar?</label>
@@ -3007,7 +3007,7 @@ function startCierreTurno(){
   openTool('Cierre de turno', `
     <div class="card" style="text-align:left;">
       <p class="tool-meta">30 segundos</p>
-      <p class="desc">Tres preguntas rápidas para cerrar el turno antes de volver a casa. No se guardan: son solo para ordenar tus ideas ahora.</p>
+      <p class="desc" data-no-guarda>Tres preguntas rápidas para cerrar el turno antes de volver a casa. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label for="cierreTurno1">¿Qué dejo hoy en el trabajo?</label>
       <textarea id="cierreTurno1" placeholder="Una palabra o frase corta..."></textarea>
       <label for="cierreTurno2">¿Qué quiero llevarme?</label>
@@ -3045,7 +3045,7 @@ function startVolverCalle(){
   openTool('Volver a calle', `
     <div class="card" style="text-align:left;">
       <p class="tool-meta">15–20 segundos</p>
-      <p class="desc">Dos preguntas rápidas para retomar el turno después de la pausa. No se guardan: son solo para ordenar tus ideas ahora.</p>
+      <p class="desc" data-no-guarda>Dos preguntas rápidas para retomar el turno después de la pausa. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label for="volverCalle1">¿Cómo estoy?</label>
       <textarea id="volverCalle1" placeholder="Una palabra o frase corta..."></textarea>
       <label for="volverCalle2">¿Qué quiero hacer en la primera parada?</label>
@@ -4440,7 +4440,13 @@ const Overlays = (()=>{
     n = n || top();
     if(!n || !isOpen(n)) return;
     if(isDirty(n)){
-      const ok = await confirmDialog({
+      // Las rutinas rápidas ([data-no-guarda]) nunca guardan: no se sugiere que falte guardar
+      const efimero = !!dialog(n).querySelector('[data-no-guarda]');
+      const ok = await confirmDialog(efimero ? {
+        title:'¿Cerrar?',
+        message:'Lo que has escrito aquí no se guarda. Si cierras, se borrará.',
+        confirmText:'Cerrar', cancelText:'Seguir escribiendo', danger:true
+      } : {
         title:'¿Cerrar sin guardar?',
         message:'Has escrito algo que todavía no has guardado. Si cierras, se perderá.',
         confirmText:'Cerrar sin guardar', cancelText:'Seguir escribiendo', danger:true
