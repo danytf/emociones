@@ -943,7 +943,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <h3>👁️ Recordatorio visual</h3>
           <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte cómo quieres afrontar una situación</b> cuando aparezcan tensión, desánimo o dudas.</p>
-          <p class="desc"><b>¿Cómo se prepara?</b><br>Guarda una <b>frase, imagen o recordatorio</b> que puedas consultar rápidamente. La idea no es obligarte a pensar en positivo, sino <b>volver a tu objetivo y a la actitud que quieres mantener</b>.</p>
+          <p class="desc"><b>¿Cómo se prepara?</b><br>Guarda una <b>frase o recordatorio de texto</b> que puedas consultar rápidamente. La idea no es obligarte a pensar en positivo, sino <b>volver a tu objetivo y a la actitud que quieres mantener</b>.</p>
           <button class="btn btn-outline" onclick="openVisualAnchor()">Ver mis frases</button>
         </div>
       </div>
@@ -3008,7 +3008,7 @@ function toggleKitSenal(s){
     state.kitSenales = state.kitSenales.filter(x=>x!==s);
   } else {
     if(state.kitSenales.length >= 3){
-      fieldError('kitSenalChips', 'Tu protocolo debe ser fácil de recordar. Elige como máximo 3 señales (desmarca una para cambiarla).', {focus:false});
+      fieldError('kitSenalChips', 'Para que tu plan sea fácil de recordar, puedes elegir hasta 3 señales. Desmarca una para elegir otra.', {focus:false});
       return;
     }
     state.kitSenales.push(s);
@@ -3040,16 +3040,22 @@ const KIT_TOOL_EXACT = {
   'Recordatorio de confianza': ()=>openAnchor(),
   'Recordatorio visual': ()=>activarRecordatorioVisual()
 };
-/* Coincidencia por palabras clave: solo como respaldo para datos antiguos guardados como texto libre */
+/* Parecido por palabras clave: NUNCA abre nada por sí solo. Un recurso personal como «salir a
+   respirar» no es el Suspiro fisiológico; como mucho se ofrece esa herramienta como opción. */
 const KIT_TOOL_MATCHERS = [
-  {re:/suspiro|respira/i, fn:()=>startBreath(60)},
-  {re:/parar y decidir|stop/i, fn:()=>startPauseDecision()},
-  {re:/grounding|5.?4.?3.?2.?1/i, fn:()=>startGrounding()},
-  {re:/tense|release|tensa/i, fn:()=>startTense()},
-  {re:/confianza/i, fn:()=>openAnchor()},
-  {re:/anclaje visual|recordatorio visual/i, fn:()=>activarRecordatorioVisual()},
-  {re:/checkpoint/i, fn:()=>openCheckpoint()}
+  {re:/suspiro|respira/i, name:'Suspiro fisiológico'},
+  {re:/parar y decidir|stop/i, name:'Parar y decidir'},
+  {re:/grounding|5.?4.?3.?2.?1/i, name:'Grounding 5-4-3-2-1'},
+  {re:/tense|release|tensa/i, name:'Tense & Release'},
+  {re:/confianza/i, name:'Recordatorio de confianza'},
+  {re:/anclaje visual|recordatorio visual/i, name:'Recordatorio visual'}
 ];
+const normTxt = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+/* Herramienta interna solo si el texto ES el nombre de una (sin distinguir mayúsculas ni tildes) */
+function kitToolName(txt){
+  return Object.keys(KIT_TOOL_EXACT).find(k => normTxt(k) === normTxt(txt)) || null;
+}
+let kitSuggestedTool = null;
 function onKitHerramientaChange(){
   const val = document.getElementById('kitHerramientaSelect').value;
   const wrap = document.getElementById('kitHerramientaOtraWrap');
@@ -3065,19 +3071,20 @@ function onKitHerramientaChange(){
 function activarKitPlan(){
   const txt = (state.kitHerramienta||'').trim();
   if(!txt) return;
-  if(Object.prototype.hasOwnProperty.call(KIT_TOOL_EXACT, txt)){ KIT_TOOL_EXACT[txt](); return; }
+  // Herramienta interna conocida: se abre directamente
+  const tool = kitToolName(txt);
+  if(tool){ KIT_TOOL_EXACT[tool](); return; }
+  // Recurso personal: se muestra lo guardado, sin decir que se abre ninguna herramienta
   const match = KIT_TOOL_MATCHERS.find(m=>m.re.test(txt));
-  if(match){ match.fn(); }
-  else {
-    openModal(`
-      <h2>🚨 Mi protocolo personal</h2>
-      <p class="desc"><b>Me regulo con:</b> ${escapeHtml(txt)}</p>
-      ${state.kitAjuste?`<p class="desc"><b>Ajusto:</b> ${escapeHtml(state.kitAjuste)}</p>`:''}
-      ${state.kitPersona?`<p class="desc"><b>Pido ayuda a:</b> ${escapeHtml(state.kitPersona)}</p>`:''}
-      ${state.kitPedira?`<p class="desc"><b>Y le pido:</b> ${escapeHtml(state.kitPedira)}</p>`:''}
-      <button class="btn btn-outline" onclick="closeModal()">Cerrar</button>
-    `);
-  }
+  kitSuggestedTool = match ? match.name : null;
+  openModal(`
+    <h2>🧩 Este es tu recurso personal</h2>
+    <p style="font-size:18px;font-weight:800;line-height:1.45;">«${escapeHtml(txt)}»</p>
+    ${state.kitAjuste?`<p class="desc"><b>Después, ajusto:</b> ${escapeHtml(state.kitAjuste)}</p>`:''}
+    ${(state.kitPersona || state.kitPedira)?`<p class="desc"><b>Si sigo atascado, pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}</b>${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : '.'}</p>`:''}
+    ${kitSuggestedTool ? `<button type="button" class="btn btn-outline" style="margin-top:6px;" data-action="kitSuggestedTool">Abrir también «${escapeHtml(kitSuggestedTool)}» de la app</button>` : ''}
+    <button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="closeModal()">Hecho</button>
+  `);
 }
 
 /* ============ MODO RESET FLOW (Protocolo R.E.S.E.T.) ============ */
@@ -3269,7 +3276,7 @@ function renderResetStep(){
           <div class="kit-flow-arrow">↓</div>
           <div class="kit-flow-step">
             <span class="kit-flow-label">SI SIGO ATASCADO</span>
-            ${(state.kitPersona || state.kitPedira) ? `<p>${escapeHtml(state.kitPersona) || '—'}${state.kitPedira ? ` · ${escapeHtml(state.kitPedira)}` : ''}</p>` : '<p class="kit-flow-empty">Pido apoyo</p>'}
+            ${(state.kitPersona || state.kitPedira) ? `<p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>` : '<p class="kit-flow-empty">Pido apoyo</p>'}
           </div>
         </div>
         ${state.kitHerramienta ? `<button class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
@@ -3277,7 +3284,7 @@ function renderResetStep(){
 
       <div class="card">
         <p><b>🚨 Mis señales de alerta</b></p>
-        <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una dinámica que no te está ayudando.</p>
+        <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una dinámica que no te está ayudando. <b>Elige hasta 3</b>: así tu plan es fácil de recordar cuando lo necesites.</p>
         <div class="chip-group" id="kitSenalChips" role="group" aria-label="Mis señales de alerta (máximo 3)">${CHECKIN_TITLES.map(s=>`<button type="button" ${chipAttrs(state.kitSenales.includes(s))} data-action="toggleKitSenal" data-value="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('')}</div>
 
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
@@ -3852,6 +3859,7 @@ Object.assign(ACTIONS, {
     el.closest('.check-item').classList.toggle('checked', el.checked);
   },
   toggleEmocion: el => toggleEmocion(el.dataset.id),
+  kitSuggestedTool: () => { const t = kitSuggestedTool; closeModal(); if(t && KIT_TOOL_EXACT[t]) KIT_TOOL_EXACT[t](); },
   confirmOk: () => settleConfirm(true),
   confirmCancel: () => settleConfirm(false),
   toastClose: () => hideToast(),
