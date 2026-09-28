@@ -3140,7 +3140,7 @@ function startBreath(seconds){
   toolTimers.push(t2);
 }
 
-/* ---- Parar y Decidir (PARA → Toma aire → Observa y nombra → Genera opciones → Actúa) ---- */
+/* ---- Parar y decidir (PARA → Toma aire → Observa y nombra → Genera opciones → Actúa) ---- */
 const pauseSteps = [
   {l:'P', title:'Para', desc:'Detente un momento. Lo que sucede fuera puede esperar 30 segundos.'},
   {l:'T', title:'Toma aire', desc:'Respira lento y profundo (suspiro fisiológico: 2 inhalaciones nasales, exhalación larga por la boca).'},
@@ -3163,7 +3163,7 @@ function renderPauseStep(){
       <p class="desc">${escapeHtml(pauseOpciones) || '—'}</p>
       <p><b>Ahora decide</b></p>
     </div>` : '';
-  openTool('Parar y Decidir', `
+  openTool('Parar y decidir', `
     <div class="card" style="text-align:center;">
       <div class="step-dots">${pauseSteps.map((_,i)=>`<span class="${i<=pauseIdx?'on':''}"></span>`).join('')}</div>
       <div class="timer-big" style="font-size:36px;">${s.l}</div>
@@ -3183,7 +3183,7 @@ function nextPause(){
     if(s.key==='opciones') pauseOpciones = val;
   }
   pauseIdx++;
-  if(pauseIdx>=pauseSteps.length){ showToolDone('Parar y Decidir', startPauseDecision); return; }
+  if(pauseIdx>=pauseSteps.length){ showToolDone('Parar y decidir', startPauseDecision); return; }
   renderPauseStep();
 }
 
