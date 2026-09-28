@@ -464,6 +464,18 @@ input[type=range]{width:100%;accent-color:var(--wesser-red);}
 .mini-card{background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
 .mini-card b{font-size:13px;color:var(--wesser-red);}
 .mini-card p{font-size:13px;margin:4px 0 0;color:var(--text-secondary);}
+/* Modo oscuro: el rojo, el ámbar oscuro y el azul marino usados como COLOR DE TEXTO no llegan
+   a 4,5:1 sobre el fondo oscuro; se sustituyen por tonos claros equivalentes. */
+:root[data-theme="dark"] .mini-card b,
+:root[data-theme="dark"] .range-val,
+:root[data-theme="dark"] .compare-col b,
+:root[data-theme="dark"] .circle-control .cc-col b{color:#F87171;}
+:root[data-theme="dark"] .kit-flow-label{color:#FBBF24;}
+:root[data-theme="dark"] .prompt-text{color:var(--text-primary);}
+/* Frases destacadas de herramientas y confirmaciones «hecho» */
+.quote-strong{font-size:19px;font-weight:800;color:var(--wesser-navy);}
+:root[data-theme="dark"] .quote-strong{color:var(--text-primary);}
+.text-ok{color:var(--ok-text);}
 
 .patron-block{margin-bottom:16px;}
 .patron-block:last-child{margin-bottom:0;}
@@ -505,24 +517,24 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <body>
 <!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
 <div id="srStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
-<!-- Aviso breve no modal: lo lee el lector de pantalla por #srStatus, aquí solo se muestra -->
-<div id="toast" class="toast" aria-hidden="true"><span id="toastMsg"></span><button type="button" data-action="toastClose" aria-label="Cerrar aviso">✕</button></div>
+<!-- Aviso breve no modal: se anuncia por #srStatus; aquí se muestra y se puede cerrar -->
+<div id="toast" class="toast"><span id="toastMsg"></span><button type="button" data-action="toastClose" aria-label="Cerrar aviso">✕</button></div>
 
 <header>
   <h1 class="sr-only">Wesser · Gestión Emocional</h1>
   <div class="header-inner">
     <div class="brand"><b>WESSER</b><span>Gestión Emocional</span></div>
     <div class="header-actions">
-      <button class="icon-btn" onclick="openHelp()" title="Ayuda" aria-label="Abrir ayuda">❓</button>
-      <button class="icon-btn" id="themeToggle" title="Modo claro/oscuro" aria-label="Cambiar entre modo claro y oscuro">🌓</button>
+      <button type="button" class="icon-btn" onclick="openHelp()" title="Ayuda" aria-label="Abrir ayuda">❓</button>
+      <button type="button" class="icon-btn" id="themeToggle" title="Modo claro/oscuro" aria-label="Cambiar entre modo claro y oscuro">🌓</button>
     </div>
   </div>
   <nav class="tabs-wrap" aria-label="Secciones principales">
     <div class="header-tabs" id="headerTabs">
-      <button data-view="aprender" class="active"><span class="ic">🧠</span><span class="lb">Aprender</span></button>
-      <button data-view="bienestar"><span class="ic">🌱</span><span class="lb">Bienestar</span></button>
-      <button data-view="herramientas"><span class="ic">🧰</span><span class="lb">Herramientas</span></button>
-      <button data-view="diario"><span class="ic">📓</span><span class="lb">Diario</span></button>
+      <button type="button" data-view="aprender" class="active"><span class="ic">🧠</span><span class="lb">Aprender</span></button>
+      <button type="button" data-view="bienestar"><span class="ic">🌱</span><span class="lb">Bienestar</span></button>
+      <button type="button" data-view="herramientas"><span class="ic">🧰</span><span class="lb">Herramientas</span></button>
+      <button type="button" data-view="diario"><span class="ic">📓</span><span class="lb">Diario</span></button>
       <button type="button" class="tab-reset" id="tabReset" aria-haspopup="dialog" onclick="openReset()"><span class="ic" aria-hidden="true">🆘</span><span class="lb">Reset</span></button>
     </div>
     <div class="tabs-fade" aria-hidden="true"></div>
@@ -540,20 +552,20 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     </div>
     <div class="ql-row" id="qlRow">
       <span id="qlKitSlot"></span>
-      <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
-      <button class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
-      <button class="ql-btn" onclick="startVolverCalle()"><span class="ql-em">🔄</span><span class="ql-lb">Volver a calle</span></button>
-      <button class="ql-btn" onclick="startCierreTurno()"><span class="ql-em">🏠</span><span class="ql-lb">Cierre de turno</span></button>
-      <button class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
+      <button type="button" class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
+      <button type="button" class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
+      <button type="button" class="ql-btn" onclick="startVolverCalle()"><span class="ql-em">🔄</span><span class="ql-lb">Volver a calle</span></button>
+      <button type="button" class="ql-btn" onclick="startCierreTurno()"><span class="ql-em">🏠</span><span class="ql-lb">Cierre de turno</span></button>
+      <button type="button" class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
       <div id="qlMoreWrap" class="ql-more-collapsed">
-        <button class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
-        <button class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mala interacción</span></button>
-        <button class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em">🎯</span><span class="ql-lb">Presión por objetivo</span></button>
-        <button class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
-        <button class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
-        <button class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
-        <button class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em">👋</span><span class="ql-lb">Dudo en la parada</span></button>
-        <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
+        <button type="button" class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
+        <button type="button" class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mala interacción</span></button>
+        <button type="button" class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em">🎯</span><span class="ql-lb">Presión por objetivo</span></button>
+        <button type="button" class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
+        <button type="button" class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
+        <button type="button" class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
+        <button type="button" class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em">👋</span><span class="ql-lb">Dudo en la parada</span></button>
+        <button type="button" class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
       </div>
     </div>
   </div>
@@ -868,7 +880,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <summary>14. Diferencia activación de energía 🔋</summary>
         <div class="help-body">
           <p>No es lo mismo <b>«estoy demasiado acelerado»</b> que <b>«estoy agotado y me cuesta arrancar»</b>. Son situaciones diferentes y necesitan respuestas diferentes.</p>
-          <p>Si necesitas <b>bajar la activación</b>, prueba Suspiro fisiológico, Tense & Release o Grounding.</p>
+          <p>Si necesitas <b>bajar la activación</b>, prueba Suspiro fisiológico, Tense &amp; Release o Grounding.</p>
           <p>Si lo que te falta es <b>energía</b>, haz una pausa real: <b>hidrátate, toma algo de aire y desconecta unos minutos</b>. Si necesitas comer, hazlo. Después, baja la exigencia de ese tramo y utiliza <b>«Volver a calle»</b> cuando decidas retomar.</p>
         </div>
       </details>
@@ -896,35 +908,35 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p class="tool-meta">⏱️ 30–45 segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>evitar que una interacción que te ha dejado tocado contamine las siguientes</b>: un grito, una risa, un rechazo especialmente desagradable o una conversación que ha salido mal.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br><b>Corta → Separa → Aprende → Suelta → Vuelve.</b></p>
-          <button class="btn btn-blue" onclick="startBadApproach()">Empezar</button>
+          <button type="button" class="btn btn-blue" onclick="startBadApproach()">Empezar</button>
         </div>
         <div class="card">
           <h3>🌬️ Suspiro fisiológico</h3>
           <p class="tool-meta">⏱️ 30–60 segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br><b>Puede ayudarte a bajar rápidamente la activación</b> cuando estás nervioso, acelerado o tenso.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br>Haz <b>dos inhalaciones seguidas</b>, preferiblemente por la nariz —la segunda más pequeña— y después una <b>exhalación lenta y larga</b>. Repite durante 30–60 segundos.</p>
-          <button class="btn btn-blue" onclick="startBreath(60)">Respirar 60 s</button>
+          <button type="button" class="btn btn-blue" onclick="startBreath(60)">Respirar 60 s</button>
         </div>
         <div class="card">
           <h3>🛑 Parar y decidir</h3>
           <p class="tool-meta">⏱️ 1–2 minutos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>cortar una reacción automática y recuperar margen para decidir qué hacer</b> ante tensión, rabia, nervios o bloqueo.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br><b>PARA → Toma aire → Observa y nombra → Genera opciones → Actúa.</b></p>
-          <button class="btn btn-blue" onclick="startPauseDecision()">Empezar</button>
+          <button type="button" class="btn btn-blue" onclick="startPauseDecision()">Empezar</button>
         </div>
         <div class="card">
           <h3>👀 Grounding 5-4-3-2-1</h3>
           <p class="tool-meta">⏱️ 1–2 minutos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>sacar la atención del bucle de pensamientos y volver al presente</b> cuando tu cabeza está atrapada en preocupaciones o anticipaciones.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br>Lleva tu atención al entorno utilizando los sentidos: <b>5</b> cosas que ves · <b>4</b> que oyes · <b>3</b> que tocas · <b>2</b> que hueles · <b>1</b> que saboreas.</p>
-          <button class="btn btn-blue" onclick="startGrounding()">Empezar</button>
+          <button type="button" class="btn btn-blue" onclick="startGrounding()">Empezar</button>
         </div>
         <div class="card">
-          <h3>💪 Tense & Release</h3>
+          <h3>💪 Tense &amp; Release</h3>
           <p class="tool-meta">⏱️ ~2 minutos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>soltar tensión física acumulada</b>, especialmente cuando notas rigidez en puños, brazos, hombros o piernas.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br><b>Tensa de forma firme pero cómoda, sin dolor, mantén unos segundos y después suelta</b>. Repite con diferentes grupos musculares: puños, brazos, hombros y piernas.</p>
-          <button class="btn btn-blue" onclick="startTense()">Empezar</button>
+          <button type="button" class="btn btn-blue" onclick="startTense()">Empezar</button>
         </div>
       </div>
     </div>
@@ -938,21 +950,21 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p class="tool-meta">⏱️ 10 segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para ese instante justo <b>antes de dejar pasar a alguien</b>, cuando no tienes claro si estás tomando una decisión consciente o <b>evitando un posible rechazo o una interacción incómoda</b>.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br>Responde a una sola pregunta: <b>«¿Estoy decidiendo o estoy evitando?»</b> Después, sigue.</p>
-          <button class="btn btn-blue" onclick="startMomentoDecidir()">Empezar</button>
+          <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">Empezar</button>
         </div>
         <div class="card">
           <h3>🎯 Resultado vs. Proceso</h3>
           <p class="tool-meta">⏱️ 20 segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para detectar si la presión por objetivo te ha hecho <b>fijarte demasiado en el resultado</b> —socios, ratio, número del día— <b>en lugar de en el proceso</b> —paradas, apertura, escucha y técnica—.</p>
           <p class="desc"><b>¿Cómo se hace?</b><br>Identifica <b>dónde estás mirando ahora mismo</b>. Si estás centrado en el resultado, elige una conducta de proceso a la que volver.</p>
-          <button class="btn btn-blue" onclick="startResultadoProceso()">Empezar</button>
+          <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">Empezar</button>
         </div>
         <div class="card">
           <h3>🗣️ Pide feedback</h3>
           <p class="tool-meta">⏱️ 30 segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>pedir una observación concreta</b> en lugar de un genérico «dime si lo hago bien».</p>
           <p class="desc"><b>¿Cómo se hace?</b><br>Elige <b>una sola petición concreta</b> y tendrás la frase lista para decirla.</p>
-          <button class="btn btn-outline" onclick="startPedirFeedback()">Empezar</button>
+          <button type="button" class="btn btn-outline" onclick="startPedirFeedback()">Empezar</button>
         </div>
       </div>
     </div>
@@ -966,14 +978,14 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>evocar una sensación de seguridad y confianza</b> antes de una conversación difícil o después de un momento de inseguridad.</p>
           <p class="desc"><b>¿Cómo se prepara?</b><br>Elige un gesto discreto —por ejemplo, <b>juntar pulgar e índice</b>— mientras recuerdas una situación en la que te sentiste <b>seguro, concentrado o satisfecho con tu trabajo</b>. Después puedes utilizar ese gesto como <b>recordatorio de ese estado</b>.</p>
-          <button class="btn btn-green" onclick="openAnchor()">Configurar / Usar</button>
+          <button type="button" class="btn btn-green" onclick="openAnchor()">Configurar / Usar</button>
         </div>
         <div class="card">
           <h3>👁️ Recordatorio visual</h3>
           <p class="tool-meta">⏱️ Preparación previa · uso en segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>recordarte cómo quieres afrontar una situación</b> cuando aparezcan tensión, desánimo o dudas.</p>
           <p class="desc"><b>¿Cómo se prepara?</b><br>Guarda una <b>frase o recordatorio de texto</b> que puedas consultar rápidamente. La idea no es obligarte a pensar en positivo, sino <b>volver a tu objetivo y a la actitud que quieres mantener</b>.</p>
-          <button class="btn btn-outline" onclick="openVisualAnchor()">Ver mis frases</button>
+          <button type="button" class="btn btn-outline" onclick="openVisualAnchor()">Ver mis frases</button>
         </div>
       </div>
     </div>
@@ -993,7 +1005,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           🎯 <b>Estrategia:</b> ¿necesito cambiar algo?</p>
           <p class="desc">Termina con una decisión concreta: <b>seguir igual · hacer una pausa · ajustar la estrategia</b>.</p>
           <p class="desc">Se guarda en tu historial para que puedas <b>revisar cómo llegas a mitad de turno y detectar patrones con el tiempo</b>.</p>
-          <button class="btn btn-amber" onclick="openCheckpoint()">Hacer checkpoint</button>
+          <button type="button" class="btn btn-amber" onclick="openCheckpoint()">Hacer checkpoint</button>
           <div id="checkpointHistorial" style="margin-top:12px;"></div>
         </div>
         <div class="card">
@@ -1001,7 +1013,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <p class="tool-meta">⏱️ 30 segundos</p>
           <p class="desc"><b>🎯 ¿Para qué sirve?</b><br>Para <b>identificar una conducta concreta que ha funcionado</b> después de una buena conversación y decidir qué repetir en la siguiente.</p>
           <p class="desc">No es para puntuarte. Es para <b>quedarte con lo que ya funciona</b>, en vez de entrenar solo la corrección del error.</p>
-          <button class="btn btn-green" onclick="startExito()">Registrar</button>
+          <button type="button" class="btn btn-green" onclick="startExito()">Registrar</button>
           <div id="exitoHistorial" style="margin-top:12px;"></div>
         </div>
       </div>
@@ -1033,7 +1045,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 
     <div class="card">
       <h3>1. Contexto</h3>
-      <label>S · Situación</label>
+      <label for="sepaSituacion">S · Situación</label>
       <p class="desc" style="margin-top:-6px;">¿Qué está pasando realmente?</p>
       <select id="sepaSituacion" onchange="toggleSituacionOtra()">
         <option>Permiso difícil</option>
@@ -1058,7 +1070,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 
     <div class="card">
       <h3>2. Pensamiento y acción</h3>
-      <label>P · Pensamiento automático</label>
+      <label for="sepaPensDestructivo">P · Pensamiento automático</label>
       <p class="desc" style="margin-top:-6px;">¿Qué me estoy diciendo?</p>
       <select id="sepaPensDestructivo" onchange="toggleSepaPensOtro()">
         <option>No voy a poder</option>
@@ -1074,9 +1086,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <textarea id="sepaPensDestructivoLibre" placeholder="Escribe tu pensamiento..."></textarea>
       </div>
 
-      <label>P+ · Pensamiento útil 💡</label>
+      <label for="sepaPensConstructivo">P+ · Pensamiento útil 💡</label>
       <p class="desc" style="margin-top:-6px;">¿Cómo puedo interpretar la situación de una forma más realista y útil?</p>
-      <button class="btn btn-outline btn-sm" style="margin-bottom:10px;" onclick="sugerirReencuadre()">💡 Sugerir reencuadre</button>
+      <button type="button" class="btn btn-outline btn-sm" style="margin-bottom:10px;" onclick="sugerirReencuadre()">💡 Sugerir reencuadre</button>
       <textarea id="sepaPensConstructivo" placeholder="Es una zona difícil, pero todavía puedo aplicar técnica y centrarme en hacer buenas conversaciones..."></textarea>
 
       <label for="sepaAccion">A · Acción inmediata</label>
@@ -1092,8 +1104,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       </div>
       <textarea id="sepaAccion" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
 
-      <button class="btn btn-primary" id="sepaSaveBtn" onclick="guardarSepa()">Guardar registro</button>
-      <button class="btn btn-outline" id="sepaCancelBtn" style="display:none;margin-top:10px;" onclick="cancelarEdicionSepa()">Cancelar edición</button>
+      <button type="button" class="btn btn-primary" id="sepaSaveBtn" onclick="guardarSepa()">Guardar registro</button>
+      <button type="button" class="btn btn-outline" id="sepaCancelBtn" style="display:none;margin-top:10px;" onclick="cancelarEdicionSepa()">Cancelar edición</button>
     </div>
 
     <p class="desc" style="font-weight:700;margin-bottom:4px;">🎯 Recuerda</p>
@@ -1103,8 +1115,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <h3 style="margin-top:0;">📊 Mis patrones</h3>
       <p class="desc">Solo muestra lo que has registrado. No es un diagnóstico.</p>
       <div class="btn-row" style="max-width:280px;margin-bottom:12px;">
-        <button class="btn btn-sm" id="patronesBtn7" onclick="setPatronesRango(7)">Últimos 7 días</button>
-        <button class="btn btn-sm" id="patronesBtn30" onclick="setPatronesRango(30)">Últimos 30 días</button>
+        <button type="button" class="btn btn-sm" id="patronesBtn7" onclick="setPatronesRango(7)">Últimos 7 días</button>
+        <button type="button" class="btn btn-sm" id="patronesBtn30" onclick="setPatronesRango(30)">Últimos 30 días</button>
       </div>
       <div id="patronesBody"></div>
     </div>
@@ -1125,7 +1137,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <!-- CONFIRMACIÓN ACCESIBLE (sustituye a confirm()) -->
 <div class="modal-back confirm-back" id="confirmBack" onclick="if(event.target===this)Overlays.requestClose('confirm')">
   <div class="confirm-box" id="confirmBox" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMsg" tabindex="-1">
-    <h2 id="confirmTitle"></h2>
+    <h2 id="confirmTitle">Confirmar</h2>
     <p class="desc" id="confirmMsg"></p>
     <div class="btn-row">
       <button type="button" class="btn btn-outline" id="confirmCancel" data-action="confirmCancel" data-autofocus>Cancelar</button>
@@ -1139,11 +1151,11 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <div class="overlay-header">
     <b>🆘 MODO RESET</b>
     <div class="oh-actions">
-      <button class="close-x labeled" onclick="startCheckin()" title="Señales de alerta" aria-label="Señales de alerta">🚦<span class="lbl">Señales</span></button>
-      <button class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset" aria-label="Iniciar Modo Reset">🆘<span class="lbl">Iniciar</span></button>
-      <button class="close-x labeled" onclick="openKit()" title="Kit de Emergencia" aria-label="Kit de Emergencia">🎒<span class="lbl">Kit</span></button>
-      <button class="close-x labeled" onclick="openCheckinHistorial()" title="Historial" aria-label="Ver historial">📚<span class="lbl">Historial</span></button>
-      <button class="close-x" onclick="Overlays.requestClose('reset')" title="Cerrar" aria-label="Cerrar Modo Reset">✕</button>
+      <button type="button" class="close-x labeled" onclick="startCheckin()" title="Señales de alerta" aria-label="Señales de alerta">🚦<span class="lbl">Señales</span></button>
+      <button type="button" class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset" aria-label="Iniciar Modo Reset">🆘<span class="lbl">Iniciar</span></button>
+      <button type="button" class="close-x labeled" onclick="openKit()" title="Kit de Emergencia" aria-label="Kit de Emergencia">🎒<span class="lbl">Kit</span></button>
+      <button type="button" class="close-x labeled" onclick="openCheckinHistorial()" title="Historial" aria-label="Ver historial">📚<span class="lbl">Historial</span></button>
+      <button type="button" class="close-x" onclick="Overlays.requestClose('reset')" title="Cerrar" aria-label="Cerrar Modo Reset">✕</button>
     </div>
   </div>
   <div class="overlay-body" id="resetBody"></div>
@@ -1153,7 +1165,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <div class="overlay" id="toolOverlay" role="dialog" aria-modal="true" aria-labelledby="toolTitle" tabindex="-1">
   <div class="overlay-header" style="background:linear-gradient(135deg,var(--calm-blue),var(--wesser-navy));">
     <b id="toolTitle">Herramienta</b>
-    <button class="close-x" onclick="Overlays.requestClose('tool')" aria-label="Cerrar herramienta">✕</button>
+    <button type="button" class="close-x" onclick="Overlays.requestClose('tool')" aria-label="Cerrar herramienta">✕</button>
   </div>
   <div class="overlay-body" id="toolBody"></div>
 </div>
@@ -1162,7 +1174,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-label="Ayuda" tabindex="-1">
   <div class="overlay-header" style="background:linear-gradient(135deg,var(--wesser-navy),#0b1120);">
     <b>❓ Ayuda</b>
-    <button class="close-x" onclick="Overlays.requestClose('help')" aria-label="Cerrar ayuda">✕</button>
+    <button type="button" class="close-x" onclick="Overlays.requestClose('help')" aria-label="Cerrar ayuda">✕</button>
   </div>
   <div class="overlay-body">
     <p class="desc" style="margin-bottom:4px;">Qué hace cada parte de la app y cuándo usarla. Los datos que guardes en el Diario, Checkpoints, Check-ins, Reset y recursos personales <b>se almacenan solo en este dispositivo y no se envían a ningún sitio</b>. Los formularios de uso rápido que no generan un registro no se conservan al cerrar la herramienta.</p>
@@ -1219,7 +1231,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
           <li><b>Suspiro fisiológico</b>: ejercicio respiratorio de 60 segundos que puede ayudarte a bajar rápidamente la activación cuando estás acelerado o tenso.</li>
           <li><b>Parar y decidir</b>: PARA → Toma aire → Observa y nombra → Genera opciones → Actúa. Es la herramienta general para situaciones de tensión, rabia o bloqueo. <b>Úsala cuando no sepas cuál elegir.</b></li>
           <li><b>Grounding 5‑4‑3‑2‑1</b>: lleva tu atención a los 5 sentidos para volver al presente.</li>
-          <li><b>Tense & Release</b>: tensa y suelta puños, brazos, hombros y piernas para liberar la tensión física.</li>
+          <li><b>Tense &amp; Release</b>: tensa y suelta puños, brazos, hombros y piernas para liberar la tensión física.</li>
         </ul>
         <p><b>🎯 Foco y rendimiento</b><br>Para <b>volver al proceso y tomar mejores decisiones</b>.</p>
         <ul>
@@ -1290,9 +1302,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <p class="desc">Los datos que guardas (Diario, Checkpoints, Check-ins, Reset, Kit y recursos personales) se almacenan <b>solo en este dispositivo y no se envían a ningún sitio</b>. Eso significa que <b>no hay una copia de seguridad automática</b>: si borras los datos del navegador o cambias de móvil o tablet, pueden perderse. Exporta una copia desde aquí para guardarla a salvo.</p>
         <p class="desc" style="font-size:12.5px;">Los datos se almacenan localmente en este navegador. La app no los envía a un servidor. No están cifrados; en un dispositivo compartido, otras personas con acceso al mismo perfil del navegador podrían verlos.</p>
         <div class="btn-row" style="margin-top:10px;">
-          <button class="btn btn-navy" onclick="exportarDatos()">⬇️ Exportar datos</button>
-          <button class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
-          <button class="btn btn-outline" style="color:var(--alert-coral);" onclick="borrarTodosDatos()">🗑️ Borrar todos los datos</button>
+          <button type="button" class="btn btn-navy" onclick="exportarDatos()">⬇️ Exportar datos</button>
+          <button type="button" class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
+          <button type="button" class="btn btn-outline" style="color:var(--alert-coral);" onclick="borrarTodosDatos()">🗑️ Borrar todos los datos</button>
         </div>
         <p id="datosMsg" class="field-ok" role="status" style="margin-top:12px;"></p>
         <input type="file" id="importDatosInput" accept="application/json" style="display:none;" onchange="importarDatos(this)">
@@ -1847,7 +1859,7 @@ function renderQlKitButton(){
   const slot = document.getElementById('qlKitSlot');
   if(!slot) return;
   slot.innerHTML = state.kitHerramienta
-    ? `<button class="ql-btn ql-kit" onclick="activarKitPlan()"><span class="ql-em">🚨</span><span class="ql-lb">Activar mi plan</span></button>`
+    ? `<button type="button" class="ql-btn ql-kit" onclick="activarKitPlan()"><span class="ql-em">🚨</span><span class="ql-lb">Activar mi plan</span></button>`
     : '';
 }
 renderQlKitButton();
@@ -1937,7 +1949,7 @@ const PENSAMIENTO_HOOKS = {
 function renderWheel(){
   const grid = document.getElementById('wheelGrid');
   grid.innerHTML = EMOTIONS.map(e=>`
-    <button class="wheel-btn" style="background:${e.color};${e.textColor?`color:${e.textColor};`:''}" data-action="showEmotion" data-value="${escapeHtml(e.id)}">
+    <button type="button" class="wheel-btn" style="background:${e.color};${e.textColor?`color:${e.textColor};`:''}" data-action="showEmotion" data-value="${escapeHtml(e.id)}">
       <span class="em">${emoji(e.id)}</span>${e.nombre}
     </button>`).join('');
 }
@@ -1956,7 +1968,7 @@ function showEmotion(id){
     <p class="desc">${e.expresion}</p>
     <h3 style="margin-top:14px;">💬 ¿Qué me puedo decir?</h3>
     <p style="font-weight:700;font-style:italic;">«${e.reencuadre}»</p>
-    <button class="btn btn-outline" style="margin-top:14px;" onclick="closeModal()">Cerrar</button>
+    <button type="button" class="btn btn-outline" style="margin-top:14px;" onclick="closeModal()">Cerrar</button>
   `);
 }
 renderWheel();
@@ -2092,15 +2104,15 @@ function renderSepaHistorial(){
     const emosTxt = emos.map(id=>`${emoji(id)} ${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||'')}`).join(' · ');
     return `
     <div class="history-item">
-      <button class="del" data-action="borrarSepa" data-id="${escapeHtml(e.id)}">Eliminar</button>
-      <button class="edit" data-action="editarSepa" data-id="${escapeHtml(e.id)}">Editar</button>
+      <button type="button" class="del" data-action="borrarSepa" data-id="${escapeHtml(e.id)}">Eliminar</button>
+      <button type="button" class="edit" data-action="editarSepa" data-id="${escapeHtml(e.id)}">Editar</button>
       <div class="meta">${escapeHtml(fechaDe(e))} · ${emosTxt}</div>
       <p><b>S:</b> ${escapeHtml(e.situacion)}</p>
       <p><b>P:</b> ${escapeHtml(e.pensD)||'—'}</p>
       <p><b>P+:</b> ${escapeHtml(e.pensC)}</p>
       <p><b>A:</b> ${escapeHtml(e.accion)}</p>
     </div>`;
-  }).join('') + (state.sepaEntries.length > sepaHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasSepa()">Mostrar más</button>` : '');
+  }).join('') + (state.sepaEntries.length > sepaHistorialLimit ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" onclick="verMasSepa()">Mostrar más</button>` : '');
 }
 renderSepaHistorial();
 
@@ -2204,22 +2216,22 @@ function openCheckpoint(editId){
   const decision = existing ? (existing.decision||'') : '';
   openTool('Checkpoint Mental', `
     <div class="card">
-      <label>Nivel de fatiga física/mental (1‑10)</label>
+      <label for="cpFatiga">Nivel de fatiga física/mental (1‑10)</label>
       <input type="range" id="cpFatiga" min="1" max="10" value="${escapeHtml(fatiga)}" oninput="document.getElementById('cpFatigaVal').textContent=this.value+'/10'">
       <div class="range-val" id="cpFatigaVal">${escapeHtml(fatiga)}/10</div>
       <div class="range-labels"><span>1 = nada</span><span>10 = mucha</span></div>
-      <label style="margin-top:14px;">Activación emocional (1‑10)</label>
+      <label for="cpEmocional" style="margin-top:14px;">Activación emocional (1‑10)</label>
       <input type="range" id="cpEmocional" min="1" max="10" value="${escapeHtml(emocional)}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value+'/10'">
       <div class="range-val" id="cpEmocionalVal">${escapeHtml(emocional)}/10</div>
       <div class="range-labels"><span>1 = baja</span><span>10 = alta</span></div>
-      <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
+      <label for="cpNota" style="margin-top:14px;">Ajuste táctico para el tramo final</label>
       <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
       <p style="margin-top:14px;"><b>¿Qué hago ahora?</b></p>
       <div class="btn-row" id="cpDecisionRow" role="group" aria-label="¿Qué hago ahora?" style="flex-wrap:wrap;">
         ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" aria-pressed="${decision===o.v}" data-decision="${escapeHtml(o.v)}" data-action="setCpDecision" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
       </div>
       <input type="hidden" id="cpDecision" value="${escapeHtml(decision)}">
-      <button class="btn btn-green" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
+      <button type="button" class="btn btn-green" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
     </div>
   `);
 }
@@ -2255,8 +2267,8 @@ function renderCheckpointHistorial(){
   if(!state.checkpoints.length){ wrap.innerHTML='<div class="empty-state">Sin checkpoints todavía.</div>'; return; }
   wrap.innerHTML = state.checkpoints.map(c=>`
     <div class="history-item">
-      <button class="del" data-action="borrarCheckpoint" data-id="${escapeHtml(c.id)}">Eliminar</button>
-      <button class="edit" data-action="editarCheckpoint" data-id="${escapeHtml(c.id)}">Editar</button>
+      <button type="button" class="del" data-action="borrarCheckpoint" data-id="${escapeHtml(c.id)}">Eliminar</button>
+      <button type="button" class="edit" data-action="editarCheckpoint" data-id="${escapeHtml(c.id)}">Editar</button>
       <div class="meta">${escapeHtml(fechaDe(c))}</div>
       <p>Fatiga: <b>${escapeHtml(c.fatiga)}/10</b> · Activación: <b>${escapeHtml(c.emocional)}/10</b></p>
       ${c.decision?`<p><b>Decisión:</b> ${escapeHtml(c.decision)}</p>`:''}
@@ -2287,10 +2299,10 @@ function renderExito(){
       <div id="exitoOtraWrap" style="${exitoConducta==='Otra'?'':'display:none;'}">
         <textarea id="exitoOtraInput" placeholder="Escribe qué ha funcionado..." oninput="exitoOtraTexto=this.value;">${escapeHtml(exitoOtraTexto)}</textarea>
       </div>
-      <label style="margin-top:14px;">¿Qué quiero repetir en el siguiente?</label>
+      <label for="exitoRepetirInput" style="margin-top:14px;">¿Qué quiero repetir en el siguiente?</label>
       <textarea id="exitoRepetirInput" placeholder="Sé concreto: una sola cosa..." oninput="exitoRepetirTexto=this.value;">${escapeHtml(exitoRepetirTexto)}</textarea>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">💡 Ha ido bien no significa que tengas que cambiarlo todo. Mantén lo que ya funciona.</p>
-      <button class="btn btn-green" style="margin-top:6px;" onclick="guardarExito()">Guardar</button>
+      <button type="button" class="btn btn-green" style="margin-top:6px;" onclick="guardarExito()">Guardar</button>
     </div>
   `);
 }
@@ -2312,8 +2324,8 @@ function guardarExito(){
       <p class="desc"><b>Ha funcionado:</b><br>${escapeHtml(conducta)}</p>
       ${repetir ? `<p class="desc"><b>Quiero repetir:</b><br>${escapeHtml(repetir)}</p>` : ''}
       <div class="btn-row" style="margin-top:10px;">
-        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" onclick="startExito()">🔁 Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-blue" onclick="startExito()">🔁 Repetir</button>
       </div>
     </div>
   `);
@@ -2324,7 +2336,7 @@ function renderExitoHistorial(){
   if(!state.exitos.length){ wrap.innerHTML=''; return; }
   wrap.innerHTML = state.exitos.slice(0,5).map(e=>`
     <div class="history-item">
-      <button class="del" data-action="borrarExito" data-id="${escapeHtml(e.id)}">Eliminar</button>
+      <button type="button" class="del" data-action="borrarExito" data-id="${escapeHtml(e.id)}">Eliminar</button>
       <div class="meta">${escapeHtml(fechaDe(e))}</div>
       <p><b>${escapeHtml(e.conducta)}</b></p>
       ${e.repetir?`<p class="desc">Repetir: ${escapeHtml(e.repetir)}</p>`:''}
@@ -2359,8 +2371,8 @@ function showToolDone(title, repeatFn){
       <h3>Hecho</h3>
       <p class="desc">Puedes volver a la calle o repetirla si lo necesitas.</p>
       <div class="btn-row" style="margin-top:10px;">
-        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" data-action="toolRepeat">🔁 Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-blue" data-action="toolRepeat">🔁 Repetir</button>
       </div>
     </div>
   `);
@@ -2398,13 +2410,13 @@ function startPreTurno(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">⏱️ 30–45 segundos</p>
       <p class="desc">Tres preguntas rápidas antes de empezar el turno. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label>¿Cómo llego hoy?</label>
+      <label for="preTurno1">¿Cómo llego hoy?</label>
       <textarea id="preTurno1" placeholder="Una palabra o frase corta..."></textarea>
-      <label>¿Qué quiero cuidar en mi forma de captar?</label>
+      <label for="preTurno2">¿Qué quiero cuidar en mi forma de captar?</label>
       <textarea id="preTurno2" placeholder="Ej: escuchar hasta el final, sonreír más..."></textarea>
-      <label>Si aparece mi primera señal, ¿qué haré?</label>
+      <label for="preTurno3">Si aparece mi primera señal, ¿qué haré?</label>
       <textarea id="preTurno3" placeholder="Tu respuesta de emergencia..."></textarea>
-      <button class="btn btn-amber" style="margin-top:6px;" onclick="finalizarPreTurno()">✅ Estoy preparado</button>
+      <button type="button" class="btn btn-amber" style="margin-top:6px;" onclick="finalizarPreTurno()">✅ Estoy preparado</button>
     </div>
   `);
 }
@@ -2421,8 +2433,8 @@ function finalizarPreTurno(){
       <p class="desc"><b>Quiero cuidar:</b><br>${escapeHtml(cuidar)||'—'}</p>
       <p class="desc"><b>Si aparece la señal:</b><br>${escapeHtml(senal)||'—'}</p>
       <div class="btn-row" style="margin-top:10px;">
-        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" onclick="startPreTurno()">🔁 Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-blue" onclick="startPreTurno()">🔁 Repetir</button>
       </div>
     </div>
   `);
@@ -2434,13 +2446,13 @@ function startCierreTurno(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">⏱️ 30 segundos</p>
       <p class="desc">Tres preguntas rápidas para cerrar el turno antes de volver a casa. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label>¿Qué dejo hoy en el trabajo?</label>
+      <label for="cierreTurno1">¿Qué dejo hoy en el trabajo?</label>
       <textarea id="cierreTurno1" placeholder="Una palabra o frase corta..."></textarea>
-      <label>¿Qué quiero llevarme?</label>
+      <label for="cierreTurno2">¿Qué quiero llevarme?</label>
       <textarea id="cierreTurno2" placeholder="Ej: un aprendizaje, una buena conversación..."></textarea>
-      <label>¿Qué necesito hacer ahora para cambiar de contexto?</label>
+      <label for="cierreTurno3">¿Qué necesito hacer ahora para cambiar de contexto?</label>
       <textarea id="cierreTurno3" placeholder="Ej: cambiarme de ropa, caminar, llamar a alguien..."></textarea>
-      <button class="btn btn-navy" style="margin-top:6px;" onclick="finalizarCierreTurno()">✅ Turno cerrado</button>
+      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarCierreTurno()">✅ Turno cerrado</button>
     </div>
   `);
 }
@@ -2458,10 +2470,10 @@ function finalizarCierreTurno(){
       <p class="desc"><b>Para cambiar de contexto:</b><br>${escapeHtml(contexto)||'—'}</p>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"El turno ha terminado. No necesito seguir resolviéndolo ahora."</p>
       <div class="btn-row" style="margin-top:10px;flex-wrap:wrap;">
-        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" onclick="startCierreTurno()">🔁 Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-blue" onclick="startCierreTurno()">🔁 Repetir</button>
       </div>
-      <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="closeTool();startGrounding();">🧠 Sigo dándole vueltas</button>
+      <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="closeTool();startGrounding();">🧠 Sigo dándole vueltas</button>
     </div>
   `);
 }
@@ -2472,11 +2484,11 @@ function startVolverCalle(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">⏱️ 15–20 segundos</p>
       <p class="desc">Dos preguntas rápidas para retomar el turno después de la pausa. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label>¿Cómo estoy?</label>
+      <label for="volverCalle1">¿Cómo estoy?</label>
       <textarea id="volverCalle1" placeholder="Una palabra o frase corta..."></textarea>
-      <label>¿Qué quiero hacer en la primera parada?</label>
+      <label for="volverCalle2">¿Qué quiero hacer en la primera parada?</label>
       <textarea id="volverCalle2" placeholder="Ej: sonreír, escuchar bien, ritmo tranquilo..."></textarea>
-      <button class="btn btn-navy" style="margin-top:6px;" onclick="finalizarVolverCalle()">✅ Vuelvo a calle</button>
+      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarVolverCalle()">✅ Vuelvo a calle</button>
     </div>
   `);
 }
@@ -2491,8 +2503,8 @@ function finalizarVolverCalle(){
       <p class="desc"><b>Primera parada:</b><br>${escapeHtml(primero)||'—'}</p>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"No necesito recuperar el día. Solo hacer el siguiente."</p>
       <div class="btn-row" style="margin-top:10px;">
-        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" onclick="startVolverCalle()">🔁 Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-blue" onclick="startVolverCalle()">🔁 Repetir</button>
       </div>
     </div>
   `);
@@ -2518,7 +2530,7 @@ function startBreath(seconds){
       <p class="desc">Inhala profundo por la nariz (2-3s), una segunda inhalación corta (1s), y exhala lentamente por la boca (6-8s) hasta vaciar los pulmones.</p>
       <div class="breath-circle" id="breathCircle">Inhala</div>
       <div class="timer-big" role="timer" id="breathTimer">${seconds}</div>
-      <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
+      <button type="button" class="btn btn-outline" onclick="closeTool()">Terminar</button>
     </div>
   `);
   announce(`Suspiro fisiológico: ${seconds} segundos. Sigue las fases que se van indicando.`);
@@ -2566,7 +2578,7 @@ function renderPauseStep(){
       ${s.input ? `<textarea id="pauseInput" placeholder="${s.ph}">${escapeHtml(prefill)}</textarea>` : ''}
     </div>
     ${summary}
-    <button class="btn btn-navy" onclick="nextPause()">${pauseIdx<pauseSteps.length-1?'Siguiente':'Terminar'}</button>
+    <button type="button" class="btn btn-navy" onclick="nextPause()">${pauseIdx<pauseSteps.length-1?'Siguiente':'Terminar'}</button>
   `);
 }
 function nextPause(){
@@ -2603,7 +2615,7 @@ function renderBadApproachStep(){
       <p class="desc">${s.desc}</p>
       ${s.input ? `<textarea id="badApproachInput" placeholder="${s.ph}">${escapeHtml(prefill)}</textarea>` : ''}
     </div>
-    <button class="btn btn-navy" onclick="nextBadApproach()">${badApproachIdx<badApproachSteps.length-1?'Siguiente':'Terminar'}</button>
+    <button type="button" class="btn btn-navy" onclick="nextBadApproach()">${badApproachIdx<badApproachSteps.length-1?'Siguiente':'Terminar'}</button>
   `);
 }
 function nextBadApproach(){
@@ -2626,8 +2638,8 @@ function startResultadoProceso(){
       </div>
       <p style="margin-top:14px;text-align:center;"><b>¿Dónde estoy mirando ahora mismo?</b></p>
       <div class="btn-row" style="flex-wrap:wrap;">
-        <button class="btn btn-outline" onclick="selectRP('resultado')">🎯 Resultado</button>
-        <button class="btn btn-outline" onclick="selectRP('proceso')">🛠️ Proceso</button>
+        <button type="button" class="btn btn-outline" onclick="selectRP('resultado')">🎯 Resultado</button>
+        <button type="button" class="btn btn-outline" onclick="selectRP('proceso')">🛠️ Proceso</button>
       </div>
     </div>
   `);
@@ -2641,8 +2653,8 @@ function selectRP(val){
         <p class="desc">Es un foco más cercano a lo que sí puedes ejecutar ahora.</p>
         <p class="desc">El resultado también depende de cosas que no controlas; el proceso es donde puedes actuar.</p>
         <div class="btn-row" style="margin-top:10px;">
-          <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-          <button class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
+          <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+          <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
         </div>
       </div>
     `);
@@ -2663,10 +2675,10 @@ function finalizarRP(foco){
     <div class="card" style="text-align:center;">
       <p style="font-size:36px;">🛠️</p>
       <h3>Mi foco ahora</h3>
-      <p style="font-size:19px;font-weight:800;color:var(--wesser-navy);">«${escapeHtml(foco)}»</p>
+      <p class="quote-strong">«${escapeHtml(foco)}»</p>
       <div class="btn-row" style="margin-top:14px;">
-        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
       </div>
     </div>
   `);
@@ -2679,8 +2691,8 @@ function startMomentoDecidir(){
       <p class="desc">Antes de dejar pasar a alguien, hazte esta pregunta:</p>
       <p style="font-size:17px;font-weight:800;margin:10px 0;">¿Estoy decidiendo no hacer la parada o estoy evitando sentir el rechazo?</p>
       <div class="btn-row" style="flex-wrap:wrap;">
-        <button class="btn btn-outline" onclick="selectMomentoDecidir('decide')">Decido conscientemente</button>
-        <button class="btn btn-outline" onclick="selectMomentoDecidir('evita')">Estoy evitando</button>
+        <button type="button" class="btn btn-outline" onclick="selectMomentoDecidir('decide')">Decido conscientemente</button>
+        <button type="button" class="btn btn-outline" onclick="selectMomentoDecidir('evita')">Estoy evitando</button>
       </div>
     </div>
   `);
@@ -2693,8 +2705,8 @@ function selectMomentoDecidir(val){
         <h3>Es tu decisión</h3>
         <p class="desc">No todas las paradas tienen que producirse. Decidir con criterio también es parte del trabajo.</p>
         <div class="btn-row" style="margin-top:10px;">
-          <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-          <button class="btn btn-blue" onclick="startMomentoDecidir()">🔁 Repetir</button>
+          <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+          <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">🔁 Repetir</button>
         </div>
       </div>
     `);
@@ -2704,10 +2716,10 @@ function selectMomentoDecidir(val){
     <div class="card" style="text-align:center;">
       <p style="font-size:36px;">👋</p>
       <h3>Solo necesitas decidir</h3>
-      <p style="font-size:19px;font-weight:800;color:var(--wesser-navy);">"No necesito sentirme seguro. Solo necesito decidir."</p>
+      <p class="quote-strong">«No necesito sentirme seguro. Solo necesito decidir.»</p>
       <div class="btn-row" style="margin-top:14px;">
-        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" onclick="startMomentoDecidir()">🔁 Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">🔁 Repetir</button>
       </div>
     </div>
   `);
@@ -2747,7 +2759,7 @@ function renderNoSeQueNecesito(){
         <p class="desc" style="font-style:italic;">Empieza por este paso sugerido:</p>
         <h3>${primary.title}</h3>
         <p class="desc">${primary.desc}</p>
-        <button class="btn btn-primary" data-action="nsqnGo" data-idx="0">${primary.cta}</button>
+        <button type="button" class="btn btn-primary" data-action="nsqnGo" data-idx="0">${primary.cta}</button>
       </div>
       ${rest.length ? `
         <div class="card">
@@ -2756,7 +2768,7 @@ function renderNoSeQueNecesito(){
             <div class="history-item" style="margin-bottom:8px;">
               <p style="font-weight:700;">${r.title}</p>
               <p class="desc">${r.desc}</p>
-              <button class="btn btn-outline btn-sm" data-action="nsqnGo" data-idx="${i+1}">${r.cta}</button>
+              <button type="button" class="btn btn-outline btn-sm" data-action="nsqnGo" data-idx="${i+1}">${r.cta}</button>
             </div>`).join('')}
         </div>` : ''}
     `;
@@ -2805,7 +2817,7 @@ function renderGroundingStep(){
       <div class="step-dots">${groundingSteps.map((_,i)=>`<span class="${i<=groundingIdx?'on':''}"></span>`).join('')}</div>
       <div class="timer-big">${s.n}</div>
       <p style="font-size:18px;font-weight:700;">${s.label}</p>
-      <button class="btn btn-blue" onclick="nextGrounding()">${groundingIdx<groundingSteps.length-1?'Siguiente':'Terminar'}</button>
+      <button type="button" class="btn btn-blue" onclick="nextGrounding()">${groundingIdx<groundingSteps.length-1?'Siguiente':'Terminar'}</button>
     </div>
   `);
 }
@@ -2822,19 +2834,19 @@ function openAnchor(){
 function renderAnchorTool(){
   openTool('Recordatorio de confianza', `
     <div class="card">
-      <label>Palabra clave</label>
+      <label for="anchorWordInput">Palabra clave</label>
       <input type="text" id="anchorWordInput" placeholder='Ej: "Confianza", "Calma", "Seguridad"'>
-      <label>Recuerdo de seguridad o confianza</label>
+      <label for="anchorMemoryInput">Recuerdo de seguridad o confianza</label>
       <textarea id="anchorMemoryInput" placeholder="Describe brevemente ese momento..."></textarea>
-      <button class="btn btn-green" onclick="addConfidenceAnchor()">Guardar anclaje</button>
+      <button type="button" class="btn btn-green" onclick="addConfidenceAnchor()">Guardar anclaje</button>
     </div>
     <div style="margin-top:16px;">
       ${state.confidenceAnchors.length ? state.confidenceAnchors.map((a,i)=>`
         <div class="history-item">
-          <button class="del" data-action="delConfidenceAnchor" data-idx="${i}">Eliminar</button>
+          <button type="button" class="del" data-action="delConfidenceAnchor" data-idx="${i}">Eliminar</button>
           <p style="font-weight:700;">${escapeHtml(a.word)}</p>
           <p class="desc">${escapeHtml(a.memory)}</p>
-          <button class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="runAnchorGuide" data-idx="${i}">Usar ahora</button>
+          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="runAnchorGuide" data-idx="${i}">Usar ahora</button>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado ningún anclaje.</div>'}
     </div>
   `);
@@ -2863,9 +2875,9 @@ function runAnchorGuide(i){
       <p class="desc">Repite tu gesto mientras recuerdas:</p>
       <p style="font-weight:700;font-size:17px;">«${escapeHtml(a.memory)}»</p>
       <p class="desc" style="margin-top:14px;">Repite tu palabra clave:</p>
-      <p style="font-size:26px;font-weight:800;color:var(--success-green);">${escapeHtml(a.word)}</p>
+      <p class="text-ok" style="font-size:26px;font-weight:800;">${escapeHtml(a.word)}</p>
       <div class="timer-big" role="timer" id="anchorTimer">30</div>
-      <button class="btn btn-outline" onclick="closeTool()">Terminar</button>
+      <button type="button" class="btn btn-outline" onclick="closeTool()">Terminar</button>
     </div>
   `);
   announce('Recordatorio de confianza: 30 segundos. Repite tu gesto mientras recuerdas ese momento y di tu palabra clave.');
@@ -2923,15 +2935,15 @@ function renderVisualAnchorModal(){
   openModal(`
     <h2>👁️ Recordatorio visual</h2>
     <p class="desc">Guarda una frase o recordatorio de enfoque que puedas consultar rápidamente cuando lo necesites.</p>
-    <label>Nuevo recordatorio</label>
+    <label for="newVisualPhrase">Nuevo recordatorio</label>
     <input type="text" id="newVisualPhrase" placeholder="Ej: Me centro en hacer bien la siguiente parada">
-    <button class="btn btn-navy" onclick="addVisualAnchor()">Guardar</button>
+    <button type="button" class="btn btn-navy" onclick="addVisualAnchor()">Guardar</button>
     <div style="margin-top:16px;">
       ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
         <div class="history-item">
-          <button class="del" data-action="delVisualAnchor" data-idx="${i}">Eliminar</button>
+          <button type="button" class="del" data-action="delVisualAnchor" data-idx="${i}">Eliminar</button>
           <p style="font-weight:700;">"${escapeHtml(p)}"</p>
-          <button class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="usarRecordatorioVisual" data-idx="${i}">👁️ Usar ahora</button>
+          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="usarRecordatorioVisual" data-idx="${i}">👁️ Usar ahora</button>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado recordatorios.</div>'}
     </div>
   `);
@@ -2954,7 +2966,7 @@ function usarRecordatorioVisual(i){
   openTool('👁️ Recordatorio visual', `
     <div class="card" style="text-align:center;">
       <p style="font-size:20px;font-weight:700;line-height:1.5;">«${escapeHtml(v)}»</p>
-      <button class="btn btn-outline" style="margin-top:16px;" onclick="closeTool()">Cerrar</button>
+      <button type="button" class="btn btn-outline" style="margin-top:16px;" onclick="closeTool()">Cerrar</button>
     </div>
   `);
 }
@@ -2990,7 +3002,7 @@ function renderPedirFeedback(){
       <div id="pedirFeedbackOtroWrap" style="${pedirFeedbackSel==='Otro'?'':'display:none;'}">
         <textarea id="pedirFeedbackOtroInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe qué quieres pedir...">${escapeHtml(pedirFeedbackOtro)}</textarea>
       </div>
-      <button class="btn btn-primary" style="margin-top:10px;" onclick="finalizarPedirFeedback()">Ver mi petición</button>
+      <button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="finalizarPedirFeedback()">Ver mi petición</button>
     </div>
   `);
 }
@@ -3005,13 +3017,13 @@ function finalizarPedirFeedback(){
   openTool('🗣️ Pide feedback', `
     <div class="card" style="text-align:center;">
       <p><b>¿Qué quiero saber?</b></p>
-      <p style="font-size:19px;font-weight:800;color:var(--wesser-navy);">«${escapeHtml(peticion)}»</p>
+      <p class="quote-strong">«${escapeHtml(peticion)}»</p>
       ${state.kitPersona ? `<p class="desc" style="margin-top:10px;">Puedes pedírselo a: <b>${escapeHtml(state.kitPersona)}</b></p>` : ''}
       <div class="btn-row" style="margin-top:14px;flex-wrap:wrap;">
-        <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" onclick="startPedirFeedback()">🔁 Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-blue" onclick="startPedirFeedback()">🔁 Repetir</button>
       </div>
-      <button class="btn btn-outline btn-sm" style="margin-top:10px;" data-action="guardarPedirFeedbackEnKit">Guardar como mi petición del Kit</button>
+      <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" data-action="guardarPedirFeedbackEnKit">Guardar como mi petición del Kit</button>
     </div>
   `);
 }
@@ -3281,8 +3293,8 @@ function renderResetStep(){
         <h3>Has dejado un Reset a medias.</h3>
         <p class="desc">Puedes continuar donde lo dejaste o empezar uno nuevo (se perderá el progreso guardado).</p>
         <div class="btn-row" style="margin-top:14px;">
-          <button class="btn btn-amber" onclick="resumeReset()">Continuar</button>
-          <button class="btn btn-outline" onclick="startFreshReset()">Empezar de nuevo</button>
+          <button type="button" class="btn btn-amber" onclick="resumeReset()">Continuar</button>
+          <button type="button" class="btn btn-outline" onclick="startFreshReset()">Empezar de nuevo</button>
         </div>
       </div>
     `;
@@ -3319,7 +3331,7 @@ function renderResetStep(){
             ${(state.kitPersona || state.kitPedira) ? `<p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>` : '<p class="kit-flow-empty">Pido apoyo</p>'}
           </div>
         </div>
-        ${state.kitHerramienta ? `<button class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
+        ${state.kitHerramienta ? `<button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
       </div>
 
       <div class="card">
@@ -3329,7 +3341,7 @@ function renderResetStep(){
 
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
         <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
-        <label>Mi herramienta</label>
+        <label for="kitHerramientaSelect">Mi herramienta</label>
         <select id="kitHerramientaSelect" onchange="onKitHerramientaChange()">
           ${KIT_HERRAMIENTAS_FIJAS.map(h=>`<option ${(KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?state.kitHerramienta:'Otro recurso personal')===h?'selected':''}>${escapeHtml(h)}</option>`).join('')}
         </select>
@@ -3339,15 +3351,15 @@ function renderResetStep(){
 
         <p><b>2️⃣ 🎙️ Ajusto una cosa</b></p>
         <p class="desc">Elige <b>un solo ajuste técnico</b> para aplicar cuando actives tu plan.</p>
-        <label>Mi ajuste</label>
+        <label for="kitAjusteInput">Mi ajuste</label>
         <input type="text" id="kitAjusteInput" value="${escapeHtml(state.kitAjuste)}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…" oninput="state.kitAjuste=this.value;saveSoon();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una sola variable. Una cosa cada vez.</b></p>
 
         <p><b>3️⃣ 🤝 Pido apoyo si lo necesito</b></p>
         <p class="desc">Elige de antemano <b>a quién acudir</b> y qué pedir.</p>
-        <label>Mi persona de apoyo</label>
+        <label for="kitPersonaInput">Mi persona de apoyo</label>
         <input type="text" id="kitPersonaInput" value="${escapeHtml(state.kitPersona)}" oninput="state.kitPersona=this.value;saveSoon();">
-        <label>¿Qué pediré?</label>
+        <label for="kitPediraInput">¿Qué pediré?</label>
         <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: Quiero que observes dos paradas y me digas una cosa que estoy haciendo bien y una que pueda ajustar." oninput="state.kitPedira=this.value;saveSoon();">
 
         <p><b>🚨 ¿Cuándo pediré ayuda?</b></p>
@@ -3357,8 +3369,8 @@ function renderResetStep(){
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Si detecto mis señales → me regulo → aplico un ajuste → y pido apoyo si sigo atascado.</b></p>
         <p class="desc">🎯 <b>No espero a estar al límite. Actúo cuando aparecen las primeras señales.</b></p>
       </div>
-      <button class="btn btn-amber" onclick="saveKitPlan()">Guardar mi plan</button>
-      <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
+      <button type="button" class="btn btn-amber" onclick="saveKitPlan()">Guardar mi plan</button>
+      <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
     `;
   }
   else if(resetStep==='historial'){
@@ -3371,7 +3383,7 @@ function renderResetStep(){
         <details class="help-item">
           <summary>${escapeHtml(fechaDe(r))}${r.senal?' · '+escapeHtml(r.senal):''}</summary>
           <div class="help-body">
-            <button class="del" data-action="borrarResetHistorial" data-id="${escapeHtml(r.id)}">Eliminar</button>
+            <button type="button" class="del" data-action="borrarResetHistorial" data-id="${escapeHtml(r.id)}">Eliminar</button>
             <p><b>Señal principal:</b> ${escapeHtml(r.senal)||'—'}</p>
             <p><b>El contexto:</b> ${escapeHtml(r.examResultado)||'—'}</p>
             <p><b>Mi forma de trabajar:</b> ${escapeHtml(r.examRendimiento)||'—'}</p>
@@ -3381,9 +3393,9 @@ function renderResetStep(){
             <p><b>Qué he aprendido:</b> ${escapeHtml(r.aprendizaje)||'—'}</p>
             <p><b>Observación:</b> ${escapeHtml(r.observacion)||'—'}</p>
             <p><b>Pacto de permanencia:</b> ${escapeHtml(r.pacto)||'—'}</p>
-            ${r.micro ? `<button class="btn btn-outline" style="margin-top:8px;" data-action="repetirAjuste" data-id="${escapeHtml(r.id)}">🔁 Repetir este ajuste</button>` : ''}
+            ${r.micro ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" data-action="repetirAjuste" data-id="${escapeHtml(r.id)}">🔁 Repetir este ajuste</button>` : ''}
           </div>
-        </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has completado ninguna sesión de Reset.
+        </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has completado ninguna sesión de Reset.
           <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="resetGoto(1)">🆘 Empezar un Reset</button></div></div>`}
 
       <div class="card">
@@ -3391,12 +3403,12 @@ function renderResetStep(){
       </div>
       ${state.checkins.length ? state.checkins.slice(0, checkinHistorialLimit).map(c=>`
         <div class="card history-item">
-          <button class="del" data-action="borrarCheckin" data-id="${escapeHtml(c.id)}">Eliminar</button>
+          <button type="button" class="del" data-action="borrarCheckin" data-id="${escapeHtml(c.id)}">Eliminar</button>
           <div class="meta">${escapeHtml(fechaDe(c))} · ${escapeHtml(c.total)} ${c.total===1?'señal marcada':'señales marcadas'}</div>
           ${c.items.length? `<ul>${c.items.map(i=>`<li>${checkinItemTitleHtml(i)}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
-        </div>`).join('') + (state.checkins.length > checkinHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasCheckins()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has hecho ningún check-in.
+        </div>`).join('') + (state.checkins.length > checkinHistorialLimit ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" onclick="verMasCheckins()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has hecho ningún check-in.
           <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="startCheckin()">🚦 Hacer un check-in</button></div></div>`}
-      <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
+      <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
     `;
   }
   else if(resetStep==='checkin'){
@@ -3423,8 +3435,8 @@ function renderResetStep(){
         <p class="desc">Se trata de detectar <b>qué está empezando a cambiar en ti</b> para poder decidir antes <b>qué necesitas ajustar, practicar o hablar con alguien</b>.</p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🔑 <b>Detectarlo pronto te da más margen para actuar.</b></p>
       </div>
-      <button class="btn btn-amber" onclick="saveCheckin()">Guardar check-in y continuar</button>
-      <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
+      <button type="button" class="btn btn-amber" onclick="saveCheckin()">Guardar check-in y continuar</button>
+      <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
     `;
   }
   else if(resetStep===0){
@@ -3480,7 +3492,7 @@ function renderResetStep(){
         <p class="desc">Reconocer lo que está ocurriendo <b>sin juzgarte por ello</b> es el primer paso para entender qué puede estar cambiando y decidir qué ajustar.</p>
       </div>
       <div class="card" style="text-align:left;">${chips}</div>
-      <button class="btn btn-amber" onclick="continuarReconoce()">Continuar</button>`;
+      <button type="button" class="btn btn-amber" onclick="continuarReconoce()">Continuar</button>`;
   }
   else if(resetStep===2){
     body.innerHTML = `
@@ -3509,12 +3521,12 @@ function renderResetStep(){
           <li>Forma de hacer la parada</li>
         </ul>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando viene del contexto y qué parte puedo revisar y ajustar yo?</b></p>
-        <label>El contexto → no lo controlo directamente</label>
+        <label for="resetExamResultadoInput">El contexto → no lo controlo directamente</label>
         <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgressSoon();">${escapeHtml(resetExamResultado)}</textarea>
-        <label>Mi forma de trabajar → puedo revisarla y ajustarla</label>
+        <label for="resetExamRendimientoInput">Mi forma de trabajar → puedo revisarla y ajustarla</label>
         <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgressSoon();">${escapeHtml(resetExamRendimiento)}</textarea>
       </div>
-      <button class="btn btn-amber" onclick="continuarExamina()">Continuar</button>
+      <button type="button" class="btn btn-amber" onclick="continuarExamina()">Continuar</button>
     `;
   }
   else if(resetStep===3){
@@ -3524,13 +3536,13 @@ function renderResetStep(){
         <span class="badge amber">S · Separa</span>
         <h3>Lo que sigue funcionando</h3>
         <p class="desc">Escribe <b>2 cosas concretas que estás haciendo bien y que quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
-        <label>Conducta 1</label>
+        <label for="resetAspecto1Input">Conducta 1</label>
         <input type="text" id="resetAspecto1Input" value="${escapeHtml(resetAspecto1)}" placeholder="Ej: mantengo la sonrisa en el saludo" oninput="resetAspecto1=this.value;saveResetProgressSoon();">
-        <label>Conducta 2</label>
+        <label for="resetAspecto2Input">Conducta 2</label>
         <input type="text" id="resetAspecto2Input" value="${escapeHtml(resetAspecto2)}" placeholder="Ej: sigo escuchando antes de responder" oninput="resetAspecto2=this.value;saveResetProgressSoon();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>Piensa en cosas que haces tú y que puedes repetir:</b> cómo haces la parada, cómo escuchas, cómo explicas, cómo gestionas una objeción, cómo mantienes la actitud o cómo adaptas tu forma de trabajar.</p>
       </div>
-      <button class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Continuar</button>
+      <button type="button" class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Continuar</button>
     `;
   }
   else if(resetStep===4){
@@ -3561,7 +3573,7 @@ function renderResetStep(){
         <p class="desc"><b>Mantén este único ajuste durante las próximas 10 oportunidades de parada</b> y observa cómo lo aplicas, cómo te sientes y qué ocurre en las conversaciones.</p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>No busques arreglarlo todo. Elige una cosa, pruébala y aprende de lo que ocurra.</b></p>
       </div>
-      <button class="btn btn-amber" ${resetMicro?'':'disabled'} onclick="resetGoto(5)">Continuar</button>
+      <button type="button" class="btn btn-amber" ${resetMicro?'':'disabled'} onclick="resetGoto(5)">Continuar</button>
     `;
   }
   else if(resetStep===5){
@@ -3572,8 +3584,8 @@ function renderResetStep(){
       <p class="desc"><b>Microcambio elegido:</b><br><b>${escapeHtml(resetMicro)}</b></p>
       <div class="timer-big">${escapeHtml(resetStops)} / 10</div>
       <div class="btn-row">
-        <button class="btn btn-green" id="incrementStopBtn" onclick="incrementStop()">+1 parada probada</button>
-        ${resetStops>0 ? '<button class="btn btn-outline" id="decrementStopBtn" onclick="decrementStop()">↩ Deshacer última</button>' : ''}
+        <button type="button" class="btn btn-green" id="incrementStopBtn" onclick="incrementStop()">+1 parada probada</button>
+        ${resetStops>0 ? '<button type="button" class="btn btn-outline" id="decrementStopBtn" onclick="decrementStop()">↩ Deshacer última</button>' : ''}
       </div>
       <p class="desc" style="margin-top:10px;">Pruébalo durante <b>las próximas 10 oportunidades de parada</b>. Mantén el mismo ajuste y evita cambiar otras cosas al mismo tiempo.</p>
       <p class="desc">No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, cómo te sientes al hacerlo y qué ocurre en las conversaciones.</b></p>
@@ -3581,9 +3593,9 @@ function renderResetStep(){
       <p class="desc">Pregúntate:</p>
       <p class="desc"><b>¿He podido aplicar el ajuste como quería?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Qué ha ocurrido en las conversaciones?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Una mala conversación no demuestra que el ajuste no sirva. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
-      ${resetStops>=10 ? '<p class="desc" style="color:var(--success-green);font-weight:700;">✅ Test completado.</p>' : `<p class="desc">${10-resetStops===1 ? "Te falta <b>1</b> parada" : `Te faltan <b>${10-resetStops}</b> paradas`} para poder continuar.</p>`}
-      <button class="btn btn-primary" style="margin-top:8px;" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Continuar</button>
-      <button class="btn btn-outline" style="margin-top:10px;" onclick="closeReset()">Cerrar y seguir luego</button>
+      ${resetStops>=10 ? '<p class="desc text-ok" style="font-weight:700;">✅ Test completado.</p>' : `<p class="desc">${10-resetStops===1 ? "Te falta <b>1</b> parada" : `Te faltan <b>${10-resetStops}</b> paradas`} para poder continuar.</p>`}
+      <button type="button" class="btn btn-primary" style="margin-top:8px;" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Continuar</button>
+      <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="closeReset()">Cerrar y seguir luego</button>
     `;
   }
   else if(resetStep===6){
@@ -3601,10 +3613,10 @@ function renderResetStep(){
         <div class="btn-row" style="flex-wrap:wrap;">
           ${opciones.map(o=>`<button type="button" class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" aria-pressed="${resetAprendizaje===o.v}" data-action="setAprendizaje" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
         </div>
-        <label style="margin-top:14px;">¿Qué has observado? (opcional)</label>
+        <label for="resetObservacionInput" style="margin-top:14px;">¿Qué has observado? (opcional)</label>
         <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgressSoon();">${escapeHtml(resetObservacion)}</textarea>
       </div>
-      <button class="btn btn-primary" ${resetAprendizaje?'':'disabled'} onclick="resetGoto(7)">Continuar</button>
+      <button type="button" class="btn btn-primary" ${resetAprendizaje?'':'disabled'} onclick="resetGoto(7)">Continuar</button>
     `;
   }
   else if(resetStep===7){
@@ -3630,7 +3642,7 @@ function renderResetStep(){
         <p class="desc"><b>«Cuando el resultado no acompañe, me comprometo a...»</b></p>
         <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..." oninput="resetPacto=this.value;saveResetProgressSoon();">${escapeHtml(resetPacto)}</textarea>
       </div>
-      <button class="btn btn-primary" onclick="finalizarReset()">Finalizar</button>
+      <button type="button" class="btn btn-primary" onclick="finalizarReset()">Finalizar</button>
     `;
   }
 }
