@@ -3508,7 +3508,7 @@ function renderResetStep(){
       <div class="card">
         <h3>🔬 Después, a prueba</h3>
         <p class="desc">El ajuste que elijas pasará directamente a <b>T · Testea</b>.</p>
-        <p class="desc"><b>Mantén este único ajuste durante las próximas 10 oportunidades de parada</b> y observa si puedes aplicarlo, qué cambia en tu forma de trabajar y qué ocurre en las conversaciones.</p>
+        <p class="desc"><b>Mantén este único ajuste durante las próximas 10 oportunidades de parada</b> y observa cómo lo aplicas, cómo te sientes y qué ocurre en las conversaciones.</p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>No busques arreglarlo todo. Elige una cosa, pruébala y aprende de lo que ocurra.</b></p>
       </div>
       <button class="btn btn-amber" ${resetMicro?'':'disabled'} onclick="resetGoto(5)">Continuar</button>
@@ -3526,10 +3526,10 @@ function renderResetStep(){
         ${resetStops>0 ? '<button class="btn btn-outline" id="decrementStopBtn" onclick="decrementStop()">↩ Deshacer última</button>' : ''}
       </div>
       <p class="desc" style="margin-top:10px;">Pruébalo durante <b>las próximas 10 oportunidades de parada</b>. Mantén el mismo ajuste y evita cambiar otras cosas al mismo tiempo.</p>
-      <p class="desc">No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, qué cambia en tu forma de trabajar y qué ocurre en las conversaciones.</b></p>
+      <p class="desc">No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, cómo te sientes al hacerlo y qué ocurre en las conversaciones.</b></p>
       <p><b>🔎 Al terminar</b></p>
       <p class="desc">Pregúntate:</p>
-      <p class="desc"><b>¿He podido aplicar el ajuste como quería?</b><br><b>¿Qué he observado al aplicarlo?</b><br><b>¿Qué ha ocurrido en las conversaciones?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
+      <p class="desc"><b>¿He podido aplicar el ajuste como quería?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Qué ha ocurrido en las conversaciones?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Una mala conversación no demuestra que el ajuste no sirva. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
       ${resetStops>=10 ? '<p class="desc" style="color:var(--success-green);font-weight:700;">✅ Test completado.</p>' : `<p class="desc">${10-resetStops===1 ? "Te falta <b>1</b> parada" : `Te faltan <b>${10-resetStops}</b> paradas`} para poder continuar.</p>`}
       <button class="btn btn-primary" style="margin-top:8px;" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Continuar</button>
@@ -3571,7 +3571,7 @@ function renderResetStep(){
       </div>
       <div class="card">
         <h3>🆘 Guía rápida de emergencia</h3>
-        <div class="mini-card"><b>PARA</b><p>No significa abandonar la jornada. Significa <b>cortar el automático</b>: tómate 2 minutos, respira y date un momento para recuperar el foco.</p><p style="font-style:italic;">¿Necesito seguir empujando o necesito 2 minutos para volver mejor?</p></div>
+        <div class="mini-card"><b>PARA</b><p>No significa abandonar la jornada. Significa <b>cortar el automático</b>: tómate 2 minutos, respira o pide un relevo de aire para recuperar el foco.</p><p style="font-style:italic;">¿Necesito seguir empujando o necesito 2 minutos para volver mejor?</p></div>
         <div class="mini-card"><b>REVISA</b><p>Antes de cambiar cosas, <b>separa el resultado de tu forma de trabajar y elige un solo ajuste concreto</b>.</p><p style="font-style:italic;">¿Qué está cambiando realmente en mi forma de captar?</p></div>
         <div class="mini-card"><b>PIDE</b><p>No hace falta llegar a «no puedo más».</p><p style="font-style:italic;">¿Hay algo que otra persona pueda ayudarme a ver o ajustar ahora mismo?</p></div>
       </div>
