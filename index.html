@@ -2536,11 +2536,13 @@ function sugerirReencuadre(){
   if(!actual || actual === lastReencuadre) el.value = texto;
   else if(!actual.includes(texto)) el.value = actual + '\n' + texto;
   lastReencuadre = texto;
+  announce('Sugerencia añadida al pensamiento útil.');
 }
 let lastReencuadre = '';
 function insertAccion(txt){
   const el = document.getElementById('sepaAccion');
   el.value = el.value ? el.value + '. ' + txt : txt;
+  announce(`Añadido a la acción: ${txt}.`);
 }
 
 function toggleSituacionOtra(){
@@ -2638,8 +2640,8 @@ function renderSepaHistorial(){
     const emosTxt = emos.map(id=>`${emoji(id)} ${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||'')}`).join(' · ');
     return `
     <div class="history-item">
-      <button type="button" class="del" data-action="borrarSepa" data-id="${escapeHtml(e.id)}">Eliminar</button>
-      <button type="button" class="edit" data-action="editarSepa" data-id="${escapeHtml(e.id)}">Editar</button>
+      <button type="button" class="del" data-action="borrarSepa" data-id="${escapeHtml(e.id)}" aria-label="Eliminar registro del ${escapeHtml(fechaDe(e))}${e.situacion ? `: ${escapeHtml(e.situacion)}` : ''}">Eliminar</button>
+      <button type="button" class="edit" data-action="editarSepa" data-id="${escapeHtml(e.id)}" aria-label="Editar registro del ${escapeHtml(fechaDe(e))}${e.situacion ? `: ${escapeHtml(e.situacion)}` : ''}">Editar</button>
       <div class="meta">${escapeHtml(fechaDe(e))} · ${emosTxt}</div>
       <p><b>S:</b> ${escapeHtml(e.situacion)}</p>
       <p><b>P:</b> ${escapeHtml(e.pensD)||'—'}</p>
@@ -2814,8 +2816,8 @@ function renderCheckpointHistorial(){
   if(!state.checkpoints.length){ wrap.innerHTML='<div class="empty-state">Sin checkpoints todavía.</div>'; return; }
   wrap.innerHTML = state.checkpoints.map(c=>`
     <div class="history-item">
-      <button type="button" class="del" data-action="borrarCheckpoint" data-id="${escapeHtml(c.id)}">Eliminar</button>
-      <button type="button" class="edit" data-action="editarCheckpoint" data-id="${escapeHtml(c.id)}">Editar</button>
+      <button type="button" class="del" data-action="borrarCheckpoint" data-id="${escapeHtml(c.id)}" aria-label="Eliminar checkpoint del ${escapeHtml(fechaDe(c))}">Eliminar</button>
+      <button type="button" class="edit" data-action="editarCheckpoint" data-id="${escapeHtml(c.id)}" aria-label="Editar checkpoint del ${escapeHtml(fechaDe(c))}">Editar</button>
       <div class="meta">${escapeHtml(fechaDe(c))}</div>
       <p>Fatiga: <b>${escapeHtml(c.fatiga)}/10</b> · Activación: <b>${escapeHtml(c.emocional)}/10</b></p>
       ${c.decision?`<p><b>Decisión:</b> ${escapeHtml(c.decision)}</p>`:''}
@@ -2883,7 +2885,7 @@ function renderExitoHistorial(){
   if(!state.exitos.length){ wrap.innerHTML=''; return; }
   wrap.innerHTML = state.exitos.slice(0,5).map(e=>`
     <div class="history-item">
-      <button type="button" class="del" data-action="borrarExito" data-id="${escapeHtml(e.id)}">Eliminar</button>
+      <button type="button" class="del" data-action="borrarExito" data-id="${escapeHtml(e.id)}" aria-label="Eliminar: ${escapeHtml(e.conducta)}">Eliminar</button>
       <div class="meta">${escapeHtml(fechaDe(e))}</div>
       <p><b>${escapeHtml(e.conducta)}</b></p>
       ${e.repetir?`<p class="desc">Repetir: ${escapeHtml(e.repetir)}</p>`:''}
@@ -3397,10 +3399,10 @@ function renderAnchorTool(){
     <div style="margin-top:16px;">
       ${state.confidenceAnchors.length ? state.confidenceAnchors.map((a,i)=>`
         <div class="history-item">
-          <button type="button" class="del" data-action="delConfidenceAnchor" data-idx="${i}">Eliminar</button>
+          <button type="button" class="del" data-action="delConfidenceAnchor" data-idx="${i}" aria-label="Eliminar anclaje: ${escapeHtml(a.word)}">Eliminar</button>
           <p style="font-weight:700;">${escapeHtml(a.word)}</p>
           <p class="desc">${escapeHtml(a.memory)}</p>
-          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="runAnchorGuide" data-idx="${i}">Usar ahora</button>
+          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="runAnchorGuide" data-idx="${i}" aria-label="Usar ahora: ${escapeHtml(a.word)}">Usar ahora</button>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado ningún anclaje.</div>'}
     </div>
   `);
@@ -3495,9 +3497,9 @@ function renderVisualAnchorModal(){
     <div style="margin-top:16px;">
       ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
         <div class="history-item">
-          <button type="button" class="del" data-action="delVisualAnchor" data-idx="${i}">Eliminar</button>
+          <button type="button" class="del" data-action="delVisualAnchor" data-idx="${i}" aria-label="Eliminar recordatorio: ${escapeHtml(p)}">Eliminar</button>
           <p style="font-weight:700;">"${escapeHtml(p)}"</p>
-          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="usarRecordatorioVisual" data-idx="${i}">Usar ahora</button>
+          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="usarRecordatorioVisual" data-idx="${i}" aria-label="Usar ahora: ${escapeHtml(p)}">Usar ahora</button>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado recordatorios.</div>'}
     </div>
   `);
@@ -3947,7 +3949,7 @@ function renderResetStep(){
         <details class="help-item">
           <summary>${escapeHtml(fechaDe(r))}${r.senal?' · '+escapeHtml(r.senal):''}</summary>
           <div class="help-body">
-            <button type="button" class="del" data-action="borrarResetHistorial" data-id="${escapeHtml(r.id)}">Eliminar</button>
+            <button type="button" class="del" data-action="borrarResetHistorial" data-id="${escapeHtml(r.id)}" aria-label="Eliminar sesión de Reset del ${escapeHtml(fechaDe(r))}">Eliminar</button>
             <p><b>Señal principal:</b> ${escapeHtml(r.senal)||'—'}</p>
             <p><b>El contexto:</b> ${escapeHtml(r.examResultado)||'—'}</p>
             <p><b>Mi forma de trabajar:</b> ${escapeHtml(r.examRendimiento)||'—'}</p>
@@ -3957,7 +3959,7 @@ function renderResetStep(){
             <p><b>Qué he aprendido:</b> ${escapeHtml(r.aprendizaje)||'—'}</p>
             <p><b>Observación:</b> ${escapeHtml(r.observacion)||'—'}</p>
             <p><b>Pacto de permanencia:</b> ${escapeHtml(r.pacto)||'—'}</p>
-            ${r.micro ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" data-action="repetirAjuste" data-id="${escapeHtml(r.id)}">Repetir este ajuste</button>` : ''}
+            ${r.micro ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" data-action="repetirAjuste" data-id="${escapeHtml(r.id)}" aria-label="Repetir este ajuste: ${escapeHtml(r.micro)}">Repetir este ajuste</button>` : ''}
           </div>
         </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has completado ninguna sesión de Reset.
           <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="resetGoto(1)">Empezar un Reset</button></div></div>`}
@@ -3967,7 +3969,7 @@ function renderResetStep(){
       </div>
       ${state.checkins.length ? state.checkins.slice(0, checkinHistorialLimit).map(c=>`
         <div class="card history-item">
-          <button type="button" class="del" data-action="borrarCheckin" data-id="${escapeHtml(c.id)}">Eliminar</button>
+          <button type="button" class="del" data-action="borrarCheckin" data-id="${escapeHtml(c.id)}" aria-label="Eliminar check-in del ${escapeHtml(fechaDe(c))}">Eliminar</button>
           <div class="meta">${escapeHtml(fechaDe(c))} · ${escapeHtml(c.total)} ${c.total===1?'señal marcada':'señales marcadas'}</div>
           ${c.items.length? `<ul>${c.items.map(i=>`<li>${checkinItemTitleHtml(i)}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
         </div>`).join('') + (state.checkins.length > checkinHistorialLimit ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" onclick="verMasCheckins()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has hecho ningún check-in.

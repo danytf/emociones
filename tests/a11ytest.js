@@ -144,6 +144,20 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   const oc = await page.evaluate(() => getComputedStyle(document.activeElement).outlineColor);
   ok(oc === 'rgb(204, 46, 52)', 'foco visible en rojo de marca sobre la cabecera: ' + oc);
 
+  // Botones repetidos en listas: el nombre accesible dice a qué elemento se refieren
+  const lista = await page.evaluate(() => {
+    state.sepaEntries.unshift(newRecord({ situacion: 'Zona con poco flujo', emociones: ['ira'], pensD: 'a', pensC: 'b', accion: 'c' }));
+    goto('diario'); renderSepaHistorial();
+    const del = document.querySelector('#sepaHistorial [data-action="borrarSepa"]');
+    window.__ann = [];
+    insertAccion('Pausa consciente');
+    return { del: del.getAttribute('aria-label'), visible: del.textContent };
+  });
+  await page.waitForTimeout(300);
+  const anuncios = await page.evaluate(() => window.__ann.map(a => a[1]).join(' | '));
+  ok(lista.del.startsWith(lista.visible + ' registro del') && lista.del.includes('Zona con poco flujo'), 'Eliminar del historial nombra el registro: ' + lista.del);
+  ok(anuncios.includes('Añadido a la acción: Pausa consciente'), 'los chips de acción anuncian lo añadido: ' + anuncios);
+
   ok(errors.length === 0, 'sin errores de JS: ' + errors.join(' | '));
   await browser.close();
 })();
