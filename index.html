@@ -1484,7 +1484,8 @@ function sugerirReencuadre(){
   const pensD = document.getElementById('sepaPensDestructivo').value;
   const emoTxt = selectedEmociones.length ? REENCUADRES[selectedEmociones[0]] : REENCUADRES.generico;
   /* Máximo 2 frases (~30-35 palabras): un solo gancho de contexto + el reencuadre de la emoción */
-  const contextHook = SITUACION_HOOKS[situacion] || PENSAMIENTO_HOOKS[pensD] || '';
+  /* Con «Otra…» no hay gancho de situación: se usa el del pensamiento o, si no hay, el genérico */
+  const contextHook = SITUACION_HOOKS[situacion] || PENSAMIENTO_HOOKS[pensD] || SITUACION_HOOKS['Otra'];
   const texto = contextHook ? `${contextHook} ${emoTxt}` : emoTxt;
   document.getElementById('sepaPensConstructivo').value = texto;
 }
