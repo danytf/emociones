@@ -87,7 +87,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   // ================= CHECKPOINT =================
   section('Checkpoint');
   await page.locator('#headerTabs [data-view="herramientas"]').click();
-  await page.locator('button:has-text("Hacer checkpoint")').click();
+  await page.locator('#view-herramientas .trow:has-text("Checkpoint de mitad de turno")').click();
   await page.locator('#cpFatiga').fill('8');
   await page.fill('#cpNota', 'Bajar ritmo');
   await page.locator('#cpDecisionRow button:has-text("Hago una pausa")').click();
@@ -106,7 +106,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
 
   // ================= QUÉ HA FUNCIONADO =================
   section('Qué ha funcionado');
-  await page.locator('#view-herramientas button:has-text("Registrar")').click();
+  await page.locator('#view-herramientas .trow:has-text("¿Qué ha funcionado?")').click();
   await page.locator('#toolBody [data-value="He adaptado mi entrada"]').click();
   await page.fill('#exitoRepetirInput', 'Adaptar la entrada');
   await page.locator('#toolBody button:has-text("Guardar")').click();
@@ -127,11 +127,11 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
 
   // ================= HERRAMIENTAS: entrada y salida =================
   section('Herramientas');
-  const toolButtons = await page.locator('#view-herramientas .tool-cards .card > button').count();
+  const toolButtons = await page.locator('#view-herramientas .trow').count();
   let opened = 0;
   for (let i = 0; i < toolButtons; i++) {
     await page.locator('#headerTabs [data-view="herramientas"]').click();
-    await page.locator('#view-herramientas .tool-cards .card > button').nth(i).click();
+    await page.locator('#view-herramientas .trow').nth(i).click();
     const t = await top();
     if (t === 'tool' || t === 'modal') {
       opened++;

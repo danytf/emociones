@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#D32F2F">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="description" content="Herramientas prácticas de gestión emocional para captadores Wesser.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23D32F2F'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Arial,sans-serif' font-weight='800' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
 <title>Wesser · Gestión Emocional</title>
@@ -579,50 +579,61 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 
 /* Cabecera de página */
 .ds .ds-page-head{margin-bottom:var(--sp-2);}
-.ds .ds-page-head h2{font-size:var(--fs-2xl);line-height:var(--lh-tight);font-weight:750;letter-spacing:-.02em;color:var(--ds-ink);margin:0 0 var(--sp-2);display:flex;align-items:center;gap:var(--sp-3);}
-.ds .ds-page-head h2 .ic{width:28px;height:28px;color:var(--ds-ink-3);}
+.ds .ds-page-head h2{font-size:var(--fs-2xl);line-height:var(--lh-tight);font-weight:750;letter-spacing:-.02em;color:var(--ds-ink);margin:0 0 var(--sp-1);}
 .ds .ds-page-head p{font-size:var(--fs-md);line-height:var(--lh-body);color:var(--ds-ink-2);margin:0;max-width:60ch;}
 
 /* Icono dentro de un cuadrado tintado */
 .ds .tile{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;flex-shrink:0;
   color:var(--tone);background:color-mix(in srgb, var(--tone) 12%, transparent);}
 .ds .tile .ic{width:22px;height:22px;}
-.ds .tile-sm{width:36px;height:36px;border-radius:10px;}
-.ds .tile-sm .ic{width:19px;height:19px;}
 
-/* Grupo: sin caja ni borde de color; solo jerarquía y aire */
-.ds .tool-group{border:none;background:none;padding:0;margin-top:var(--sp-8);}
+/* Grupo: sección ligera, solo el título */
+.ds .tool-group{border:none;background:none;padding:0;margin-top:var(--sp-6);}
+.ds .ds-page-head + .tool-group{margin-top:0;}
 .ds .tool-group.relief,.ds .tool-group.focus,.ds .tool-group.anchor,.ds .tool-group.tracking{border-left:none;}
-.ds .tgroup-head{display:flex;align-items:flex-start;gap:var(--sp-3);margin-bottom:var(--sp-4);}
-.ds .tgroup-head h3{font-size:var(--fs-lg);font-weight:700;color:var(--ds-ink);margin:1px 0 2px;letter-spacing:-.01em;}
-.ds .tgroup-head p{font-size:var(--fs-sm);line-height:1.45;color:var(--ds-ink-3);margin:0;}
-.ds .tool-cards{gap:var(--sp-4);}
+.ds .tgroup-title{display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-xs);font-weight:750;text-transform:uppercase;letter-spacing:.08em;color:var(--ds-ink-3);margin:0 0 var(--sp-3);}
+.ds .tgroup-title::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--tone);}
 
-/* Tarjeta de herramienta */
-.ds .tcard{background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-lg);padding:var(--sp-5);
-  box-shadow:var(--ds-shadow);display:flex;flex-direction:column;gap:var(--sp-3);margin:0;transition:border-color .2s ease, box-shadow .2s ease;}
-@media (hover:hover){ .ds .tcard:hover{border-color:color-mix(in srgb, var(--tone) 35%, var(--ds-line));} }
-.ds .tcard-head{display:flex;align-items:center;gap:var(--sp-3);}
-.ds .tcard-title{font-size:var(--fs-lg);line-height:var(--lh-tight);font-weight:650;color:var(--ds-ink);margin:0 0 3px;letter-spacing:-.01em;}
-.ds .tcard-meta{display:flex;align-items:center;gap:6px;font-size:var(--fs-xs);font-weight:600;color:var(--ds-ink-3);margin:0;letter-spacing:.01em;}
-.ds .tcard-lead{font-size:var(--fs-md);line-height:var(--lh-body);color:var(--ds-ink-2);margin:0;flex:1;}
-.ds .tcard-how{background:var(--ds-canvas);border-radius:var(--ds-radius-sm);padding:var(--sp-3) var(--sp-4);}
-.ds .eyebrow{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ds-ink-3);margin-bottom:var(--sp-1);}
-.ds .tcard-how p{font-size:var(--fs-sm);line-height:1.5;color:var(--ds-ink);margin:0;}
-.ds .tcard-list{list-style:none;padding:0;margin:0;display:grid;gap:6px;}
-.ds .tcard-list li{font-size:var(--fs-sm);line-height:1.45;color:var(--ds-ink-2);margin:0;}
-.ds .tcard-list b{color:var(--ds-ink);font-weight:650;}
-.ds .tcard-note{font-size:var(--fs-sm);line-height:1.5;color:var(--ds-ink-3);margin:0;}
+/* Fila de herramienta: toda la fila es el botón */
+.ds .trow-list{display:grid;grid-template-columns:repeat(auto-fill, minmax(min(340px, 100%), 1fr));gap:var(--sp-2);}
+.ds .trow{display:flex;align-items:center;gap:var(--sp-3);width:100%;min-height:72px;padding:var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-3);
+  background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-md);box-shadow:0 1px 2px rgba(16,24,40,.04);
+  font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .15s ease, background .15s ease;}
+@media (hover:hover){ .ds .trow:hover{border-color:color-mix(in srgb, var(--tone) 40%, var(--ds-line));} }
+.ds .trow:active{background:var(--ds-canvas);}
+.ds .trow-body{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+.ds .trow-title{font-size:var(--fs-md);font-weight:650;line-height:1.3;color:var(--ds-ink);}
+.ds .trow-desc{font-size:var(--fs-sm);line-height:1.4;color:var(--ds-ink-2);}
+.ds .trow-meta{font-size:var(--fs-xs);font-weight:650;color:var(--ds-ink-3);font-variant-numeric:tabular-nums;}
+.ds .trow > .ic{color:var(--ds-ink-3);width:18px;height:18px;}
 
-/* Botón tonal: una acción por tarjeta, sin 12 bloques de color fuerte compitiendo */
-.ds .tbtn{display:flex;align-items:center;justify-content:center;gap:var(--sp-2);width:100%;min-height:48px;margin-top:var(--sp-1);
-  border:none;border-radius:var(--ds-radius-md);font:inherit;font-size:var(--fs-md);font-weight:650;cursor:pointer;
-  color:var(--tone-ink);background:color-mix(in srgb, var(--tone) 12%, transparent);transition:background .15s ease;}
-.ds .tbtn:hover{background:color-mix(in srgb, var(--tone) 18%, transparent);}
-.ds .tbtn:active{background:color-mix(in srgb, var(--tone) 24%, transparent);}
-.ds .tbtn .ic{transition:transform .15s ease;}
-@media (hover:hover){ .ds .tbtn:hover .ic{transform:translateX(2px);} }
-@media (prefers-reduced-motion: reduce){ .ds .tbtn .ic, .ds .tcard{transition:none;} }
+/* Historiales bajo Seguimiento del turno */
+.ds .thist{margin-top:var(--sp-4);}
+.ds .thist:has(> div:empty){display:none;}
+.ds .thist-title{font-size:var(--fs-sm);font-weight:700;color:var(--ds-ink-2);margin:0 0 var(--sp-2);}
+@media (prefers-reduced-motion: reduce){ .ds .trow{transition:none;} }
+
+/* ---------- Cabecera y pestañas (global) ---------- */
+header{background:var(--ds-surface);color:var(--ds-ink);box-shadow:none;border-bottom:1px solid var(--ds-line);}
+.brand b{color:var(--wesser-red);letter-spacing:.08em;font-weight:800;}
+.brand span{color:var(--ds-ink-3);opacity:1;}
+:root[data-theme="dark"] .brand b{color:#F87171;}
+.icon-btn{background:transparent;color:var(--ds-ink-2);border:1px solid var(--ds-line);}
+.icon-btn .ic{width:20px;height:20px;}
+@media (hover:hover){ .icon-btn:hover{background:var(--ds-canvas);} }
+.header-tabs button{background:transparent;color:var(--ds-ink-2);font-weight:650;}
+.header-tabs button .ic{width:18px;height:18px;font-size:inherit;}
+@media (hover:hover){ .header-tabs button:hover{background:var(--ds-canvas);} }
+.header-tabs button.active{background:color-mix(in srgb, var(--wesser-red) 10%, transparent);color:#B91C1C;box-shadow:none;}
+:root[data-theme="dark"] .header-tabs button.active{background:color-mix(in srgb, #F87171 16%, transparent);color:#FCA5A5;}
+.header-tabs button.tab-reset{background:color-mix(in srgb, var(--reset-amber) 18%, transparent);color:#92400E;}
+:root[data-theme="dark"] .header-tabs button.tab-reset{background:color-mix(in srgb, #FBBF24 16%, transparent);color:#FCD34D;}
+.header-tabs button.tab-reset.pending::after{background:var(--wesser-red);box-shadow:0 0 0 2px var(--ds-surface);}
+.tabs-fade{background:linear-gradient(to right, transparent, var(--ds-surface));}
+header :focus-visible{outline-color:var(--wesser-red);}
+/* Iconos del lanzador rápido */
+.ql-btn .ql-em{display:inline-flex;}
+.ql-btn .ql-em .ic{width:18px;height:18px;}
 </style>
 </head>
 <body>
@@ -645,6 +656,19 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M3.5 16a9 9 0 1 1 17 0"/><path d="M12 12l4-4"/><circle cx="12" cy="12" r="1.2"/><path d="M3 20h18"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2z"/><path d="M22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 20v-8"/><path d="M12 12c0-4 3-7 8-7 0 5-3 8-8 7z"/><path d="M12 14c0-3-2.5-5.5-7-5.5 0 4 2.5 6.5 7 5.5z"/></symbol>
+  <symbol id="i-notebook" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v18"/><path d="M12.5 8h3"/><path d="M12.5 12h3"/></symbol>
+  <symbol id="i-lifebuoy" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M5.6 5.6l3.6 3.6"/><path d="M14.8 14.8l3.6 3.6"/><path d="M14.8 9.2l3.6-3.6"/><path d="M5.6 18.4l3.6-3.6"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.3"/><path d="M12 16.8h.01"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-sunrise" viewBox="0 0 24 24"><path d="M17 18a5 5 0 0 0-10 0"/><path d="M12 3v6"/><path d="M9 6l3-3 3 3"/><path d="M4.2 10.2l1.4 1.4M18.4 11.6l1.4-1.4M2 18h2M20 18h2M3 22h18"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-return" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
 </svg>
 <!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
@@ -657,17 +681,17 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <div class="header-inner">
     <div class="brand"><b>WESSER</b><span>Gestión Emocional</span></div>
     <div class="header-actions">
-      <button type="button" class="icon-btn" onclick="openHelp()" title="Ayuda" aria-label="Abrir ayuda">❓</button>
-      <button type="button" class="icon-btn" id="themeToggle" title="Modo claro/oscuro" aria-label="Cambiar entre modo claro y oscuro">🌓</button>
+      <button type="button" class="icon-btn" onclick="openHelp()" title="Ayuda" aria-label="Abrir ayuda"><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg></button>
+      <button type="button" class="icon-btn" id="themeToggle" title="Modo claro/oscuro" aria-label="Cambiar entre modo claro y oscuro"><svg class="ic" aria-hidden="true"><use href="#i-moon"/></svg></button>
     </div>
   </div>
   <nav class="tabs-wrap" aria-label="Secciones principales">
     <div class="header-tabs" id="headerTabs">
-      <button type="button" data-view="aprender" class="active"><span class="ic">🧠</span><span class="lb">Aprender</span></button>
-      <button type="button" data-view="bienestar"><span class="ic">🌱</span><span class="lb">Bienestar</span></button>
-      <button type="button" data-view="herramientas"><span class="ic">🧰</span><span class="lb">Herramientas</span></button>
-      <button type="button" data-view="diario"><span class="ic">📓</span><span class="lb">Diario</span></button>
-      <button type="button" class="tab-reset" id="tabReset" aria-haspopup="dialog" onclick="openReset()"><span class="ic" aria-hidden="true">🆘</span><span class="lb">Reset</span></button>
+      <button type="button" data-view="aprender" class="active"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg><span class="lb">Aprender</span></button>
+      <button type="button" data-view="bienestar"><svg class="ic" aria-hidden="true"><use href="#i-sprout"/></svg><span class="lb">Bienestar</span></button>
+      <button type="button" data-view="herramientas"><svg class="ic" aria-hidden="true"><use href="#i-toolbox"/></svg><span class="lb">Herramientas</span></button>
+      <button type="button" data-view="diario"><svg class="ic" aria-hidden="true"><use href="#i-notebook"/></svg><span class="lb">Diario</span></button>
+      <button type="button" class="tab-reset" id="tabReset" aria-haspopup="dialog" onclick="openReset()"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg><span class="lb">Reset</span></button>
     </div>
     <div class="tabs-fade" aria-hidden="true"></div>
   </nav>
@@ -684,20 +708,20 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     </div>
     <div class="ql-row" id="qlRow">
       <span id="qlKitSlot"></span>
-      <button type="button" class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
-      <button type="button" class="ql-btn" onclick="startPreTurno()"><span class="ql-em">🚀</span><span class="ql-lb">Antes de salir</span></button>
-      <button type="button" class="ql-btn" onclick="startVolverCalle()"><span class="ql-em">🔄</span><span class="ql-lb">Volver a calle</span></button>
-      <button type="button" class="ql-btn" onclick="startCierreTurno()"><span class="ql-em">🏠</span><span class="ql-lb">Cierre de turno</span></button>
-      <button type="button" class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset()"><span class="ql-em">🆘</span><span class="ql-lb">Estoy en una mala racha</span></button>
+      <button type="button" class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span><span class="ql-lb">No sé qué necesito</span></button>
+      <button type="button" class="ql-btn" onclick="startPreTurno()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-sunrise"/></svg></span><span class="ql-lb">Antes de salir</span></button>
+      <button type="button" class="ql-btn" onclick="startVolverCalle()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-return"/></svg></span><span class="ql-lb">Volver a calle</span></button>
+      <button type="button" class="ql-btn" onclick="startCierreTurno()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg></span><span class="ql-lb">Cierre de turno</span></button>
+      <button type="button" class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg></span><span class="ql-lb">Estoy en una mala racha</span></button>
       <div id="qlMoreWrap" class="ql-more-collapsed">
-        <button type="button" class="ql-btn ql-success" onclick="startExito()"><span class="ql-em">🟢</span><span class="ql-lb">Qué ha funcionado</span></button>
-        <button type="button" class="ql-btn" onclick="startBadApproach()"><span class="ql-em">💥</span><span class="ql-lb">Mala interacción</span></button>
-        <button type="button" class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em">🎯</span><span class="ql-lb">Presión por objetivo</span></button>
-        <button type="button" class="ql-btn" onclick="startBreath(60)"><span class="ql-em">😰</span><span class="ql-lb">Estoy acelerado</span></button>
-        <button type="button" class="ql-btn" onclick="startGrounding()"><span class="ql-em">🧠</span><span class="ql-lb">No paro de darle vueltas</span></button>
-        <button type="button" class="ql-btn" onclick="startPauseDecision()"><span class="ql-em">😤</span><span class="ql-lb">Reacciono en automático</span></button>
-        <button type="button" class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em">👋</span><span class="ql-lb">Dudo en la parada</span></button>
-        <button type="button" class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
+        <button type="button" class="ql-btn ql-success" onclick="startExito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span><span class="ql-lb">Qué ha funcionado</span></button>
+        <button type="button" class="ql-btn" onclick="startBadApproach()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-msg-x"/></svg></span><span class="ql-lb">Mala interacción</span></button>
+        <button type="button" class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span class="ql-lb">Presión por objetivo</span></button>
+        <button type="button" class="ql-btn" onclick="startBreath(60)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span><span class="ql-lb">Estoy acelerado</span></button>
+        <button type="button" class="ql-btn" onclick="startGrounding()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg></span><span class="ql-lb">No paro de darle vueltas</span></button>
+        <button type="button" class="ql-btn" onclick="startPauseDecision()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-pause-oct"/></svg></span><span class="ql-lb">Reacciono en automático</span></button>
+        <button type="button" class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-split"/></svg></span><span class="ql-lb">Dudo en la parada</span></button>
+        <button type="button" class="ql-btn" onclick="startTense()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-squeeze"/></svg></span><span class="ql-lb">Estoy muy tenso</span></button>
       </div>
     </div>
   </div>
@@ -1093,203 +1117,94 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   <!-- HERRAMIENTAS -->
   <section class="view ds" id="view-herramientas">
     <div class="ds-page-head">
-      <h2><svg class="ic" aria-hidden="true"><use href="#i-toolbox"/></svg>Caja de Herramientas</h2>
+      <h2>Caja de Herramientas</h2>
       <p>Elige la herramienta que mejor encaje con lo que necesitas ahora mismo en calle.</p>
     </div>
 
     <section class="tool-group relief" data-tone="relief" aria-labelledby="tg-relief">
-      <div class="tgroup-head">
-        <span class="tile tile-sm"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg></span>
-        <div>
-          <h3 id="tg-relief">Reinicio y regulación</h3>
-          <p>Para bajar la activación, recuperar perspectiva o volver a centrarte en poco tiempo.</p>
-        </div>
-      </div>
-      <div class="tool-cards">
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-msg-x"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Después de una mala interacción</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>30–45 segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para evitar que una interacción que te ha dejado tocado contamine las siguientes: un grito, una risa, un rechazo especialmente desagradable o una conversación que ha salido mal.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se hace</span><p>Corta → Separa → Aprende → Suelta → Vuelve.</p></div>
-          <button type="button" class="tbtn" onclick="startBadApproach()">Empezar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Suspiro fisiológico</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>30–60 segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Puede ayudarte a bajar rápidamente la activación cuando estás nervioso, acelerado o tenso.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se hace</span><p>Haz dos inhalaciones seguidas, preferiblemente por la nariz —la segunda más pequeña— y después una exhalación lenta y larga. Repite durante 30–60 segundos.</p></div>
-          <button type="button" class="tbtn" onclick="startBreath(60)">Respirar 60 s<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-pause-oct"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Parar y decidir</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>1–2 minutos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para cortar una reacción automática y recuperar margen para decidir qué hacer ante tensión, rabia, nervios o bloqueo.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se hace</span><p>PARA → Toma aire → Observa y nombra → Genera opciones → Actúa.</p></div>
-          <button type="button" class="tbtn" onclick="startPauseDecision()">Empezar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Grounding 5-4-3-2-1</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>1–2 minutos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para sacar la atención del bucle de pensamientos y volver al presente cuando tu cabeza está atrapada en preocupaciones o anticipaciones.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se hace</span><p>Lleva tu atención al entorno con los sentidos: 5 cosas que ves · 4 que oyes · 3 que tocas · 2 que hueles · 1 que saboreas.</p></div>
-          <button type="button" class="tbtn" onclick="startGrounding()">Empezar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-squeeze"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Tense &amp; Release</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>~40 segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para soltar tensión física acumulada, especialmente cuando notas rigidez en puños, brazos, hombros o piernas.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se hace</span><p>Tensa de forma firme pero cómoda, sin dolor, mantén unos segundos y después suelta. Repite con puños, brazos, hombros y piernas.</p></div>
-          <button type="button" class="tbtn" onclick="startTense()">Empezar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
+      <h3 class="tgroup-title" id="tg-relief">Reinicio y regulación</h3>
+      <div class="trow-list">
+        <button type="button" class="trow" onclick="startBadApproach()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-msg-x"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Después de una mala interacción</span><span class="trow-desc"><span class="trow-meta">30–45 s</span> · Que un mal momento no contamine las siguientes paradas.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" class="trow" onclick="startBreath(60)">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Suspiro fisiológico</span><span class="trow-desc"><span class="trow-meta">30–60 s</span> · Baja rápido la activación si estás nervioso o tenso.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" class="trow" onclick="startPauseDecision()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-pause-oct"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Parar y decidir</span><span class="trow-desc"><span class="trow-meta">1–2 min</span> · Corta una reacción automática y decide qué hacer.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" class="trow" onclick="startGrounding()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Grounding 5-4-3-2-1</span><span class="trow-desc"><span class="trow-meta">1–2 min</span> · Sal del bucle de pensamientos y vuelve al presente.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" class="trow" onclick="startTense()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-squeeze"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Tense &amp; Release</span><span class="trow-desc"><span class="trow-meta">40 s</span> · Suelta la tensión física acumulada.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
       </div>
     </section>
 
     <section class="tool-group focus" data-tone="focus" aria-labelledby="tg-focus">
-      <div class="tgroup-head">
-        <span class="tile tile-sm"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span>
-        <div>
-          <h3 id="tg-focus">Foco y rendimiento</h3>
-          <p>Para volver al proceso, tomar mejores decisiones y evitar que la presión por el resultado marque tu conducta.</p>
-        </div>
-      </div>
-      <div class="tool-cards">
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-split"/></svg></span>
-            <div>
-              <h3 class="tcard-title">El momento de decidir</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>10 segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para ese instante justo antes de dejar pasar a alguien, cuando no tienes claro si estás tomando una decisión consciente o evitando un posible rechazo o una interacción incómoda.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se hace</span><p>Responde a una sola pregunta: «¿Estoy decidiendo o estoy evitando?» Después, sigue.</p></div>
-          <button type="button" class="tbtn" onclick="startMomentoDecidir()">Empezar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Resultado vs. Proceso</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>20 segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para detectar si la presión por objetivo te ha hecho fijarte demasiado en el resultado —socios, ratio, número del día— en lugar de en el proceso —paradas, apertura, escucha y técnica—.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se hace</span><p>Identifica dónde estás mirando ahora mismo. Si estás centrado en el resultado, elige una conducta de proceso a la que volver.</p></div>
-          <button type="button" class="tbtn" onclick="startResultadoProceso()">Empezar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-msg-q"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Pide feedback</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>30 segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para pedir una observación concreta en lugar de un genérico «dime si lo hago bien».</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se hace</span><p>Elige una sola petición concreta y tendrás la frase lista para decirla.</p></div>
-          <button type="button" class="tbtn" onclick="startPedirFeedback()">Empezar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
+      <h3 class="tgroup-title" id="tg-focus">Foco y rendimiento</h3>
+      <div class="trow-list">
+        <button type="button" class="trow" onclick="startMomentoDecidir()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-split"/></svg></span>
+          <span class="trow-body"><span class="trow-title">El momento de decidir</span><span class="trow-desc"><span class="trow-meta">10 s</span> · Antes de dejar pasar a alguien: ¿decides o evitas?</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" class="trow" onclick="startResultadoProceso()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Resultado vs. Proceso</span><span class="trow-desc"><span class="trow-meta">20 s</span> · Del número del día a lo que sí puedes hacer ahora.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" class="trow" onclick="startPedirFeedback()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-msg-q"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Pide feedback</span><span class="trow-desc"><span class="trow-meta">30 s</span> · Convierte «¿lo hago bien?» en una petición concreta.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
       </div>
     </section>
 
     <section class="tool-group anchor" data-tone="anchor" aria-labelledby="tg-anchor">
-      <div class="tgroup-head">
-        <span class="tile tile-sm"><svg class="ic" aria-hidden="true"><use href="#i-anchor"/></svg></span>
-        <div>
-          <h3 id="tg-anchor">Preparación</h3>
-          <p>Prepara un recurso antes de que lo necesites.</p>
-        </div>
-      </div>
-      <div class="tool-cards">
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Recordatorio de confianza</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>Preparación previa · uso en segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para evocar una sensación de seguridad y confianza antes de una conversación difícil o después de un momento de inseguridad.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se prepara</span><p>Elige un gesto discreto —por ejemplo, juntar pulgar e índice— mientras recuerdas una situación en la que te sentiste seguro, concentrado o satisfecho con tu trabajo. Después, ese gesto te sirve como recordatorio de ese estado.</p></div>
-          <button type="button" class="tbtn" onclick="openAnchor()">Configurar / Usar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-bookmark"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Recordatorio visual</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>Preparación previa · uso en segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para recordarte cómo quieres afrontar una situación cuando aparezcan tensión, desánimo o dudas.</p>
-          <div class="tcard-how"><span class="eyebrow">Cómo se prepara</span><p>Guarda una frase o recordatorio de texto que puedas consultar rápidamente. No se trata de obligarte a pensar en positivo, sino de volver a tu objetivo y a la actitud que quieres mantener.</p></div>
-          <button type="button" class="tbtn" onclick="openVisualAnchor()">Ver mis frases<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        </article>
+      <h3 class="tgroup-title" id="tg-anchor">Preparación</h3>
+      <div class="trow-list">
+        <button type="button" class="trow" onclick="openAnchor()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Recordatorio de confianza</span><span class="trow-desc"><span class="trow-meta">Se prepara antes</span> · Tu gesto y tu palabra clave para recuperar seguridad.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" class="trow" onclick="openVisualAnchor()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-bookmark"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Recordatorio visual</span><span class="trow-desc"><span class="trow-meta">Se prepara antes</span> · Tus frases para volver a tu objetivo.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
       </div>
     </section>
 
     <section class="tool-group tracking" data-tone="track" aria-labelledby="tg-track">
-      <div class="tgroup-head">
-        <span class="tile tile-sm"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg></span>
-        <div>
-          <h3 id="tg-track">Seguimiento del turno</h3>
-          <p>Revisa cómo vas antes de acumular fatiga o perder el foco.</p>
-        </div>
+      <h3 class="tgroup-title" id="tg-track">Seguimiento del turno</h3>
+      <div class="trow-list">
+        <button type="button" class="trow" onclick="openCheckpoint()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-gauge"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Checkpoint de mitad de turno</span><span class="trow-desc"><span class="trow-meta">~1 min</span> · Revisa fatiga y activación y decide cómo seguir.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
+        <button type="button" class="trow" onclick="startExito()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span>
+          <span class="trow-body"><span class="trow-title">¿Qué ha funcionado?</span><span class="trow-desc"><span class="trow-meta">30 s</span> · Quédate con la conducta que te ha funcionado.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
       </div>
-      <div class="tool-cards">
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-gauge"/></svg></span>
-            <div>
-              <h3 class="tcard-title">Checkpoint de mitad de turno</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>~1 minuto</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para detectar a tiempo tensión, fatiga o pérdida de concentración y ajustar tu jornada antes de que vaya a más.</p>
-          <div class="tcard-how"><span class="eyebrow">Te guía con estas preguntas</span><ul class="tcard-list"><li><b>Cuerpo:</b> ¿estoy tenso, cansado o acelerado?</li><li><b>Cabeza:</b> ¿estoy concentrado o funcionando en automático?</li><li><b>Emoción:</b> ¿qué estoy sintiendo?</li><li><b>Estrategia:</b> ¿necesito cambiar algo?</li></ul></div>
-          <p class="tcard-note">Anotas tu fatiga y tu activación (1-10), un ajuste para el tramo final y una decisión: seguir igual · hacer una pausa · ajustar la estrategia. Se guarda en tu historial para detectar patrones con el tiempo.</p>
-          <button type="button" class="tbtn" onclick="openCheckpoint()">Hacer checkpoint<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-          <div id="checkpointHistorial"></div>
-        </article>
-        <article class="card tcard">
-          <div class="tcard-head">
-            <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span>
-            <div>
-              <h3 class="tcard-title">¿Qué ha funcionado?</h3>
-              <p class="tcard-meta"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg>30 segundos</p>
-            </div>
-          </div>
-          <p class="tcard-lead">Para identificar una conducta concreta que ha funcionado después de una buena conversación y decidir qué repetir en la siguiente.</p>
-          <div class="tcard-how"><span class="eyebrow">Por qué</span><p>No es para puntuarte. Es para quedarte con lo que ya funciona, en vez de entrenar solo la corrección del error.</p></div>
-          <button type="button" class="tbtn" onclick="startExito()">Registrar<svg class="ic ic-sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-          <div id="exitoHistorial"></div>
-        </article>
-      </div>
+      <div class="thist"><h4 class="thist-title">Tus checkpoints</h4><div id="checkpointHistorial"></div></div>
+      <div class="thist"><h4 class="thist-title">Lo que te ha funcionado</h4><div id="exitoHistorial"></div></div>
     </section>
   </section>
 
@@ -2096,7 +2011,10 @@ function applyTheme(){
   const t = state.theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');
   document.documentElement.setAttribute('data-theme', t);
   const btn = document.getElementById('themeToggle');
-  btn.textContent = t === 'dark' ? '☀️' : '🌙';
+  btn.innerHTML = `<svg class="ic" aria-hidden="true"><use href="#i-${t === 'dark' ? 'sun' : 'moon'}"/></svg>`;
+  // La barra del navegador acompaña a la cabecera (ya no es roja)
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content', t === 'dark' ? '#141B2E' : '#FFFFFF');
   btn.setAttribute('aria-label', t === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
 }
 applyTheme();
@@ -2140,7 +2058,7 @@ function renderQlKitButton(){
   const slot = document.getElementById('qlKitSlot');
   if(!slot) return;
   slot.innerHTML = state.kitHerramienta
-    ? `<button type="button" class="ql-btn ql-kit" onclick="activarKitPlan()"><span class="ql-em">🚨</span><span class="ql-lb">Activar mi plan</span></button>`
+    ? `<button type="button" class="ql-btn ql-kit" onclick="activarKitPlan()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg></span><span class="ql-lb">Activar mi plan</span></button>`
     : '';
 }
 renderQlKitButton();
@@ -3167,6 +3085,8 @@ function openAnchor(){
 function renderAnchorTool(){
   openTool('Recordatorio de confianza', `
     <div class="card">
+      <p class="desc">Para <b>evocar una sensación de seguridad y confianza</b> antes de una conversación difícil o después de un momento de inseguridad.</p>
+      <p class="desc"><b>Cómo se prepara:</b> elige un gesto discreto —por ejemplo, juntar pulgar e índice— mientras recuerdas una situación en la que te sentiste seguro, concentrado o satisfecho con tu trabajo. Después, ese gesto te sirve como recordatorio de ese estado.</p>
       <label for="anchorWordInput">Palabra clave</label>
       <input type="text" id="anchorWordInput" placeholder='Ej: "Confianza", "Calma", "Seguridad"'>
       <label for="anchorMemoryInput">Recuerdo de seguridad o confianza</label>
