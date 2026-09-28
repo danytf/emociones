@@ -140,8 +140,10 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
       opened++;
       await page.keyboard.press('Escape');
       if (await top() === 'confirm') await confirmOk();
+    } else if (t === 'reset' && await page.evaluate(() => resetStep === 'kit' && document.getElementById('resetTitle').textContent === 'Kit de Emergencia')) {
+      opened++;   // el Kit se abre en su propia ventana, con cabecera «Kit de Emergencia»
     }
-    if (await top() !== null) await page.evaluate(() => { Overlays.close('modal'); Overlays.close('tool'); });
+    if (await top() !== null) await page.evaluate(() => { Overlays.close('modal'); Overlays.close('tool'); Overlays.close('reset'); });
   }
   ok(opened === toolButtons && await page.evaluate(() => toolTimers.length === 0), `las ${toolButtons} herramientas abren y cierran (temporizadores parados)`);
   const qlCount = await page.evaluate(() => { toggleQlMore(); return document.querySelectorAll('#qlRow .ql-btn').length; });
