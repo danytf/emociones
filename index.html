@@ -1511,7 +1511,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
 
   <!-- DIARIO SEPA -->
   <section class="view ds" id="view-diario">
-    <h2>Registro S‑E‑P‑A</h2>
+    <h2>Diario S‑E‑P‑A</h2>
     <p class="desc" style="margin-bottom:16px;"><b>Situación → Emoción → Pensamiento → Acción</b></p>
 
     <!-- Explicación plegable: abierta la primera vez; la app recuerda si la cierras (ver initSepaIntro) -->
@@ -1739,6 +1739,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
         <ul>
           <li><b>Recordatorio de confianza</b>: guarda una o varias palabras clave con el recuerdo de seguridad asociado. Al usarlo, la app te guía 30 segundos mientras repites tu gesto discreto.</li>
           <li><b>Recordatorio visual</b>: guarda frases o recordatorios de enfoque para releerlos cuando lo necesites.</li>
+          <li><b>Kit de Emergencia</b>: tu plan (señales, herramienta, ajuste y apoyo) para activarlo con un toque cuando aparezcan las primeras señales.</li>
         </ul>
         <p><b>Seguimiento del turno</b><br>Para <b>observar cómo estás durante la jornada y registrar lo que te funciona</b>.</p>
         <ul>
@@ -1767,7 +1768,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
     <details class="help-item">
       <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg></span><span class="sum-title">Modo Reset</span></summary>
       <div class="help-body">
-        <p>Botón siempre visible en la cabecera. Utilízalo cuando sientas que has <b>«chocado con la pared»</b>: mala racha, desgaste o frustración acumulada.</p>
+        <p>Siempre visible en la navegación (<b>Reset</b>). Utilízalo cuando sientas que has <b>«chocado con la pared»</b>: mala racha, desgaste o frustración acumulada.</p>
         <p>La pantalla inicial explica qué hacer durante una mala racha: <b>Normalizar → Revisar → Rescatar → Regular → Pedir ayuda</b>. También encontrarás <b>¿Qué está en mis manos?</b>, donde puedes separar lo que no controlas, lo que puedes influir y lo que puedes revisar.</p>
         <p>Desde ahí puedes hacer un <b>Check-in de señales</b>, con 17 señales de autoobservación. En <b>Historial</b> puedes revisar tus sesiones de Reset y tus check-ins, eliminarlos o repetir un ajuste.</p>
         <p><b>El protocolo R.E.S.E.T.</b></p>
@@ -2302,7 +2303,7 @@ function importarDatos(input){
 async function borrarTodosDatos(){
   const ok = await confirmDialog({
     title:'¿Borrar todos tus datos?',
-    message:'Esto borrará TODOS tus datos guardados en este dispositivo (diario, checkpoints, historial de Reset, kit, anclajes...). Esta acción no se puede deshacer.',
+    message:'Esto borrará TODOS tus datos guardados en este dispositivo (diario, checkpoints, historial de Reset, kit, recordatorios...). Esta acción no se puede deshacer.',
     confirmText:'Borrar todo', danger:true
   });
   if(!ok) return;
@@ -2892,7 +2893,7 @@ function guardarExito(){
   if(!conducta){ fieldError('exitoChips', 'Elige o escribe qué ha funcionado antes de guardar.'); return; }
   const repetir = document.getElementById('exitoRepetirInput').value.trim();
   state.exitos.unshift(newRecord({conducta, repetir}));
-  save();
+  if(!save()){ state.exitos.shift(); return; }   // el aviso de error ya se ha mostrado; el formulario se conserva
   renderExitoHistorial();
   renderPatrones();
   openTool('¿Qué ha funcionado?', `
@@ -3440,16 +3441,16 @@ function renderAnchorTool(){
       <input type="text" id="anchorWordInput" placeholder='Ej: "Confianza", "Calma", "Seguridad"'>
       <label for="anchorMemoryInput">Recuerdo de seguridad o confianza</label>
       <textarea id="anchorMemoryInput" placeholder="Describe brevemente ese momento..."></textarea>
-      <button type="button" class="btn btn-green" onclick="addConfidenceAnchor()">Guardar anclaje</button>
+      <button type="button" class="btn btn-green" onclick="addConfidenceAnchor()">Guardar recordatorio</button>
     </div>
     <div style="margin-top:16px;">
       ${state.confidenceAnchors.length ? state.confidenceAnchors.map((a,i)=>`
         <div class="history-item">
-          <button type="button" class="del" data-action="delConfidenceAnchor" data-idx="${i}" aria-label="Eliminar anclaje: ${escapeHtml(a.word)}">Eliminar</button>
+          <button type="button" class="del" data-action="delConfidenceAnchor" data-idx="${i}" aria-label="Eliminar recordatorio: ${escapeHtml(a.word)}">Eliminar</button>
           <p style="font-weight:700;">${escapeHtml(a.word)}</p>
           <p class="desc">${escapeHtml(a.memory)}</p>
           <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="runAnchorGuide" data-idx="${i}" aria-label="Usar ahora: ${escapeHtml(a.word)}">Usar ahora</button>
-        </div>`).join('') : '<div class="empty-state">Aún no has guardado ningún anclaje.</div>'}
+        </div>`).join('') : '<div class="empty-state">Aún no has guardado ningún recordatorio.</div>'}
     </div>
   `);
 }
@@ -3461,11 +3462,12 @@ function addConfidenceAnchor(){
   if(!memory) errores.push(['anchorMemoryInput', 'Describe el recuerdo de seguridad o confianza.']);
   if(!showFieldErrors(errores)) return;
   state.confidenceAnchors.unshift({word, memory});
-  save();
+  const ok = save();
   renderAnchorTool();
+  if(ok) notify('Recordatorio guardado.');
 }
 async function delConfidenceAnchor(i){
-  if(!(await confirmDelete('este anclaje'))) return;
+  if(!(await confirmDelete('este recordatorio de confianza'))) return;
   state.confidenceAnchors.splice(i,1); save();
   renderAnchorTool();
 }
@@ -3553,8 +3555,10 @@ function renderVisualAnchorModal(){
 function addVisualAnchor(){
   const v = document.getElementById('newVisualPhrase').value.trim();
   if(!v) return;
-  state.visualAnchors.unshift(v); save();
+  state.visualAnchors.unshift(v);
+  const ok = save();
   renderVisualAnchorModal();
+  if(ok) notify('Recordatorio guardado.');
 }
 async function delVisualAnchor(i){
   if(!(await confirmDelete('este recordatorio'))) return;
@@ -3663,9 +3667,10 @@ function saveKitPlan(){
   state.kitAjuste = document.getElementById('kitAjusteInput').value.trim();
   state.kitPersona = document.getElementById('kitPersonaInput').value.trim();
   state.kitPedira = document.getElementById('kitPediraInput').value.trim();
-  save();
+  const ok = save();
   renderQlKitButton();
-  resetGoto(0);
+  renderResetStep();   // se queda en el Kit, con el protocolo actualizado
+  if(ok) notify('Plan guardado. Lo activas con «Activar mi plan».');
 }
 
 function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
@@ -4277,9 +4282,10 @@ function finalizarReset(){
     aprendizaje: resetAprendizaje, observacion: resetObservacion
   }));
   clearResetProgress();
-  save();
+  const ok = save();
   closeReset();
   renderPatrones();
+  if(ok) notify('Sesión de Reset guardada. La tienes en el Historial.');
 }
 async function borrarResetHistorial(id){
   if(!(await confirmDelete('esta sesión de Reset del historial'))) return;

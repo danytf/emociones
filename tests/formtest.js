@@ -106,6 +106,13 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('QuotaExceeded'); }; save(); save(); });
   ok(await page.locator('#toast').evaluate(t => t.classList.contains('show') && t.classList.contains('error')), 'error de guardado como aviso no modal');
   await page.locator('#toast').screenshot({ path: S + '/toast.png' });
+  // Si no se puede guardar, «¿Qué ha funcionado?» no muestra «Guardado» ni deja el registro en memoria
+  const fallo = await page.evaluate(() => {
+    const antes = state.exitos.length;
+    startExito(); selectExitoConducta(EXITO_OPCIONES[0]); guardarExito();
+    return { h3: document.querySelector('#toolBody h3')?.textContent || '', igual: state.exitos.length === antes };
+  });
+  ok(fallo.h3 !== 'Guardado' && fallo.igual, '«¿Qué ha funcionado?» no dice «Guardado» si el guardado falla');
 
   ok(nativeDialogs === 0, 'ningún alert()/confirm() nativo en todo el recorrido');
   ok(errors.length === 0, 'sin errores de JS: ' + errors.join(' | '));

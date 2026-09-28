@@ -224,6 +224,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.fill('#kitPersonaInput', 'Laura');
   await page.fill('#kitPediraInput', 'Que me observe dos paradas');
   await page.locator('#resetBody button:has-text("Guardar mi plan")').click();
+  ok(await page.evaluate(() => resetStep === 'kit' && document.getElementById('resetTitle').textContent === 'Kit de Emergencia' && document.getElementById('toastMsg').textContent.startsWith('Plan guardado')), 'guardar el plan se queda en el Kit y lo confirma');
   await page.reload();
   s = await st();
   ok(s.kitHerramienta === 'Salir a respirar al parque' && s.kitAjuste === 'Simplificar la apertura' && s.kitPersona === 'Laura' && s.kitPedira === 'Que me observe dos paradas' && s.kitSenales.length === 3, 'plan persistido tras recargar');
