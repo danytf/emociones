@@ -77,8 +77,8 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await page.locator('#cpNota').fill('bajar ritmo');
   const confirmOpen = () => page.evaluate(() => Overlays.top() === 'confirm');
   await page.keyboard.press('Escape');
-  ok(await confirmOpen() && (await page.locator('#confirmMsg').innerText()).startsWith('Has escrito algo'), 'Escape con texto sin guardar abre la confirmación accesible');
-  ok(await page.evaluate(() => document.activeElement.id) === 'confirmCancel', 'foco inicial en la opción segura (Seguir escribiendo)');
+  ok(await confirmOpen() && (await page.locator('#confirmMsg').innerText()).startsWith('Tienes cambios que todavía no has guardado'), 'Escape con cambios sin guardar abre la confirmación accesible');
+  ok(await page.evaluate(() => document.activeElement.id) === 'confirmCancel', 'foco inicial en la opción segura (Seguir editando)');
   ok(await page.evaluate(() => document.getElementById('toolOverlay').inert && !document.getElementById('confirmBack').inert), 'la herramienta queda inert bajo la confirmación');
   await page.keyboard.press('Enter');
   ok(!(await confirmOpen()) && (await openSet()).includes('toolOverlay'), '«Seguir escribiendo» mantiene la herramienta abierta');
@@ -94,11 +94,39 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   const noConfirm = async () => !(await confirmOpen());
   await page.evaluate(() => { openCheckpoint(); });
   await page.locator('#cpNota').fill('otra');
-  await page.evaluate(() => guardarCheckpoint());
+  await page.evaluate(() => { setCpDecision('Sigo igual'); guardarCheckpoint(); });
   ok(await noConfirm() && !(await openSet()).includes('toolOverlay'), 'guardar cierra sin preguntar');
   await page.evaluate(() => openCheckpoint(state.checkpoints[0].id));
   await page.keyboard.press('Escape');
   ok(await noConfirm() && !(await openSet()).includes('toolOverlay'), 'editar sin tocar nada y cerrar no pregunta');
+
+  // Cambios sin guardar en controles que no son texto (Checkpoint)
+  const soloCambio = async (label, cambio) => {
+    await page.evaluate(() => openCheckpoint());
+    await cambio();
+    await page.locator('#toolOverlay button[aria-label="Cerrar herramienta"]').click();
+    const t = await page.evaluate(() => Overlays.top() === 'confirm' && document.getElementById('confirmTitle').textContent);
+    ok(t === '¿Cerrar sin guardar?', `${label}: cerrar pide «¿Cerrar sin guardar?»`);
+    if (await confirmOpen()) await page.locator('#confirmOk').click();
+    await page.evaluate(() => Overlays.close('tool'));
+  };
+  await soloCambio('mover solo «Nivel de fatiga»', () => page.locator('#cpFatiga').fill('8'));
+  await soloCambio('cambiar solo «Activación emocional»', () => page.locator('#cpEmocional').fill('2'));
+  await soloCambio('elegir solo «¿Qué hago ahora?»', () => page.locator('#cpDecisionRow button').nth(1).click());
+  // Volver al valor inicial no cuenta como cambio
+  await page.evaluate(() => openCheckpoint());
+  await page.locator('#cpFatiga').fill('8'); await page.locator('#cpFatiga').fill('5');
+  await page.keyboard.press('Escape');
+  ok(await noConfirm() && !(await openSet()).includes('toolOverlay'), 'volver al valor inicial no cuenta como cambio sin guardar');
+  // «¿Qué ha funcionado?»: elegir solo un chip también cuenta; «No sé qué necesito» (no guarda) no pregunta
+  await page.evaluate(() => startExito());
+  await page.locator('#toolBody [data-action="selectExitoConducta"]').first().click();
+  await page.keyboard.press('Escape');
+  ok(await page.evaluate(() => Overlays.top() === 'confirm'), '«¿Qué ha funcionado?»: elegir solo una conducta y cerrar pide confirmación');
+  await page.locator('#confirmOk').click();
+  await page.evaluate(() => { startNoSeQueNecesito(); setNsqnAnswer('cabeza', true); });
+  await page.keyboard.press('Escape');
+  ok(await noConfirm() && !(await openSet()).includes('toolOverlay'), '«No sé qué necesito» (no guarda nada) se cierra sin preguntar');
 
   // Reset: lo escrito se guarda solo, no pregunta
   await page.evaluate(() => { openReset(); resetGoto(2); });

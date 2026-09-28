@@ -96,10 +96,17 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
     document.getElementById('sepaAccion').value = 'Pausa consciente';
     guardarSepa();
     const diario = document.getElementById('toastMsg').textContent;
+    // Checkpoint sin decisión: no se guarda, no se cierra y explica qué falta
+    const nCp = state.checkpoints.length;
     openCheckpoint(); guardarCheckpoint();
+    const sinDecision = { guardado: state.checkpoints.length !== nCp, abierto: Overlays.top() === 'tool',
+      error: (document.querySelector('#cpDecisionRow + .field-error') || {}).textContent || '' };
+    setCpDecision('Hago una pausa'); guardarCheckpoint();
     const cp = document.getElementById('toastMsg').textContent;
-    return { diario, cp };
+    return { diario, cp, sinDecision, conDecision: state.checkpoints.length === nCp + 1 };
   });
+  ok(!avisos.sinDecision.guardado && avisos.sinDecision.abierto && avisos.sinDecision.error === 'Elige qué vas a hacer ahora.', 'Checkpoint sin decisión: no se guarda ni se cierra y muestra el error');
+  ok(avisos.conDecision, 'Checkpoint con decisión: se guarda');
   ok(avisos.diario.startsWith('Registro guardado') && avisos.cp.startsWith('Checkpoint guardado'), `guardar confirma con aviso (${avisos.diario} | ${avisos.cp})`);
 
   // Error al guardar: aviso no modal, sin repetir
@@ -113,6 +120,67 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
     return { h3: document.querySelector('#toolBody h3')?.textContent || '', igual: state.exitos.length === antes };
   });
   ok(fallo.h3 !== 'Guardado' && fallo.igual, '«¿Qué ha funcionado?» no dice «Guardado» si el guardado falla');
+
+  // Guardado transaccional: con el almacenamiento fallando, nada se confirma ni avanza
+  const tx = await page.evaluate(() => {
+    Overlays.close('tool'); hideToast();
+    const r = {};
+    // Diario: nuevo registro
+    goto('diario');
+    const nS = state.sepaEntries.length;
+    selectedEmociones = ['miedo']; syncEmocionChips();
+    document.getElementById('sepaPensConstructivo').value = 'Mi idea';
+    document.getElementById('sepaAccion').value = 'Pausa consciente';
+    guardarSepa();
+    r.diarioNuevo = state.sepaEntries.length === nS && document.getElementById('sepaPensConstructivo').value === 'Mi idea'
+      && selectedEmociones.includes('miedo') && !document.getElementById('toastMsg').textContent.startsWith('Registro');
+    // Diario: edición
+    const id = state.sepaEntries[0].id, original = state.sepaEntries[0].pensC;
+    editarSepa(id);
+    document.getElementById('sepaPensConstructivo').value = 'Cambio que no se guarda';
+    guardarSepa();
+    r.diarioEdicion = state.sepaEntries[0].pensC === original && editingSepaId === id && document.getElementById('sepaSaveBtn').textContent === 'Actualizar registro';
+    cancelarEdicionSepa();
+    // Checkpoint: nuevo y edición
+    const nC = state.checkpoints.length;
+    openCheckpoint(); document.getElementById('cpNota').value = 'Agua'; setCpDecision('Sigo igual'); guardarCheckpoint();
+    r.cpNuevo = state.checkpoints.length === nC && Overlays.top() === 'tool' && document.getElementById('cpNota').value === 'Agua';
+    Overlays.close('tool');
+    const cid = state.checkpoints[0].id, notaOrig = state.checkpoints[0].nota;
+    openCheckpoint(cid); document.getElementById('cpNota').value = 'Nueva nota'; guardarCheckpoint();
+    r.cpEdicion = state.checkpoints[0].nota === notaOrig && editingCheckpointId === cid && Overlays.top() === 'tool';
+    Overlays.close('tool');
+    // Check-in: no avanza
+    const nK = state.checkins.length;
+    openReset(); startCheckin(); checkinState[0][0] = true; saveCheckin();
+    r.checkin = state.checkins.length === nK && resetStep === 'checkin' && checkinState[0][0] === true;
+    Overlays.close('reset');
+    // Eliminar: se revierte (Diario, Checkpoint, Qué ha funcionado)
+    const antes = [state.sepaEntries.length, state.checkpoints.length];
+    return { r, antes };
+  });
+  ok(tx.r.diarioNuevo, 'fallo al guardar: el Diario conserva el formulario y no confirma');
+  ok(tx.r.diarioEdicion, 'fallo al guardar: la edición del Diario conserva el original y sigue en edición');
+  ok(tx.r.cpNuevo, 'fallo al guardar: el Checkpoint no se cierra y conserva los valores');
+  ok(tx.r.cpEdicion, 'fallo al guardar: la edición del Checkpoint conserva el original');
+  ok(tx.r.checkin, 'fallo al guardar: el Check-in no avanza y conserva lo marcado');
+  // Eliminar con el almacenamiento fallando: se confirma el borrado y no desaparece nada
+  await page.evaluate(() => goto('diario'));
+  await page.locator('#sepaHistorial [data-action="borrarSepa"]').first().click();
+  await page.locator('#confirmOk').click();
+  await page.waitForTimeout(100);
+  const del = await page.evaluate(n => ({ estado: state.sepaEntries.length === n, visibles: document.querySelectorAll('#sepaHistorial .history-item').length }), tx.antes[0]);
+  ok(del.estado && del.visibles === Math.min(tx.antes[0], 10), 'fallo al guardar: eliminar se revierte y el registro sigue visible');
+  // Importar con el almacenamiento fallando: sin aviso de éxito y con los datos anteriores
+  const antesImport = await page.evaluate(() => state.sepaEntries.length);
+  await page.evaluate(() => openHelp());
+  await page.setInputFiles('#importDatosInput', { name: 'copia.json', mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({ format: 'wesser-app-data', dataVersion: 3, sepaEntries: [], checkpoints: [], visualAnchors: [], checkins: [], confidenceAnchors: [], resetHistory: [] })) });
+  await page.waitForTimeout(300);
+  if (await page.evaluate(() => Overlays.top() === 'confirm')) await page.locator('#confirmOk').click();
+  await page.waitForTimeout(300);
+  const imp = await page.evaluate(() => ({ n: state.sepaEntries.length, aviso: (() => { try { return sessionStorage.getItem('wesserNotice'); } catch (e) { return 'x'; } })(), msg: document.getElementById('datosMsg').textContent }));
+  ok(imp.n === antesImport && !imp.aviso && imp.msg.startsWith('No se han importado'), 'fallo al guardar: importar no muestra éxito y conserva los datos anteriores');
 
   ok(nativeDialogs === 0, 'ningún alert()/confirm() nativo en todo el recorrido');
   ok(errors.length === 0, 'sin errores de JS: ' + errors.join(' | '));

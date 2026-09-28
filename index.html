@@ -446,7 +446,7 @@ header :focus-visible, .overlay-header :focus-visible{outline-color:#fff;}
 .field-ok{--msg-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M8 12.5l2.8 2.8L16 10'/%3E%3C/svg%3E");}
 .field-ok{color:var(--ok-text);}
 [aria-invalid="true"]{border-color:var(--error-text) !important;}
-.chip-group.has-error{outline:2px solid var(--error-text);outline-offset:6px;border-radius:12px;}
+.chip-group.has-error, .btn-row.has-error{outline:2px solid var(--error-text);outline-offset:6px;border-radius:12px;}
 /* Confirmación accesible (alertdialog), por encima de cualquier otro overlay */
 .confirm-back{z-index:300;align-items:center;padding:16px;}
 .confirm-box{
@@ -2082,6 +2082,14 @@ function flushSave(){ if(saveTimer) save(); }
 // Si se oculta o cierra la página con un guardado pendiente, se escribe ya para no perder texto
 window.addEventListener('pagehide', flushSave);
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') flushSave(); });
+/* Guarda un cambio ya aplicado en memoria. Si no se puede guardar, lo deshace con revert()
+   (save() ya ha mostrado el aviso de error) y devuelve false: la interfaz no debe confirmar
+   ni avanzar. */
+function commitSave(revert){
+  if(save()) return true;
+  revert();
+  return false;
+}
 /* Devuelve true si se ha guardado: los avisos de «guardado» solo se muestran entonces */
 function save(){
   clearTimeout(saveTimer);
@@ -2292,8 +2300,14 @@ function importarDatos(input){
       confirmText:'Reemplazar datos', danger:true
     });
     if(!ok){ input.value=''; return; }
+    const prevState = state;
     state = normalizeState(imported);
-    save();
+    // Si no se puede guardar, no se importa: se restauran los datos anteriores y no hay aviso de éxito
+    if(!commitSave(()=>{ state = prevState; })){
+      input.value='';
+      datosMsg('No se han importado los datos porque el navegador no ha permitido guardarlos. Tus datos anteriores siguen igual.', 'error');
+      return;
+    }
     // El aviso de éxito se muestra después de recargar
     try{ sessionStorage.setItem('wesserNotice', 'Datos importados correctamente.'); }catch(err){}
     location.reload();
@@ -2596,20 +2610,19 @@ function guardarSepa(){
   if(!accion) errores.push(['sepaAccion', 'Indica qué vas a hacer ahora.']);
   if(!showFieldErrors(errores)) return;
   const editando = !!editingSepaId;
+  const prevEntries = state.sepaEntries;
   if(editingSepaId){
-    const entry = state.sepaEntries.find(x=>x.id===editingSepaId);
-    if(entry){
-      entry.situacion = situacion; entry.emociones = [...selectedEmociones];
-      entry.pensD = pensD; entry.pensC = pensC; entry.accion = accion;
-      touch(entry);
-    }
-    cancelarEdicionSepa();
+    // Se sustituye por una copia: si el guardado falla, el registro original queda intacto
+    state.sepaEntries = prevEntries.map(x => x.id===editingSepaId
+      ? { ...x, situacion, emociones: [...selectedEmociones], pensD, pensC, accion, updatedAt: nowIso() } : x);
   } else {
-    state.sepaEntries.unshift(newRecord({
+    state.sepaEntries = [newRecord({
       situacion, emociones: [...selectedEmociones], pensD, pensC, accion
-    }));
+    }), ...prevEntries];
   }
-  const ok = save();
+  // Si no se guarda: se deshace el cambio y el formulario (y la edición) siguen tal cual
+  if(!commitSave(()=>{ state.sepaEntries = prevEntries; })) return;
+  if(editando) cancelarEdicionSepa();
   selectedEmociones = [];
   syncEmocionChips();
   document.getElementById('sepaSituacionOtra').value='';
@@ -2620,7 +2633,7 @@ function guardarSepa(){
   document.getElementById('sepaAccion').value='';
   renderSepaHistorial();
   lastReencuadre = '';
-  if(ok) notify(editando ? 'Registro actualizado.' : 'Registro guardado. Lo tienes en el Historial.');
+  notify(editando ? 'Registro actualizado.' : 'Registro guardado. Lo tienes en el Historial.');
 }
 function editarSepa(id){
   const e = state.sepaEntries.find(x=>x.id===id);
@@ -2651,9 +2664,11 @@ function cancelarEdicionSepa(){
 }
 async function borrarSepa(id){
   if(!(await confirmDelete('este registro del Diario'))) return;
-  state.sepaEntries = state.sepaEntries.filter(x=>x.id!==id);
+  const prev = state.sepaEntries;
+  state.sepaEntries = prev.filter(x=>x.id!==id);
+  if(!commitSave(()=>{ state.sepaEntries = prev; })) return;
   if(editingSepaId===id) cancelarEdicionSepa();
-  save(); renderSepaHistorial();
+  renderSepaHistorial();
 }
 let sepaHistorialLimit = 10;
 function verMasSepa(){ sepaHistorialLimit += 10; renderSepaHistorial(); }
@@ -2786,7 +2801,7 @@ function openCheckpoint(editId){
   const nota = existing ? (existing.nota||'') : '';
   const decision = existing ? (existing.decision||'') : '';
   openTool('Checkpoint de mitad de turno', `
-    <div class="card">
+    <div class="card" data-guarda>
       <p class="desc"><b>Tómate un momento y pregúntate:</b></p>
       <p class="desc"><b>Cuerpo:</b> ¿estoy tenso, cansado o acelerado?<br>
       <b>Cabeza:</b> ¿estoy concentrado o funcionando en automático?<br>
@@ -2810,6 +2825,7 @@ function openCheckpoint(editId){
       <button type="button" class="btn btn-green" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
     </div>
   `);
+  Overlays.resetBaseline('tool');   // punto de partida para detectar cambios sin guardar
 }
 function setCpDecision(v){
   document.getElementById('cpDecision').value = v;
@@ -2823,21 +2839,27 @@ function guardarCheckpoint(){
   const emocional = cleanInt(document.getElementById('cpEmocional').value, 1, 10, 5);
   const nota = document.getElementById('cpNota').value.trim();
   const decision = document.getElementById('cpDecision').value;
-  const editando = !!editingCheckpointId;
-  if(editingCheckpointId){
-    const entry = state.checkpoints.find(x=>x.id===editingCheckpointId);
-    if(entry){ entry.fatiga = fatiga; entry.emocional = emocional; entry.nota = nota; entry.decision = decision; touch(entry); }
-    editingCheckpointId = null;
-  } else {
-    state.checkpoints.unshift(newRecord({fatiga, emocional, nota, decision}));
+  if(!decision){
+    fieldError('cpDecisionRow', 'Elige qué vas a hacer ahora.');   // también lleva el foco al grupo
+    return;
   }
-  const ok = save(); closeTool(); renderCheckpointHistorial();
-  if(ok) notify(editando ? 'Checkpoint actualizado.' : 'Checkpoint guardado. Lo tienes en «Tus checkpoints».');
+  const editando = !!editingCheckpointId;
+  const prev = state.checkpoints;
+  state.checkpoints = editando
+    ? prev.map(x => x.id===editingCheckpointId ? { ...x, fatiga, emocional, nota, decision, updatedAt: nowIso() } : x)
+    : [newRecord({fatiga, emocional, nota, decision}), ...prev];
+  // Si no se guarda: se deshace, la herramienta sigue abierta con los valores y se puede reintentar
+  if(!commitSave(()=>{ state.checkpoints = prev; })) return;
+  editingCheckpointId = null;
+  closeTool(); renderCheckpointHistorial();
+  notify(editando ? 'Checkpoint actualizado.' : 'Checkpoint guardado. Lo tienes en «Tus checkpoints».');
 }
 async function borrarCheckpoint(id){
   if(!(await confirmDelete('este checkpoint'))) return;
-  state.checkpoints = state.checkpoints.filter(x=>x.id!==id);
-  save(); renderCheckpointHistorial();
+  const prev = state.checkpoints;
+  state.checkpoints = prev.filter(x=>x.id!==id);
+  if(!commitSave(()=>{ state.checkpoints = prev; })) return;
+  renderCheckpointHistorial();
 }
 function renderCheckpointHistorial(){
   const wrap = document.getElementById('checkpointHistorial');
@@ -2863,11 +2885,12 @@ let exitoRepetirTexto = '';
 function startExito(){
   exitoConducta = ''; exitoOtraTexto = ''; exitoRepetirTexto = '';
   renderExito();
+  Overlays.resetBaseline('tool');   // formulario vacío = punto de partida (elegir un chip ya es un cambio)
 }
 function selectExitoConducta(v){ exitoConducta = v; renderExito(); }
 function renderExito(){
   openTool('¿Qué ha funcionado?', `
-    <div class="card" style="text-align:left;">
+    <div class="card" style="text-align:left;" data-guarda>
       <p class="desc">Piensa en una conversación que haya ido bien. No es para puntuarte, es para quedarte con lo que funciona.</p>
       <p id="exitoLabel"><b>¿Qué ha funcionado?</b></p>
       <div class="chip-group" id="exitoChips" role="group" aria-labelledby="exitoLabel">
@@ -2892,8 +2915,9 @@ function guardarExito(){
   }
   if(!conducta){ fieldError('exitoChips', 'Elige o escribe qué ha funcionado antes de guardar.'); return; }
   const repetir = document.getElementById('exitoRepetirInput').value.trim();
-  state.exitos.unshift(newRecord({conducta, repetir}));
-  if(!save()){ state.exitos.shift(); return; }   // el aviso de error ya se ha mostrado; el formulario se conserva
+  const prev = state.exitos;
+  state.exitos = [newRecord({conducta, repetir}), ...prev];
+  if(!commitSave(()=>{ state.exitos = prev; })) return;   // el formulario se conserva
   renderExitoHistorial();
   renderPatrones();
   openTool('¿Qué ha funcionado?', `
@@ -2922,8 +2946,10 @@ function renderExitoHistorial(){
 }
 async function borrarExito(id){
   if(!(await confirmDelete('este registro'))) return;
-  state.exitos = state.exitos.filter(x=>x.id!==id);
-  save(); renderExitoHistorial(); renderPatrones();
+  const prev = state.exitos;
+  state.exitos = prev.filter(x=>x.id!==id);
+  if(!commitSave(()=>{ state.exitos = prev; })) return;
+  renderExitoHistorial(); renderPatrones();
 }
 renderExitoHistorial();
 
@@ -3461,14 +3487,17 @@ function addConfidenceAnchor(){
   if(!word) errores.push(['anchorWordInput', 'Escribe una palabra clave.']);
   if(!memory) errores.push(['anchorMemoryInput', 'Describe el recuerdo de seguridad o confianza.']);
   if(!showFieldErrors(errores)) return;
-  state.confidenceAnchors.unshift({word, memory});
-  const ok = save();
+  const prev = state.confidenceAnchors;
+  state.confidenceAnchors = [{word, memory}, ...prev];
+  if(!commitSave(()=>{ state.confidenceAnchors = prev; })) return;   // lo escrito se conserva
   renderAnchorTool();
-  if(ok) notify('Recordatorio guardado.');
+  notify('Recordatorio guardado.');
 }
 async function delConfidenceAnchor(i){
   if(!(await confirmDelete('este recordatorio de confianza'))) return;
-  state.confidenceAnchors.splice(i,1); save();
+  const prev = state.confidenceAnchors;
+  state.confidenceAnchors = prev.filter((_, j) => j !== i);
+  if(!commitSave(()=>{ state.confidenceAnchors = prev; })) return;
   renderAnchorTool();
 }
 function runAnchorGuide(i){
@@ -3555,14 +3584,17 @@ function renderVisualAnchorModal(){
 function addVisualAnchor(){
   const v = document.getElementById('newVisualPhrase').value.trim();
   if(!v) return;
-  state.visualAnchors.unshift(v);
-  const ok = save();
+  const prev = state.visualAnchors;
+  state.visualAnchors = [v, ...prev];
+  if(!commitSave(()=>{ state.visualAnchors = prev; })) return;   // lo escrito se conserva
   renderVisualAnchorModal();
-  if(ok) notify('Recordatorio guardado.');
+  notify('Recordatorio guardado.');
 }
 async function delVisualAnchor(i){
   if(!(await confirmDelete('este recordatorio'))) return;
-  state.visualAnchors.splice(i,1); save();
+  const prev = state.visualAnchors;
+  state.visualAnchors = prev.filter((_, j) => j !== i);
+  if(!commitSave(()=>{ state.visualAnchors = prev; })) return;
   renderVisualAnchorModal();
 }
 function usarRecordatorioVisual(i){
@@ -3635,8 +3667,9 @@ function finalizarPedirFeedback(){
 }
 function guardarPedirFeedbackEnKit(){
   if(!pedirFeedbackFinal) return;
+  const prevPedira = state.kitPedira;
   state.kitPedira = cleanStr(pedirFeedbackFinal, LIMITS.shortStr);
-  save();
+  if(!commitSave(()=>{ state.kitPedira = prevPedira; })) return;   // sin «Guardado» si no se ha guardado
   // Confirmación junto al botón, sin diálogo
   const btn = document.querySelector('[data-action="guardarPedirFeedbackEnKit"]');
   let msg = document.getElementById('pedirKitMsg');
@@ -3651,26 +3684,30 @@ function guardarPedirFeedbackEnKit(){
 /* ============ KIT DE EMERGENCIA DEL CAPTADOR ============ */
 function openKit(){ resetStep = 'kit'; renderResetStep(); }
 function toggleKitSenal(s){
-  if(state.kitSenales.includes(s)){
-    state.kitSenales = state.kitSenales.filter(x=>x!==s);
+  const prev = state.kitSenales;
+  if(prev.includes(s)){
+    state.kitSenales = prev.filter(x=>x!==s);
   } else {
-    if(state.kitSenales.length >= 3){
+    if(prev.length >= 3){
       fieldError('kitSenalChips', 'Para que tu plan sea fácil de recordar, puedes elegir hasta 3 señales. Desmarca una para elegir otra.', {focus:false});
       return;
     }
-    state.kitSenales.push(s);
+    state.kitSenales = [...prev, s];
   }
-  save();
+  // Si no se guarda, el chip no cambia de estado
+  if(!commitSave(()=>{ state.kitSenales = prev; })) return;
   renderResetStep();
 }
 function saveKitPlan(){
+  const prev = { kitAjuste: state.kitAjuste, kitPersona: state.kitPersona, kitPedira: state.kitPedira };
   state.kitAjuste = document.getElementById('kitAjusteInput').value.trim();
   state.kitPersona = document.getElementById('kitPersonaInput').value.trim();
   state.kitPedira = document.getElementById('kitPediraInput').value.trim();
-  const ok = save();
+  // Si no se guarda: se deshace y los campos conservan lo escrito para reintentar
+  if(!commitSave(()=>{ Object.assign(state, prev); })) return;
   renderQlKitButton();
   renderResetStep();   // se queda en el Kit, con el protocolo actualizado
-  if(ok) notify('Plan guardado. Lo activas con «Activar mi plan».');
+  notify('Plan guardado. Lo activas con «Activar mi plan».');
 }
 
 function openCheckinHistorial(){ resetStep = 'historial'; renderResetStep(); }
@@ -3707,6 +3744,7 @@ let kitSuggestedTool = null;
 function onKitHerramientaChange(){
   const val = document.getElementById('kitHerramientaSelect').value;
   const wrap = document.getElementById('kitHerramientaOtraWrap');
+  const prev = state.kitHerramienta;
   if(val === 'Otro recurso personal'){
     wrap.style.display = 'block';
     state.kitHerramienta = document.getElementById('kitHerramientaOtraInput').value.trim();
@@ -3714,7 +3752,8 @@ function onKitHerramientaChange(){
     wrap.style.display = 'none';
     state.kitHerramienta = val;
   }
-  save();
+  // Si no se guarda, el selector vuelve a mostrar la herramienta que sigue guardada
+  if(!commitSave(()=>{ state.kitHerramienta = prev; })) renderResetStep();
 }
 /* Ajuste y apoyo del plan. Vacío si el usuario no los ha rellenado. */
 function kitPlanRestoHtml(ajusteLbl){
@@ -3811,8 +3850,10 @@ let checkinHistorialLimit = 5;
 function verMasCheckins(){ checkinHistorialLimit += 5; renderResetStep(); }
 async function borrarCheckin(id){
   if(!(await confirmDelete('este check-in'))) return;
-  state.checkins = state.checkins.filter(x=>x.id!==id);
-  save(); renderResetStep();
+  const prev = state.checkins;
+  state.checkins = prev.filter(x=>x.id!==id);
+  if(!commitSave(()=>{ state.checkins = prev; })) return;
+  renderResetStep();
 }
 
 /* Copia en memoria el progreso del Reset; persistirlo es aparte (inmediato o diferido) */
@@ -3894,8 +3935,10 @@ function toggleCheckinItem(si,ii){ checkinState[si][ii] = !checkinState[si][ii];
 function saveCheckin(){
   const checkedLabels = [];
   CHECKIN_SECTIONS.forEach((s,si)=>s.items.forEach((label,ii)=>{ if(checkinState[si][ii]) checkedLabels.push(label); }));
-  state.checkins.unshift(newRecord({total:checkedLabels.length, items:checkedLabels}));
-  save();
+  const prev = state.checkins;
+  state.checkins = [newRecord({total:checkedLabels.length, items:checkedLabels}), ...prev];
+  // Si no se guarda: no avanza y las casillas marcadas siguen igual
+  if(!commitSave(()=>{ state.checkins = prev; })) return;
   resetCheckinItems = checkedLabels;
   resetGoto(1);
 }
@@ -4276,21 +4319,26 @@ function finalizarReset(){
   const pactoEl = document.getElementById('resetPactoInput');
   if(pactoEl) resetPacto = pactoEl.value.trim();
   if(!resetPacto){ fieldError('resetPactoInput', 'Escribe tu pacto de permanencia antes de finalizar.'); return; }
-  state.resetHistory.unshift(newRecord({
+  const prevHistory = state.resetHistory, prevProgress = state.resetProgress;
+  state.resetHistory = [newRecord({
     senal: resetSenal, examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
     aspecto1: resetAspecto1, aspecto2: resetAspecto2, micro: resetMicro, stops: resetStops, pacto: resetPacto,
     aprendizaje: resetAprendizaje, observacion: resetObservacion
-  }));
-  clearResetProgress();
-  const ok = save();
+  }), ...prevHistory];
+  state.resetProgress = null;
+  // Si no se guarda: el Reset sigue abierto en el cierre, con su progreso, para reintentar
+  if(!commitSave(()=>{ state.resetHistory = prevHistory; state.resetProgress = prevProgress; })) return;
+  renderResetTab();
   closeReset();
   renderPatrones();
-  if(ok) notify('Sesión de Reset guardada. La tienes en el Historial.');
+  notify('Sesión de Reset guardada. La tienes en el Historial.');
 }
 async function borrarResetHistorial(id){
   if(!(await confirmDelete('esta sesión de Reset del historial'))) return;
-  state.resetHistory = state.resetHistory.filter(x=>x.id!==id);
-  save(); renderResetStep();
+  const prev = state.resetHistory;
+  state.resetHistory = prev.filter(x=>x.id!==id);
+  if(!commitSave(()=>{ state.resetHistory = prev; })) return;
+  renderResetStep();
   renderPatrones();
 }
 function continuarReconoce(){
@@ -4407,6 +4455,7 @@ const Overlays = (()=>{
   const stack = [];          // nombres abiertos, de abajo arriba
   const openers = {};        // elemento con el foco al abrir cada overlay
   const typed = {};          // el usuario ha escrito algo en este overlay desde que se abrió
+  const baseline = {};       // «foto» del formulario [data-guarda] al abrirlo (ver formSig)
   const root = n => document.getElementById(DEFS[n].root);
   const dialog = n => document.getElementById(DEFS[n].dialog);
   const top = () => stack[stack.length-1] || null;
@@ -4449,6 +4498,9 @@ const Overlays = (()=>{
       lastFocus[n] = null;
       stack.push(n);
       root(n).classList.add('active');
+      baseline[n] = formSig(n);
+    } else if(baseline[n] == null){
+      baseline[n] = formSig(n);   // el formulario aparece en un repintado posterior
     }
     sync();
     if(fresh){ focusInitial(n); return; }
@@ -4475,8 +4527,22 @@ const Overlays = (()=>{
     if(opener && document.contains(opener) && !opener.closest('[inert]') && (!t || dialog(t).contains(opener))) opener.focus({preventScroll:true});
     else if(t) focusInitial(t);
   }
+  /* Formularios que guardan ([data-guarda]): «foto» de todos sus controles (texto, rangos,
+     selects, casillas, hidden y botones con aria-pressed). Se compara con la tomada al abrir. */
+  function formSig(n){
+    const region = dialog(n).querySelector('[data-guarda]');
+    if(!region) return null;
+    return JSON.stringify([...region.querySelectorAll('input, select, textarea, [aria-pressed]')].map(el =>
+      el.hasAttribute('aria-pressed') ? el.getAttribute('aria-pressed')
+      : (el.type === 'checkbox' || el.type === 'radio') ? el.checked : el.value));
+  }
+  function resetBaseline(n){ baseline[n] = formSig(n); }
   function isDirty(n){
-    if(DEFS[n].persistent || !typed[n]) return false;
+    if(DEFS[n].persistent) return false;
+    const sig = formSig(n);
+    if(sig !== null) return baseline[n] != null && sig !== baseline[n];
+    // Sin formulario marcado: solo cuenta el texto escrito
+    if(!typed[n]) return false;
     return [...dialog(n).querySelectorAll('textarea, input[type="text"]')].some(f => f.value.trim() !== '');
   }
   async function requestClose(n){
@@ -4485,10 +4551,15 @@ const Overlays = (()=>{
     if(isDirty(n)){
       // Las rutinas rápidas ([data-no-guarda]) nunca guardan: no se sugiere que falte guardar
       const efimero = !!dialog(n).querySelector('[data-no-guarda]');
+      const formulario = formSig(n) !== null;
       const ok = await confirmDialog(efimero ? {
         title:'¿Cerrar?',
         message:'Lo que has escrito aquí no se guarda. Si cierras, se borrará.',
         confirmText:'Cerrar', cancelText:'Seguir escribiendo', danger:true
+      } : formulario ? {
+        title:'¿Cerrar sin guardar?',
+        message:'Tienes cambios que todavía no has guardado. Si cierras, se perderán.',
+        confirmText:'Cerrar sin guardar', cancelText:'Seguir editando', danger:true
       } : {
         title:'¿Cerrar sin guardar?',
         message:'Has escrito algo que todavía no has guardado. Si cierras, se perderá.',
@@ -4543,7 +4614,7 @@ const Overlays = (()=>{
     else if(!e.shiftKey && active === last){ e.preventDefault(); first.focus(); }
   });
 
-  return { open, close, requestClose, isOpen, top };
+  return { open, close, requestClose, isOpen, top, resetBaseline };
 })();
 
 
