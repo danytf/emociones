@@ -119,6 +119,28 @@ header{
 }
 .header-tabs button .ic{font-size:15px;}
 .header-tabs button.active{background:#fff;color:var(--wesser-red);box-shadow:inset 0 -3px 0 var(--wesser-red-dark);}
+/* Móvil (estrecho o apaisado con poca altura): cabecera más compacta para dejar más pantalla
+   al contenido. Las pestañas mantienen 44 px de alto; en tablet y escritorio no cambia nada. */
+@media (max-width:480px), (max-height:500px){
+  header{padding:8px 12px 8px;padding-top:calc(8px + env(safe-area-inset-top,0px));}
+  .brand b{font-size:15px;}
+  .brand span{font-size:10px;}
+  .icon-btn{width:40px;height:40px;font-size:17px;}
+  .header-tabs{margin-top:6px;}
+  .tabs-fade{top:6px;}
+}
+/* Pantallas muy bajas (móvil en horizontal): el subtítulo de la marca sobra */
+@media (max-height:500px){
+  .brand span{display:none;}
+}
+/* Móvil en horizontal: sobra ancho y falta alto → marca, iconos y pestañas en una sola fila */
+@media (max-height:500px) and (min-width:600px){
+  header{display:flex;align-items:center;gap:12px;}
+  .header-inner{flex:0 0 auto;gap:10px;margin:0;}
+  .tabs-wrap{flex:1 1 auto;min-width:0;margin:0;}
+  .header-tabs{margin-top:0;}
+  .tabs-fade{top:0;}
+}
 .header-tabs button.tab-reset{background:var(--reset-amber);color:#1A2B4C;}
 /* Reset a medias: punto visible (y aria-label descriptivo, ver renderResetTab) */
 .header-tabs button.tab-reset.pending::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--wesser-red-dark);box-shadow:0 0 0 2px #fff;}
