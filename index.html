@@ -2890,7 +2890,7 @@ function renderResetStep(){
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>De lo marcado en tu check-in, elige la principal.</p>
       <div class="chip-group">${resetCheckinItems.map(s=>`<div class="chip ${resetSenal===s?'selected':''}" onclick="selectSenal(this)">${s}</div>`).join('')}</div>
     ` : `
-      <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el "no", cansancio previo, hacer menos paradas, trabajar en automático…</p>
+      <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el «no», cansancio previo, hacer menos paradas, trabajar en automático…</p>
       <textarea id="resetSenalInput" placeholder="Escribe tu señal principal..." oninput="resetSenal=this.value;saveResetProgress();">${escapeHtml(resetSenal)}</textarea>
     `;
     body.innerHTML = `
@@ -2899,7 +2899,7 @@ function renderResetStep(){
         <span class="badge amber">R · Reconoce</span>
         <h3>Reconoce lo que está pasando</h3>
         <p class="desc"><b>Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.</b></p>
-        <p class="desc">Reconocer lo que está ocurriendo <b>sin juzgarte por ello</b> es el primer paso para poder entender qué está cambiando y decidir qué ajustar.</p>
+        <p class="desc">Reconocer lo que está ocurriendo <b>sin juzgarte por ello</b> es el primer paso para entender qué puede estar cambiando y decidir qué ajustar.</p>
         <div class="breath-circle" id="resetBreathCircle">Inhala</div>
         <div class="timer-big" id="resetBreathTimer">30</div>
       </div>
