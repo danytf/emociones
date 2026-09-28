@@ -954,7 +954,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <option>Comparación con compañeros</option>
         <option>Presión por el objetivo</option>
         <option>Cambio de zona o ubicación</option>
-        <option>Otra…</option>
+        <option value="Otra">Otra…</option>
       </select>
       <div id="sepaSituacionOtraWrap" style="display:none;">
         <input type="text" id="sepaSituacionOtra" placeholder="Describe brevemente la situación">
@@ -978,7 +978,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <option>Siempre hace lo mismo</option>
         <option>No vale la pena</option>
         <option>¿Y si me voy a 0?</option>
-        <option>Otro…</option>
+        <option value="Otro">Otro…</option>
       </select>
       <div id="sepaPensOtroWrap" style="display:none;">
         <textarea id="sepaPensDestructivoLibre" placeholder="Escribe tu pensamiento..."></textarea>
@@ -1199,13 +1199,22 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <script>
 /* ============ STATE ============ */
 const LS_KEY = 'wesserAppState';
-function loadState(){
-  try{
-    const raw = localStorage.getItem(LS_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
+const DATA_VERSION = 2;
+/* Límites de saneamiento: cualquier dato (localStorage o importado) se recorta a estos tamaños */
+const LIMITS = {
+  importBytes: 5 * 1024 * 1024,  // tamaño máximo del archivo importado
+  items: 5000,                   // registros máximos por colección
+  checkinItems: 50,              // señales máximas dentro de un check-in
+  kitSenales: 20,
+  shortStr: 300,                 // fechas, etiquetas, nombres
+  longStr: 5000                  // textos libres
+};
+const EMOTION_IDS = ['alegria','tristeza','miedo','ira','sorpresa','asco'];
+const COLLECTIONS = ['sepaEntries','checkpoints','visualAnchors','checkins','confidenceAnchors','resetHistory','exitos'];
+
+function emptyState(){
   return {
-    dataVersion: 1,
+    dataVersion: DATA_VERSION,
     theme:null,
     sepaEntries:[],
     checkpoints:[],
@@ -1216,40 +1225,175 @@ function loadState(){
     resetProgress:null, resetHistory:[], exitos:[]
   };
 }
-/* Normaliza datos cargados o importados: rellena campos que puedan faltar en versiones antiguas
-   y repara campos corruptos (null, tipo incorrecto, etc.) para que el resto de la app pueda
-   asumir siempre la forma esperada. Punto único donde añadir futuras migraciones. */
-function normalizeState(s){
-  if(!s || typeof s !== 'object' || Array.isArray(s)) s = {};
-  if(!Array.isArray(s.checkins)) s.checkins = [];
-  if(!Array.isArray(s.kitSenales)) s.kitSenales = [];
-  // Títulos de señales pasaron de comillas rectas a «»: migra los guardados para que sigan coincidiendo
-  const fixQuotes = x => typeof x === 'string' ? x.replace(/"([^"]*)"/g, '«$1»') : x;
-  s.kitSenales = s.kitSenales.map(fixQuotes);
-  if(Array.isArray(s.resetHistory)) s.resetHistory.forEach(r => { if(r && r.senal) r.senal = fixQuotes(r.senal); });
-  if(s.resetProgress && s.resetProgress.senal) s.resetProgress.senal = fixQuotes(s.resetProgress.senal);
-  if(typeof s.kitHerramienta !== 'string') s.kitHerramienta = '';
-  if(typeof s.kitAjuste !== 'string') s.kitAjuste = '';
-  if(typeof s.kitPersona !== 'string') s.kitPersona = '';
-  if(typeof s.kitPedira !== 'string') s.kitPedira = '';
-  if(!Array.isArray(s.confidenceAnchors)){
-    s.confidenceAnchors = (s.anchorWord && s.anchorMemory) ? [{word:s.anchorWord, memory:s.anchorMemory}] : [];
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return emptyState();
+}
+
+/* ---- Primitivas de saneamiento: nunca devuelven otra cosa que el tipo esperado ---- */
+function cleanStr(v, max){
+  if(typeof v === 'number' && Number.isFinite(v)) v = String(v);
+  if(typeof v !== 'string') return '';
+  return v.slice(0, max || LIMITS.longStr);
+}
+function cleanInt(v, min, max, def){
+  const n = typeof v === 'string' && v.trim() !== '' ? Number(v) : v;
+  if(typeof n !== 'number' || !Number.isFinite(n)) return def;
+  return Math.min(max, Math.max(min, Math.round(n)));
+}
+function isPlainObject(v){ return !!v && typeof v === 'object' && !Array.isArray(v); }
+/* Los ids se usan para editar/borrar: deben ser enteros positivos y únicos dentro de su colección */
+function cleanCollection(arr, cleanRecord){
+  if(!Array.isArray(arr)) return [];
+  const out = [], seen = new Set();
+  let fallbackId = Date.now();
+  for(const raw of arr.slice(0, LIMITS.items)){
+    const rec = cleanRecord(raw);
+    if(!rec) continue;
+    if(isPlainObject(rec) && 'id' in rec){
+      if(!Number.isSafeInteger(rec.id) || rec.id <= 0 || seen.has(rec.id)){
+        while(seen.has(fallbackId)) fallbackId--;
+        rec.id = fallbackId;
+      }
+      seen.add(rec.id);
+    }
+    out.push(rec);
   }
-  if(s.resetProgress===undefined || typeof s.resetProgress !== 'object') s.resetProgress = null;
-  if(!Array.isArray(s.resetHistory)) s.resetHistory = [];
-  if(!Array.isArray(s.sepaEntries)) s.sepaEntries = [];
-  if(!Array.isArray(s.checkpoints)) s.checkpoints = [];
-  if(!Array.isArray(s.visualAnchors)) s.visualAnchors = [];
-  if(!Array.isArray(s.exitos)) s.exitos = [];
-  if(!s.dataVersion) s.dataVersion = 1;
+  return out;
+}
+
+/* ---- Migraciones explícitas: cada una lleva los datos de la versión N a la N+1 ---- */
+const MIGRATIONS = {
+  /* v1 → v2: los títulos de señales pasaron de comillas rectas a «», los anclajes antiguos de
+     un solo elemento (anchorWord/anchorMemory) pasan a la lista, y la emoción única del Diario
+     (emocion) pasa a la lista de emociones. */
+  1: s => {
+    const fixQuotes = x => typeof x === 'string' ? x.replace(/"([^"]*)"/g, '«$1»') : x;
+    if(Array.isArray(s.kitSenales)) s.kitSenales = s.kitSenales.map(fixQuotes);
+    if(Array.isArray(s.resetHistory)) s.resetHistory.forEach(r => { if(isPlainObject(r)) r.senal = fixQuotes(r.senal); });
+    if(isPlainObject(s.resetProgress)) s.resetProgress.senal = fixQuotes(s.resetProgress.senal);
+    if(!Array.isArray(s.confidenceAnchors) && s.anchorWord && s.anchorMemory){
+      s.confidenceAnchors = [{word:s.anchorWord, memory:s.anchorMemory}];
+    }
+    if(Array.isArray(s.sepaEntries)) s.sepaEntries.forEach(e => {
+      if(isPlainObject(e) && !Array.isArray(e.emociones) && e.emocion) e.emociones = [e.emocion];
+    });
+    s.dataVersion = 2;
+    return s;
+  }
+};
+function migrateState(s){
+  let v = cleanInt(s.dataVersion, 1, DATA_VERSION, 1);
+  while(v < DATA_VERSION){ s = MIGRATIONS[v](s); v++; }
   return s;
 }
-/* Valida en profundidad que el JSON importado tenga la forma esperada de un export de Wesser:
-   todas las colecciones deben existir y ser arrays. No valida el contenido interno de cada entrada. */
-function isValidWesserData(obj){
-  if(!obj || typeof obj !== 'object' || Array.isArray(obj)) return false;
-  const expectedArrayKeys = ['sepaEntries','checkpoints','visualAnchors','checkins','confidenceAnchors','resetHistory'];
-  return expectedArrayKeys.every(k => Array.isArray(obj[k]));
+
+/* ---- Saneamiento por colección: solo sobreviven los campos conocidos, con su tipo ---- */
+const SANITIZERS = {
+  sepaEntries: r => isPlainObject(r) ? {
+    id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr),
+    situacion: cleanStr(r.situacion),
+    emociones: Array.isArray(r.emociones) ? [...new Set(r.emociones.filter(x => EMOTION_IDS.includes(x)))] : [],
+    pensD: cleanStr(r.pensD), pensC: cleanStr(r.pensC), accion: cleanStr(r.accion)
+  } : null,
+  checkpoints: r => isPlainObject(r) ? {
+    id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr),
+    fatiga: cleanInt(r.fatiga, 1, 10, 5), emocional: cleanInt(r.emocional, 1, 10, 5),
+    nota: cleanStr(r.nota), decision: cleanStr(r.decision, LIMITS.shortStr)
+  } : null,
+  visualAnchors: r => { const v = cleanStr(r); return v.trim() ? v : null; },
+  checkins: r => {
+    if(!isPlainObject(r)) return null;
+    const items = Array.isArray(r.items) ? r.items.slice(0, LIMITS.checkinItems).map(i => cleanStr(i, LIMITS.shortStr)).filter(Boolean) : [];
+    return { id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr), total: items.length, items };
+  },
+  confidenceAnchors: r => {
+    if(!isPlainObject(r)) return null;
+    const a = { word: cleanStr(r.word, LIMITS.shortStr), memory: cleanStr(r.memory) };
+    return (a.word.trim() || a.memory.trim()) ? a : null;
+  },
+  resetHistory: r => isPlainObject(r) ? {
+    id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr),
+    senal: cleanStr(r.senal, LIMITS.shortStr),
+    examResultado: cleanStr(r.examResultado), examRendimiento: cleanStr(r.examRendimiento),
+    aspecto1: cleanStr(r.aspecto1), aspecto2: cleanStr(r.aspecto2),
+    micro: cleanStr(r.micro, LIMITS.shortStr), stops: cleanInt(r.stops, 0, 10, 0),
+    pacto: cleanStr(r.pacto), aprendizaje: cleanStr(r.aprendizaje, LIMITS.shortStr),
+    observacion: cleanStr(r.observacion)
+  } : null,
+  exitos: r => isPlainObject(r) ? {
+    id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr),
+    conducta: cleanStr(r.conducta), repetir: cleanStr(r.repetir)
+  } : null
+};
+function cleanResetProgress(p){
+  if(!isPlainObject(p)) return null;
+  const step = cleanInt(p.step, 1, 7, 0);
+  if(!step) return null;
+  return {
+    step, senal: cleanStr(p.senal, LIMITS.shortStr),
+    examResultado: cleanStr(p.examResultado), examRendimiento: cleanStr(p.examRendimiento),
+    aspecto1: cleanStr(p.aspecto1), aspecto2: cleanStr(p.aspecto2),
+    micro: cleanStr(p.micro, LIMITS.shortStr) || null, stops: cleanInt(p.stops, 0, 10, 0),
+    pacto: cleanStr(p.pacto), aprendizaje: cleanStr(p.aprendizaje, LIMITS.shortStr),
+    observacion: cleanStr(p.observacion)
+  };
+}
+
+/* Punto central de migración y saneamiento. Todo dato cargado o importado pasa por aquí:
+   se migra a la versión actual y se reconstruye campo a campo, de modo que el resto de la
+   app puede asumir siempre la forma y los tipos esperados. Los campos desconocidos se descartan. */
+function normalizeState(raw){
+  let s = isPlainObject(raw) ? raw : {};
+  s = migrateState(s);
+  const out = emptyState();
+  out.theme = (s.theme === 'light' || s.theme === 'dark') ? s.theme : null;
+  COLLECTIONS.forEach(k => { out[k] = cleanCollection(s[k], SANITIZERS[k]); });
+  out.kitSenales = Array.isArray(s.kitSenales)
+    ? [...new Set(s.kitSenales.map(x => cleanStr(x, LIMITS.shortStr)).filter(Boolean))].slice(0, LIMITS.kitSenales)
+    : [];
+  out.kitHerramienta = cleanStr(s.kitHerramienta, LIMITS.shortStr);
+  out.kitAjuste = cleanStr(s.kitAjuste, LIMITS.shortStr);
+  out.kitPersona = cleanStr(s.kitPersona, LIMITS.shortStr);
+  out.kitPedira = cleanStr(s.kitPedira, LIMITS.shortStr);
+  out.resetProgress = cleanResetProgress(s.resetProgress);
+  return out;
+}
+
+/* Valida un JSON importado antes de aceptarlo. Devuelve un mensaje de error o null si es válido.
+   No sustituye a normalizeState(): después de validar, los datos se sanean igualmente. */
+function validateImport(obj){
+  if(!isPlainObject(obj)) return 'El archivo no contiene un objeto de datos.';
+  // Los exports de v1 siempre llevan dataVersion:1; se acepta su ausencia solo si trae las colecciones de v1
+  const v = obj.dataVersion;
+  if(v !== undefined && !(Number.isInteger(v) && v >= 1 && v <= DATA_VERSION)){
+    return v > DATA_VERSION
+      ? 'Este archivo viene de una versión más reciente de la app.'
+      : 'La versión de datos del archivo no es reconocible.';
+  }
+  const required = ['sepaEntries','checkpoints','visualAnchors','checkins','confidenceAnchors','resetHistory'];
+  for(const k of required){ if(!Array.isArray(obj[k])) return `Falta la colección «${k}».`; }
+  for(const k of COLLECTIONS){
+    const arr = obj[k];
+    if(arr === undefined) continue;
+    if(!Array.isArray(arr)) return `La colección «${k}» no es una lista.`;
+    if(arr.length > LIMITS.items) return `La colección «${k}» tiene demasiados registros.`;
+    const expectString = k === 'visualAnchors';
+    if(!arr.every(r => expectString ? typeof r === 'string' : isPlainObject(r))) return `La colección «${k}» contiene registros con un formato no válido.`;
+  }
+  if(obj.kitSenales !== undefined && !(Array.isArray(obj.kitSenales) && obj.kitSenales.length <= 100 && obj.kitSenales.every(x => typeof x === 'string'))){
+    return 'Las señales del Kit no tienen un formato válido.';
+  }
+  for(const k of ['kitHerramienta','kitAjuste','kitPersona','kitPedira']){
+    if(obj[k] !== undefined && typeof obj[k] !== 'string') return `El campo «${k}» no tiene un formato válido.`;
+  }
+  if(obj.resetProgress !== undefined && obj.resetProgress !== null && !isPlainObject(obj.resetProgress)){
+    return 'El progreso de Reset no tiene un formato válido.';
+  }
+  return null;
 }
 let state = normalizeState(loadState());
 function save(){
@@ -1266,6 +1410,21 @@ function escapeHtml(str){
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
+/* ============ ACCIONES (delegación de eventos) ============
+   El HTML generado dinámicamente no lleva JavaScript inline con datos: cada botón declara
+   data-action y, si lo necesita, data-id / data-idx / data-value (siempre con escapeHtml).
+   Los valores se leen de dataset como texto plano y nunca se evalúan como código.
+   El registro ACTIONS se rellena al final del script. */
+const ACTIONS = {};
+document.addEventListener('click', e=>{
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  const name = el.dataset.action;
+  if(Object.prototype.hasOwnProperty.call(ACTIONS, name)) ACTIONS[name](el, e);
+});
+const dataId = el => Number(el.dataset.id);
+const dataIdx = el => Number(el.dataset.idx);
+
 /* ============ MIS DATOS: exportar / importar / borrar ============ */
 function exportarDatos(){
   const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
@@ -1280,13 +1439,15 @@ function exportarDatos(){
 function importarDatos(input){
   const file = input.files[0];
   if(!file) return;
+  if(file.size > LIMITS.importBytes){ alert('El archivo es demasiado grande para ser un archivo de datos de la app.'); input.value=''; return; }
   const reader = new FileReader();
   reader.onload = (e)=>{
     let imported;
     try{ imported = JSON.parse(e.target.result); }
     catch(err){ alert('El archivo no es un JSON válido.'); input.value=''; return; }
-    if(!isValidWesserData(imported)){
-      alert('Este archivo no parece un archivo de datos válido de Wesser.');
+    const error = validateImport(imported);
+    if(error){
+      alert('Este archivo no parece un archivo de datos válido de Wesser.\n\n' + error);
       input.value='';
       return;
     }
@@ -1434,7 +1595,7 @@ const PENSAMIENTO_HOOKS = {
 function renderWheel(){
   const grid = document.getElementById('wheelGrid');
   grid.innerHTML = EMOTIONS.map(e=>`
-    <button class="wheel-btn" style="background:${e.color};${e.textColor?`color:${e.textColor};`:''}" onclick="showEmotion('${e.id}')">
+    <button class="wheel-btn" style="background:${e.color};${e.textColor?`color:${e.textColor};`:''}" data-action="showEmotion" data-value="${escapeHtml(e.id)}">
       <span class="em">${emoji(e.id)}</span>${e.nombre}
     </button>`).join('');
 }
@@ -1443,6 +1604,7 @@ function emoji(id){
 }
 function showEmotion(id){
   const e = EMOTIONS.find(x=>x.id===id);
+  if(!e) return;
   openModal(`
     <span class="badge navy">${e.tipo} · Busca ${e.finalidad}</span>
     <h2>${emoji(e.id)} ${e.nombre}</h2>
@@ -1463,9 +1625,10 @@ let patronesRango = 7;
 const ACCION_LABELS = ['Pausa consciente','Respiración lenta','Ajustar el ritmo','Revisar mi técnica','Adaptar el speech','Cambiar el enfoque o la ubicación','Pedir apoyo'];
 function renderEmocionChips(){
   const c = document.getElementById('sepaEmocionChips');
-  c.innerHTML = EMOTIONS.map(e=>`<div class="chip" data-id="${e.id}">${emoji(e.id)} ${e.nombre} <span onclick="event.stopPropagation();showEmotion('${e.id}')" title="Ver ficha">ℹ️</span></div>`).join('');
+  c.innerHTML = EMOTIONS.map(e=>`<div class="chip" data-id="${e.id}">${emoji(e.id)} ${e.nombre} <span data-action="showEmotion" data-value="${escapeHtml(e.id)}" title="Ver ficha">ℹ️</span></div>`).join('');
   c.querySelectorAll('.chip').forEach(ch=>{
-    ch.onclick = ()=>{
+    ch.onclick = (ev)=>{
+      if(ev.target.closest('[data-action]')) return; // el ℹ️ abre la ficha, no selecciona
       const id = ch.dataset.id;
       if(selectedEmociones.includes(id)){
         selectedEmociones = selectedEmociones.filter(x=>x!==id);
@@ -1485,7 +1648,7 @@ function sugerirReencuadre(){
   const emoTxt = selectedEmociones.length ? REENCUADRES[selectedEmociones[0]] : REENCUADRES.generico;
   /* Máximo 2 frases (~30-35 palabras): un solo gancho de contexto + el reencuadre de la emoción */
   /* Con «Otra…» no hay gancho de situación: se usa el del pensamiento o, si no hay, el genérico */
-  const contextHook = SITUACION_HOOKS[situacion] || PENSAMIENTO_HOOKS[pensD] || SITUACION_HOOKS['Otra'];
+  const contextHook = (situacion!=='Otra' && SITUACION_HOOKS[situacion]) || PENSAMIENTO_HOOKS[pensD] || SITUACION_HOOKS['Otra'];
   const texto = contextHook ? `${contextHook} ${emoTxt}` : emoTxt;
   document.getElementById('sepaPensConstructivo').value = texto;
 }
@@ -1583,12 +1746,12 @@ function renderSepaHistorial(){
   if(!state.sepaEntries.length){ wrap.innerHTML = '<div class="empty-state">Aún no hay registros. ¡Anota tu primer S‑E‑P‑A!</div>'; return; }
   const visibles = state.sepaEntries.slice(0, sepaHistorialLimit);
   wrap.innerHTML = visibles.map(e=>{
-    const emos = e.emociones || (e.emocion ? [e.emocion] : []);
-    const emosTxt = emos.map(id=>`${emoji(id)} ${EMOTIONS.find(x=>x.id===id)?.nombre||''}`).join(' · ');
+    const emos = e.emociones || [];
+    const emosTxt = emos.map(id=>`${emoji(id)} ${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||'')}`).join(' · ');
     return `
     <div class="history-item">
-      <button class="del" onclick="borrarSepa(${e.id})">Eliminar</button>
-      <button class="edit" onclick="editarSepa(${e.id})">Editar</button>
+      <button class="del" data-action="borrarSepa" data-id="${escapeHtml(e.id)}">Eliminar</button>
+      <button class="edit" data-action="editarSepa" data-id="${escapeHtml(e.id)}">Editar</button>
       <div class="meta">${escapeHtml(e.fecha)} · ${emosTxt}</div>
       <p><b>S:</b> ${escapeHtml(e.situacion)}</p>
       <p><b>P:</b> ${escapeHtml(e.pensD)||'—'}</p>
@@ -1700,18 +1863,18 @@ function openCheckpoint(editId){
   openTool('Checkpoint Mental', `
     <div class="card">
       <label>Nivel de fatiga física/mental (1‑10)</label>
-      <input type="range" id="cpFatiga" min="1" max="10" value="${fatiga}" oninput="document.getElementById('cpFatigaVal').textContent=this.value+'/10'">
-      <div class="range-val" id="cpFatigaVal">${fatiga}/10</div>
+      <input type="range" id="cpFatiga" min="1" max="10" value="${escapeHtml(fatiga)}" oninput="document.getElementById('cpFatigaVal').textContent=this.value+'/10'">
+      <div class="range-val" id="cpFatigaVal">${escapeHtml(fatiga)}/10</div>
       <div class="range-labels"><span>1 = nada</span><span>10 = mucha</span></div>
       <label style="margin-top:14px;">Activación emocional (1‑10)</label>
-      <input type="range" id="cpEmocional" min="1" max="10" value="${emocional}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value+'/10'">
-      <div class="range-val" id="cpEmocionalVal">${emocional}/10</div>
+      <input type="range" id="cpEmocional" min="1" max="10" value="${escapeHtml(emocional)}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value+'/10'">
+      <div class="range-val" id="cpEmocionalVal">${escapeHtml(emocional)}/10</div>
       <div class="range-labels"><span>1 = baja</span><span>10 = alta</span></div>
       <label style="margin-top:14px;">Ajuste táctico para el tramo final</label>
       <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
       <p style="margin-top:14px;"><b>¿Qué hago ahora?</b></p>
       <div class="btn-row" id="cpDecisionRow" style="flex-wrap:wrap;">
-        ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" data-decision="${escapeHtml(o.v)}" onclick="setCpDecision('${o.v}')">${o.em} ${o.v}</button>`).join('')}
+        ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" data-decision="${escapeHtml(o.v)}" data-action="setCpDecision" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
       </div>
       <input type="hidden" id="cpDecision" value="${escapeHtml(decision)}">
       <button class="btn btn-green" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
@@ -1725,8 +1888,8 @@ function setCpDecision(v){
   });
 }
 function guardarCheckpoint(){
-  const fatiga = document.getElementById('cpFatiga').value;
-  const emocional = document.getElementById('cpEmocional').value;
+  const fatiga = cleanInt(document.getElementById('cpFatiga').value, 1, 10, 5);
+  const emocional = cleanInt(document.getElementById('cpEmocional').value, 1, 10, 5);
   const nota = document.getElementById('cpNota').value.trim();
   const decision = document.getElementById('cpDecision').value;
   if(editingCheckpointId){
@@ -1749,10 +1912,10 @@ function renderCheckpointHistorial(){
   if(!state.checkpoints.length){ wrap.innerHTML='<div class="empty-state">Sin checkpoints todavía.</div>'; return; }
   wrap.innerHTML = state.checkpoints.map(c=>`
     <div class="history-item">
-      <button class="del" onclick="borrarCheckpoint(${c.id})">Eliminar</button>
-      <button class="edit" onclick="openCheckpoint(${c.id})">Editar</button>
+      <button class="del" data-action="borrarCheckpoint" data-id="${escapeHtml(c.id)}">Eliminar</button>
+      <button class="edit" data-action="editarCheckpoint" data-id="${escapeHtml(c.id)}">Editar</button>
       <div class="meta">${escapeHtml(c.fecha)}</div>
-      <p>Fatiga: <b>${c.fatiga}/10</b> · Activación: <b>${c.emocional}/10</b></p>
+      <p>Fatiga: <b>${escapeHtml(c.fatiga)}/10</b> · Activación: <b>${escapeHtml(c.emocional)}/10</b></p>
       ${c.decision?`<p><b>Decisión:</b> ${escapeHtml(c.decision)}</p>`:''}
       ${c.nota?`<p>${escapeHtml(c.nota)}</p>`:''}
     </div>`).join('');
@@ -1775,8 +1938,8 @@ function renderExito(){
       <p class="desc">Piensa en una conversación que haya ido bien. No es para puntuarte, es para quedarte con lo que funciona.</p>
       <p><b>¿Qué ha funcionado?</b></p>
       <div class="chip-group">
-        ${EXITO_OPCIONES.map(o=>`<div class="chip ${exitoConducta===o?'selected':''}" onclick="selectExitoConducta('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
-        <div class="chip ${exitoConducta==='Otra'?'selected':''}" onclick="selectExitoConducta('Otra')">Otra</div>
+        ${EXITO_OPCIONES.map(o=>`<div class="chip ${exitoConducta===o?'selected':''}" data-action="selectExitoConducta" data-value="${escapeHtml(o)}">${escapeHtml(o)}</div>`).join('')}
+        <div class="chip ${exitoConducta==='Otra'?'selected':''}" data-action="selectExitoConducta" data-value="Otra">Otra</div>
       </div>
       <div id="exitoOtraWrap" style="${exitoConducta==='Otra'?'':'display:none;'}">
         <textarea id="exitoOtraInput" placeholder="Escribe qué ha funcionado..." oninput="exitoOtraTexto=this.value;">${escapeHtml(exitoOtraTexto)}</textarea>
@@ -1818,7 +1981,7 @@ function renderExitoHistorial(){
   if(!state.exitos.length){ wrap.innerHTML=''; return; }
   wrap.innerHTML = state.exitos.slice(0,5).map(e=>`
     <div class="history-item">
-      <button class="del" onclick="borrarExito(${e.id})">Eliminar</button>
+      <button class="del" data-action="borrarExito" data-id="${escapeHtml(e.id)}">Eliminar</button>
       <div class="meta">${escapeHtml(e.fecha)}</div>
       <p><b>${escapeHtml(e.conducta)}</b></p>
       ${e.repetir?`<p class="desc">Repetir: ${escapeHtml(e.repetir)}</p>`:''}
@@ -1845,8 +2008,10 @@ function closeTool(){
   clearToolTimers();
   document.getElementById('toolOverlay').classList.remove('active');
 }
-function showToolDone(title, repeatOnclick){
+let toolRepeatFn = null;
+function showToolDone(title, repeatFn){
   clearToolTimers();
+  toolRepeatFn = repeatFn;
   openTool(title, `
     <div class="card" style="text-align:center;">
       <p style="font-size:40px;">✅</p>
@@ -1854,7 +2019,7 @@ function showToolDone(title, repeatOnclick){
       <p class="desc">Puedes volver a la calle o repetirla si lo necesitas.</p>
       <div class="btn-row" style="margin-top:10px;">
         <button class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button class="btn btn-blue" onclick="${repeatOnclick}">🔁 Repetir</button>
+        <button class="btn btn-blue" data-action="toolRepeat">🔁 Repetir</button>
       </div>
     </div>
   `);
@@ -2021,7 +2186,7 @@ function startBreath(seconds){
   const t2 = setInterval(()=>{
     remaining--;
     timerEl.textContent = remaining;
-    if(remaining<=0){ showToolDone('Suspiro Fisiológico', 'startBreath(60)'); }
+    if(remaining<=0){ showToolDone('Suspiro Fisiológico', ()=>startBreath(60)); }
   }, 1000);
   toolTimers.push(t2);
 }
@@ -2069,7 +2234,7 @@ function nextPause(){
     if(s.key==='opciones') pauseOpciones = val;
   }
   pauseIdx++;
-  if(pauseIdx>=pauseSteps.length){ showToolDone('Parar y Decidir', 'startPauseDecision()'); return; }
+  if(pauseIdx>=pauseSteps.length){ showToolDone('Parar y Decidir', startPauseDecision); return; }
   renderPauseStep();
 }
 
@@ -2102,7 +2267,7 @@ function nextBadApproach(){
   const s = badApproachSteps[badApproachIdx];
   if(s.input){ badApproachAprende = document.getElementById('badApproachInput').value.trim(); }
   badApproachIdx++;
-  if(badApproachIdx>=badApproachSteps.length){ showToolDone('💥 Después de una mala interacción', 'startBadApproach()'); return; }
+  if(badApproachIdx>=badApproachSteps.length){ showToolDone('💥 Después de una mala interacción', startBadApproach); return; }
   renderBadApproachStep();
 }
 
@@ -2144,7 +2309,7 @@ function selectRP(val){
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Vuelve a una conducta que sí puedas ejecutar ahora.</p>
       <p><b>Elige tu foco para la siguiente parada</b></p>
       <div class="chip-group">
-        ${RP_PROCESO_OPCIONES.map(o=>`<div class="chip" onclick="finalizarRP('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
+        ${RP_PROCESO_OPCIONES.map(o=>`<div class="chip" data-action="finalizarRP" data-value="${escapeHtml(o)}">${escapeHtml(o)}</div>`).join('')}
       </div>
     </div>
   `);
@@ -2212,6 +2377,7 @@ const NSQN_QUESTIONS = [
   {key:'dias', q:'¿Llevas varios días así?'}
 ];
 let nsqnAnswers = {};
+let nsqnRecs = [];
 function startNoSeQueNecesito(){ nsqnAnswers = {}; renderNoSeQueNecesito(); }
 function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(); }
 /* Orden de prioridad: un patrón de varios días pesa más que un automatismo puntual,
@@ -2220,15 +2386,15 @@ function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(
    la sensación de que se ignoran las demás señales marcadas. */
 function nsqnRecommendations(){
   const list = [];
-  if(nsqnAnswers.dias === true) list.push({title:'🆘 Puede ser una mala racha', desc:'Cuando la sensación se repite varios días, tiene sentido pasar por el modo Reset.', action:"closeTool();openReset();", cta:'Ir a Reset'});
-  if(nsqnAnswers.evitando === true) list.push({title:'🛑 Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:'startPauseDecision();', cta:'Empezar'});
-  if(nsqnAnswers.acelerado === true) list.push({title:'🌬️ Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:'startBreath(60);', cta:'Respirar 60s'});
-  if(nsqnAnswers.cabeza === true) list.push({title:'👀 Grounding 5-4-3-2-1', desc:'Puede ayudarte a salir de la rumiación y volver al presente.', action:'startGrounding();', cta:'Empezar'});
+  if(nsqnAnswers.dias === true) list.push({title:'🆘 Puede ser una mala racha', desc:'Cuando la sensación se repite varios días, tiene sentido pasar por el modo Reset.', action:()=>{ closeTool(); openReset(); }, cta:'Ir a Reset'});
+  if(nsqnAnswers.evitando === true) list.push({title:'🛑 Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:startPauseDecision, cta:'Empezar'});
+  if(nsqnAnswers.acelerado === true) list.push({title:'🌬️ Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:()=>startBreath(60), cta:'Respirar 60 s'});
+  if(nsqnAnswers.cabeza === true) list.push({title:'👀 Grounding 5-4-3-2-1', desc:'Puede ayudarte a salir de la rumiación y volver al presente.', action:startGrounding, cta:'Empezar'});
   return list;
 }
 function renderNoSeQueNecesito(){
   const answered = Object.keys(nsqnAnswers).length;
-  const recs = nsqnRecommendations();
+  const recs = nsqnRecs = nsqnRecommendations();
   let resultHtml = '';
   if(recs.length){
     const [primary, ...rest] = recs;
@@ -2237,16 +2403,16 @@ function renderNoSeQueNecesito(){
         ${recs.length>1 ? `<p class="desc" style="font-style:italic;">Has marcado varias señales. Empieza por esta, es la más urgente ahora mismo:</p>` : ''}
         <h3>${primary.title}</h3>
         <p class="desc">${primary.desc}</p>
-        <button class="btn btn-primary" onclick="${primary.action}">${primary.cta}</button>
+        <button class="btn btn-primary" data-action="nsqnGo" data-idx="0">${primary.cta}</button>
       </div>
       ${rest.length ? `
         <div class="card">
           <p><b>También podría ayudarte</b></p>
-          ${rest.map(r=>`
+          ${rest.map((r,i)=>`
             <div class="history-item" style="margin-bottom:8px;">
               <p style="font-weight:700;">${r.title}</p>
               <p class="desc">${r.desc}</p>
-              <button class="btn btn-outline btn-sm" onclick="${r.action}">${r.cta}</button>
+              <button class="btn btn-outline btn-sm" data-action="nsqnGo" data-idx="${i+1}">${r.cta}</button>
             </div>`).join('')}
         </div>` : ''}
     `;
@@ -2263,8 +2429,8 @@ function renderNoSeQueNecesito(){
       ${NSQN_QUESTIONS.map(q=>`
         <p style="margin-top:14px;"><b>${q.q}</b></p>
         <div class="btn-row">
-          <button class="btn btn-sm ${nsqnAnswers[q.key]===true?'btn-navy':'btn-outline'}" style="flex:1 1 80px;" onclick="setNsqnAnswer('${q.key}', true)">Sí</button>
-          <button class="btn btn-sm ${nsqnAnswers[q.key]===false?'btn-navy':'btn-outline'}" style="flex:1 1 80px;" onclick="setNsqnAnswer('${q.key}', false)">No</button>
+          <button class="btn btn-sm ${nsqnAnswers[q.key]===true?'btn-navy':'btn-outline'}" style="flex:1 1 80px;" data-action="nsqnAnswer" data-value="${escapeHtml(q.key)}" data-answer="1">Sí</button>
+          <button class="btn btn-sm ${nsqnAnswers[q.key]===false?'btn-navy':'btn-outline'}" style="flex:1 1 80px;" data-action="nsqnAnswer" data-value="${escapeHtml(q.key)}" data-answer="0">No</button>
         </div>
       `).join('')}
     </div>
@@ -2298,7 +2464,7 @@ function renderGroundingStep(){
 }
 function nextGrounding(){
   groundingIdx++;
-  if(groundingIdx>=groundingSteps.length){ showToolDone('Grounding 5‑4‑3‑2‑1', 'startGrounding()'); return; }
+  if(groundingIdx>=groundingSteps.length){ showToolDone('Grounding 5‑4‑3‑2‑1', startGrounding); return; }
   renderGroundingStep();
 }
 
@@ -2318,10 +2484,10 @@ function renderAnchorTool(){
     <div style="margin-top:16px;">
       ${state.confidenceAnchors.length ? state.confidenceAnchors.map((a,i)=>`
         <div class="history-item">
-          <button class="del" onclick="delConfidenceAnchor(${i})">Eliminar</button>
+          <button class="del" data-action="delConfidenceAnchor" data-idx="${i}">Eliminar</button>
           <p style="font-weight:700;">${escapeHtml(a.word)}</p>
           <p class="desc">${escapeHtml(a.memory)}</p>
-          <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="runAnchorGuide(${i})">Usar ahora</button>
+          <button class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="runAnchorGuide" data-idx="${i}">Usar ahora</button>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado ningún anclaje.</div>'}
     </div>
   `);
@@ -2341,6 +2507,7 @@ function delConfidenceAnchor(i){
 }
 function runAnchorGuide(i){
   const a = state.confidenceAnchors[i];
+  if(!a) return;
   openTool('Recordatorio de confianza', `
     <div class="card" style="text-align:center;">
       <p class="desc">Repite tu gesto mientras recuerdas:</p>
@@ -2355,7 +2522,7 @@ function runAnchorGuide(i){
   const el = document.getElementById('anchorTimer');
   const t = setInterval(()=>{
     remaining--; el.textContent = remaining;
-    if(remaining<=0){ clearInterval(t); showToolDone('Recordatorio de confianza', `runAnchorGuide(${i})`); }
+    if(remaining<=0){ clearInterval(t); showToolDone('Recordatorio de confianza', ()=>runAnchorGuide(i)); }
   },1000);
   toolTimers.push(t);
 }
@@ -2388,7 +2555,7 @@ function runTensePhase(phase, secs){
       if(phase==='tense'){ runTensePhase('release',5); }
       else{
         tenseIdx++;
-        if(tenseIdx>=tenseGroups.length){ showToolDone('Tense & Release', 'startTense()'); }
+        if(tenseIdx>=tenseGroups.length){ showToolDone('Tense & Release', startTense); }
         else{ runTensePhase('tense',5); }
       }
     }
@@ -2410,9 +2577,9 @@ function renderVisualAnchorModal(){
     <div style="margin-top:16px;">
       ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
         <div class="history-item">
-          <button class="del" onclick="delVisualAnchor(${i})">Eliminar</button>
+          <button class="del" data-action="delVisualAnchor" data-idx="${i}">Eliminar</button>
           <p style="font-weight:700;">"${escapeHtml(p)}"</p>
-          <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="usarRecordatorioVisual(${i})">👁️ Usar ahora</button>
+          <button class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="usarRecordatorioVisual" data-idx="${i}">👁️ Usar ahora</button>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado recordatorios.</div>'}
     </div>
   `);
@@ -2456,6 +2623,7 @@ const PEDIR_FEEDBACK_OPCIONES = [
 ];
 let pedirFeedbackSel = '';
 let pedirFeedbackOtro = '';
+let pedirFeedbackFinal = '';
 function startPedirFeedback(){ pedirFeedbackSel=''; pedirFeedbackOtro=''; renderPedirFeedback(); }
 function selectPedirFeedback(v){ pedirFeedbackSel = v; renderPedirFeedback(); }
 function renderPedirFeedback(){
@@ -2464,8 +2632,8 @@ function renderPedirFeedback(){
       <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Necesito una observación, no que me digas si lo hago bien o mal."</p>
       <p><b>Elige una sola petición concreta</b></p>
       <div class="chip-group">
-        ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<div class="chip ${pedirFeedbackSel===o.v?'selected':''}" onclick="selectPedirFeedback('${o.v.replace(/'/g,"\\'")}')">${o.em} ${o.v}</div>`).join('')}
-        <div class="chip ${pedirFeedbackSel==='Otro'?'selected':''}" onclick="selectPedirFeedback('Otro')">✍️ Otra petición</div>
+        ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<div class="chip ${pedirFeedbackSel===o.v?'selected':''}" data-action="selectPedirFeedback" data-value="${escapeHtml(o.v)}">${o.em} ${escapeHtml(o.v)}</div>`).join('')}
+        <div class="chip ${pedirFeedbackSel==='Otro'?'selected':''}" data-action="selectPedirFeedback" data-value="Otro">✍️ Otra petición</div>
       </div>
       <div id="pedirFeedbackOtroWrap" style="${pedirFeedbackSel==='Otro'?'':'display:none;'}">
         <textarea id="pedirFeedbackOtroInput" placeholder="Escribe qué quieres pedir...">${escapeHtml(pedirFeedbackOtro)}</textarea>
@@ -2481,6 +2649,7 @@ function finalizarPedirFeedback(){
     if(!peticion){ alert('Escribe qué quieres pedir.'); return; }
   }
   if(!peticion){ alert('Elige una petición.'); return; }
+  pedirFeedbackFinal = peticion;
   openTool('🗣️ Pide feedback', `
     <div class="card" style="text-align:center;">
       <p><b>¿Qué quiero saber?</b></p>
@@ -2490,12 +2659,13 @@ function finalizarPedirFeedback(){
         <button class="btn btn-outline" onclick="closeTool()">Volver</button>
         <button class="btn btn-blue" onclick="startPedirFeedback()">🔁 Repetir</button>
       </div>
-      <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="guardarPedirFeedbackEnKit('${peticion.replace(/'/g,"\\'")}')">Guardar como mi petición del Kit</button>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px;" data-action="guardarPedirFeedbackEnKit">Guardar como mi petición del Kit</button>
     </div>
   `);
 }
-function guardarPedirFeedbackEnKit(peticion){
-  state.kitPedira = peticion;
+function guardarPedirFeedbackEnKit(){
+  if(!pedirFeedbackFinal) return;
+  state.kitPedira = cleanStr(pedirFeedbackFinal, LIMITS.shortStr);
   save();
   alert('Guardado en tu Kit: «¿Qué pediré?»');
 }
@@ -2564,7 +2734,7 @@ function onKitHerramientaChange(){
 function activarKitPlan(){
   const txt = (state.kitHerramienta||'').trim();
   if(!txt) return;
-  if(KIT_TOOL_EXACT[txt]){ KIT_TOOL_EXACT[txt](); return; }
+  if(Object.prototype.hasOwnProperty.call(KIT_TOOL_EXACT, txt)){ KIT_TOOL_EXACT[txt](); return; }
   const match = KIT_TOOL_MATCHERS.find(m=>m.re.test(txt));
   if(match){ match.fn(); }
   else {
@@ -2616,6 +2786,14 @@ const CHECKIN_SECTIONS = [
   ]}
 ];
 const CHECKIN_TITLES = CHECKIN_SECTIONS.flatMap(s=>s.items.map(i=>i.match(/<b>(.*?)<\/b>/)[1]));
+/* Los check-ins guardan la etiqueta HTML de cada señal. Solo se pinta como HTML si coincide
+   exactamente con una etiqueta de la app; cualquier otra (datos antiguos o importados) se
+   muestra como texto plano, sin etiquetas. */
+const CHECKIN_LABELS = new Set(CHECKIN_SECTIONS.flatMap(s=>s.items));
+function checkinItemHtml(item){
+  if(CHECKIN_LABELS.has(item)) return item;
+  return escapeHtml(String(item).replace(/<br\s*\/?>/gi, ' — ').replace(/<[^>]*>/g, ''));
+}
 
 let resetStep = 0;
 let resetMicro = null;
@@ -2757,13 +2935,13 @@ function renderResetStep(){
       <div class="card">
         <p><b>🚨 Mis señales de alerta</b></p>
         <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una dinámica que no te está ayudando.</p>
-        <div class="chip-group" id="kitSenalChips">${CHECKIN_TITLES.map(s=>`<div class="chip ${state.kitSenales.includes(s)?'selected':''}" onclick="toggleKitSenal('${s.replace(/'/g,"\\'")}')">${s}</div>`).join('')}</div>
+        <div class="chip-group" id="kitSenalChips">${CHECKIN_TITLES.map(s=>`<div class="chip ${state.kitSenales.includes(s)?'selected':''}" data-action="toggleKitSenal" data-value="${escapeHtml(s)}">${escapeHtml(s)}</div>`).join('')}</div>
 
         <p><b>1️⃣ 🌬️ Me regulo</b></p>
         <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
         <label>Mi herramienta</label>
         <select id="kitHerramientaSelect" onchange="onKitHerramientaChange()">
-          ${KIT_HERRAMIENTAS_FIJAS.map(h=>`<option ${(KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?state.kitHerramienta:'Otro recurso personal')===h?'selected':''}>${h}</option>`).join('')}
+          ${KIT_HERRAMIENTAS_FIJAS.map(h=>`<option ${(KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?state.kitHerramienta:'Otro recurso personal')===h?'selected':''}>${escapeHtml(h)}</option>`).join('')}
         </select>
         <div id="kitHerramientaOtraWrap" style="${KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?'display:none;':''}">
           <input type="text" id="kitHerramientaOtraInput" value="${KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?'':escapeHtml(state.kitHerramienta)}" placeholder="Describe tu recurso personal" oninput="state.kitHerramienta=this.value;save();">
@@ -2803,17 +2981,17 @@ function renderResetStep(){
         <details class="help-item">
           <summary>${escapeHtml(r.fecha)}${r.senal?' · '+escapeHtml(r.senal):''}</summary>
           <div class="help-body">
-            <button class="del" onclick="borrarResetHistorial(${r.id})">Eliminar</button>
+            <button class="del" data-action="borrarResetHistorial" data-id="${escapeHtml(r.id)}">Eliminar</button>
             <p><b>Señal principal:</b> ${escapeHtml(r.senal)||'—'}</p>
             <p><b>Contexto (no depende de mí):</b> ${escapeHtml(r.examResultado)||'—'}</p>
             <p><b>Mi actuación:</b> ${escapeHtml(r.examRendimiento)||'—'}</p>
             <p><b>Lo que sigue funcionando:</b> ${[r.aspecto1,r.aspecto2].filter(Boolean).map(escapeHtml).join(' · ')||'—'}</p>
             <p><b>Ajuste elegido:</b> ${escapeHtml(r.micro)||'—'}</p>
-            <p><b>Paradas testeadas:</b> ${r.stops||0} / 10</p>
+            <p><b>Paradas testeadas:</b> ${escapeHtml(r.stops||0)} / 10</p>
             <p><b>Qué he aprendido:</b> ${escapeHtml(r.aprendizaje)||'—'}</p>
             <p><b>Observación:</b> ${escapeHtml(r.observacion)||'—'}</p>
             <p><b>Pacto de permanencia:</b> ${escapeHtml(r.pacto)||'—'}</p>
-            ${r.micro ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="repetirAjuste('${r.micro.replace(/'/g,"\\'")}','${(r.senal||'').replace(/'/g,"\\'")}')">🔁 Repetir este ajuste</button>` : ''}
+            ${r.micro ? `<button class="btn btn-outline" style="margin-top:8px;" data-action="repetirAjuste" data-id="${escapeHtml(r.id)}">🔁 Repetir este ajuste</button>` : ''}
           </div>
         </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : '<div class="card empty-state">Aún no has completado ninguna sesión de Reset.</div>'}
 
@@ -2822,8 +3000,8 @@ function renderResetStep(){
       </div>
       ${state.checkins.length ? state.checkins.map(c=>`
         <div class="card history-item">
-          <div class="meta">${c.fecha} · ${c.total} señales marcadas</div>
-          ${c.items.length? `<ul>${c.items.map(i=>`<li>${i}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
+          <div class="meta">${escapeHtml(c.fecha)} · ${escapeHtml(c.total)} ${c.total===1?'señal marcada':'señales marcadas'}</div>
+          ${c.items.length? `<ul>${c.items.map(i=>`<li>${checkinItemHtml(i)}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
         </div>`).join('') : '<div class="card empty-state">Aún no has hecho ningún check-in.</div>'}
       <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
     `;
@@ -2840,8 +3018,8 @@ function renderResetStep(){
         <div class="card">
           <h3>${s.title}</h3>
           ${s.items.map((label,ii)=>`
-            <div class="check-item ${checkinState[si][ii]?'checked':''}" onclick="toggleCheckinItem(${si},${ii})">
-              <input type="checkbox" ${checkinState[si][ii]?'checked':''} onclick="event.stopPropagation()" onchange="toggleCheckinItem(${si},${ii})">
+            <div class="check-item ${checkinState[si][ii]?'checked':''}" data-action="toggleCheckinItem" data-si="${si}" data-ii="${ii}">
+              <input type="checkbox" ${checkinState[si][ii]?'checked':''}>
               <span>${label}</span>
             </div>`).join('')}
         </div>
@@ -2895,7 +3073,7 @@ function renderResetStep(){
   else if(resetStep===1){
     const chips = resetCheckinItems.length ? `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>De lo marcado en tu check-in, elige la principal.</p>
-      <div class="chip-group">${resetCheckinItems.map(s=>`<div class="chip ${resetSenal===s?'selected':''}" onclick="selectSenal(this)">${s}</div>`).join('')}</div>
+      <div class="chip-group">${resetCheckinItems.map(s=>`<div class="chip ${resetSenal===s?'selected':''}" data-action="selectSenal">${s}</div>`).join('')}</div>
     ` : `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el «no», cansancio previo, hacer menos paradas, trabajar en automático…</p>
       <textarea id="resetSenalInput" placeholder="Escribe tu señal principal..." oninput="resetSenal=this.value;saveResetProgress();">${escapeHtml(resetSenal)}</textarea>
@@ -2991,7 +3169,7 @@ function renderResetStep(){
         ${Object.entries(MICROAUDITORIA).map(([cat,items])=>`
           <div class="chip-cat">${cat}</div>
           <div class="chip-group">
-            ${items.map(m=>`<div class="chip ${resetMicro===m?'selected':''}" onclick="selectMicro('${m.replace(/'/g,"\\'")}')">${m}</div>`).join('')}
+            ${items.map(m=>`<div class="chip ${resetMicro===m?'selected':''}" data-action="selectMicro" data-value="${escapeHtml(m)}">${escapeHtml(m)}</div>`).join('')}
           </div>
         `).join('')}
       </div>
@@ -3009,8 +3187,8 @@ function renderResetStep(){
       ${resetDots()}
       <span class="badge amber">T · Testea</span>
       <h3>Prueba el ajuste</h3>
-      <p class="desc"><b>Microcambio elegido:</b><br><b>${resetMicro}</b></p>
-      <div class="timer-big">${resetStops} / 10</div>
+      <p class="desc"><b>Microcambio elegido:</b><br><b>${escapeHtml(resetMicro)}</b></p>
+      <div class="timer-big">${escapeHtml(resetStops)} / 10</div>
       <div class="btn-row">
         <button class="btn btn-green" onclick="incrementStop()">+1 parada probada</button>
       </div>
@@ -3038,7 +3216,7 @@ function renderResetStep(){
         <h3>🔎 ¿Qué he aprendido?</h3>
         <p class="desc">Después de probar el ajuste durante 10 paradas, ¿qué quieres hacer con él?</p>
         <div class="btn-row" style="flex-wrap:wrap;">
-          ${opciones.map(o=>`<button class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" onclick="resetAprendizaje='${o.v}';saveResetProgress();renderResetStep();">${o.em} ${o.v}</button>`).join('')}
+          ${opciones.map(o=>`<button class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" data-action="setAprendizaje" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
         </div>
         <label style="margin-top:14px;">¿Qué has observado? (opcional)</label>
         <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgress();">${escapeHtml(resetObservacion)}</textarea>
@@ -3100,7 +3278,10 @@ function guardarSepara(){
   if(!resetAspecto1 || !resetAspecto2){ alert('Escribe los 2 aspectos que sigues haciendo bien.'); return; }
   resetGoto(4);
 }
-function repetirAjuste(micro, senal){
+function repetirAjuste(id){
+  const r = state.resetHistory.find(x=>x.id===id);
+  if(!r || !r.micro) return;
+  const micro = r.micro, senal = r.senal;
   clearResetProgress();
   resetMicro = micro; resetSenal = senal || ''; resetStops = 0;
   resetExamResultado=''; resetExamRendimiento=''; resetAspecto1=''; resetAspecto2=''; resetPacto='';
@@ -3110,7 +3291,7 @@ function repetirAjuste(micro, senal){
   document.getElementById('resetOverlay').classList.add('active');
   renderResetStep();
 }
-function selectSenal(el){ resetSenal = el.textContent; saveResetProgress(); renderResetStep(); }
+function selectSenal(el){ resetSenal = cleanStr(el.textContent, LIMITS.shortStr); saveResetProgress(); renderResetStep(); }
 function selectMicro(m){ resetMicro = m; saveResetProgress(); renderResetStep(); }
 function resetGoto(step){ resetStep = step; saveResetProgress(); renderResetStep(); }
 function incrementStop(){ if(resetStops<10) resetStops++; saveResetProgress(); renderResetStep(); }
@@ -3186,6 +3367,35 @@ document.addEventListener('keydown', (e)=>{
     e.preventDefault();
     e.target.click();
   }
+});
+
+/* ============ REGISTRO DE ACCIONES ============ */
+Object.assign(ACTIONS, {
+  showEmotion: el => showEmotion(el.dataset.value),
+  borrarSepa: el => borrarSepa(dataId(el)),
+  editarSepa: el => editarSepa(dataId(el)),
+  setCpDecision: el => setCpDecision(el.dataset.value),
+  borrarCheckpoint: el => borrarCheckpoint(dataId(el)),
+  editarCheckpoint: el => openCheckpoint(dataId(el)),
+  selectExitoConducta: el => selectExitoConducta(el.dataset.value),
+  borrarExito: el => borrarExito(dataId(el)),
+  toolRepeat: () => { if(typeof toolRepeatFn === 'function') toolRepeatFn(); },
+  finalizarRP: el => finalizarRP(el.dataset.value),
+  nsqnAnswer: el => setNsqnAnswer(el.dataset.value, el.dataset.answer === '1'),
+  nsqnGo: el => { const rec = nsqnRecs[dataIdx(el)]; if(rec) rec.action(); },
+  delConfidenceAnchor: el => delConfidenceAnchor(dataIdx(el)),
+  runAnchorGuide: el => runAnchorGuide(dataIdx(el)),
+  delVisualAnchor: el => delVisualAnchor(dataIdx(el)),
+  usarRecordatorioVisual: el => usarRecordatorioVisual(dataIdx(el)),
+  selectPedirFeedback: el => selectPedirFeedback(el.dataset.value),
+  guardarPedirFeedbackEnKit: () => guardarPedirFeedbackEnKit(),
+  toggleKitSenal: el => toggleKitSenal(el.dataset.value),
+  borrarResetHistorial: el => borrarResetHistorial(dataId(el)),
+  repetirAjuste: el => repetirAjuste(dataId(el)),
+  toggleCheckinItem: el => toggleCheckinItem(Number(el.dataset.si), Number(el.dataset.ii)),
+  selectSenal: el => selectSenal(el),
+  selectMicro: el => selectMicro(el.dataset.value),
+  setAprendizaje: el => { resetAprendizaje = el.dataset.value; saveResetProgress(); renderResetStep(); }
 });
 
 /* ============ INIT ============ */
