@@ -1234,7 +1234,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <p>Desde ahí puedes hacer un <b>Check-in de señales</b>, con 17 señales de autoobservación y su historial.</p>
         <p><b>🔄 El protocolo R.E.S.E.T.</b></p>
         <ul>
-          <li><b>R · Reconoce</b>: reconoce la mala racha sin juzgarte, con una respiración guiada, y detecta la señal que estás notando con más fuerza.</li>
+          <li><b>R · Reconoce</b>: reconoce la mala racha sin juzgarte y detecta la señal que estás notando con más fuerza.</li>
           <li><b>E · Examina</b>: separa lo que pertenece al contexto de lo que puedes revisar y ajustar en tu forma de trabajar.</li>
           <li><b>S · Separa</b>: escribe 2 aspectos que sigues haciendo bien a pesar de la racha.</li>
           <li><b>E · Elige</b>: selecciona una sola conducta concreta para ajustar: ritmo y voz, escucha, presencia y parada, apertura y adaptación, o un hábito a corregir.</li>
@@ -3428,26 +3428,9 @@ function renderResetStep(){
         <h3>Reconoce lo que está pasando</h3>
         <p class="desc"><b>Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.</b></p>
         <p class="desc">Reconocer lo que está ocurriendo <b>sin juzgarte por ello</b> es el primer paso para entender qué puede estar cambiando y decidir qué ajustar.</p>
-        <div class="breath-circle" id="resetBreathCircle">Inhala</div>
-        <div class="timer-big" role="timer" id="resetBreathTimer">30</div>
       </div>
       <div class="card" style="text-align:left;">${chips}</div>
       <button class="btn btn-amber" onclick="continuarReconoce()">Continuar</button>`;
-    let remaining=30;
-    const circle = document.getElementById('resetBreathCircle');
-    const timerEl = document.getElementById('resetBreathTimer');
-    announce('Respiración guiada de 30 segundos.');
-    stepBreathCycle(circle, 0);
-    const t2 = setInterval(()=>{
-      remaining--; timerEl.textContent = Math.max(remaining,0);
-      if(remaining<=0){
-        clearToolTimers();
-        circle.textContent = 'Hecho';
-        circle.classList.remove('grow');
-        announce('Respiración completada. Indica tu señal principal y continúa.');
-      }
-    },1000);
-    toolTimers.push(t2);
   }
   else if(resetStep===2){
     body.innerHTML = `
@@ -3658,7 +3641,7 @@ function repetirAjuste(id){
   Overlays.open('reset');
   renderResetStep();
 }
-/* Sin re-render: re-pintar el paso reiniciaría la respiración guiada de 30 s */
+/* Sin re-render: se actualizan los chips en su sitio y el foco no se mueve */
 function selectSenal(el){
   resetSenal = cleanStr(el.dataset.value, LIMITS.shortStr);
   el.parentElement.querySelectorAll('[data-action="selectSenal"]').forEach(b=>setPressed(b, b === el));
