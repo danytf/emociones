@@ -9,6 +9,7 @@
 <title>Wesser · Gestión Emocional</title>
 <style>
 :root{
+  color-scheme:light;  /* controles nativos (selects, barras de desplazamiento…) acordes al tema */
   --wesser-red:#D32F2F;
   --wesser-red-dark:#B71C1C;
   --wesser-navy:#1A2B4C;
@@ -31,6 +32,7 @@
   --radius:16px;
 }
 :root[data-theme="dark"]{
+  color-scheme:dark;
   --error-text:#FCA5A5;
   --ok-text:#6EE7B7;
   --bg-main:#0B1120;
@@ -1251,7 +1253,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <details class="help-item">
       <summary>🌓 Modo claro / oscuro</summary>
       <div class="help-body">
-        <p>El icono de la cabecera permite <b>cambiar entre modo claro y oscuro</b> para adaptar la pantalla a la luz del lugar donde estés.</p>
+        <p>El icono de la cabecera permite <b>cambiar entre modo claro y oscuro</b>. Mientras no lo cambies, la app usa el tema de tu dispositivo.</p>
       </div>
     </details>
 
@@ -1259,6 +1261,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <summary>💾 Mis datos</summary>
       <div class="help-body">
         <p class="desc">Los datos que guardas (Diario, Checkpoints, Check-ins, Reset, Kit y recursos personales) se almacenan <b>solo en este dispositivo y no se envían a ningún sitio</b>. Eso significa que <b>no hay una copia de seguridad automática</b>: si borras los datos del navegador o cambias de móvil o tablet, pueden perderse. Exporta una copia desde aquí para guardarla a salvo.</p>
+        <p class="desc" style="font-size:12.5px;">Los datos se almacenan localmente en este navegador. La app no los envía a un servidor. No están cifrados; en un dispositivo compartido, otras personas con acceso al mismo perfil del navegador podrían verlos.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button class="btn btn-navy" onclick="exportarDatos()">⬇️ Exportar datos</button>
           <button class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
@@ -1777,6 +1780,8 @@ function applyTheme(){
   btn.setAttribute('aria-label', t === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
 }
 applyTheme();
+// Sin elección manual, se sigue el tema del sistema también si cambia con la app abierta
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ if(!state.theme) applyTheme(); });
 document.getElementById('themeToggle').onclick = ()=>{
   const cur = document.documentElement.getAttribute('data-theme');
   state.theme = cur === 'dark' ? 'light' : 'dark';
