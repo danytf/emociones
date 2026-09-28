@@ -1209,6 +1209,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
     <details class="help-item" open>
       <summary>🚀 ¿Por dónde empiezo?</summary>
       <div class="help-body">
+        <p><button type="button" class="btn btn-outline btn-sm" onclick="closeHelp();showWelcome(0);">👋 Ver la bienvenida</button></p>
         <p><b>1️⃣ Empieza por Aprender</b><br>
         Lee esa sección con calma una vez para entender las bases. <b>Puedes abrir solo las fichas que te interesen.</b></p>
         <p><b>2️⃣ Usa «¿Qué necesitas ahora?» cuando lo necesites</b><br>
@@ -1917,6 +1918,53 @@ function openModal(html){
   Overlays.open('modal');
 }
 function closeModal(){ Overlays.close('modal'); }
+
+/* ============ BIENVENIDA (primera vez) ============
+   Tres pasos en el modal. Se muestra una sola vez y solo si no hay datos guardados, así que
+   quien ya usa la app no la ve. Se puede volver a abrir desde la Ayuda. */
+const WELCOME_STEPS = [
+  { title:'👋 Bienvenido', html:`
+      <p class="desc">Esta app te ayuda a <b>entender y gestionar lo que sientes en la calle</b>: antes de salir, en un momento difícil y al terminar la jornada.</p>
+      <p class="desc">Todo lo que guardas se queda <b>solo en este dispositivo</b>; no se envía a ningún sitio.</p>` },
+  { title:'🧭 Cuándo usar cada parte', html:`
+      <p class="desc">🧠 <b>Aprender</b> y 🌱 <b>Bienestar</b>: léelos con calma, fuera de la calle.</p>
+      <p class="desc">⚡ <b>«¿Qué necesitas ahora?»</b>: arriba del todo, para un momento difícil en calle. Si dudas, pulsa <b>🤔 No sé qué necesito</b>.</p>
+      <p class="desc">📓 <b>Diario</b>: al acabar, para entender qué pasó y qué hacer la próxima vez.</p>
+      <p class="desc">🆘 <b>Reset</b>: cuando llevas varios días sin encontrar tu ritmo.</p>` },
+  { title:'🎒 Prepara tu Kit', html:`
+      <p class="desc">El <b>Kit de Emergencia</b> es tu plan para cuando aparezcan tus primeras señales: qué notas, con qué te regulas, qué ajustas y a quién pides apoyo.</p>
+      <p class="desc"><b>Prepararlo ahora lleva un par de minutos</b> y después lo tienes a mano con «🚨 Activar mi plan».</p>` }
+];
+let welcomeStep = 0;
+function showWelcome(step){
+  welcomeStep = step || 0;
+  const w = WELCOME_STEPS[welcomeStep];
+  const last = welcomeStep === WELCOME_STEPS.length - 1;
+  openModal(`
+    <div class="step-dots" aria-hidden="true">${WELCOME_STEPS.map((_,i)=>`<span class="${i<=welcomeStep?'on':''}"></span>`).join('')}</div>
+    <h2>${w.title}</h2>
+    <p class="sr-only">Paso ${welcomeStep+1} de ${WELCOME_STEPS.length}</p>
+    ${w.html}
+    <div class="btn-row" style="margin-top:14px;">
+      ${last
+        ? `<button type="button" class="btn btn-outline" data-action="welcomeClose">Más tarde</button>
+           <button type="button" class="btn btn-primary" data-action="welcomeKit">Preparar mi Kit</button>`
+        : `<button type="button" class="btn btn-outline" data-action="welcomeClose">Saltar</button>
+           <button type="button" class="btn btn-primary" data-action="welcomeNext">Siguiente</button>`}
+    </div>
+  `);
+}
+function hasUserData(){
+  return ['sepaEntries','checkpoints','checkins','resetHistory','exitos','confidenceAnchors','visualAnchors'].some(k => state[k].length)
+    || !!(state.kitHerramienta || state.kitSenales.length || state.kitAjuste || state.kitPersona || state.kitPedira);
+}
+function maybeShowWelcome(){
+  let seen = false;
+  try{ seen = localStorage.getItem('wesserWelcomeSeen') === '1'; }catch(e){ seen = true; }
+  if(seen) return;
+  try{ localStorage.setItem('wesserWelcomeSeen', '1'); }catch(e){}
+  if(!hasUserData()) showWelcome(0);
+}
 
 /* ============ DATA: EMOTIONS (enfoque autogestión del captador) ============ */
 const EMOTIONS = [
@@ -3861,7 +3909,13 @@ const Overlays = (()=>{
       root(n).classList.add('active');
     }
     sync();
-    if(fresh || !dialog(n).contains(document.activeElement)) focusInitial(n);
+    if(fresh){ focusInitial(n); return; }
+    // Ya estaba abierto y se ha vuelto a pintar (siguiente paso, chip elegido…): el foco vuelve
+    // al control equivalente del nuevo contenido en vez de saltar al principio del diálogo
+    if(!dialog(n).contains(document.activeElement)){
+      const same = lastFocus[n] && dialog(n).querySelector(lastFocus[n]);
+      if(same) same.focus({preventScroll:true}); else focusInitial(n);
+    }
   }
   function close(n, opts){
     if(!isOpen(n)) return;
@@ -3975,6 +4029,9 @@ Object.assign(ACTIONS, {
   },
   toggleEmocion: el => toggleEmocion(el.dataset.id),
   kitSuggestedTool: () => { const t = kitSuggestedTool; closeModal(); if(t && KIT_TOOL_EXACT[t]) KIT_TOOL_EXACT[t](); },
+  welcomeNext: () => showWelcome(welcomeStep + 1),
+  welcomeClose: () => closeModal(),
+  welcomeKit: () => { closeModal(); openReset(); openKit(); },
   confirmOk: () => settleConfirm(true),
   confirmCancel: () => settleConfirm(false),
   toastClose: () => hideToast(),
@@ -3985,6 +4042,7 @@ Object.assign(ACTIONS, {
 
 /* ============ INIT ============ */
 renderResetTab();
+maybeShowWelcome();
 /* Preferencia de interfaz (no es un dato del usuario): recordar si la explicación del Diario está plegada */
 (function initSepaIntro(){
   const d = document.getElementById('sepaIntro');
