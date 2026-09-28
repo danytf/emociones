@@ -2375,8 +2375,8 @@ function showWelcome(step){
     ${w.html}
     <div class="btn-row" style="margin-top:14px;">
       ${last
-        ? `<button type="button" class="btn btn-outline" data-action="welcomeClose">Más tarde</button>
-           <button type="button" class="btn btn-navy" data-action="welcomeKit">Preparar mi Kit</button>`
+        ? `<button type="button" class="btn btn-outline" data-action="welcomeKit">Preparar mi Kit</button>
+           <button type="button" class="btn btn-navy" data-action="welcomeClose">Empezar</button>`
         : `<button type="button" class="btn btn-outline" data-action="welcomeClose">Saltar</button>
            <button type="button" class="btn btn-navy" data-action="welcomeNext">Siguiente</button>`}
     </div>
@@ -4464,7 +4464,8 @@ Object.assign(ACTIONS, {
   toggleEmocion: el => toggleEmocion(el.dataset.id),
   kitSuggestedTool: () => { const t = kitSuggestedTool; closeModal(); if(t && KIT_TOOL_EXACT[t]) KIT_TOOL_EXACT[t](); },
   welcomeNext: () => showWelcome(welcomeStep + 1),
-  welcomeClose: () => closeModal(),
+  // Al cerrar la bienvenida se empieza por Aprender, como recomienda la Ayuda
+  welcomeClose: () => { closeModal(); goto('aprender'); },
   welcomeKit: () => { closeModal(); openReset(); openKit(); },
   confirmOk: () => settleConfirm(true),
   confirmCancel: () => settleConfirm(false),

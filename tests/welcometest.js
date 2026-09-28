@@ -32,6 +32,10 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await p.evaluate(() => localStorage.clear()); await p.reload();
   await p.locator('[data-action="welcomeClose"]').click();
   ok(await top() === null, '«Saltar» la cierra');
+  // «Empezar» (último paso) lleva a Aprender, aunque se abra desde otra sección
+  await p.evaluate(() => { goto('diario'); showWelcome(2); });
+  await p.locator('#modalSheet button:text-is("Empezar")').click();
+  ok(await top() === null && await p.evaluate(() => document.querySelector('.view.active').id) === 'view-aprender', '«Empezar» cierra la bienvenida y lleva a Aprender');
   ok(errs.length === 0, 'sin errores de JS ' + errs.join('|'));
   await b.close();
 })();
