@@ -20,5 +20,17 @@ ok((await p.locator('#resetBody').innerText()).includes('Elige hasta 3: así tu 
 ok((await p.locator('#resetBody .kit-flow').innerText()).includes('Pido apoyo a Laura: «que me observe dos paradas»'), 'caja SI SIGO ATASCADO: «Pido apoyo a…»');
 for(let i=0;i<4;i++) await p.locator('#kitSenalChips button').nth(i).click();
 ok((await p.locator('#kitSenalChips + .field-error').innerText()).includes('Para que tu plan sea fácil de recordar, puedes elegir hasta 3 señales'), 'aviso del límite reformulado');
+// «Activar mi plan» con herramienta de la app: al terminar, «Hecho» recuerda ajuste y apoyo (solo desde el Kit)
+const plan = await p.evaluate(()=>{
+  Overlays.close('reset');
+  state.kitHerramienta='Tense & Release'; state.kitAjuste='Simplificar la apertura'; state.kitPersona='Laura'; state.kitPedira='';
+  activarKitPlan(); showToolDone('Tense & Release', startTense);
+  const conKit = document.getElementById('toolBody').innerText;
+  closeTool(); startTense(); showToolDone('Tense & Release', startTense);
+  const sinKit = document.getElementById('toolBody').innerText; closeTool();
+  return { conKit, sinKit };
+});
+ok(/Sigue tu plan/i.test(plan.conKit) && plan.conKit.includes('Simplificar la apertura') && plan.conKit.includes('pido apoyo a Laura'), 'Kit: la pantalla «Hecho» recuerda el resto del plan');
+ok(!/Sigue tu plan/i.test(plan.sinKit), 'Kit: abierta fuera del Kit, la herramienta no muestra el plan');
 ok(errs.length===0,'sin errores de JS '+errs.join('|'));
 await b.close();})();

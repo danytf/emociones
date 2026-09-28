@@ -902,6 +902,9 @@ header :focus-visible{outline-color:var(--wesser-red);}
   .ds .breath-circle{background:var(--ds-canvas);box-shadow:none;}
   .modal-sheet.ds .badge.emo-badge, :root[data-theme="dark"] .modal-sheet.ds .badge.emo-badge{background:var(--ds-canvas);color:var(--ds-ink);}
 }
+.ds .kit-plan-next{text-align:left;background:var(--ds-canvas);border-radius:12px;padding:var(--sp-3) var(--sp-4);margin-top:var(--sp-3);}
+.ds .eyebrow{display:block;font-family:var(--font-brand);font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ds-ink-3);margin:0 0 var(--sp-1);}
+.ds .kit-plan-next .desc{margin:var(--sp-1) 0 0;}
 </style>
 </head>
 <body>
@@ -2928,6 +2931,7 @@ function showToolDone(title, repeatFn){
       <div class="tool-hero"><span class="tile tile-lg" data-tone="anchor"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span></div>
       <h3>Hecho</h3>
       <p class="desc">Puedes volver a la calle o repetirla si lo necesitas.</p>
+      ${kitPlanActivo && kitPlanRestoHtml('Ahora, ajusto:') ? `<div class="kit-plan-next"><p class="eyebrow">Sigue tu plan</p>${kitPlanRestoHtml('Ahora, ajusto:')}</div>` : ''}
       <div class="btn-row" style="margin-top:10px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
         <button type="button" class="btn btn-blue" data-action="toolRepeat">Repetir</button>
@@ -3670,20 +3674,27 @@ function onKitHerramientaChange(){
   }
   save();
 }
+/* Ajuste y apoyo del plan. Vacío si el usuario no los ha rellenado. */
+function kitPlanRestoHtml(ajusteLbl){
+  return (state.kitAjuste ? `<p class="desc"><b>${ajusteLbl}</b> ${escapeHtml(state.kitAjuste)}</p>` : '')
+    + ((state.kitPersona || state.kitPedira) ? `<p class="desc"><b>Si sigo atascado, pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}</b>${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : '.'}</p>` : '');
+}
+/* true mientras se usa la herramienta abierta desde «Activar mi plan»: su pantalla «Hecho»
+   recuerda el resto del plan. Se apaga al cerrar la herramienta. */
+let kitPlanActivo = false;
 function activarKitPlan(){
   const txt = (state.kitHerramienta||'').trim();
   if(!txt) return;
   // Herramienta interna conocida: se abre directamente
   const tool = kitToolName(txt);
-  if(tool){ KIT_TOOL_EXACT[tool](); return; }
+  if(tool){ kitPlanActivo = true; KIT_TOOL_EXACT[tool](); return; }
   // Recurso personal: se muestra lo guardado, sin decir que se abre ninguna herramienta
   const match = KIT_TOOL_MATCHERS.find(m=>m.re.test(txt));
   kitSuggestedTool = match ? match.name : null;
   openModal(`
     <h2>Este es tu recurso personal</h2>
     <p style="font-size:18px;font-weight:800;line-height:1.45;">«${escapeHtml(txt)}»</p>
-    ${state.kitAjuste?`<p class="desc"><b>Después, ajusto:</b> ${escapeHtml(state.kitAjuste)}</p>`:''}
-    ${(state.kitPersona || state.kitPedira)?`<p class="desc"><b>Si sigo atascado, pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}</b>${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : '.'}</p>`:''}
+    ${kitPlanRestoHtml('Después, ajusto:')}
     ${kitSuggestedTool ? `<button type="button" class="btn btn-outline" style="margin-top:6px;" data-action="kitSuggestedTool">Abrir también «${escapeHtml(kitSuggestedTool)}» de la app</button>` : ''}
     <button type="button" class="btn btn-navy" style="margin-top:10px;" onclick="closeModal()">Hecho</button>
   `);
@@ -4343,8 +4354,10 @@ const Overlays = (()=>{
     reset: { root:'resetOverlay', dialog:'resetOverlay', level:1, persistent:true,
              onClose(){ clearToolTimers(); flushSave(); renderResetTab(); } },   // el progreso del Reset y el Kit se guardan solos
     help:  { root:'helpOverlay',  dialog:'helpOverlay',  level:1 },
-    tool:  { root:'toolOverlay',  dialog:'toolOverlay',  level:2, onClose(){ clearToolTimers(); } },
-    modal: { root:'modalBack',    dialog:'modalSheet',   level:3 },
+    tool:  { root:'toolOverlay',  dialog:'toolOverlay',  level:2, onClose(){ clearToolTimers(); kitPlanActivo = false; } },
+    // Si el modal da paso a una herramienta (p. ej. «Usar ahora» del anclaje), el plan sigue activo
+    modal: { root:'modalBack',    dialog:'modalSheet',   level:3,
+             onClose(){ setTimeout(()=>{ if(!document.getElementById('toolOverlay').classList.contains('active')) kitPlanActivo = false; }, 0); } },
     // Confirmación: siempre encima; cerrarla por cualquier vía equivale a «Cancelar»
     confirm: { root:'confirmBack', dialog:'confirmBox',   level:4, onClose(){ if(confirmResolve) settleConfirm(false); } }
   };
