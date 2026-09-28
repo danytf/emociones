@@ -176,7 +176,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   for (let i = 0; i < 3; i++) await page.locator('#incrementStopBtn').click();
   await page.locator('#decrementStopBtn').click();
   ok(await page.evaluate(() => resetStops) === 2, 'contador +3 y deshacer → 2');
-  ok(await page.locator('#resetBody button.btn-primary:text-is("Continuar")').isDisabled(), 'no se puede continuar antes de 10');
+  ok(await page.locator('#resetBody button.btn-amber:text-is("Continuar")').isDisabled(), 'no se puede continuar antes de 10');
   // Cerrar a medias y reanudar
   await page.locator('#resetBody button:has-text("Cerrar y seguir luego")').click();
   await page.reload();
@@ -185,7 +185,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#resetBody button.btn:text-is("Continuar")').click();
   ok(await page.evaluate(() => resetStep === 5 && resetStops === 2 && resetMicro === 'Simplificar la apertura'), 'reanudar donde se dejó');
   for (let i = 0; i < 8; i++) await page.locator('#incrementStopBtn').click();
-  await page.locator('#resetBody button.btn-primary:text-is("Continuar")').click();
+  await page.locator('#resetBody button.btn-amber:text-is("Continuar")').click();
   await page.locator('#resetBody [data-value="Lo mantengo"]').click();
   await page.fill('#resetObservacionInput', 'Más conversaciones largas');
   await page.locator('#resetBody button.btn:text-is("Continuar")').click();

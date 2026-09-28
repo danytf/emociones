@@ -872,6 +872,12 @@ header :focus-visible{outline-color:var(--wesser-red);}
 .ds input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--wesser-red);border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
 .ds input[type=range]:focus-visible{outline-offset:6px;}
 :root[data-theme="dark"] .ds .range-val{color:var(--ds-ink);}
+/* ---------- Detalles finales ---------- */
+.ds .thist-title, #resetBody h3{font-family:var(--font-brand);}
+.toast button .ic{width:18px;height:18px;}
+@media (max-width:600px){ .ql-toggle{min-height:44px;} }
+.modal-sheet.ds .badge.emo-badge{background:color-mix(in srgb, var(--emo) 14%, var(--ds-surface));color:color-mix(in srgb, var(--emo) 70%, var(--ds-ink));}
+:root[data-theme="dark"] .modal-sheet.ds .badge.emo-badge{background:color-mix(in srgb, var(--emo) 24%, var(--ds-surface));color:color-mix(in srgb, var(--emo) 45%, var(--ds-ink));}
 </style>
 </head>
 <body>
@@ -925,12 +931,13 @@ header :focus-visible{outline-color:var(--wesser-red);}
   <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M12 15l-3-3c1.5-4.5 4.5-8 10-9 -.9 5.5-4.5 8.5-9 10"/><path d="M9 12H5l2.5-3.5H11"/><path d="M12 15v4l3.5-2.5V13"/><path d="M6.5 16.5c-1.5.5-2.5 2-2.5 3.5 1.5 0 3-1 3.5-2.5"/></symbol>
   <symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></symbol>
   <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 10.5v-6a1.5 1.5 0 0 1 3 0V11"/><path d="M14 10.5V6a1.5 1.5 0 0 1 3 0v6.5"/><path d="M17 10a1.5 1.5 0 0 1 3 0v4a7 7 0 0 1-7 7h-1a6 6 0 0 1-4.6-2.2L4.3 15a1.6 1.6 0 0 1 2.4-2l1.3 1.3"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4"/><path d="M7.5 8.5L12 4l4.5 4.5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
 </svg>
 <!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
 <div id="srStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 <!-- Aviso breve no modal: se anuncia por #srStatus; aquí se muestra y se puede cerrar -->
-<div id="toast" class="toast"><span id="toastMsg"></span><button type="button" data-action="toastClose" aria-label="Cerrar aviso">✕</button></div>
+<div id="toast" class="toast"><span id="toastMsg"></span><button type="button" data-action="toastClose" aria-label="Cerrar aviso"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>
 
 <header>
   <h1 class="sr-only">Wesser · Gestión Emocional</h1>
@@ -1546,7 +1553,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
       </div>
       <textarea id="sepaAccion" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
 
-      <button type="button" class="btn btn-primary" id="sepaSaveBtn" onclick="guardarSepa()">Guardar registro</button>
+      <button type="button" class="btn btn-green" id="sepaSaveBtn" onclick="guardarSepa()">Guardar registro</button>
       <button type="button" class="btn btn-outline" id="sepaCancelBtn" style="display:none;margin-top:10px;" onclick="cancelarEdicionSepa()">Cancelar edición</button>
     </div>
 
@@ -1654,7 +1661,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
           <li><b>Pedir y dar apoyo</b> — Qué pedir y cómo apoyar a un compañero.</li>
         </ul>
         <p>Dentro de <b>Las 6 Emociones</b> encontrarás la <b>rueda interactiva</b>: Alegría, Tristeza, Miedo, Ira, Sorpresa y Asco. Pulsa cada emoción para consultar su función adaptativa, cómo puede expresarse físicamente y una frase de reencuadre.</p>
-        <p>Son las mismas emociones que puedes seleccionar en el <b>Diario S-E-P-A</b>. Allí puedes pulsar el icono <b>ℹ️</b> para consultar su ficha sin cambiar de pestaña.</p>
+        <p>Son las mismas emociones que puedes seleccionar en el <b>Diario S-E-P-A</b>. Allí puedes pulsar el icono <svg class="ic ic-sm" aria-label="información" role="img"><use href="#i-info"/></svg> para consultar su ficha sin cambiar de pestaña.</p>
       </div>
     </details>
 
@@ -1704,7 +1711,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
         <p>Registra momentos difíciles en <b>4 pasos principales</b> para observar qué ha ocurrido y entrenar respuestas más útiles:</p>
         <ul>
           <li><b>S · Situación</b>: qué ha ocurrido.</li>
-          <li><b>E · Emoción</b>: qué has sentido. Puedes marcar más de una; pulsa <b>ℹ️</b> para consultar la ficha de cada emoción.</li>
+          <li><b>E · Emoción</b>: qué has sentido. Puedes marcar más de una; pulsa <svg class="ic ic-sm" aria-label="información" role="img"><use href="#i-info"/></svg> para consultar la ficha de cada emoción.</li>
           <li><b>P · Pensamiento</b>: qué te has dicho en ese momento.</li>
           <li><b>P+ · Pensamiento útil</b>: una interpretación más realista y útil. Puedes pulsar <b>«Sugerir reencuadre»</b> para recibir una propuesta.</li>
           <li><b>A · Acción</b>: qué vas a hacer ahora o en la próxima parada. Hay opciones rápidas para elegir.</li>
@@ -1748,8 +1755,8 @@ header :focus-visible{outline-color:var(--wesser-red);}
         <p class="desc" style="font-size:12.5px;">Los datos se almacenan localmente en este navegador. La app no los envía a un servidor. No están cifrados; en un dispositivo compartido, otras personas con acceso al mismo perfil del navegador podrían verlos.</p>
         <p class="desc" style="font-size:12.5px;">Para abrir la app necesitas conexión. Una vez abierta, funciona sin cobertura: si la pierdes, no recargues la página. Tus datos siguen guardados en el dispositivo aunque no puedas abrirla en ese momento.</p>
         <div class="btn-row" style="margin-top:10px;">
-          <button type="button" class="btn btn-navy" onclick="exportarDatos()">⬇️ Exportar datos</button>
-          <button type="button" class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
+          <button type="button" class="btn btn-navy" onclick="exportarDatos()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-save"/></svg> Exportar datos</button>
+          <button type="button" class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-upload"/></svg> Importar datos</button>
           <button type="button" class="btn btn-outline" style="color:var(--alert-coral);" onclick="borrarTodosDatos()">Borrar todos los datos</button>
         </div>
         <p id="datosMsg" class="field-ok" role="status" style="margin-top:12px;"></p>
@@ -2369,9 +2376,9 @@ function showWelcome(step){
     <div class="btn-row" style="margin-top:14px;">
       ${last
         ? `<button type="button" class="btn btn-outline" data-action="welcomeClose">Más tarde</button>
-           <button type="button" class="btn btn-primary" data-action="welcomeKit">Preparar mi Kit</button>`
+           <button type="button" class="btn btn-navy" data-action="welcomeKit">Preparar mi Kit</button>`
         : `<button type="button" class="btn btn-outline" data-action="welcomeClose">Saltar</button>
-           <button type="button" class="btn btn-primary" data-action="welcomeNext">Siguiente</button>`}
+           <button type="button" class="btn btn-navy" data-action="welcomeNext">Siguiente</button>`}
     </div>
   `);
 }
@@ -2456,7 +2463,7 @@ function showEmotion(id){
   const e = EMOTIONS.find(x=>x.id===id);
   if(!e) return;
   openModal(`
-    <span class="badge navy">${e.tipo} · Busca ${e.finalidad}</span>
+    <span class="badge navy emo-badge" style="--emo:${e.color};">${e.tipo} · Busca ${e.finalidad}</span>
     <h2>${emoji(e.id)} ${e.nombre}</h2>
     <h3 style="margin-top:14px;">¿Para qué sirve?</h3>
     <p class="desc">${e.funcion}</p>
@@ -2921,7 +2928,7 @@ function startPreTurno(){
       <textarea id="preTurno2" placeholder="Ej: escuchar hasta el final, sonreír más..."></textarea>
       <label for="preTurno3">Si aparece mi primera señal, ¿qué haré?</label>
       <textarea id="preTurno3" placeholder="Tu respuesta de emergencia..."></textarea>
-      <button type="button" class="btn btn-amber" style="margin-top:6px;" onclick="finalizarPreTurno()">Estoy preparado</button>
+      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarPreTurno()">Estoy preparado</button>
     </div>
   `);
 }
@@ -3264,7 +3271,7 @@ function renderNoSeQueNecesito(){
         <p class="desc" style="font-style:italic;">Empieza por este paso sugerido:</p>
         <h3>${primary.title}</h3>
         <p class="desc">${primary.desc}</p>
-        <button type="button" class="btn btn-primary" data-action="nsqnGo" data-idx="0">${primary.cta}</button>
+        <button type="button" class="btn btn-navy" data-action="nsqnGo" data-idx="0">${primary.cta}</button>
       </div>
       ${rest.length ? `
         <div class="card">
@@ -3322,7 +3329,7 @@ function renderGroundingStep(){
       <div class="step-dots">${groundingSteps.map((_,i)=>`<span class="${i<=groundingIdx?'on':''}"></span>`).join('')}</div>
       <div class="timer-big">${s.n}</div>
       <p style="font-size:18px;font-weight:700;">${s.label}</p>
-      <button type="button" class="btn btn-blue" onclick="nextGrounding()">${groundingIdx<groundingSteps.length-1?'Siguiente':'Terminar'}</button>
+      <button type="button" class="btn btn-navy" onclick="nextGrounding()">${groundingIdx<groundingSteps.length-1?'Siguiente':'Terminar'}</button>
     </div>
   `);
 }
@@ -3444,7 +3451,7 @@ function renderVisualAnchorModal(){
     <p class="desc">Guarda una frase o recordatorio de enfoque que puedas consultar rápidamente cuando lo necesites.</p>
     <label for="newVisualPhrase">Nuevo recordatorio</label>
     <input type="text" id="newVisualPhrase" placeholder="Ej: Me centro en hacer bien la siguiente parada">
-    <button type="button" class="btn btn-navy" onclick="addVisualAnchor()">Guardar</button>
+    <button type="button" class="btn btn-green" onclick="addVisualAnchor()">Guardar</button>
     <div style="margin-top:16px;">
       ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
         <div class="history-item">
@@ -3509,7 +3516,7 @@ function renderPedirFeedback(){
       <div id="pedirFeedbackOtroWrap" style="${pedirFeedbackSel==='Otro'?'':'display:none;'}">
         <textarea id="pedirFeedbackOtroInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe qué quieres pedir...">${escapeHtml(pedirFeedbackOtro)}</textarea>
       </div>
-      <button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="finalizarPedirFeedback()">Ver mi petición</button>
+      <button type="button" class="btn btn-navy" style="margin-top:10px;" onclick="finalizarPedirFeedback()">Ver mi petición</button>
     </div>
   `);
 }
@@ -3631,7 +3638,7 @@ function activarKitPlan(){
     ${state.kitAjuste?`<p class="desc"><b>Después, ajusto:</b> ${escapeHtml(state.kitAjuste)}</p>`:''}
     ${(state.kitPersona || state.kitPedira)?`<p class="desc"><b>Si sigo atascado, pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}</b>${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : '.'}</p>`:''}
     ${kitSuggestedTool ? `<button type="button" class="btn btn-outline" style="margin-top:6px;" data-action="kitSuggestedTool">Abrir también «${escapeHtml(kitSuggestedTool)}» de la app</button>` : ''}
-    <button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="closeModal()">Hecho</button>
+    <button type="button" class="btn btn-navy" style="margin-top:10px;" onclick="closeModal()">Hecho</button>
   `);
 }
 
@@ -4108,7 +4115,7 @@ function renderResetStep(){
       <p class="desc"><b>¿He podido aplicar el ajuste como quería?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Qué ha ocurrido en las conversaciones?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una mala conversación no demuestra que el ajuste no sirva. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
       ${resetStops>=10 ? '<p class="desc text-ok" style="font-weight:700;">Test completado.</p>' : `<p class="desc">${10-resetStops===1 ? "Te falta <b>1</b> parada" : `Te faltan <b>${10-resetStops}</b> paradas`} para poder continuar.</p>`}
-      <button type="button" class="btn btn-primary" style="margin-top:8px;" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Continuar</button>
+      <button type="button" class="btn btn-amber" style="margin-top:8px;" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Continuar</button>
       <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="closeReset()">Cerrar y seguir luego</button>
     `;
   }
@@ -4130,7 +4137,7 @@ function renderResetStep(){
         <label for="resetObservacionInput" style="margin-top:14px;">¿Qué has observado? (opcional)</label>
         <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgressSoon();">${escapeHtml(resetObservacion)}</textarea>
       </div>
-      <button type="button" class="btn btn-primary" ${resetAprendizaje?'':'disabled'} onclick="resetGoto(7)">Continuar</button>
+      <button type="button" class="btn btn-amber" ${resetAprendizaje?'':'disabled'} onclick="resetGoto(7)">Continuar</button>
     `;
   }
   else if(resetStep===7){
@@ -4156,7 +4163,7 @@ function renderResetStep(){
         <p class="desc"><b>«Cuando el resultado no acompañe, me comprometo a...»</b></p>
         <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..." oninput="resetPacto=this.value;saveResetProgressSoon();">${escapeHtml(resetPacto)}</textarea>
       </div>
-      <button type="button" class="btn btn-primary" onclick="finalizarReset()">Finalizar</button>
+      <button type="button" class="btn btn-amber" onclick="finalizarReset()">Finalizar</button>
     `;
   }
 }
