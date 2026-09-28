@@ -415,7 +415,7 @@ header :focus-visible, .overlay-header :focus-visible{outline-color:#fff;}
 /* HISTORY */
 .history-item{border-left:4px solid var(--wesser-red);padding:10px 12px;margin-bottom:10px;background:var(--bg-main);border-radius:0 10px 10px 0;}
 .history-item .meta{font-size:12px;color:var(--text-secondary);margin-bottom:4px;}
-.history-item .del, .help-body .del{float:right;background:none;border:none;color:var(--alert-coral);font-size:13px;font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px -6px 0 0;}
+.history-item .del, .help-body .del{float:right;background:none;border:none;color:var(--error-text);font-size:13px;font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px -6px 0 0;}
 .history-item .edit, .help-body .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:13px;font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px 4px 0 0;}
 :root[data-theme="dark"] .history-item .edit, :root[data-theme="dark"] .help-body .edit{color:#cbd5e1;}
 
@@ -439,7 +439,11 @@ header :focus-visible, .overlay-header :focus-visible{outline-color:#fff;}
 /* Mensajes en línea de formularios y de «Mis datos» */
 .field-error, .field-ok{font-size:13.5px;font-weight:700;margin:-4px 0 12px;line-height:1.45;}
 .field-error{color:var(--error-text);}
-.field-error::before{content:'⚠️ ';content:'⚠️ ' / '';}
+/* Icono de estado (de línea, en el color del texto) delante de cada mensaje con contenido */
+.field-error:not(:empty)::before, .field-ok:not(:empty)::before{content:'';display:inline-block;width:1.15em;height:1.15em;margin-right:6px;vertical-align:-.2em;
+  background:currentColor;-webkit-mask:var(--msg-ic) center/contain no-repeat;mask:var(--msg-ic) center/contain no-repeat;}
+.field-error{--msg-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5L2.5 20h19z'/%3E%3Cpath d='M12 10v4.5'/%3E%3Cpath d='M12 17.5h.01'/%3E%3C/svg%3E");}
+.field-ok{--msg-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M8 12.5l2.8 2.8L16 10'/%3E%3C/svg%3E");}
 .field-ok{color:var(--ok-text);}
 [aria-invalid="true"]{border-color:var(--error-text) !important;}
 .chip-group.has-error{outline:2px solid var(--error-text);outline-offset:6px;border-radius:12px;}
@@ -1777,7 +1781,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-navy" onclick="exportarDatos()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-save"/></svg> Exportar datos</button>
           <button type="button" class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-upload"/></svg> Importar datos</button>
-          <button type="button" class="btn btn-outline" style="color:var(--alert-coral);" onclick="borrarTodosDatos()">Borrar todos los datos</button>
+          <button type="button" class="btn btn-outline" style="color:var(--error-text);" onclick="borrarTodosDatos()">Borrar todos los datos</button>
         </div>
         <p id="datosMsg" class="field-ok" role="status" style="margin-top:12px;"></p>
         <input type="file" id="importDatosInput" accept="application/json" style="display:none;" onchange="importarDatos(this)">
@@ -2231,7 +2235,7 @@ function exportarDatos(){
     const toRevoke = url;
     setTimeout(()=>URL.revokeObjectURL(toRevoke), 30000);
     const n = (arr, uno, varios) => `${arr.length} ${arr.length===1 ? uno : varios}`;
-    datosMsg(`✅ Copia de seguridad descargada: ${filename}. `
+    datosMsg(`Copia de seguridad descargada: ${filename}. `
       + `Incluye ${n(state.sepaEntries,'registro del Diario','registros del Diario')}, `
       + `${n(state.resetHistory,'sesión de Reset','sesiones de Reset')}, `
       + `${n(state.checkins,'check-in','check-ins')}, `
@@ -3573,7 +3577,7 @@ function guardarPedirFeedbackEnKit(){
     msg.id = 'pedirKitMsg'; msg.className = 'field-ok'; msg.setAttribute('role', 'status'); msg.style.marginTop = '10px';
     btn.insertAdjacentElement('afterend', msg);
   }
-  if(msg) msg.textContent = '✅ Guardado en tu Kit como «¿Qué pediré?».';
+  if(msg) msg.textContent = 'Guardado en tu Kit como «¿Qué pediré?».';
 }
 
 /* ============ KIT DE EMERGENCIA DEL CAPTADOR ============ */

@@ -61,7 +61,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   // Pide feedback → guardado en Kit en línea
   await page.evaluate(() => { startPedirFeedback(); selectPedirFeedback('Mira mi ritmo'); finalizarPedirFeedback(); });
   await page.locator('[data-action="guardarPedirFeedbackEnKit"]').click();
-  ok((await page.locator('#pedirKitMsg').innerText()).startsWith('✅ Guardado en tu Kit'), 'Pide feedback: confirmación en línea');
+  ok((await page.locator('#pedirKitMsg').innerText()).startsWith('Guardado en tu Kit'), 'Pide feedback: confirmación en línea');
   await page.evaluate(() => closeTool());
 
   // Confirmación de borrado

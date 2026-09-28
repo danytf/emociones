@@ -101,7 +101,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await dl.saveAs(file);
   const exp = JSON.parse(fs.readFileSync(file, 'utf8'));
   ok(exp.exportFormat === 'wesser-app-data' && exp.dataVersion === 3 && /Z$/.test(exp.exportedAt), 'export incluye formato, versión y fecha de exportación');
-  ok((await page.locator('#datosMsg').innerText()).startsWith('✅ Copia de seguridad descargada: ' + expectedName), 'mensaje de éxito claro (en línea)');
+  ok((await page.locator('#datosMsg').innerText()).startsWith('Copia de seguridad descargada: ' + expectedName), 'mensaje de éxito claro (en línea)');
   const madridMidnight = await page.evaluate(() => { const d = new Date(2026, 8, 28, 0, 30); return { local: localDateStamp(d), utc: d.toISOString().slice(0, 10) }; });
   ok(madridMidnight.local === '2026-09-28' && madridMidnight.utc === '2026-09-27', 'a las 00:30 usa la fecha local, no la UTC');
   const revoked = await page.evaluate(() => new Promise(res => {
