@@ -15,6 +15,7 @@
   --wesser-red:#CC2E34;
   --wesser-red-dark:#A8242A;
   --wesser-navy:#292C2F;
+  --emo-tristeza:#292C2F;
   --reset-amber:#F59E0B;
   --reset-amber-dark:#B45309;
   --calm-blue:#0369A1;
@@ -35,6 +36,7 @@
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
+  --emo-tristeza:#8A96A0;
   --error-text:#FCA5A5;
   --ok-text:#6EE7B7;
   --bg-main:#1B1D1F;
@@ -855,6 +857,21 @@ header :focus-visible{outline-color:var(--wesser-red);}
 .modal-sheet.ds{--tone:var(--wesser-red);}
 :root[data-theme="dark"] .modal-sheet.ds{--tone:#EF6A6E;}
 #helpOverlay .overlay-body > p.desc:first-child{font-size:var(--fs-md);line-height:1.6;}
+/* ---------- Rueda de emociones, respiración y deslizadores ---------- */
+.ds .wheel-btn{background:color-mix(in srgb, var(--emo) 12%, var(--ds-surface));border:1px solid color-mix(in srgb, var(--emo) 40%, var(--ds-surface));
+  color:var(--ds-ink);font-family:var(--font-brand);font-weight:700;}
+:root[data-theme="dark"] .ds .wheel-btn{background:color-mix(in srgb, var(--emo) 20%, var(--ds-surface));border-color:color-mix(in srgb, var(--emo) 55%, var(--ds-surface));}
+.ds .breath-circle{background:color-mix(in srgb, var(--tone-relief) 14%, var(--ds-surface));border:2px solid var(--tone-relief);
+  color:var(--tone-relief-ink);font-family:var(--font-brand);font-weight:700;
+  box-shadow:0 0 0 14px color-mix(in srgb, var(--tone-relief) 7%, transparent);}
+/* Deslizador propio: pista del tema y tramo recorrido en rojo (--fill lo pone rangeFill) */
+.ds input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;margin:14px 0 10px;
+  background:linear-gradient(to right, var(--wesser-red) var(--fill,50%), var(--ds-line-strong) var(--fill,50%));}
+.ds input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--wesser-red);
+  border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
+.ds input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--wesser-red);border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
+.ds input[type=range]:focus-visible{outline-offset:6px;}
+:root[data-theme="dark"] .ds .range-val{color:var(--ds-ink);}
 </style>
 </head>
 <body>
@@ -2376,7 +2393,7 @@ const EMOTIONS = [
     funcion:'Puede ayudarnos a acercarnos a los demás, conectar y afrontar lo que hacemos con más energía y motivación.',
     expresion:'Sonrisa, sensación de bienestar y energía, mayor apertura y ganas de relacionarnos.',
     reencuadre:'Disfruto la conversación, conecto con la persona y doy lo mejor de mí.'},
-  {id:'tristeza', nombre:'Tristeza', color:'var(--wesser-navy)', tipo:'Básica', finalidad:'ASIMILACIÓN',
+  {id:'tristeza', nombre:'Tristeza', color:'var(--emo-tristeza)', tipo:'Básica', finalidad:'ASIMILACIÓN',
     funcion:'Puede ayudarnos a asimilar una pérdida, una decepción o algo que nos ha afectado, y también puede llevarnos a buscar apoyo o a bajar el ritmo.',
     expresion:'Menos energía, necesidad de estar más tranquilos o solos, llanto o sensación de pesadez.',
     reencuadre:'Esto me ha afectado, pero un rechazo no define mi capacidad. Puedo aprender de lo ocurrido y seguir.'},
@@ -2428,7 +2445,7 @@ const PENSAMIENTO_HOOKS = {
 function renderWheel(){
   const grid = document.getElementById('wheelGrid');
   grid.innerHTML = EMOTIONS.map(e=>`
-    <button type="button" class="wheel-btn" style="background:${e.color};${e.textColor?`color:${e.textColor};`:''}" data-action="showEmotion" data-value="${escapeHtml(e.id)}">
+    <button type="button" class="wheel-btn" style="--emo:${e.color};" data-action="showEmotion" data-value="${escapeHtml(e.id)}">
       <span class="em">${emoji(e.id)}</span>${e.nombre}
     </button>`).join('');
 }
@@ -2840,9 +2857,13 @@ function openTool(title, html){
   document.getElementById('toolTitle').textContent = title;
   const body = document.getElementById('toolBody');
   body.innerHTML = html;
+  body.querySelectorAll('input[type=range]').forEach(rangeFill);
   body.classList.add('center-short');
   Overlays.open('tool');
 }
+/* Tramo recorrido del deslizador (lo pinta el CSS con --fill) */
+function rangeFill(el){ el.style.setProperty('--fill', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); }
+document.addEventListener('input', e=>{ if(e.target.matches('input[type=range]')) rangeFill(e.target); });
 function closeTool(){ Overlays.close('tool'); }
 let toolRepeatFn = null;
 function showToolDone(title, repeatFn){
