@@ -1412,7 +1412,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
         </button>
         <button type="button" class="trow" onclick="startBreath(60)">
           <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span>
-          <span class="trow-body"><span class="trow-title">Suspiro fisiológico</span><span class="trow-desc"><span class="trow-meta">30–60 s</span> · Baja rápido la activación si estás nervioso o tenso.</span></span>
+          <span class="trow-body"><span class="trow-title">Suspiro fisiológico</span><span class="trow-desc"><span class="trow-meta">30–60 s</span> · Puede ayudarte a bajar la activación si estás nervioso o tenso.</span></span>
           <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
         </button>
         <button type="button" class="trow" onclick="startPauseDecision()">
@@ -1704,7 +1704,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
         <p><b>Reinicio y regulación</b><br>Para <b>bajar la activación o recuperar perspectiva</b> en el momento.</p>
         <ul>
           <li><b>Después de una mala interacción</b>: Corta → Separa → Aprende → Suelta → Vuelve. Te ayuda a evitar que una interacción difícil contamine las siguientes.</li>
-          <li><b>Suspiro fisiológico</b>: ejercicio respiratorio de 60 segundos que puede ayudarte a bajar rápidamente la activación cuando estás acelerado o tenso.</li>
+          <li><b>Suspiro fisiológico</b>: ejercicio respiratorio de hasta 60 segundos que puede ayudarte a bajar rápidamente la activación cuando estás acelerado o tenso.</li>
           <li><b>Parar y decidir</b>: PARA → Toma aire → Observa y nombra → Genera opciones → Actúa. Es la herramienta general para situaciones de tensión, rabia o bloqueo. <b>Úsala cuando no sepas cuál elegir.</b></li>
           <li><b>Grounding 5‑4‑3‑2‑1</b>: lleva tu atención a los 5 sentidos para volver al presente.</li>
           <li><b>Tense &amp; Release</b>: tensa y suelta puños, brazos, hombros y piernas para liberar la tensión física.</li>
@@ -3063,7 +3063,8 @@ function stepBreathCycle(circleEl, idx){
 function startBreath(seconds){
   openTool('Suspiro Fisiológico', `
     <div class="card" style="text-align:center;">
-      <p class="desc">Inhala profundo por la nariz (2-3s), una segunda inhalación corta (1s), y exhala lentamente por la boca (6-8s) hasta vaciar los pulmones.</p>
+      <p class="desc">Inhala profundo por la nariz (2-3 s), una segunda inhalación corta (1 s), y exhala lentamente por la boca (6-8 s), sin forzar.</p>
+      <p class="desc" style="font-size:var(--fs-sm);"><b>Si te mareas o te resulta incómodo, vuelve a respirar con normalidad.</b> Puedes terminar cuando quieras.</p>
       <div class="breath-circle" id="breathCircle">Inhala</div>
       <div class="timer-big" role="timer" id="breathTimer">${seconds}</div>
       <button type="button" class="btn btn-outline" onclick="closeTool()">Terminar</button>
