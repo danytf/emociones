@@ -1029,7 +1029,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
           <p>Una emoción es una <b>respuesta de nuestro cuerpo y nuestra mente ante algo que sucede o que interpretamos</b>. Muchas veces aparece de forma automática y nos prepara para responder.</p>
 
           <p><b>¿De dónde puede surgir?</b></p>
-          <p>Puede aparecer por algo que <b>pasa fuera de nosotros</b> o por algo que <b>pensamos, recordamos o imaginamos</b> .</p>
+          <p>Puede aparecer por algo que <b>pasa fuera de nosotros</b> o por algo que <b>pensamos, recordamos o imaginamos</b>.</p>
 
           <p><b>¿Para qué sirve?</b></p>
           <p>Las emociones <b>pueden cumplir una función útil</b>: nos ayudan a adaptarnos y nos preparan para responder a lo que está ocurriendo.</p>
@@ -1069,13 +1069,13 @@ header :focus-visible{outline-color:var(--wesser-red);}
           <p>Para esta app utilizamos el <b>modelo de cinco competencias de Daniel Goleman</b> como marco práctico.</p>
 
           <p><b>Conmigo mismo</b></p>
-          <p><b>1. Autoconciencia </b><br>Reconocer <b>qué estoy sintiendo y ponerle nombre</b>.</p>
-          <p><b>2. Autorregulación </b><br>Gestionar lo que siento <b>sin reaccionar automáticamente</b>.</p>
-          <p><b>3. Motivación </b><br>Mantener el rumbo hacia un objetivo <b>aunque aparezcan dificultades, rechazo o días malos</b>.</p>
+          <p><b>1. Autoconciencia</b><br>Reconocer <b>qué estoy sintiendo y ponerle nombre</b>.</p>
+          <p><b>2. Autorregulación</b><br>Gestionar lo que siento <b>sin reaccionar automáticamente</b>.</p>
+          <p><b>3. Motivación</b><br>Mantener el rumbo hacia un objetivo <b>aunque aparezcan dificultades, rechazo o días malos</b>.</p>
 
           <p><b>Con los demás</b></p>
-          <p><b>4. Empatía </b><br>Intentar comprender <b>qué puede estar sintiendo o pensando la otra persona</b>, sin necesidad de estar de acuerdo.</p>
-          <p><b>5. Habilidades sociales </b><br><b>Comunicar, escuchar, adaptarse, resolver conflictos y relacionarnos bien con los demás.</b></p>
+          <p><b>4. Empatía</b><br>Intentar comprender <b>qué puede estar sintiendo o pensando la otra persona</b>, sin necesidad de estar de acuerdo.</p>
+          <p><b>5. Habilidades sociales</b><br><b>Comunicar, escuchar, adaptarse, resolver conflictos y relacionarnos bien con los demás.</b></p>
 
           <p><b>En la calle</b></p>
           <p class="quote">Tener Inteligencia Emocional no significa <b>«no sentir»</b>. Significa <b>darte cuenta de lo que estás sintiendo, gestionarlo y decidir cómo quieres responder</b>.</p>
@@ -2763,9 +2763,9 @@ function renderPatrones(){
 /* ============ CHECKPOINT ============ */
 let editingCheckpointId = null;
 const CHECKPOINT_DECISIONES = [
-  {v:'Sigo igual', em:''},
-  {v:'Hago una pausa', em:''},
-  {v:'Ajusto la estrategia', em:''}
+  {v:'Sigo igual'},
+  {v:'Hago una pausa'},
+  {v:'Ajusto la estrategia'}
 ];
 function openCheckpoint(editId){
   editingCheckpointId = editId || null;
@@ -2976,6 +2976,13 @@ function startPreTurno(){
               <p>${escapeHtml(state.kitAjuste)}</p>
             </div>
           ` : ''}
+          ${(state.kitPersona || state.kitPedira) ? `
+            <div class="kit-flow-arrow">↓</div>
+            <div class="kit-flow-step">
+              <span class="kit-flow-label">SI SIGO ATASCADO</span>
+              <p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>
+            </div>
+          ` : ''}
         </div>
       </div>
     ` : ''}
@@ -2987,7 +2994,7 @@ function startPreTurno(){
       <label for="preTurno2">¿Qué quiero cuidar en mi forma de captar?</label>
       <textarea id="preTurno2" placeholder="Ej: escuchar hasta el final, sonreír más..."></textarea>
       <label for="preTurno3">Si aparece mi primera señal, ¿qué haré?</label>
-      <textarea id="preTurno3" placeholder="Tu respuesta de emergencia..."></textarea>
+      <textarea id="preTurno3" placeholder="${tienePlan ? 'Ya lo tienes en tu plan de arriba; añade algo solo si quieres' : 'Tu respuesta de emergencia...'}"></textarea>
       <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarPreTurno()">Estoy preparado</button>
     </div>
   `);
@@ -3010,6 +3017,7 @@ function finalizarPreTurno(){
       </div>
     </div>
   `);
+  announce('Estoy preparado: resumen listo.');
 }
 
 /* ---- Cierre de turno (transición trabajo -> casa) ---- */
@@ -3048,6 +3056,7 @@ function finalizarCierreTurno(){
       <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="closeTool();startGrounding();">Sigo dándole vueltas</button>
     </div>
   `);
+  announce('Turno cerrado: resumen listo.');
 }
 
 /* ---- Volver a calle (retomar el turno tras una pausa) ---- */
@@ -3073,16 +3082,17 @@ function finalizarVolverCalle(){
       <h3 style="text-align:center;">Vuelvo a calle</h3>
       <p class="desc"><b>¿Cómo estoy?</b><br>${escapeHtml(como)||'—'}</p>
       <p class="desc"><b>Primera parada:</b><br>${escapeHtml(primero)||'—'}</p>
-      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"No necesito recuperar el día. Solo hacer el siguiente."</p>
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"No necesito recuperar el día. Solo hacer bien la siguiente parada."</p>
       <div class="btn-row" style="margin-top:10px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
         <button type="button" class="btn btn-blue" onclick="startVolverCalle()">Repetir</button>
       </div>
     </div>
   `);
+  announce('Vuelvo a calle: resumen listo.');
 }
 
-/* ---- Breathing (Suspiro Fisiológico de Huberman) ---- */
+/* ---- Breathing (Suspiro fisiológico de Huberman) ---- */
 const BREATH_SEQUENCE = [
   {label:'Inhala', ms:2500},
   {label:'Inhala corto', ms:1000},
@@ -3097,7 +3107,7 @@ function stepBreathCycle(circleEl, idx){
   toolTimers.push(t);
 }
 function startBreath(seconds){
-  openTool('Suspiro Fisiológico', `
+  openTool('Suspiro fisiológico', `
     <div class="card" style="text-align:center;">
       <p class="desc">Inhala profundo por la nariz (2-3 s), una segunda inhalación corta (1 s), y exhala lentamente por la boca (6-8 s), sin forzar.</p>
       <p class="desc" style="font-size:var(--fs-sm);"><b>Si te mareas o te resulta incómodo, vuelve a respirar con normalidad.</b> Puedes terminar cuando quieras.</p>
@@ -3114,7 +3124,7 @@ function startBreath(seconds){
   const t2 = setInterval(()=>{
     remaining--;
     timerEl.textContent = remaining;
-    if(remaining<=0){ showToolDone('Suspiro Fisiológico', ()=>startBreath(60)); }
+    if(remaining<=0){ showToolDone('Suspiro fisiológico', ()=>startBreath(60)); }
   }, 1000);
   toolTimers.push(t2);
 }
@@ -3474,7 +3484,7 @@ function runAnchorGuide(i){
 
 /* ---- Tense & Release ---- */
 const tenseGroups = [
-  {name:'Puños', emoji:''}, {name:'Brazos', emoji:''}, {name:'Hombros', emoji:''}, {name:'Piernas', emoji:''}
+  {name:'Puños'}, {name:'Brazos'}, {name:'Hombros'}, {name:'Piernas'}
 ];
 let tenseIdx = 0, tensePhase = 'tense';
 function startTense(){ tenseIdx=0; announce(`Tense & Release: ${tenseGroups.length} grupos musculares, 5 segundos de tensión y 5 de relajación cada uno.`); runTensePhase('tense',5); }
@@ -3561,11 +3571,11 @@ function activarRecordatorioVisual(){
 
 /* ---- Pide feedback (concreta una peticion de observacion en vez de un generico "dime si lo hago bien") ---- */
 const PEDIR_FEEDBACK_OPCIONES = [
-  {em:'', v:'Obsérvame en una parada'},
-  {em:'', v:'Escucha mi apertura'},
-  {em:'', v:'Dime si estoy anticipando demasiado'},
-  {em:'', v:'Mira mi ritmo'},
-  {em:'', v:'Ayúdame con esta objeción'}
+  {v:'Obsérvame en una parada'},
+  {v:'Escucha mi apertura'},
+  {v:'Dime si estoy anticipando demasiado'},
+  {v:'Mira mi ritmo'},
+  {v:'Ayúdame con esta objeción'}
 ];
 let pedirFeedbackSel = '';
 let pedirFeedbackOtro = '';
@@ -4201,9 +4211,9 @@ function renderResetStep(){
   }
   else if(resetStep===6){
     const opciones = [
-      {v:'Lo mantengo', em:''},
-      {v:'Lo ajusto', em:''},
-      {v:'Pruebo otra cosa', em:''}
+      {v:'Lo mantengo'},
+      {v:'Lo ajusto'},
+      {v:'Pruebo otra cosa'}
     ];
     body.innerHTML = `
       ${resetDots()}
