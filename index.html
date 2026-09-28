@@ -3389,9 +3389,11 @@ function renderGroundingStep(){
       <div class="step-dots">${groundingSteps.map((_,i)=>`<span class="${i<=groundingIdx?'on':''}"></span>`).join('')}</div>
       <div class="timer-big">${s.n}</div>
       <p style="font-size:18px;font-weight:700;">${s.label}</p>
+      <p class="desc" style="font-size:var(--fs-sm);">Nómbralo mentalmente, sin hablar. Si no llegas a esa cifra, no pasa nada: pasa al siguiente sentido.</p>
       <button type="button" class="btn btn-navy" onclick="nextGrounding()">${groundingIdx<groundingSteps.length-1?'Siguiente':'Terminar'}</button>
     </div>
   `);
+  announce(`${s.n} ${s.label.toLowerCase()}.`);
 }
 function nextGrounding(){
   groundingIdx++;

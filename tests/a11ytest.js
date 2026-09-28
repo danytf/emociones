@@ -158,6 +158,13 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   ok(lista.del.startsWith(lista.visible + ' registro del') && lista.del.includes('Zona con poco flujo'), 'Eliminar del historial nombra el registro: ' + lista.del);
   ok(anuncios.includes('Añadido a la acción: Pausa consciente'), 'los chips de acción anuncian lo añadido: ' + anuncios);
 
+  // Grounding: cada paso se anuncia al lector de pantalla
+  await page.evaluate(() => { window.__ann = []; startGrounding(); nextGrounding(); });
+  await page.waitForTimeout(300);
+  const annG = await page.evaluate(() => window.__ann.map(a => a[1]).join(' | '));
+  ok(annG.includes('4 sonidos que puedes escuchar'), 'Grounding anuncia cada paso: ' + annG);
+  await page.evaluate(() => Overlays.close('tool'));
+
   ok(errors.length === 0, 'sin errores de JS: ' + errors.join(' | '));
   await browser.close();
 })();
