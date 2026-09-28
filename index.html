@@ -1989,7 +1989,7 @@ function guardarSepa(){
   // Mismas condiciones que antes, pero se indican todas a la vez junto a cada campo
   const errores = [];
   if(situacionSel==='Otra' && !situacionOtra) errores.push(['sepaSituacionOtra', 'Describe brevemente la situación.']);
-  if(!selectedEmociones.length) errores.push(['sepaEmocionChips', 'Selecciona al menos una emoción sentida.']);
+  if(!selectedEmociones.length) errores.push(['sepaEmocionChips', 'Selecciona al menos una emoción.']);
   if(pDLista==='Otro' && !pDLibre) errores.push(['sepaPensDestructivoLibre', 'Escribe tu pensamiento automático.']);
   if(!pensC) errores.push(['sepaPensConstructivo', 'Escribe un pensamiento útil (o pulsa «Sugerir reencuadre»).']);
   if(!accion) errores.push(['sepaAccion', 'Indica qué vas a hacer ahora.']);
