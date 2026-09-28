@@ -2450,7 +2450,7 @@ const EMOTIONS = [
    del Diario y «Sugerir reencuadre» leen de ahí. Aquí solo se añade el reencuadre genérico. */
 const REENCUADRES = {
   ...Object.fromEntries(EMOTIONS.map(e=>[e.id, e.reencuadre])),
-  generico:'Es una zona difícil, pero todavía puedo aplicar técnica y centrarme en hacer buenas conversaciones.'
+  generico:'Es un momento difícil, pero todavía puedo aplicar técnica y centrarme en hacer buenas conversaciones.'
 };
 const SITUACION_HOOKS = {
   'Permiso difícil':'Este permiso concreto está siendo más difícil de lo habitual.',
@@ -2529,8 +2529,15 @@ function sugerirReencuadre(){
   /* Con «Otra…» no hay gancho de situación: se usa el del pensamiento o, si no hay, el genérico */
   const contextHook = (situacion!=='Otra' && SITUACION_HOOKS[situacion]) || PENSAMIENTO_HOOKS[pensD] || SITUACION_HOOKS['Otra'];
   const texto = contextHook ? `${contextHook} ${emoTxt}` : emoTxt;
-  document.getElementById('sepaPensConstructivo').value = texto;
+  /* Lo que haya escrito el usuario se conserva: la sugerencia se añade debajo.
+     Solo se sustituye si el campo está vacío o contiene únicamente la sugerencia anterior. */
+  const el = document.getElementById('sepaPensConstructivo');
+  const actual = el.value.trim();
+  if(!actual || actual === lastReencuadre) el.value = texto;
+  else if(!actual.includes(texto)) el.value = actual + '\n' + texto;
+  lastReencuadre = texto;
 }
+let lastReencuadre = '';
 function insertAccion(txt){
   const el = document.getElementById('sepaAccion');
   el.value = el.value ? el.value + '. ' + txt : txt;

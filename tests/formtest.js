@@ -73,6 +73,20 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.mouse.click(10, 10);
   ok(await page.evaluate(() => state.sepaEntries.length === 1 && Overlays.top() === null), 'clic en el fondo = cancelar');
 
+  // «Sugerir reencuadre» no borra lo que ha escrito el usuario
+  const reenc = await page.evaluate(() => {
+    goto('diario');
+    const el = document.getElementById('sepaPensConstructivo');
+    el.value = ''; sugerirReencuadre(); const sola = el.value;
+    sugerirReencuadre(); const repetida = el.value;               // pulsar dos veces: sustituye, no duplica
+    el.value = 'Mi propia idea'; sugerirReencuadre(); const conPropia = el.value;
+    sugerirReencuadre(); const otraVez = el.value;
+    el.value = '';
+    return { sola, repetida, conPropia, otraVez };
+  });
+  ok(reenc.sola && reenc.repetida === reenc.sola && !reenc.sola.includes('zona difícil'), 'reencuadre: con el campo vacío se rellena; al repetir no se duplica; sin «zona difícil» genérica');
+  ok(reenc.conPropia.startsWith('Mi propia idea') && reenc.conPropia.includes(reenc.sola) && reenc.otraVez === reenc.conPropia, 'reencuadre: conserva lo escrito y añade la sugerencia debajo, una sola vez');
+
   // Error al guardar: aviso no modal, sin repetir
   await page.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('QuotaExceeded'); }; save(); save(); });
   ok(await page.locator('#toast').evaluate(t => t.classList.contains('show') && t.classList.contains('error')), 'error de guardado como aviso no modal');
