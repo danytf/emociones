@@ -3083,7 +3083,7 @@ function finalizarReset(){
   renderPatrones();
 }
 function borrarResetHistorial(id){
-  if(!confirm('¿Eliminar esta sesión Reset del historial? No se puede deshacer.')) return;
+  if(!confirm('¿Eliminar esta sesión de Reset del historial? No se puede deshacer.')) return;
   state.resetHistory = state.resetHistory.filter(x=>x.id!==id);
   save(); renderResetStep();
   renderPatrones();
