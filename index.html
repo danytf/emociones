@@ -637,6 +637,26 @@ header :focus-visible{outline-color:var(--wesser-red);}
 /* Iconos del lanzador rápido */
 .ql-btn .ql-em{display:inline-flex;}
 .ql-btn .ql-em .ic{width:18px;height:18px;}
+/* Lanzador rápido en el sistema de diseño: botones neutros; solo la acción principal
+   (Activar mi plan) va en rojo de marca sólido; Reset y Qué ha funcionado, en tono suave. */
+.ql-btn{background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-md);
+  box-shadow:0 1px 2px rgba(28,31,33,.04);color:var(--ds-ink);font-weight:650;transition:border-color .15s ease, background .15s ease;}
+.ql-btn .ql-em{color:var(--ds-ink-2);}
+@media (hover:hover){ .ql-btn:hover{border-color:var(--ds-line-strong);transform:none;} }
+.ql-btn:active{background:var(--ds-canvas);}
+.ql-btn.ql-kit{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;box-shadow:0 2px 8px rgba(204,46,52,.25);}
+.ql-btn.ql-kit .ql-em{color:#fff;}
+@media (hover:hover){ .ql-btn.ql-kit:hover{background:var(--wesser-red-dark);border-color:var(--wesser-red-dark);} }
+.ql-btn.ql-reset{background:color-mix(in srgb, #E0A030 18%, var(--ds-surface));border-color:color-mix(in srgb, #E0A030 40%, var(--ds-surface));color:#7A4F12;}
+.ql-btn.ql-reset .ql-em{color:#7A4F12;}
+:root[data-theme="dark"] .ql-btn.ql-reset{background:color-mix(in srgb, #F0CB85 16%, var(--ds-surface));border-color:color-mix(in srgb, #F0CB85 35%, var(--ds-surface));color:#F0CB85;}
+:root[data-theme="dark"] .ql-btn.ql-reset .ql-em{color:#F0CB85;}
+.ql-btn.ql-success{background:color-mix(in srgb, var(--tone-anchor) 12%, var(--ds-surface));border-color:color-mix(in srgb, var(--tone-anchor) 30%, var(--ds-surface));color:var(--tone-anchor-ink);}
+.ql-btn.ql-success .ql-em{color:var(--tone-anchor-ink);}
+.ql-title{color:var(--ds-ink-3);letter-spacing:.04em;white-space:nowrap;}
+@media (max-width:400px){ .ql-title{font-size:11px;letter-spacing:.02em;} }
+@media (max-width:350px){ .ql-title{white-space:normal;} }
+@media (prefers-reduced-motion: reduce){ .ql-btn{transition:none;} }
 
 /* ---------- Tipografía de marca: Montserrat (wesser.es), incrustada para funcionar sin conexión.
    Licencia SIL Open Font License 1.1. Solo títulos y navegación; el texto corrido usa la del sistema. */
