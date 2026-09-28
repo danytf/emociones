@@ -3302,11 +3302,12 @@ const NSQN_QUESTIONS = [
   {key:'acelerado', q:'¿Tu cuerpo está acelerado?'},
   {key:'cabeza', q:'¿Tu cabeza no para?'},
   {key:'evitando', q:'¿Estás evitando hacer paradas?'},
-  {key:'dias', q:'¿Llevas varios días así?'}
+  {key:'dias', q:'¿Llevas varios días sin encontrar tu ritmo?'}
 ];
 let nsqnAnswers = {};
 let nsqnRecs = [];
-function startNoSeQueNecesito(){ nsqnAnswers = {}; renderNoSeQueNecesito(); }
+let nsqnLastResult = '';   // último resultado anunciado: solo se anuncia cuando cambia
+function startNoSeQueNecesito(){ nsqnAnswers = {}; nsqnLastResult = ''; renderNoSeQueNecesito(); }
 function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(); }
 /* Orientación sencilla para elegir herramienta, no un diagnóstico ni un triaje: el orden solo
    decide qué paso se sugiere primero (un patrón de varios días, luego la evitación, luego la
@@ -3315,7 +3316,7 @@ function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(
 function nsqnRecommendations(){
   const list = [];
   if(nsqnAnswers.dias === true) list.push({title:'Modo Reset', desc:'Si esto se repite varios días, el modo Reset te ayuda a revisar qué está cambiando y a elegir un ajuste.', action:()=>{ closeTool(); openReset(); }, cta:'Ir a Reset'});
-  if(nsqnAnswers.evitando === true) list.push({title:'Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:startPauseDecision, cta:'Empezar'});
+  if(nsqnAnswers.evitando === true) list.push({title:'El momento de decidir', desc:'Puede ayudarte a distinguir si estás decidiendo o evitando antes de dejar pasar a alguien.', action:startMomentoDecidir, cta:'Empezar'});
   if(nsqnAnswers.acelerado === true) list.push({title:'Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:()=>startBreath(60), cta:'Respirar 60 s'});
   if(nsqnAnswers.cabeza === true) list.push({title:'Grounding 5-4-3-2-1', desc:'Puede ayudarte a sacar la atención del bucle de pensamientos y volver al presente.', action:startGrounding, cta:'Empezar'});
   return list;
@@ -3347,7 +3348,7 @@ function renderNoSeQueNecesito(){
   } else if(answered === NSQN_QUESTIONS.length){
     resultHtml = `
       <div class="card" style="text-align:center;">
-        <p class="desc">Con estas respuestas no tengo una herramienta clara para recomendarte. Puedes hacer un Checkpoint o elegir una herramienta manualmente.</p>
+        <p class="desc">Con estas respuestas no tengo una herramienta clara para recomendarte. <b>Si lo que notas es cansancio o falta de energía, un Checkpoint puede ayudarte a decidir cómo seguir.</b> También puedes elegir una herramienta tú mismo.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-outline" onclick="closeTool();openCheckpoint();">Hacer un Checkpoint</button>
           <button type="button" class="btn btn-outline" onclick="closeTool();goto('herramientas');">Ver herramientas</button>
@@ -3367,6 +3368,10 @@ function renderNoSeQueNecesito(){
     </div>
     ${resultHtml}
   `);
+  const result = recs.length ? `Paso sugerido: ${recs[0].title}.`
+    : (answered === NSQN_QUESTIONS.length ? 'Sin herramienta clara: puedes hacer un Checkpoint o ver las herramientas.' : '');
+  if(result && result !== nsqnLastResult) announce(result);
+  nsqnLastResult = result;
 }
 
 /* ---- Grounding 5-4-3-2-1 ---- */

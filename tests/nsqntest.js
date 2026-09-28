@@ -10,11 +10,16 @@ t=await p.locator('#toolBody').innerText();
 ok(t.includes('Empieza por este paso sugerido:') && t.indexOf('Modo Reset') < t.indexOf('Suspiro') && t.includes('Otras opciones'), 'varias: Reset primero y el resto como otras opciones');
 await p.evaluate(()=>{startNoSeQueNecesito(); ['acelerado','cabeza','evitando','dias'].forEach(k=>setNsqnAnswer(k,false));});
 t=await p.locator('#toolBody').innerText();
-ok(t.includes('Con estas respuestas no tengo una herramienta clara para recomendarte. Puedes hacer un Checkpoint o elegir una herramienta manualmente.'), 'sin recomendación: texto nuevo');
+ok(t.includes('Con estas respuestas no tengo una herramienta clara para recomendarte.') && t.includes('Si lo que notas es cansancio o falta de energía, un Checkpoint puede ayudarte a decidir cómo seguir.'), 'sin recomendación: orienta el cansancio hacia el Checkpoint');
 await p.locator('#toolBody button:has-text("Ver herramientas")').click();
 ok(await p.evaluate(()=>Overlays.top()===null && document.getElementById('view-herramientas').classList.contains('active')), '«Ver herramientas» lleva a la Caja de Herramientas');
 await p.evaluate(()=>{startNoSeQueNecesito(); ['acelerado','cabeza','evitando','dias'].forEach(k=>setNsqnAnswer(k,false));});
 await p.locator('#toolBody button:has-text("Hacer un Checkpoint")').click();
 ok(await p.locator('#toolTitle').innerText()==='Checkpoint de mitad de turno', '«Hacer un Checkpoint» abre el Checkpoint');
+await p.evaluate(()=>{ Overlays.close('tool'); startNoSeQueNecesito(); setNsqnAnswer('evitando',true); });
+await p.waitForTimeout(400);   // announce() escribe en la región viva con un pequeño retardo
+const ev = await p.evaluate(()=>({ txt: document.getElementById('toolBody').innerText, ann: document.getElementById('srStatus').textContent, q4: NSQN_QUESTIONS[3].q }));
+ok(ev.txt.includes('El momento de decidir') && ev.ann.includes('Paso sugerido: El momento de decidir'), 'evitar paradas → El momento de decidir, y se anuncia la sugerencia');
+ok(ev.q4 === '¿Llevas varios días sin encontrar tu ritmo?', 'pregunta 4 con sentido propio');
 ok(errs.length===0,'sin errores de JS '+errs.join('|'));
 await b.close();})();
