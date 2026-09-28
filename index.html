@@ -153,9 +153,29 @@ main{
 .ql-btn.ql-success{background:var(--success-green);border-color:var(--success-green);color:#fff;}
 .ql-more-collapsed{display:none;}
 .ql-more-expanded{display:contents;}
-.ql-btn.ql-toggle{background:transparent;border-style:dashed;color:var(--text-secondary);justify-content:center;}
 #qlKitSlot{display:contents;}
 .ql-btn.ql-kit{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;}
+/* «Más situaciones» va en la fila del título (antes de la lista que despliega) y no ocupa
+   una celda de la rejilla: en móvil ahorra una fila entera. Plegado: borde discontinuo;
+   desplegado: borde sólido y flecha girada. */
+.ql-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.ql-head .ql-title{margin-bottom:0;}
+.ql-toggle{
+  display:inline-flex;align-items:center;gap:6px;flex-shrink:0;min-height:44px;padding:0 14px;
+  border-radius:22px;border:1.5px dashed var(--border-color);background:transparent;
+  color:var(--text-secondary);font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+}
+.ql-toggle[aria-expanded="true"]{border-style:solid;border-color:var(--text-secondary);background:var(--card-bg);color:var(--text-primary);}
+.ql-toggle .ql-em{display:inline-block;transition:transform .2s ease;}
+.ql-toggle[aria-expanded="true"] .ql-em{transform:rotate(180deg);}
+@media (max-width:480px){
+  .quick-launcher{margin-bottom:14px;}
+  .ql-row{grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px;}
+  .ql-head{margin-bottom:6px;}
+  .ql-toggle{min-height:36px;padding:0 12px;}  /* ≥24 px (WCAG AA); en tablet se mantienen 44 px */
+  .ql-btn{padding:7px 10px;font-size:13px;}
+  .ql-btn .ql-em{font-size:15px;}
+}
 .view.active{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));
@@ -514,7 +534,10 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 
   <!-- QUICK LAUNCHER: ¿Qué necesitas ahora? -->
   <div class="quick-launcher">
-    <div class="ql-title">¿Qué necesitas ahora?</div>
+    <div class="ql-head">
+      <div class="ql-title">¿Qué necesitas ahora?</div>
+      <button type="button" class="ql-toggle" id="qlToggleBtn" aria-expanded="false" aria-controls="qlMoreWrap" onclick="toggleQlMore()"><span class="ql-lb">Más situaciones</span><span class="ql-em" aria-hidden="true">▾</span></button>
+    </div>
     <div class="ql-row" id="qlRow">
       <span id="qlKitSlot"></span>
       <button class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em">🤔</span><span class="ql-lb">No sé qué necesito</span></button>
@@ -532,7 +555,6 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
         <button class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em">👋</span><span class="ql-lb">Dudo en la parada</span></button>
         <button class="ql-btn" onclick="startTense()"><span class="ql-em">🥵</span><span class="ql-lb">Estoy muy tenso</span></button>
       </div>
-      <button class="ql-btn ql-toggle" id="qlToggleBtn" aria-expanded="false" aria-controls="qlMoreWrap" onclick="toggleQlMore()"><span class="ql-em">▾</span><span class="ql-lb">Más situaciones</span></button>
     </div>
   </div>
 
@@ -1837,9 +1859,8 @@ function toggleQlMore(){
   const btn = document.getElementById('qlToggleBtn');
   wrap.className = qlMoreExpanded ? 'ql-more-expanded' : 'ql-more-collapsed';
   btn.setAttribute('aria-expanded', qlMoreExpanded ? 'true' : 'false');
-  btn.innerHTML = qlMoreExpanded
-    ? '<span class="ql-em">▲</span><span class="ql-lb">Menos</span>'
-    : '<span class="ql-em">▾</span><span class="ql-lb">Más situaciones</span>';
+  // La flecha gira por CSS según aria-expanded; aquí solo cambia el texto
+  btn.querySelector('.ql-lb').textContent = qlMoreExpanded ? 'Menos situaciones' : 'Más situaciones';
 }
 
 /* ============ HELP OVERLAY ============ */
@@ -2376,7 +2397,7 @@ function startPreTurno(){
     ` : ''}
     <div class="card" style="text-align:left;">
       <p class="tool-meta">⏱️ 30–45 segundos</p>
-      <p class="desc">Tres preguntas rápidas antes de empezar el turno.</p>
+      <p class="desc">Tres preguntas rápidas antes de empezar el turno. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label>¿Cómo llego hoy?</label>
       <textarea id="preTurno1" placeholder="Una palabra o frase corta..."></textarea>
       <label>¿Qué quiero cuidar en mi forma de captar?</label>
@@ -2412,7 +2433,7 @@ function startCierreTurno(){
   openTool('🏠 Cierre de turno', `
     <div class="card" style="text-align:left;">
       <p class="tool-meta">⏱️ 30 segundos</p>
-      <p class="desc">Tres preguntas rápidas para cerrar el turno antes de volver a casa.</p>
+      <p class="desc">Tres preguntas rápidas para cerrar el turno antes de volver a casa. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label>¿Qué dejo hoy en el trabajo?</label>
       <textarea id="cierreTurno1" placeholder="Una palabra o frase corta..."></textarea>
       <label>¿Qué quiero llevarme?</label>
@@ -2450,7 +2471,7 @@ function startVolverCalle(){
   openTool('🔄 Volver a calle', `
     <div class="card" style="text-align:left;">
       <p class="tool-meta">⏱️ 15–20 segundos</p>
-      <p class="desc">Dos preguntas rápidas para retomar el turno después de la pausa.</p>
+      <p class="desc">Dos preguntas rápidas para retomar el turno después de la pausa. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label>¿Cómo estoy?</label>
       <textarea id="volverCalle1" placeholder="Una palabra o frase corta..."></textarea>
       <label>¿Qué quiero hacer en la primera parada?</label>
