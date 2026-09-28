@@ -1199,16 +1199,50 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 <script>
 /* ============ STATE ============ */
 const LS_KEY = 'wesserAppState';
-const DATA_VERSION = 2;
+const DATA_VERSION = 3;
+const EXPORT_FORMAT = 'wesser-app-data';
 /* Límites de saneamiento: cualquier dato (localStorage o importado) se recorta a estos tamaños */
 const LIMITS = {
   importBytes: 5 * 1024 * 1024,  // tamaño máximo del archivo importado
   items: 5000,                   // registros máximos por colección
   checkinItems: 50,              // señales máximas dentro de un check-in
   kitSenales: 20,
-  shortStr: 300,                 // fechas, etiquetas, nombres
-  longStr: 5000                  // textos libres
+  shortStr: 300,                 // campos de una línea: etiquetas, nombres, señales
+  longStr: 5000                  // textos libres (textarea): unas 800 palabras
 };
+
+/* ---- Tiempo e identificadores ----
+   id es solo un identificador (entero único); la fecha de cada registro vive en
+   createdAt/updatedAt (ISO 8601). Los registros antiguos usaban id = Date.now() y un texto
+   'fecha' en formato local: la migración a v3 deduce createdAt a partir de ellos. */
+let lastIdIssued = 0;
+function newId(){ lastIdIssued = Math.max(Date.now(), lastIdIssued + 1); return lastIdIssued; }
+function nowIso(){ return new Date().toISOString(); }
+function newRecord(fields){ const t = nowIso(); return { id: newId(), createdAt: t, updatedAt: t, ...fields }; }
+function touch(rec){ rec.updatedAt = nowIso(); }
+function cleanIso(v){
+  if(typeof v !== 'string' || v.length > 40) return null;
+  const t = Date.parse(v);
+  return Number.isFinite(t) ? new Date(t).toISOString() : null;
+}
+/* Solo para datos antiguos: el id era una marca de tiempo; si no lo parece, se usa el texto
+   'fecha' generado con toLocaleString('es-ES') («28/9/2026, 14:05:03»). */
+function inferCreatedAt(r){
+  const min = Date.UTC(2020, 0, 1), max = Date.now() + 24*60*60*1000;
+  if(Number.isSafeInteger(r.id) && r.id >= min && r.id <= max) return new Date(r.id).toISOString();
+  const m = typeof r.fecha === 'string' && r.fecha.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if(m){
+    const d = new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5], +(m[6]||0));
+    if(Number.isFinite(d.getTime())) return d.toISOString();
+  }
+  return null;
+}
+/* Texto de fecha para mostrar: siempre desde createdAt; 'fecha' solo si el registro antiguo no permitió deducirla */
+function fechaDe(r){
+  if(r.createdAt) return new Date(r.createdAt).toLocaleString('es-ES', {day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'});
+  return r.fecha || '—';
+}
+function createdAfter(r, cutoff){ return !!r.createdAt && Date.parse(r.createdAt) >= cutoff; }
 const EMOTION_IDS = ['alegria','tristeza','miedo','ira','sorpresa','asco'];
 const COLLECTIONS = ['sepaEntries','checkpoints','visualAnchors','checkins','confidenceAnchors','resetHistory','exitos'];
 
@@ -1249,16 +1283,17 @@ function isPlainObject(v){ return !!v && typeof v === 'object' && !Array.isArray
 function cleanCollection(arr, cleanRecord){
   if(!Array.isArray(arr)) return [];
   const out = [], seen = new Set();
-  let fallbackId = Date.now();
   for(const raw of arr.slice(0, LIMITS.items)){
     const rec = cleanRecord(raw);
     if(!rec) continue;
     if(isPlainObject(rec) && 'id' in rec){
       if(!Number.isSafeInteger(rec.id) || rec.id <= 0 || seen.has(rec.id)){
-        while(seen.has(fallbackId)) fallbackId--;
-        rec.id = fallbackId;
+        let id = newId();
+        while(seen.has(id)) id = newId();
+        rec.id = id;
       }
       seen.add(rec.id);
+      lastIdIssued = Math.max(lastIdIssued, rec.id);
     }
     out.push(rec);
   }
@@ -1283,6 +1318,20 @@ const MIGRATIONS = {
     });
     s.dataVersion = 2;
     return s;
+  },
+  /* v2 → v3: los registros con fecha pasan a llevar createdAt/updatedAt en ISO,
+     deducidos del id (antes una marca de tiempo) o del texto 'fecha'. */
+  2: s => {
+    ['sepaEntries','checkpoints','checkins','resetHistory','exitos'].forEach(k => {
+      if(!Array.isArray(s[k])) return;
+      s[k].forEach(r => {
+        if(!isPlainObject(r) || r.createdAt) return;
+        r.createdAt = inferCreatedAt(r);
+        r.updatedAt = r.createdAt;
+      });
+    });
+    s.dataVersion = 3;
+    return s;
   }
 };
 function migrateState(s){
@@ -1292,15 +1341,22 @@ function migrateState(s){
 }
 
 /* ---- Saneamiento por colección: solo sobreviven los campos conocidos, con su tipo ---- */
+/* id + createdAt/updatedAt; el texto 'fecha' solo se conserva si no hay createdAt (registro antiguo sin fecha deducible) */
+function cleanStamps(r){
+  const createdAt = cleanIso(r.createdAt);
+  const out = { id: r.id, createdAt, updatedAt: cleanIso(r.updatedAt) || createdAt };
+  if(!createdAt){ const f = cleanStr(r.fecha, LIMITS.shortStr); if(f) out.fecha = f; }
+  return out;
+}
 const SANITIZERS = {
   sepaEntries: r => isPlainObject(r) ? {
-    id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr),
+    ...cleanStamps(r),
     situacion: cleanStr(r.situacion),
     emociones: Array.isArray(r.emociones) ? [...new Set(r.emociones.filter(x => EMOTION_IDS.includes(x)))] : [],
     pensD: cleanStr(r.pensD), pensC: cleanStr(r.pensC), accion: cleanStr(r.accion)
   } : null,
   checkpoints: r => isPlainObject(r) ? {
-    id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr),
+    ...cleanStamps(r),
     fatiga: cleanInt(r.fatiga, 1, 10, 5), emocional: cleanInt(r.emocional, 1, 10, 5),
     nota: cleanStr(r.nota), decision: cleanStr(r.decision, LIMITS.shortStr)
   } : null,
@@ -1308,7 +1364,7 @@ const SANITIZERS = {
   checkins: r => {
     if(!isPlainObject(r)) return null;
     const items = Array.isArray(r.items) ? r.items.slice(0, LIMITS.checkinItems).map(i => cleanStr(i, LIMITS.shortStr)).filter(Boolean) : [];
-    return { id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr), total: items.length, items };
+    return { ...cleanStamps(r), total: items.length, items };
   },
   confidenceAnchors: r => {
     if(!isPlainObject(r)) return null;
@@ -1316,7 +1372,7 @@ const SANITIZERS = {
     return (a.word.trim() || a.memory.trim()) ? a : null;
   },
   resetHistory: r => isPlainObject(r) ? {
-    id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr),
+    ...cleanStamps(r),
     senal: cleanStr(r.senal, LIMITS.shortStr),
     examResultado: cleanStr(r.examResultado), examRendimiento: cleanStr(r.examRendimiento),
     aspecto1: cleanStr(r.aspecto1), aspecto2: cleanStr(r.aspecto2),
@@ -1325,7 +1381,7 @@ const SANITIZERS = {
     observacion: cleanStr(r.observacion)
   } : null,
   exitos: r => isPlainObject(r) ? {
-    id: r.id, fecha: cleanStr(r.fecha, LIMITS.shortStr),
+    ...cleanStamps(r),
     conducta: cleanStr(r.conducta), repetir: cleanStr(r.repetir)
   } : null
 };
@@ -1367,6 +1423,8 @@ function normalizeState(raw){
    No sustituye a normalizeState(): después de validar, los datos se sanean igualmente. */
 function validateImport(obj){
   if(!isPlainObject(obj)) return 'El archivo no contiene un objeto de datos.';
+  // Los exports antiguos no llevan exportFormat; si lo llevan, debe ser el de esta app
+  if(obj.exportFormat !== undefined && obj.exportFormat !== EXPORT_FORMAT) return 'El archivo no es una copia de datos de esta app.';
   // Los exports de v1 siempre llevan dataVersion:1; se acepta su ausencia solo si trae las colecciones de v1
   const v = obj.dataVersion;
   if(v !== undefined && !(Number.isInteger(v) && v >= 1 && v <= DATA_VERSION)){
@@ -1396,7 +1454,22 @@ function validateImport(obj){
   return null;
 }
 let state = normalizeState(loadState());
+/* Guardado diferido para campos que guardan mientras se escribe: agrupa las pulsaciones y
+   escribe en localStorage una sola vez tras SAVE_DELAY ms sin cambios. save() sigue siendo
+   inmediato (y cancela cualquier guardado pendiente, porque ya lo incluye). */
+const SAVE_DELAY = 400;
+let saveTimer = null;
+function saveSoon(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, SAVE_DELAY);
+}
+function flushSave(){ if(saveTimer) save(); }
+// Si se oculta o cierra la página con un guardado pendiente, se escribe ya para no perder texto
+window.addEventListener('pagehide', flushSave);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') flushSave(); });
 function save(){
+  clearTimeout(saveTimer);
+  saveTimer = null;
   try{
     localStorage.setItem(LS_KEY, JSON.stringify(state));
   }catch(e){
@@ -1426,15 +1499,39 @@ const dataId = el => Number(el.dataset.id);
 const dataIdx = el => Number(el.dataset.idx);
 
 /* ============ MIS DATOS: exportar / importar / borrar ============ */
+/* Fecha local AAAA-MM-DD (toISOString daría la fecha UTC, que de madrugada puede ser la del día anterior) */
+function localDateStamp(d){
+  d = d || new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
 function exportarDatos(){
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `wesser-datos-${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  alert('✅ Datos exportados.');
+  flushSave();
+  let url = null;
+  try{
+    const payload = { exportFormat: EXPORT_FORMAT, exportedAt: nowIso(), ...state, dataVersion: DATA_VERSION };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    url = URL.createObjectURL(blob);
+    const filename = `wesser-datos-${localDateStamp()}.json`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    // Margen antes de liberar el Blob: algunos navegadores inician la descarga de forma asíncrona
+    const toRevoke = url;
+    setTimeout(()=>URL.revokeObjectURL(toRevoke), 30000);
+    const n = (arr, uno, varios) => `${arr.length} ${arr.length===1 ? uno : varios}`;
+    alert(`✅ Copia de seguridad descargada: ${filename}\n\n`
+      + `Incluye ${n(state.sepaEntries,'registro del Diario','registros del Diario')}, `
+      + `${n(state.resetHistory,'sesión de Reset','sesiones de Reset')}, `
+      + `${n(state.checkins,'check-in','check-ins')}, `
+      + `${n(state.checkpoints,'checkpoint','checkpoints')} y tu Kit de Emergencia.\n\n`
+      + 'Guárdala en un lugar seguro. Para recuperarla, usa «Importar datos».');
+  }catch(e){
+    console.error('No se pudo exportar', e);
+    if(url) URL.revokeObjectURL(url);
+    alert('No se ha podido exportar la copia de seguridad. Tus datos siguen guardados en este dispositivo; inténtalo de nuevo o prueba con otro navegador.');
+  }
 }
 function importarDatos(input){
   const file = input.files[0];
@@ -1684,13 +1781,13 @@ function guardarSepa(){
     if(entry){
       entry.situacion = situacion; entry.emociones = [...selectedEmociones];
       entry.pensD = pensD; entry.pensC = pensC; entry.accion = accion;
+      touch(entry);
     }
     cancelarEdicionSepa();
   } else {
-    state.sepaEntries.unshift({
-      id: Date.now(), fecha: new Date().toLocaleString('es-ES'),
+    state.sepaEntries.unshift(newRecord({
       situacion, emociones: [...selectedEmociones], pensD, pensC, accion
-    });
+    }));
   }
   save();
   selectedEmociones = [];
@@ -1752,7 +1849,7 @@ function renderSepaHistorial(){
     <div class="history-item">
       <button class="del" data-action="borrarSepa" data-id="${escapeHtml(e.id)}">Eliminar</button>
       <button class="edit" data-action="editarSepa" data-id="${escapeHtml(e.id)}">Editar</button>
-      <div class="meta">${escapeHtml(e.fecha)} · ${emosTxt}</div>
+      <div class="meta">${escapeHtml(fechaDe(e))} · ${emosTxt}</div>
       <p><b>S:</b> ${escapeHtml(e.situacion)}</p>
       <p><b>P:</b> ${escapeHtml(e.pensD)||'—'}</p>
       <p><b>P+:</b> ${escapeHtml(e.pensC)}</p>
@@ -1782,8 +1879,8 @@ function renderPatrones(){
   if(btn30) btn30.className = 'btn btn-sm ' + (patronesRango===30 ? 'btn-navy' : 'btn-outline');
 
   const cutoff = Date.now() - patronesRango*24*60*60*1000;
-  const entries = state.sepaEntries.filter(e=>e.id>=cutoff);
-  const resets = state.resetHistory.filter(r=>r.id>=cutoff);
+  const entries = state.sepaEntries.filter(e=>createdAfter(e, cutoff));
+  const resets = state.resetHistory.filter(r=>createdAfter(r, cutoff));
 
   /* Bloque Diario SEPA: no se mezcla con datos de Reset */
   const emoCounts = {};
@@ -1829,7 +1926,7 @@ function renderPatrones(){
     </div>`;
 
   /* Bloque Éxitos: no se mezcla con Diario ni Reset */
-  const exitos = state.exitos.filter(e=>e.id>=cutoff);
+  const exitos = state.exitos.filter(e=>createdAfter(e, cutoff));
   const conductaCounts = {};
   exitos.forEach(e=>{ if(e.conducta) conductaCounts[e.conducta]=(conductaCounts[e.conducta]||0)+1; });
   const conductaTop = topEntry(conductaCounts);
@@ -1894,10 +1991,10 @@ function guardarCheckpoint(){
   const decision = document.getElementById('cpDecision').value;
   if(editingCheckpointId){
     const entry = state.checkpoints.find(x=>x.id===editingCheckpointId);
-    if(entry){ entry.fatiga = fatiga; entry.emocional = emocional; entry.nota = nota; entry.decision = decision; }
+    if(entry){ entry.fatiga = fatiga; entry.emocional = emocional; entry.nota = nota; entry.decision = decision; touch(entry); }
     editingCheckpointId = null;
   } else {
-    state.checkpoints.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), fatiga, emocional, nota, decision});
+    state.checkpoints.unshift(newRecord({fatiga, emocional, nota, decision}));
   }
   save(); closeTool(); renderCheckpointHistorial();
 }
@@ -1914,7 +2011,7 @@ function renderCheckpointHistorial(){
     <div class="history-item">
       <button class="del" data-action="borrarCheckpoint" data-id="${escapeHtml(c.id)}">Eliminar</button>
       <button class="edit" data-action="editarCheckpoint" data-id="${escapeHtml(c.id)}">Editar</button>
-      <div class="meta">${escapeHtml(c.fecha)}</div>
+      <div class="meta">${escapeHtml(fechaDe(c))}</div>
       <p>Fatiga: <b>${escapeHtml(c.fatiga)}/10</b> · Activación: <b>${escapeHtml(c.emocional)}/10</b></p>
       ${c.decision?`<p><b>Decisión:</b> ${escapeHtml(c.decision)}</p>`:''}
       ${c.nota?`<p>${escapeHtml(c.nota)}</p>`:''}
@@ -1959,7 +2056,7 @@ function guardarExito(){
   }
   if(!conducta){ alert('Elige o escribe qué ha funcionado.'); return; }
   const repetir = document.getElementById('exitoRepetirInput').value.trim();
-  state.exitos.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), conducta, repetir});
+  state.exitos.unshift(newRecord({conducta, repetir}));
   save();
   renderExitoHistorial();
   renderPatrones();
@@ -1982,7 +2079,7 @@ function renderExitoHistorial(){
   wrap.innerHTML = state.exitos.slice(0,5).map(e=>`
     <div class="history-item">
       <button class="del" data-action="borrarExito" data-id="${escapeHtml(e.id)}">Eliminar</button>
-      <div class="meta">${escapeHtml(e.fecha)}</div>
+      <div class="meta">${escapeHtml(fechaDe(e))}</div>
       <p><b>${escapeHtml(e.conducta)}</b></p>
       ${e.repetir?`<p class="desc">Repetir: ${escapeHtml(e.repetir)}</p>`:''}
     </div>`).join('');
@@ -2636,7 +2733,7 @@ function renderPedirFeedback(){
         <div class="chip ${pedirFeedbackSel==='Otro'?'selected':''}" data-action="selectPedirFeedback" data-value="Otro">✍️ Otra petición</div>
       </div>
       <div id="pedirFeedbackOtroWrap" style="${pedirFeedbackSel==='Otro'?'':'display:none;'}">
-        <textarea id="pedirFeedbackOtroInput" placeholder="Escribe qué quieres pedir...">${escapeHtml(pedirFeedbackOtro)}</textarea>
+        <textarea id="pedirFeedbackOtroInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe qué quieres pedir...">${escapeHtml(pedirFeedbackOtro)}</textarea>
       </div>
       <button class="btn btn-primary" style="margin-top:10px;" onclick="finalizarPedirFeedback()">Ver mi petición</button>
     </div>
@@ -2808,8 +2905,9 @@ let resetCheckinItems = [];
 let resetHistorialLimit = 5;
 function verMasReset(){ resetHistorialLimit += 5; renderResetStep(); }
 
-function saveResetProgress(){
-  if(typeof resetStep!=='number' || resetStep<1){ return; }
+/* Copia en memoria el progreso del Reset; persistirlo es aparte (inmediato o diferido) */
+function syncResetProgress(){
+  if(typeof resetStep!=='number' || resetStep<1){ return false; }
   state.resetProgress = {
     step: resetStep, senal: resetSenal,
     examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
@@ -2817,8 +2915,10 @@ function saveResetProgress(){
     micro: resetMicro, stops: resetStops, pacto: resetPacto,
     aprendizaje: resetAprendizaje, observacion: resetObservacion
   };
-  save();
+  return true;
 }
+function saveResetProgress(){ if(syncResetProgress()) save(); }
+function saveResetProgressSoon(){ if(syncResetProgress()) saveSoon(); }
 function clearResetProgress(){ state.resetProgress = null; save(); }
 
 function openReset(){
@@ -2873,7 +2973,7 @@ function toggleCheckinItem(si,ii){ checkinState[si][ii] = !checkinState[si][ii];
 function saveCheckin(){
   const checkedLabels = [];
   CHECKIN_SECTIONS.forEach((s,si)=>s.items.forEach((label,ii)=>{ if(checkinState[si][ii]) checkedLabels.push(label); }));
-  state.checkins.unshift({id:Date.now(), fecha:new Date().toLocaleString('es-ES'), total:checkedLabels.length, items:checkedLabels});
+  state.checkins.unshift(newRecord({total:checkedLabels.length, items:checkedLabels}));
   save();
   resetCheckinItems = checkedLabels;
   resetGoto(1);
@@ -2944,21 +3044,21 @@ function renderResetStep(){
           ${KIT_HERRAMIENTAS_FIJAS.map(h=>`<option ${(KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?state.kitHerramienta:'Otro recurso personal')===h?'selected':''}>${escapeHtml(h)}</option>`).join('')}
         </select>
         <div id="kitHerramientaOtraWrap" style="${KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?'display:none;':''}">
-          <input type="text" id="kitHerramientaOtraInput" value="${KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?'':escapeHtml(state.kitHerramienta)}" placeholder="Describe tu recurso personal" oninput="state.kitHerramienta=this.value;save();">
+          <input type="text" id="kitHerramientaOtraInput" value="${KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?'':escapeHtml(state.kitHerramienta)}" placeholder="Describe tu recurso personal" oninput="state.kitHerramienta=this.value;saveSoon();">
         </div>
 
         <p><b>2️⃣ 🎙️ Ajusto una cosa</b></p>
         <p class="desc">Elige <b>un solo ajuste técnico</b> para aplicar cuando actives tu plan.</p>
         <label>Mi ajuste</label>
-        <input type="text" id="kitAjusteInput" value="${escapeHtml(state.kitAjuste)}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…" oninput="state.kitAjuste=this.value;save();">
+        <input type="text" id="kitAjusteInput" value="${escapeHtml(state.kitAjuste)}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…" oninput="state.kitAjuste=this.value;saveSoon();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una sola variable. Una cosa cada vez.</b></p>
 
         <p><b>3️⃣ 🤝 Pido apoyo si lo necesito</b></p>
         <p class="desc">Elige de antemano <b>a quién acudir</b> y qué pedir.</p>
         <label>Mi persona de apoyo</label>
-        <input type="text" id="kitPersonaInput" value="${escapeHtml(state.kitPersona)}" oninput="state.kitPersona=this.value;save();">
+        <input type="text" id="kitPersonaInput" value="${escapeHtml(state.kitPersona)}" oninput="state.kitPersona=this.value;saveSoon();">
         <label>¿Qué pediré?</label>
-        <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: Quiero que observes dos paradas y me digas una cosa que estoy haciendo bien y una que pueda ajustar." oninput="state.kitPedira=this.value;save();">
+        <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: Quiero que observes dos paradas y me digas una cosa que estoy haciendo bien y una que pueda ajustar." oninput="state.kitPedira=this.value;saveSoon();">
 
         <p><b>🚨 ¿Cuándo pediré ayuda?</b></p>
         <p class="desc"><b>Si, después de regularme y aplicar mi ajuste, sigo bloqueado, evitando paradas o trabajando en automático.</b></p>
@@ -2979,7 +3079,7 @@ function renderResetStep(){
       </div>
       ${state.resetHistory.length ? state.resetHistory.slice(0, resetHistorialLimit).map(r=>`
         <details class="help-item">
-          <summary>${escapeHtml(r.fecha)}${r.senal?' · '+escapeHtml(r.senal):''}</summary>
+          <summary>${escapeHtml(fechaDe(r))}${r.senal?' · '+escapeHtml(r.senal):''}</summary>
           <div class="help-body">
             <button class="del" data-action="borrarResetHistorial" data-id="${escapeHtml(r.id)}">Eliminar</button>
             <p><b>Señal principal:</b> ${escapeHtml(r.senal)||'—'}</p>
@@ -3000,7 +3100,7 @@ function renderResetStep(){
       </div>
       ${state.checkins.length ? state.checkins.map(c=>`
         <div class="card history-item">
-          <div class="meta">${escapeHtml(c.fecha)} · ${escapeHtml(c.total)} ${c.total===1?'señal marcada':'señales marcadas'}</div>
+          <div class="meta">${escapeHtml(fechaDe(c))} · ${escapeHtml(c.total)} ${c.total===1?'señal marcada':'señales marcadas'}</div>
           ${c.items.length? `<ul>${c.items.map(i=>`<li>${checkinItemHtml(i)}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
         </div>`).join('') : '<div class="card empty-state">Aún no has hecho ningún check-in.</div>'}
       <button class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
@@ -3076,7 +3176,7 @@ function renderResetStep(){
       <div class="chip-group">${resetCheckinItems.map(s=>`<div class="chip ${resetSenal===s?'selected':''}" data-action="selectSenal">${s}</div>`).join('')}</div>
     ` : `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el «no», cansancio previo, hacer menos paradas, trabajar en automático…</p>
-      <textarea id="resetSenalInput" placeholder="Escribe tu señal principal..." oninput="resetSenal=this.value;saveResetProgress();">${escapeHtml(resetSenal)}</textarea>
+      <textarea id="resetSenalInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe tu señal principal..." oninput="resetSenal=this.value;saveResetProgressSoon();">${escapeHtml(resetSenal)}</textarea>
     `;
     body.innerHTML = `
       ${resetDots()}
@@ -3128,9 +3228,9 @@ function renderResetStep(){
         </ul>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando corresponde al contexto y qué parte puedo revisar y ajustar yo?</b></p>
         <label>El contexto → no lo controlo directamente</label>
-        <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgress();">${escapeHtml(resetExamResultado)}</textarea>
+        <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgressSoon();">${escapeHtml(resetExamResultado)}</textarea>
         <label>Mi forma de trabajar → puedo revisarla y ajustarla</label>
-        <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgress();">${escapeHtml(resetExamRendimiento)}</textarea>
+        <textarea id="resetExamRendimientoInput" placeholder="Ej: después de varios rechazos estoy parando menos..." oninput="resetExamRendimiento=this.value;saveResetProgressSoon();">${escapeHtml(resetExamRendimiento)}</textarea>
       </div>
       <button class="btn btn-amber" onclick="if(!resetExamResultado.trim()||!resetExamRendimiento.trim()){ alert('Completa el contexto y tu forma de trabajar antes de continuar.'); return; } resetGoto(3);">Continuar</button>
     `;
@@ -3143,9 +3243,9 @@ function renderResetStep(){
         <h3>Lo que sigue funcionando</h3>
         <p class="desc">Escribe <b>2 cosas concretas que estás haciendo bien y que quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
         <label>Conducta 1</label>
-        <input type="text" id="resetAspecto1Input" value="${escapeHtml(resetAspecto1)}" placeholder="Ej: mantengo la sonrisa en el saludo" oninput="resetAspecto1=this.value;saveResetProgress();">
+        <input type="text" id="resetAspecto1Input" value="${escapeHtml(resetAspecto1)}" placeholder="Ej: mantengo la sonrisa en el saludo" oninput="resetAspecto1=this.value;saveResetProgressSoon();">
         <label>Conducta 2</label>
-        <input type="text" id="resetAspecto2Input" value="${escapeHtml(resetAspecto2)}" placeholder="Ej: sigo escuchando antes de responder" oninput="resetAspecto2=this.value;saveResetProgress();">
+        <input type="text" id="resetAspecto2Input" value="${escapeHtml(resetAspecto2)}" placeholder="Ej: sigo escuchando antes de responder" oninput="resetAspecto2=this.value;saveResetProgressSoon();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>Piensa en cosas que haces tú y que puedes repetir:</b> cómo haces la parada, cómo escuchas, cómo explicas, cómo gestionas una objeción, cómo mantienes la actitud o cómo adaptas tu forma de trabajar.</p>
       </div>
       <button class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Continuar</button>
@@ -3219,7 +3319,7 @@ function renderResetStep(){
           ${opciones.map(o=>`<button class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" data-action="setAprendizaje" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
         </div>
         <label style="margin-top:14px;">¿Qué has observado? (opcional)</label>
-        <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgress();">${escapeHtml(resetObservacion)}</textarea>
+        <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgressSoon();">${escapeHtml(resetObservacion)}</textarea>
       </div>
       <button class="btn btn-primary" ${resetAprendizaje?'':'disabled'} onclick="resetGoto(7)">Continuar</button>
     `;
@@ -3245,7 +3345,7 @@ function renderResetStep(){
       <div class="card">
         <h3>🤝 Pacto de permanencia</h3>
         <p class="desc"><b>«Cuando el resultado no acompañe, me comprometo a...»</b></p>
-        <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..." oninput="resetPacto=this.value;saveResetProgress();">${escapeHtml(resetPacto)}</textarea>
+        <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..." oninput="resetPacto=this.value;saveResetProgressSoon();">${escapeHtml(resetPacto)}</textarea>
       </div>
       <button class="btn btn-primary" onclick="finalizarReset()">Finalizar</button>
     `;
@@ -3255,12 +3355,11 @@ function finalizarReset(){
   const pactoEl = document.getElementById('resetPactoInput');
   if(pactoEl) resetPacto = pactoEl.value.trim();
   if(!resetPacto){ alert('Escribe tu pacto de permanencia antes de finalizar.'); return; }
-  state.resetHistory.unshift({
-    id: Date.now(), fecha: new Date().toLocaleString('es-ES'),
+  state.resetHistory.unshift(newRecord({
     senal: resetSenal, examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
     aspecto1: resetAspecto1, aspecto2: resetAspecto2, micro: resetMicro, stops: resetStops, pacto: resetPacto,
     aprendizaje: resetAprendizaje, observacion: resetObservacion
-  });
+  }));
   clearResetProgress();
   save();
   closeReset();
@@ -3331,13 +3430,19 @@ function enhanceChip(el){
 function enhanceAllChips(root){
   (root||document).querySelectorAll('.chip').forEach(enhanceChip);
 }
+/* Límite de longitud en todos los campos de texto (también los creados dinámicamente),
+   alineado con los límites de saneamiento. Respeta un maxlength ya puesto a mano. */
+function applyInputLimits(root){
+  (root||document).querySelectorAll('textarea:not([maxlength])').forEach(el=>el.setAttribute('maxlength', LIMITS.longStr));
+  (root||document).querySelectorAll('input[type="text"]:not([maxlength])').forEach(el=>el.setAttribute('maxlength', LIMITS.shortStr));
+}
 const chipObserver = new MutationObserver((mutations)=>{
   for(const m of mutations){
     if(m.type==='childList'){
       m.addedNodes.forEach(node=>{
         if(node.nodeType!==1) return;
         if(node.classList && node.classList.contains('chip')) enhanceChip(node);
-        if(node.querySelectorAll) node.querySelectorAll('.chip').forEach(enhanceChip);
+        if(node.querySelectorAll){ node.querySelectorAll('.chip').forEach(enhanceChip); applyInputLimits(node); }
       });
     } else if(m.type==='attributes' && m.target.classList && m.target.classList.contains('chip')){
       enhanceChip(m.target);
@@ -3346,6 +3451,7 @@ const chipObserver = new MutationObserver((mutations)=>{
 });
 chipObserver.observe(document.body, {childList:true, subtree:true, attributes:true, attributeFilter:['class']});
 enhanceAllChips();
+applyInputLimits();
 
 function getActiveOverlayEl(){
   const ids = ['modalBack','toolOverlay','resetOverlay','helpOverlay'];
