@@ -83,6 +83,9 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#patronesBtn30').click();
   const p30 = await page.locator('#patronesBody .patron-count').first().innerText();
   ok(p7.startsWith('1 registro') && p30.startsWith('2 registros'), `patrones 7/30 días (${p7} | ${p30})`);
+  // Empate en el primer puesto: se muestran todos, no uno elegido al azar
+  const empate = await page.evaluate(() => topText(topEntry({ ira: 2, miedo: 2, asco: 1 }), true));
+  ok(empate === 'ira · miedo (2 cada una)' && !(await page.locator('#patronesBody').innerText()).includes('Mis patrones'), `patrones: empates completos y sin etiqueta «Mis patrones» (${empate})`);
 
   // ================= CHECKPOINT =================
   section('Checkpoint');

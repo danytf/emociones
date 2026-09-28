@@ -2652,14 +2652,22 @@ renderSepaHistorial();
 
 /* ============ MIS PATRONES ============ */
 function setPatronesRango(n){ patronesRango = n; renderPatrones(); }
+/* Valor(es) más frecuente(s). Si hay empate en el primer puesto se devuelven todos:
+   elegir uno presentaría como «el más registrado» algo que no lo es. */
 function topEntry(counts){
-  let maxKey=null, max=0;
-  for(const k in counts){ if(counts[k]>max){ max=counts[k]; maxKey=k; } }
-  return maxKey ? {key:maxKey, count:max} : null;
+  const max = Math.max(0, ...Object.values(counts));
+  if(!max) return null;
+  return { keys: Object.keys(counts).filter(k=>counts[k]===max), count: max };
 }
+/* «Ira · Miedo (1 cada una)»; fmt pinta cada valor (ya escapado) */
+function topText(top, fem, fmt = escapeHtml){
+  if(!top) return 'Aún no hay suficientes datos.';
+  const each = top.keys.length > 1 ? (fem ? ' cada una' : ' cada uno') : '';
+  return `${top.keys.map(fmt).join(' · ')} (${top.count}${each})`;
+}
+/* Con pocos registros no hay «patrón»: la etiqueta describe lo que hay */
 function patronesTier(count){
-  if(count===0) return 'Aún no hay datos.';
-  return count<=2 ? 'Lo más registrado' : 'Mis patrones';
+  return count===0 ? 'Aún no hay datos.' : 'Lo más registrado';
 }
 function renderPatrones(){
   const body = document.getElementById('patronesBody');
@@ -2692,9 +2700,9 @@ function renderPatrones(){
       <h4>Diario S-E-P-A</h4>
       <p class="patron-count">${entries.length} registro${entries.length===1?'':'s'} · ${patronesTier(entries.length)}</p>
       ${entries.length===0 ? '' : `
-        <div class="mini-card"><b>Emoción más registrada</b><p>${emoTop ? `${emoji(emoTop.key)} ${escapeHtml(EMOTIONS.find(x=>x.id===emoTop.key)?.nombre||emoTop.key)} (${emoTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-        <div class="mini-card"><b>Situación más repetida</b><p>${sitTop ? `${escapeHtml(sitTop.key)} (${sitTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-        <div class="mini-card"><b>Acción más utilizada</b><p>${accTop ? `${escapeHtml(accTop.key)} (${accTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Emoción más registrada</b><p>${topText(emoTop, true, id=>`${emoji(id)} ${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||id)}`)}</p></div>
+        <div class="mini-card"><b>Situación más repetida</b><p>${topText(sitTop, true)}</p></div>
+        <div class="mini-card"><b>Acción más utilizada</b><p>${topText(accTop, true)}</p></div>
       `}
     </div>`;
 
@@ -2711,8 +2719,8 @@ function renderPatrones(){
       <h4>Reset</h4>
       <p class="patron-count">${resets.length===1?'1 sesión':resets.length+' sesiones'} · ${patronesTier(resets.length)}</p>
       ${resets.length===0 ? '' : `
-        <div class="mini-card"><b>Ajuste más repetido</b><p>${ajusteTop ? `${escapeHtml(ajusteTop.key)} (${ajusteTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-        <div class="mini-card"><b>Señal más repetida</b><p>${senalTop ? `${escapeHtml(senalTop.key)} (${senalTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Ajuste más repetido</b><p>${topText(ajusteTop, false)}</p></div>
+        <div class="mini-card"><b>Señal más repetida</b><p>${topText(senalTop, true)}</p></div>
       `}
     </div>`;
 
@@ -2727,7 +2735,7 @@ function renderPatrones(){
       <h4>Qué ha funcionado</h4>
       <p class="patron-count">${exitos.length} registro${exitos.length===1?'':'s'} · ${patronesTier(exitos.length)}</p>
       ${exitos.length===0 ? '' : `
-        <div class="mini-card"><b>Conducta más repetida</b><p>${conductaTop ? `${escapeHtml(conductaTop.key)} (${conductaTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Conducta más repetida</b><p>${topText(conductaTop, true)}</p></div>
       `}
     </div>`;
 
