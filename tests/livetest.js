@@ -1,0 +1,27 @@
+const { chromium } = require('playwright');
+const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
+(async () => {
+  const b = await chromium.launch();
+  const p = await b.newPage({ viewport: { width: 820, height: 1180 } }); await p.addInitScript(()=>{try{localStorage.setItem('wesserWelcomeSeen','1')}catch(e){}});
+  const errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
+  const r = await p.goto('https://danytf.github.io/emociones/', { waitUntil: 'load' });
+  ok(r.status() === 200, 'GitHub Pages responde 200 por https');
+  for (const v of ['bienestar', 'herramientas', 'diario', 'aprender']) await p.locator(`#headerTabs [data-view="${v}"]`).click();
+  ok(await p.evaluate(() => document.getElementById('view-aprender').classList.contains('active')), 'navegación entre secciones');
+  await p.locator('#headerTabs [data-view="diario"]').click();
+  await p.locator('#sepaEmocionChips [data-id="ira"]').click();
+  await p.fill('#sepaPensConstructivo', 'prueba en producción');
+  await p.fill('#sepaAccion', 'pausa');
+  await p.locator('#sepaSaveBtn').click();
+  await p.reload();
+  ok(await p.evaluate(() => state.sepaEntries.length === 1 && state.dataVersion === 3), 'guardar en localStorage en el dominio publicado y conservar tras recargar');
+  await p.locator('#tabReset').click();
+  ok(await p.evaluate(() => Overlays.top() === 'reset'), 'Modo Reset abre');
+  await p.keyboard.press('Escape');
+  ok(await p.evaluate(() => Overlays.top() === null), 'Escape cierra');
+  await p.evaluate(() => localStorage.clear());
+  ok(errs.length === 0, 'sin errores en consola: ' + errs.join(' | '));
+  await b.close();
+})();
