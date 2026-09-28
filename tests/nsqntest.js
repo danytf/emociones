@@ -15,6 +15,6 @@ await p.locator('#toolBody button:has-text("Ver herramientas")').click();
 ok(await p.evaluate(()=>Overlays.top()===null && document.getElementById('view-herramientas').classList.contains('active')), '«Ver herramientas» lleva a la Caja de Herramientas');
 await p.evaluate(()=>{startNoSeQueNecesito(); ['acelerado','cabeza','evitando','dias'].forEach(k=>setNsqnAnswer(k,false));});
 await p.locator('#toolBody button:has-text("Hacer un Checkpoint")').click();
-ok(await p.locator('#toolTitle').innerText()==='⏱️ Checkpoint de mitad de turno', '«Hacer un Checkpoint» abre el Checkpoint');
+ok(await p.locator('#toolTitle').innerText()==='Checkpoint de mitad de turno', '«Hacer un Checkpoint» abre el Checkpoint');
 ok(errs.length===0,'sin errores de JS '+errs.join('|'));
 await b.close();})();

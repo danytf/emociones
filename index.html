@@ -819,6 +819,42 @@ header :focus-visible{outline-color:var(--wesser-red);}
 .ds label.check-item{font-family:inherit;font-size:var(--fs-md);font-weight:400;letter-spacing:normal;margin-top:0;line-height:1.45;}
 .ds label.check-item b{font-weight:700;}
 .ds .mini-card > b + p{margin-top:4px;}
+
+/* ---------- Herramientas, Ayuda y diálogos en el sistema de diseño ---------- */
+#toolOverlay .overlay-header, #helpOverlay .overlay-header{background:var(--ds-surface);color:var(--ds-ink);border-bottom:1px solid var(--ds-line);}
+#toolOverlay .overlay-header b, #helpOverlay .overlay-header b{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--ds-ink);white-space:normal;}
+#helpOverlay .overlay-header b .ic{width:22px;height:22px;color:var(--wesser-red);}
+#toolOverlay .close-x, #helpOverlay .close-x{background:transparent;border:1px solid var(--ds-line);color:var(--ds-ink-2);}
+#toolOverlay .close-x .ic, #helpOverlay .close-x .ic{width:20px;height:20px;}
+@media (hover:hover){ #toolOverlay .close-x:hover, #helpOverlay .close-x:hover{background:var(--ds-canvas);} }
+#toolOverlay .overlay-header :focus-visible, #helpOverlay .overlay-header :focus-visible{outline-color:var(--wesser-red);}
+@media (max-width:480px){ #toolOverlay .overlay-header, #helpOverlay .overlay-header{flex-wrap:nowrap;} }
+.ds.overlay{background:var(--ds-canvas);}
+/* Icono grande en lugar del emoji de cabecera de cada paso */
+.ds .tile-lg{width:60px;height:60px;border-radius:18px;}
+.ds .tile-lg .ic{width:30px;height:30px;}
+.ds .tool-hero{display:flex;justify-content:center;margin:var(--sp-2) 0 var(--sp-3);}
+/* Botones secundarios de herramienta: antracita (claro) / superficie clara (oscuro) */
+.ds .btn-blue, .ds .btn-navy{background:var(--ds-ink);color:var(--ds-surface);}
+.ds .btn-row.seg .btn-navy{background:var(--ds-surface);color:var(--ds-ink);}
+.ds .compare-col{background:var(--ds-canvas);border:none;border-radius:12px;}
+.ds .tool-meta{color:var(--ds-ink-3);}
+.ds input[type=range]{accent-color:var(--wesser-red);}
+.ds .range-val{font-family:var(--font-brand);color:var(--ds-ink);}
+/* Diálogos */
+.modal-back{background:rgba(27,29,31,.55);}
+.modal-sheet.ds, .confirm-box.ds{background:var(--ds-surface);color:var(--ds-ink);border:1px solid var(--ds-line);}
+.modal-sheet.ds{border-radius:24px 24px 0 0;padding:var(--sp-6) var(--sp-5);box-shadow:0 -8px 30px rgba(27,29,31,.18);}
+.confirm-box.ds{border-radius:20px;box-shadow:0 12px 40px rgba(27,29,31,.25);}
+.modal-sheet.ds h2{font-size:var(--fs-xl);font-weight:700;color:var(--ds-ink);}
+.modal-sheet.ds h3{font-family:var(--font-brand);font-size:var(--fs-md);font-weight:700;color:var(--ds-ink);}
+.modal-sheet.ds .badge.navy{background:var(--ds-canvas);color:var(--ds-ink-2);font-family:var(--font-brand);letter-spacing:.04em;}
+.modal-sheet.ds .history-item{background:var(--ds-canvas);border:none;}
+#toolOverlay{--tone:var(--wesser-red);}
+:root[data-theme="dark"] #toolOverlay{--tone:#EF6A6E;}
+.modal-sheet.ds{--tone:var(--wesser-red);}
+:root[data-theme="dark"] .modal-sheet.ds{--tone:#EF6A6E;}
+#helpOverlay .overlay-body > p.desc:first-child{font-size:var(--fs-md);line-height:1.6;}
 </style>
 </head>
 <body>
@@ -868,6 +904,10 @@ header :focus-visible{outline-color:var(--wesser-red);}
   <symbol id="i-backpack" viewBox="0 0 24 24"><path d="M5 10a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M9 6V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V6"/><path d="M8.5 13h7v4h-7z"/></symbol>
   <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 3v11"/><path d="M7.5 9.5L12 14l4.5-4.5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M12 15l-3-3c1.5-4.5 4.5-8 10-9 -.9 5.5-4.5 8.5-9 10"/><path d="M9 12H5l2.5-3.5H11"/><path d="M12 15v4l3.5-2.5V13"/><path d="M6.5 16.5c-1.5.5-2.5 2-2.5 3.5 1.5 0 3-1 3.5-2.5"/></symbol>
+  <symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 10.5v-6a1.5 1.5 0 0 1 3 0V11"/><path d="M14 10.5V6a1.5 1.5 0 0 1 3 0v6.5"/><path d="M17 10a1.5 1.5 0 0 1 3 0v4a7 7 0 0 1-7 7h-1a6 6 0 0 1-4.6-2.2L4.3 15a1.6 1.6 0 0 1 2.4-2l1.3 1.3"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
 </svg>
 <!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
@@ -1516,12 +1556,12 @@ header :focus-visible{outline-color:var(--wesser-red);}
 
 <!-- MODAL SHEET (generic, used by emotion wheel, anchor, visual anchor, kit) -->
 <div class="modal-back" id="modalBack" onclick="if(event.target===this)Overlays.requestClose('modal')">
-  <div class="modal-sheet" id="modalSheet" role="dialog" aria-modal="true" tabindex="-1"></div>
+  <div class="modal-sheet ds" id="modalSheet" role="dialog" aria-modal="true" tabindex="-1"></div>
 </div>
 
 <!-- CONFIRMACIÓN ACCESIBLE (sustituye a confirm()) -->
 <div class="modal-back confirm-back" id="confirmBack" onclick="if(event.target===this)Overlays.requestClose('confirm')">
-  <div class="confirm-box" id="confirmBox" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMsg" tabindex="-1">
+  <div class="confirm-box ds" id="confirmBox" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMsg" tabindex="-1">
     <h2 id="confirmTitle">Confirmar</h2>
     <p class="desc" id="confirmMsg"></p>
     <div class="btn-row">
@@ -1547,42 +1587,42 @@ header :focus-visible{outline-color:var(--wesser-red);}
 </div>
 
 <!-- GENERIC TOOL OVERLAY -->
-<div class="overlay" id="toolOverlay" role="dialog" aria-modal="true" aria-labelledby="toolTitle" tabindex="-1">
-  <div class="overlay-header" style="background:linear-gradient(135deg,var(--calm-blue),var(--wesser-navy));">
+<div class="overlay ds" id="toolOverlay" role="dialog" aria-modal="true" aria-labelledby="toolTitle" tabindex="-1">
+  <div class="overlay-header">
     <b id="toolTitle">Herramienta</b>
-    <button type="button" class="close-x" onclick="Overlays.requestClose('tool')" aria-label="Cerrar herramienta">✕</button>
+    <button type="button" class="close-x" onclick="Overlays.requestClose('tool')" aria-label="Cerrar herramienta"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
   </div>
   <div class="overlay-body" id="toolBody"></div>
 </div>
 
 <!-- HELP OVERLAY -->
-<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-label="Ayuda" tabindex="-1">
-  <div class="overlay-header" style="background:linear-gradient(135deg,#44514E,#292C2F);">
-    <b>❓ Ayuda</b>
-    <button type="button" class="close-x" onclick="Overlays.requestClose('help')" aria-label="Cerrar ayuda">✕</button>
+<div class="overlay ds" id="helpOverlay" role="dialog" aria-modal="true" aria-label="Ayuda" tabindex="-1">
+  <div class="overlay-header">
+    <b><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg>Ayuda</b>
+    <button type="button" class="close-x" onclick="Overlays.requestClose('help')" aria-label="Cerrar ayuda"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
   </div>
   <div class="overlay-body">
     <p class="desc" style="margin-bottom:4px;">Qué hace cada parte de la app y cuándo usarla. Los datos que guardes en el Diario, Checkpoints, Check-ins, Reset y recursos personales <b>se almacenan solo en este dispositivo y no se envían a ningún sitio</b>. Los formularios de uso rápido que no generan un registro no se conservan al cerrar la herramienta.</p>
-    <p class="desc" style="margin-bottom:14px;font-size:12.5px;">Estos datos pueden perderse si borras los datos del navegador o cambias de dispositivo. Puedes exportarlos desde <b>💾 Mis datos</b>, más abajo, para conservar una copia.</p>
+    <p class="desc" style="margin-bottom:14px;font-size:12.5px;">Estos datos pueden perderse si borras los datos del navegador o cambias de dispositivo. Puedes exportarlos desde <b>Mis datos</b>, más abajo, para conservar una copia.</p>
 
     <details class="help-item" open>
-      <summary>🚀 ¿Por dónde empiezo?</summary>
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-rocket"/></svg></span><span class="sum-title">¿Por dónde empiezo?</span></summary>
       <div class="help-body">
-        <p><button type="button" class="btn btn-outline btn-sm" onclick="closeHelp();showWelcome(0);">👋 Ver la bienvenida</button></p>
-        <p><b>1️⃣ Empieza por Aprender</b><br>
+        <p><button type="button" class="btn btn-outline btn-sm" onclick="closeHelp();showWelcome(0);">Ver la bienvenida</button></p>
+        <p><b>1. Empieza por Aprender</b><br>
         Lee esa sección con calma una vez para entender las bases. <b>Puedes abrir solo las fichas que te interesen.</b></p>
-        <p><b>2️⃣ Usa «¿Qué necesitas ahora?» cuando lo necesites</b><br>
-        ¿Notas <b>tensión, rabia, frustración o bloqueo</b> en calle? 😤 Arriba del todo tienes accesos directos a las situaciones más comunes. Si no sabes cuál elegir, pulsa <b>🤔 No sé qué necesito</b>. Para ver todas las herramientas por categorías, entra en <b>Herramientas</b>.</p>
-        <p><b>3️⃣ Cierra el día con el Diario S-E-P-A</b> 📝<br>
+        <p><b>2. Usa «¿Qué necesitas ahora?» cuando lo necesites</b><br>
+        ¿Notas <b>tensión, rabia, frustración o bloqueo</b> en calle? Arriba del todo tienes accesos directos a las situaciones más comunes. Si no sabes cuál elegir, pulsa <b>No sé qué necesito</b>. Para ver todas las herramientas por categorías, entra en <b>Herramientas</b>.</p>
+        <p><b>3. Cierra el día con el Diario S-E-P-A</b> <br>
         Dedica unos minutos a revisar cómo ha ido la jornada, qué has sentido y qué puedes aprender de lo ocurrido.</p>
-        <p><b>4️⃣ ¿Llevas varios días de mala racha? 🆘 Reset</b><br>
-        Cuando sientas que has <b>«chocado con la pared»</b>, utiliza <b>🆘 Reset</b> para parar, recolocarte y volver a la calle con otra perspectiva.</p>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Aprende → Aplica → Reflexiona → Resetea.</b> No necesitas usarlo todo a la vez. <b>Empieza por lo que necesites en cada momento.</b></p>
+        <p><b>4. ¿Llevas varios días de mala racha? Reset</b><br>
+        Cuando sientas que has <b>«chocado con la pared»</b>, utiliza <b>Reset</b> para parar, recolocarte y volver a la calle con otra perspectiva.</p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Aprende → Aplica → Reflexiona → Resetea.</b> No necesitas usarlo todo a la vez. <b>Empieza por lo que necesites en cada momento.</b></p>
       </div>
     </details>
 
     <details class="help-item">
-      <summary>🧠 Aprender</summary>
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg></span><span class="sum-title">Aprender</span></summary>
       <div class="help-body">
         <p>Léelo con calma antes de necesitar las herramientas. Son <b>9 fichas desplegables</b>. Abre la que te interese:</p>
         <ul>
@@ -1602,7 +1642,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
     </details>
 
     <details class="help-item">
-      <summary>🌱 Bienestar</summary>
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-sprout"/></svg></span><span class="sum-title">Bienestar</span></summary>
       <div class="help-body">
         <p>Hábitos y prácticas para mantener una <b>buena base emocional a medio y largo plazo</b> y recuperarte mejor después de un día difícil.</p>
         <p>Es una sección de lectura, no una herramienta para usar en una situación concreta de calle. Para eso está <b>Herramientas</b>.</p>
@@ -1610,10 +1650,10 @@ header :focus-visible{outline-color:var(--wesser-red);}
     </details>
 
     <details class="help-item">
-      <summary>🧰 Herramientas</summary>
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-toolbox"/></svg></span><span class="sum-title">Herramientas</span></summary>
       <div class="help-body">
         <p>Elige según lo que necesites ahora mismo. Están agrupadas en <b>4 bloques</b>:</p>
-        <p><b>😮‍💨 Reinicio y regulación</b><br>Para <b>bajar la activación o recuperar perspectiva</b> en el momento.</p>
+        <p><b>Reinicio y regulación</b><br>Para <b>bajar la activación o recuperar perspectiva</b> en el momento.</p>
         <ul>
           <li><b>Después de una mala interacción</b>: Corta → Separa → Aprende → Suelta → Vuelve. Te ayuda a evitar que una interacción difícil contamine las siguientes.</li>
           <li><b>Suspiro fisiológico</b>: ejercicio respiratorio de 60 segundos que puede ayudarte a bajar rápidamente la activación cuando estás acelerado o tenso.</li>
@@ -1621,18 +1661,18 @@ header :focus-visible{outline-color:var(--wesser-red);}
           <li><b>Grounding 5‑4‑3‑2‑1</b>: lleva tu atención a los 5 sentidos para volver al presente.</li>
           <li><b>Tense &amp; Release</b>: tensa y suelta puños, brazos, hombros y piernas para liberar la tensión física.</li>
         </ul>
-        <p><b>🎯 Foco y rendimiento</b><br>Para <b>volver al proceso y tomar mejores decisiones</b>.</p>
+        <p><b>Foco y rendimiento</b><br>Para <b>volver al proceso y tomar mejores decisiones</b>.</p>
         <ul>
           <li><b>El momento de decidir</b>: una sola pregunta para el instante justo antes de dejar pasar a alguien.</li>
           <li><b>Resultado vs. Proceso</b>: te ayuda a identificar cuándo estás demasiado centrado en el resultado en lugar de en lo que sí puedes hacer ahora.</li>
           <li><b>Pide feedback</b>: elige una petición concreta de observación en lugar de un genérico «dime si lo hago bien».</li>
         </ul>
-        <p><b>⚓ Preparación</b><br>Recursos que <b>se preparan antes de necesitarlos</b>.</p>
+        <p><b>Preparación</b><br>Recursos que <b>se preparan antes de necesitarlos</b>.</p>
         <ul>
           <li><b>Recordatorio de confianza</b>: guarda una o varias palabras clave con el recuerdo de seguridad asociado. Al usarlo, la app te guía 30 segundos mientras repites tu gesto discreto.</li>
           <li><b>Recordatorio visual</b>: guarda frases o recordatorios de enfoque para releerlos cuando lo necesites.</li>
         </ul>
-        <p><b>📊 Seguimiento del turno</b><br>Para <b>observar cómo estás durante la jornada y registrar lo que te funciona</b>.</p>
+        <p><b>Seguimiento del turno</b><br>Para <b>observar cómo estás durante la jornada y registrar lo que te funciona</b>.</p>
         <ul>
           <li><b>Checkpoint de mitad de turno</b>: revisión rápida de fatiga y activación a mitad de turno. Queda guardado en tu historial.</li>
           <li><b>¿Qué ha funcionado?</b>: registra una conducta que te haya funcionado para poder repetirla.</li>
@@ -1642,7 +1682,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
     </details>
 
     <details class="help-item">
-      <summary>📓 Diario S-E-P-A</summary>
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-notebook"/></svg></span><span class="sum-title">Diario S-E-P-A</span></summary>
       <div class="help-body">
         <p>Registra momentos difíciles en <b>4 pasos principales</b> para observar qué ha ocurrido y entrenar respuestas más útiles:</p>
         <ul>
@@ -1657,12 +1697,12 @@ header :focus-visible{outline-color:var(--wesser-red);}
     </details>
 
     <details class="help-item">
-      <summary>🆘 Modo Reset</summary>
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg></span><span class="sum-title">Modo Reset</span></summary>
       <div class="help-body">
         <p>Botón siempre visible en la cabecera. Utilízalo cuando sientas que has <b>«chocado con la pared»</b>: mala racha, desgaste o frustración acumulada.</p>
         <p>La pantalla inicial explica qué hacer durante una mala racha: <b>Normalizar → Revisar → Rescatar → Regular → Pedir ayuda</b>. También encontrarás <b>¿Qué está en mis manos?</b>, donde puedes separar lo que no controlas, lo que puedes influir y lo que puedes revisar.</p>
-        <p>Desde ahí puedes hacer un <b>Check-in de señales</b>, con 17 señales de autoobservación. En <b>📚 Historial</b> puedes revisar tus sesiones de Reset y tus check-ins, eliminarlos o repetir un ajuste.</p>
-        <p><b>🔄 El protocolo R.E.S.E.T.</b></p>
+        <p>Desde ahí puedes hacer un <b>Check-in de señales</b>, con 17 señales de autoobservación. En <b>Historial</b> puedes revisar tus sesiones de Reset y tus check-ins, eliminarlos o repetir un ajuste.</p>
+        <p><b>El protocolo R.E.S.E.T.</b></p>
         <ul>
           <li><b>R · Reconoce</b>: reconoce la mala racha sin juzgarte y detecta la señal que estás notando con más fuerza.</li>
           <li><b>E · Examina</b>: separa lo que pertenece al contexto de lo que puedes revisar y ajustar en tu forma de trabajar.</li>
@@ -1670,30 +1710,30 @@ header :focus-visible{outline-color:var(--wesser-red);}
           <li><b>E · Elige</b>: selecciona una sola conducta concreta para ajustar: ritmo y voz, escucha, presencia y parada, apertura y adaptación, o un hábito a corregir.</li>
           <li><b>T · Testea</b>: prueba ese cambio durante 10 oportunidades de parada sin juzgarlo únicamente por el resultado.</li>
         </ul>
-        <p>Al terminar, decide qué quieres hacer con el ajuste: <b>✅ Mantenerlo · 🔧 Ajustarlo · 🔄 Probar otra cosa</b>.</p>
+        <p>Al terminar, decide qué quieres hacer con el ajuste: <b>Mantenerlo · Ajustarlo · Probar otra cosa</b>.</p>
         <p>Al cerrar el protocolo encontrarás una guía rápida, <b>PARA → REVISA → PIDE</b>, y podrás completar un <b>Pacto de permanencia</b> con tu compromiso concreto para el próximo turno.</p>
-        <p><b>🎒 Kit de Emergencia</b></p>
-        <p>El icono <b>🎒</b> abre en cualquier momento tu plan personal de emergencia. Puedes definir tus señales de alerta, la herramienta con la que te regulas, el ajuste técnico que quieres aplicar y a quién pedir apoyo si sigues atascado. El botón <b>🚨 Activar mi plan</b> abre directamente la herramienta de la app que hayas elegido o, si es un recurso personal, te lo muestra.</p>
+        <p><b>Kit de Emergencia</b></p>
+        <p>El icono <b></b> abre en cualquier momento tu plan personal de emergencia. Puedes definir tus señales de alerta, la herramienta con la que te regulas, el ajuste técnico que quieres aplicar y a quién pedir apoyo si sigues atascado. El botón <b>Activar mi plan</b> abre directamente la herramienta de la app que hayas elegido o, si es un recurso personal, te lo muestra.</p>
       </div>
     </details>
 
     <details class="help-item">
-      <summary>🌓 Modo claro / oscuro</summary>
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-contrast"/></svg></span><span class="sum-title">Modo claro / oscuro</span></summary>
       <div class="help-body">
         <p>El icono de la cabecera permite <b>cambiar entre modo claro y oscuro</b>. Mientras no lo cambies, la app usa el tema de tu dispositivo.</p>
       </div>
     </details>
 
     <details class="help-item">
-      <summary>💾 Mis datos</summary>
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg></span><span class="sum-title">Mis datos</span></summary>
       <div class="help-body">
         <p class="desc">Los datos que guardas (Diario, Checkpoints, Check-ins, Reset, Kit y recursos personales) se almacenan <b>solo en este dispositivo y no se envían a ningún sitio</b>. Eso significa que <b>no hay una copia de seguridad automática</b>: si borras los datos del navegador o cambias de móvil o tablet, pueden perderse. Exporta una copia desde aquí para guardarla a salvo.</p>
         <p class="desc" style="font-size:12.5px;">Los datos se almacenan localmente en este navegador. La app no los envía a un servidor. No están cifrados; en un dispositivo compartido, otras personas con acceso al mismo perfil del navegador podrían verlos.</p>
-        <p class="desc" style="font-size:12.5px;">📶 Para abrir la app necesitas conexión. Una vez abierta, funciona sin cobertura: si la pierdes, no recargues la página. Tus datos siguen guardados en el dispositivo aunque no puedas abrirla en ese momento.</p>
+        <p class="desc" style="font-size:12.5px;">Para abrir la app necesitas conexión. Una vez abierta, funciona sin cobertura: si la pierdes, no recargues la página. Tus datos siguen guardados en el dispositivo aunque no puedas abrirla en ese momento.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-navy" onclick="exportarDatos()">⬇️ Exportar datos</button>
           <button type="button" class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()">⬆️ Importar datos</button>
-          <button type="button" class="btn btn-outline" style="color:var(--alert-coral);" onclick="borrarTodosDatos()">🗑️ Borrar todos los datos</button>
+          <button type="button" class="btn btn-outline" style="color:var(--alert-coral);" onclick="borrarTodosDatos()">Borrar todos los datos</button>
         </div>
         <p id="datosMsg" class="field-ok" role="status" style="margin-top:12px;"></p>
         <input type="file" id="importDatosInput" accept="application/json" style="display:none;" onchange="importarDatos(this)">
@@ -2287,17 +2327,17 @@ function closeModal(){ Overlays.close('modal'); }
    Tres pasos en el modal. Se muestra una sola vez y solo si no hay datos guardados, así que
    quien ya usa la app no la ve. Se puede volver a abrir desde la Ayuda. */
 const WELCOME_STEPS = [
-  { title:'👋 Bienvenido', html:`
+  { title:'Bienvenido', html:`
       <p class="desc">Esta app te ayuda a <b>entender y gestionar lo que sientes en la calle</b>: antes de salir, en un momento difícil y al terminar la jornada.</p>
       <p class="desc">Todo lo que guardas se queda <b>solo en este dispositivo</b>; no se envía a ningún sitio.</p>` },
-  { title:'🧭 Cuándo usar cada parte', html:`
-      <p class="desc">🧠 <b>Aprender</b> y 🌱 <b>Bienestar</b>: léelos con calma, fuera de la calle.</p>
-      <p class="desc">⚡ <b>«¿Qué necesitas ahora?»</b>: arriba del todo, para un momento difícil en calle. Si dudas, pulsa <b>🤔 No sé qué necesito</b>.</p>
-      <p class="desc">📓 <b>Diario</b>: al acabar, para entender qué pasó y qué hacer la próxima vez.</p>
-      <p class="desc">🆘 <b>Reset</b>: cuando llevas varios días sin encontrar tu ritmo.</p>` },
-  { title:'🎒 Prepara tu Kit', html:`
+  { title:'Cuándo usar cada parte', html:`
+      <p class="desc"><b>Aprender</b> y <b>Bienestar</b>: léelos con calma, fuera de la calle.</p>
+      <p class="desc"><b>«¿Qué necesitas ahora?»</b>: arriba del todo, para un momento difícil en calle. Si dudas, pulsa <b>No sé qué necesito</b>.</p>
+      <p class="desc"><b>Diario</b>: al acabar, para entender qué pasó y qué hacer la próxima vez.</p>
+      <p class="desc"><b>Reset</b>: cuando llevas varios días sin encontrar tu ritmo.</p>` },
+  { title:'Prepara tu Kit', html:`
       <p class="desc">El <b>Kit de Emergencia</b> es tu plan para cuando aparezcan tus primeras señales: qué notas, con qué te regulas, qué ajustas y a quién pides apoyo.</p>
-      <p class="desc"><b>Prepararlo ahora lleva un par de minutos</b> y después lo tienes a mano con «🚨 Activar mi plan».</p>` }
+      <p class="desc"><b>Prepararlo ahora lleva un par de minutos</b> y después lo tienes a mano con «Activar mi plan».</p>` }
 ];
 let welcomeStep = 0;
 function showWelcome(step){
@@ -2401,11 +2441,11 @@ function showEmotion(id){
   openModal(`
     <span class="badge navy">${e.tipo} · Busca ${e.finalidad}</span>
     <h2>${emoji(e.id)} ${e.nombre}</h2>
-    <h3 style="margin-top:14px;">🎯 ¿Para qué sirve?</h3>
+    <h3 style="margin-top:14px;">¿Para qué sirve?</h3>
     <p class="desc">${e.funcion}</p>
-    <h3 style="margin-top:14px;">🫀 ¿Cómo se nota?</h3>
+    <h3 style="margin-top:14px;">¿Cómo se nota?</h3>
     <p class="desc">${e.expresion}</p>
-    <h3 style="margin-top:14px;">💬 ¿Qué me puedo decir?</h3>
+    <h3 style="margin-top:14px;">¿Qué me puedo decir?</h3>
     <p style="font-weight:700;font-style:italic;">«${e.reencuadre}»</p>
     <button type="button" class="btn btn-outline" style="margin-top:14px;" onclick="closeModal()">Cerrar</button>
   `);
@@ -2642,9 +2682,9 @@ function renderPatrones(){
 /* ============ CHECKPOINT ============ */
 let editingCheckpointId = null;
 const CHECKPOINT_DECISIONES = [
-  {v:'Sigo igual', em:'▶️'},
-  {v:'Hago una pausa', em:'⏸️'},
-  {v:'Ajusto la estrategia', em:'🎯'}
+  {v:'Sigo igual', em:''},
+  {v:'Hago una pausa', em:''},
+  {v:'Ajusto la estrategia', em:''}
 ];
 function openCheckpoint(editId){
   editingCheckpointId = editId || null;
@@ -2653,13 +2693,13 @@ function openCheckpoint(editId){
   const emocional = existing ? existing.emocional : 5;
   const nota = existing ? (existing.nota||'') : '';
   const decision = existing ? (existing.decision||'') : '';
-  openTool('⏱️ Checkpoint de mitad de turno', `
+  openTool('Checkpoint de mitad de turno', `
     <div class="card">
       <p class="desc"><b>Tómate un momento y pregúntate:</b></p>
-      <p class="desc">🫀 <b>Cuerpo:</b> ¿estoy tenso, cansado o acelerado?<br>
-      🧠 <b>Cabeza:</b> ¿estoy concentrado o funcionando en automático?<br>
-      💭 <b>Emoción:</b> ¿qué estoy sintiendo?<br>
-      🎯 <b>Estrategia:</b> ¿necesito cambiar algo?</p>
+      <p class="desc"><b>Cuerpo:</b> ¿estoy tenso, cansado o acelerado?<br>
+      <b>Cabeza:</b> ¿estoy concentrado o funcionando en automático?<br>
+      <b>Emoción:</b> ¿qué estoy sintiendo?<br>
+      <b>Estrategia:</b> ¿necesito cambiar algo?</p>
       <label for="cpFatiga">Nivel de fatiga física/mental (1‑10)</label>
       <input type="range" id="cpFatiga" min="1" max="10" value="${escapeHtml(fatiga)}" oninput="document.getElementById('cpFatigaVal').textContent=this.value+'/10'">
       <div class="range-val" id="cpFatigaVal">${escapeHtml(fatiga)}/10</div>
@@ -2672,7 +2712,7 @@ function openCheckpoint(editId){
       <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
       <p style="margin-top:14px;"><b>¿Qué hago ahora?</b></p>
       <div class="btn-row" id="cpDecisionRow" role="group" aria-label="¿Qué hago ahora?" style="flex-wrap:wrap;">
-        ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" aria-pressed="${decision===o.v}" data-decision="${escapeHtml(o.v)}" data-action="setCpDecision" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
+        ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" aria-pressed="${decision===o.v}" data-decision="${escapeHtml(o.v)}" data-action="setCpDecision" data-value="${escapeHtml(o.v)}">${o.v}</button>`).join('')}
       </div>
       <input type="hidden" id="cpDecision" value="${escapeHtml(decision)}">
       <button type="button" class="btn btn-green" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
@@ -2732,7 +2772,7 @@ function startExito(){
 }
 function selectExitoConducta(v){ exitoConducta = v; renderExito(); }
 function renderExito(){
-  openTool('🟢 ¿Qué ha funcionado?', `
+  openTool('¿Qué ha funcionado?', `
     <div class="card" style="text-align:left;">
       <p class="desc">Piensa en una conversación que haya ido bien. No es para puntuarte, es para quedarte con lo que funciona.</p>
       <p id="exitoLabel"><b>¿Qué ha funcionado?</b></p>
@@ -2745,7 +2785,7 @@ function renderExito(){
       </div>
       <label for="exitoRepetirInput" style="margin-top:14px;">¿Qué quiero repetir en el siguiente?</label>
       <textarea id="exitoRepetirInput" placeholder="Sé concreto: una sola cosa..." oninput="exitoRepetirTexto=this.value;">${escapeHtml(exitoRepetirTexto)}</textarea>
-      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">💡 Ha ido bien no significa que tengas que cambiarlo todo. Mantén lo que ya funciona.</p>
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">Ha ido bien no significa que tengas que cambiarlo todo. Mantén lo que ya funciona.</p>
       <button type="button" class="btn btn-green" style="margin-top:6px;" onclick="guardarExito()">Guardar</button>
     </div>
   `);
@@ -2762,14 +2802,14 @@ function guardarExito(){
   save();
   renderExitoHistorial();
   renderPatrones();
-  openTool('🟢 ¿Qué ha funcionado?', `
+  openTool('¿Qué ha funcionado?', `
     <div class="card" style="text-align:left;">
-      <h3 style="text-align:center;">✅ Guardado</h3>
+      <h3 style="text-align:center;">Guardado</h3>
       <p class="desc"><b>Ha funcionado:</b><br>${escapeHtml(conducta)}</p>
       ${repetir ? `<p class="desc"><b>Quiero repetir:</b><br>${escapeHtml(repetir)}</p>` : ''}
       <div class="btn-row" style="margin-top:10px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startExito()">🔁 Repetir</button>
+        <button type="button" class="btn btn-blue" onclick="startExito()">Repetir</button>
       </div>
     </div>
   `);
@@ -2811,12 +2851,12 @@ function showToolDone(title, repeatFn){
   announce(`${title}: completado.`);
   openTool(title, `
     <div class="card" style="text-align:center;">
-      <p style="font-size:40px;">✅</p>
+      <div class="tool-hero"><span class="tile tile-lg" data-tone="anchor"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span></div>
       <h3>Hecho</h3>
       <p class="desc">Puedes volver a la calle o repetirla si lo necesitas.</p>
       <div class="btn-row" style="margin-top:10px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" data-action="toolRepeat">🔁 Repetir</button>
+        <button type="button" class="btn btn-blue" data-action="toolRepeat">Repetir</button>
       </div>
     </div>
   `);
@@ -2825,10 +2865,10 @@ function showToolDone(title, repeatFn){
 /* ---- Antes de salir (pre-turno) ---- */
 function startPreTurno(){
   const tienePlan = state.kitHerramienta && (state.kitSenales.length || state.kitAjuste);
-  openTool('🚀 Antes de salir', `
+  openTool('Antes de salir', `
     ${tienePlan ? `
       <div class="card kit-summary">
-        <h3>📋 Tu plan para hoy</h3>
+        <h3>Tu plan para hoy</h3>
         <div class="kit-flow">
           ${state.kitSenales.length ? `
             <div class="kit-flow-step">
@@ -2852,7 +2892,7 @@ function startPreTurno(){
       </div>
     ` : ''}
     <div class="card" style="text-align:left;">
-      <p class="tool-meta">⏱️ 30–45 segundos</p>
+      <p class="tool-meta">30–45 segundos</p>
       <p class="desc">Tres preguntas rápidas antes de empezar el turno. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label for="preTurno1">¿Cómo llego hoy?</label>
       <textarea id="preTurno1" placeholder="Una palabra o frase corta..."></textarea>
@@ -2860,7 +2900,7 @@ function startPreTurno(){
       <textarea id="preTurno2" placeholder="Ej: escuchar hasta el final, sonreír más..."></textarea>
       <label for="preTurno3">Si aparece mi primera señal, ¿qué haré?</label>
       <textarea id="preTurno3" placeholder="Tu respuesta de emergencia..."></textarea>
-      <button type="button" class="btn btn-amber" style="margin-top:6px;" onclick="finalizarPreTurno()">✅ Estoy preparado</button>
+      <button type="button" class="btn btn-amber" style="margin-top:6px;" onclick="finalizarPreTurno()">Estoy preparado</button>
     </div>
   `);
 }
@@ -2869,16 +2909,16 @@ function finalizarPreTurno(){
   const cuidar = document.getElementById('preTurno2').value.trim();
   const senal = document.getElementById('preTurno3').value.trim();
   clearToolTimers();
-  openTool('🚀 Antes de salir', `
+  openTool('Antes de salir', `
     <div class="card" style="text-align:left;">
-      <h3 style="text-align:center;">✅ Estoy preparado</h3>
+      <h3 style="text-align:center;">Estoy preparado</h3>
       <p><b>Mi enfoque para hoy</b></p>
       <p class="desc"><b>¿Cómo llego?</b><br>${escapeHtml(llego)||'—'}</p>
       <p class="desc"><b>Quiero cuidar:</b><br>${escapeHtml(cuidar)||'—'}</p>
       <p class="desc"><b>Si aparece la señal:</b><br>${escapeHtml(senal)||'—'}</p>
       <div class="btn-row" style="margin-top:10px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startPreTurno()">🔁 Repetir</button>
+        <button type="button" class="btn btn-blue" onclick="startPreTurno()">Repetir</button>
       </div>
     </div>
   `);
@@ -2886,9 +2926,9 @@ function finalizarPreTurno(){
 
 /* ---- Cierre de turno (transición trabajo -> casa) ---- */
 function startCierreTurno(){
-  openTool('🏠 Cierre de turno', `
+  openTool('Cierre de turno', `
     <div class="card" style="text-align:left;">
-      <p class="tool-meta">⏱️ 30 segundos</p>
+      <p class="tool-meta">30 segundos</p>
       <p class="desc">Tres preguntas rápidas para cerrar el turno antes de volver a casa. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label for="cierreTurno1">¿Qué dejo hoy en el trabajo?</label>
       <textarea id="cierreTurno1" placeholder="Una palabra o frase corta..."></textarea>
@@ -2896,7 +2936,7 @@ function startCierreTurno(){
       <textarea id="cierreTurno2" placeholder="Ej: un aprendizaje, una buena conversación..."></textarea>
       <label for="cierreTurno3">¿Qué necesito hacer ahora para cambiar de contexto?</label>
       <textarea id="cierreTurno3" placeholder="Ej: cambiarme de ropa, caminar, llamar a alguien..."></textarea>
-      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarCierreTurno()">✅ Turno cerrado</button>
+      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarCierreTurno()">Turno cerrado</button>
     </div>
   `);
 }
@@ -2905,9 +2945,9 @@ function finalizarCierreTurno(){
   const llevo = document.getElementById('cierreTurno2').value.trim();
   const contexto = document.getElementById('cierreTurno3').value.trim();
   clearToolTimers();
-  openTool('🏠 Cierre de turno', `
+  openTool('Cierre de turno', `
     <div class="card" style="text-align:left;">
-      <h3 style="text-align:center;">✅ Turno cerrado</h3>
+      <h3 style="text-align:center;">Turno cerrado</h3>
       <p><b>Mi cierre de hoy</b></p>
       <p class="desc"><b>Dejo en el trabajo:</b><br>${escapeHtml(dejo)||'—'}</p>
       <p class="desc"><b>Me llevo:</b><br>${escapeHtml(llevo)||'—'}</p>
@@ -2915,24 +2955,24 @@ function finalizarCierreTurno(){
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"El turno ha terminado. No necesito seguir resolviéndolo ahora."</p>
       <div class="btn-row" style="margin-top:10px;flex-wrap:wrap;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startCierreTurno()">🔁 Repetir</button>
+        <button type="button" class="btn btn-blue" onclick="startCierreTurno()">Repetir</button>
       </div>
-      <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="closeTool();startGrounding();">🧠 Sigo dándole vueltas</button>
+      <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="closeTool();startGrounding();">Sigo dándole vueltas</button>
     </div>
   `);
 }
 
 /* ---- Volver a calle (retomar el turno tras una pausa) ---- */
 function startVolverCalle(){
-  openTool('🔄 Volver a calle', `
+  openTool('Volver a calle', `
     <div class="card" style="text-align:left;">
-      <p class="tool-meta">⏱️ 15–20 segundos</p>
+      <p class="tool-meta">15–20 segundos</p>
       <p class="desc">Dos preguntas rápidas para retomar el turno después de la pausa. No se guardan: son solo para ordenar tus ideas ahora.</p>
       <label for="volverCalle1">¿Cómo estoy?</label>
       <textarea id="volverCalle1" placeholder="Una palabra o frase corta..."></textarea>
       <label for="volverCalle2">¿Qué quiero hacer en la primera parada?</label>
       <textarea id="volverCalle2" placeholder="Ej: sonreír, escuchar bien, ritmo tranquilo..."></textarea>
-      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarVolverCalle()">✅ Vuelvo a calle</button>
+      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarVolverCalle()">Vuelvo a calle</button>
     </div>
   `);
 }
@@ -2940,15 +2980,15 @@ function finalizarVolverCalle(){
   const como = document.getElementById('volverCalle1').value.trim();
   const primero = document.getElementById('volverCalle2').value.trim();
   clearToolTimers();
-  openTool('🔄 Volver a calle', `
+  openTool('Volver a calle', `
     <div class="card" style="text-align:left;">
-      <h3 style="text-align:center;">✅ Vuelvo a calle</h3>
+      <h3 style="text-align:center;">Vuelvo a calle</h3>
       <p class="desc"><b>¿Cómo estoy?</b><br>${escapeHtml(como)||'—'}</p>
       <p class="desc"><b>Primera parada:</b><br>${escapeHtml(primero)||'—'}</p>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"No necesito recuperar el día. Solo hacer el siguiente."</p>
       <div class="btn-row" style="margin-top:10px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startVolverCalle()">🔁 Repetir</button>
+        <button type="button" class="btn btn-blue" onclick="startVolverCalle()">Repetir</button>
       </div>
     </div>
   `);
@@ -3039,11 +3079,11 @@ function nextPause(){
 
 /* ---- Después de una mala interacción (Corta → Separa → Aprende → Suelta → Vuelve) ---- */
 const badApproachSteps = [
-  {l:'✂️', title:'Corta', desc:'Esa interacción ya ha terminado.'},
-  {l:'🔀', title:'Separa', desc:'Lo que ha pasado no determina cómo irá la siguiente.'},
-  {l:'🔎', title:'Aprende', desc:'¿Hay algo concreto que pueda revisar?', input:true, key:'aprende', ph:'Escribe algo breve si se te ocurre (opcional)...'},
-  {l:'🌬️', title:'Suelta', desc:'Haz una respiración lenta: inhala por la nariz y exhala despacio por la boca.'},
-  {l:'➡️', title:'Vuelve', desc:'Mi único objetivo ahora es hacer bien la siguiente parada.'}
+  {l:'x', title:'Corta', desc:'Esa interacción ya ha terminado.'},
+  {l:'split', title:'Separa', desc:'Lo que ha pasado no determina cómo irá la siguiente.'},
+  {l:'eye', title:'Aprende', desc:'¿Hay algo concreto que pueda revisar?', input:true, key:'aprende', ph:'Escribe algo breve si se te ocurre (opcional)...'},
+  {l:'wind', title:'Suelta', desc:'Haz una respiración lenta: inhala por la nariz y exhala despacio por la boca.'},
+  {l:'arrow', title:'Vuelve', desc:'Mi único objetivo ahora es hacer bien la siguiente parada.'}
 ];
 let badApproachIdx = 0;
 let badApproachAprende = '';
@@ -3051,10 +3091,10 @@ function startBadApproach(){ badApproachIdx=0; badApproachAprende=''; renderBadA
 function renderBadApproachStep(){
   const s = badApproachSteps[badApproachIdx];
   const prefill = s.key==='aprende' ? badApproachAprende : '';
-  openTool('💥 Después de una mala interacción', `
+  openTool('Después de una mala interacción', `
     <div class="card" style="text-align:center;">
       <div class="step-dots">${badApproachSteps.map((_,i)=>`<span class="${i<=badApproachIdx?'on':''}"></span>`).join('')}</div>
-      <p style="font-size:36px;">${s.l}</p>
+      <div class="tool-hero"><span class="tile tile-lg" data-tone="relief"><svg class="ic" aria-hidden="true"><use href="#i-${s.l}"/></svg></span></div>
       <h3>${s.title}</h3>
       <p class="desc">${s.desc}</p>
       ${s.input ? `<textarea id="badApproachInput" placeholder="${s.ph}">${escapeHtml(prefill)}</textarea>` : ''}
@@ -3066,45 +3106,45 @@ function nextBadApproach(){
   const s = badApproachSteps[badApproachIdx];
   if(s.input){ badApproachAprende = document.getElementById('badApproachInput').value.trim(); }
   badApproachIdx++;
-  if(badApproachIdx>=badApproachSteps.length){ showToolDone('💥 Después de una mala interacción', startBadApproach); return; }
+  if(badApproachIdx>=badApproachSteps.length){ showToolDone('Después de una mala interacción', startBadApproach); return; }
   renderBadApproachStep();
 }
 
 /* ---- Resultado vs. Proceso ---- */
 const RP_PROCESO_OPCIONES = ['Escuchar hasta el final','Cuidar mi apertura','Adaptar mi respuesta','Mantener el ritmo','Probar una parada más'];
 function startResultadoProceso(){
-  openTool('🎯 Resultado vs. Proceso', `
+  openTool('Resultado vs. Proceso', `
     <div class="card" style="text-align:left;">
       <p class="desc">La presión por objetivo suele aparecer cuando dejamos de mirar el proceso y empezamos a mirar solo el resultado.</p>
       <div class="compare-row">
-        <div class="compare-col"><b>🎯 RESULTADO</b><p>Socios · Ratio · Objetivo · Tiempo · Número del día</p></div>
-        <div class="compare-col"><b>🛠️ PROCESO</b><p>Paradas · Apertura · Escucha · Adaptación · Persistencia · Técnica</p></div>
+        <div class="compare-col"><b>RESULTADO</b><p>Socios · Ratio · Objetivo · Tiempo · Número del día</p></div>
+        <div class="compare-col"><b>PROCESO</b><p>Paradas · Apertura · Escucha · Adaptación · Persistencia · Técnica</p></div>
       </div>
       <p style="margin-top:14px;text-align:center;"><b>¿Dónde estoy mirando ahora mismo?</b></p>
       <div class="btn-row" style="flex-wrap:wrap;">
-        <button type="button" class="btn btn-outline" onclick="selectRP('resultado')">🎯 Resultado</button>
-        <button type="button" class="btn btn-outline" onclick="selectRP('proceso')">🛠️ Proceso</button>
+        <button type="button" class="btn btn-outline" onclick="selectRP('resultado')">Resultado</button>
+        <button type="button" class="btn btn-outline" onclick="selectRP('proceso')">Proceso</button>
       </div>
     </div>
   `);
 }
 function selectRP(val){
   if(val==='proceso'){
-    openTool('🎯 Resultado vs. Proceso', `
+    openTool('Resultado vs. Proceso', `
       <div class="card" style="text-align:center;">
-        <p style="font-size:36px;">🛠️</p>
+        <div class="tool-hero"><span class="tile tile-lg" data-tone="focus"><svg class="ic" aria-hidden="true"><use href="#i-toolbox"/></svg></span></div>
         <h3>Estás mirando el proceso</h3>
         <p class="desc">Es un foco más cercano a lo que sí puedes ejecutar ahora.</p>
         <p class="desc">El resultado también depende de cosas que no controlas; el proceso es donde puedes actuar.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-          <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
+          <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">Repetir</button>
         </div>
       </div>
     `);
     return;
   }
-  openTool('🎯 Resultado vs. Proceso', `
+  openTool('Resultado vs. Proceso', `
     <div class="card" style="text-align:left;">
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Vuelve a una conducta que sí puedas ejecutar ahora.</p>
       <p id="rpLabel"><b>Elige tu foco para la siguiente parada</b></p>
@@ -3115,14 +3155,14 @@ function selectRP(val){
   `);
 }
 function finalizarRP(foco){
-  openTool('🎯 Resultado vs. Proceso', `
+  openTool('Resultado vs. Proceso', `
     <div class="card" style="text-align:center;">
-      <p style="font-size:36px;">🛠️</p>
+      <div class="tool-hero"><span class="tile tile-lg" data-tone="focus"><svg class="ic" aria-hidden="true"><use href="#i-toolbox"/></svg></span></div>
       <h3>Mi foco ahora</h3>
       <p class="quote-strong">«${escapeHtml(foco)}»</p>
       <div class="btn-row" style="margin-top:14px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">🔁 Repetir</button>
+        <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">Repetir</button>
       </div>
     </div>
   `);
@@ -3130,7 +3170,7 @@ function finalizarRP(foco){
 
 /* ---- El momento de decidir (duda anticipatoria justo antes de la parada) ---- */
 function startMomentoDecidir(){
-  openTool('👋 El momento de decidir', `
+  openTool('El momento de decidir', `
     <div class="card" style="text-align:center;">
       <p class="desc">Antes de dejar pasar a alguien, hazte esta pregunta:</p>
       <p style="font-size:17px;font-weight:800;margin:10px 0;">¿Estoy decidiendo no hacer la parada o estoy evitando sentir el rechazo?</p>
@@ -3143,27 +3183,27 @@ function startMomentoDecidir(){
 }
 function selectMomentoDecidir(val){
   if(val==='decide'){
-    openTool('👋 El momento de decidir', `
+    openTool('El momento de decidir', `
       <div class="card" style="text-align:center;">
-        <p style="font-size:36px;">👋</p>
+        <div class="tool-hero"><span class="tile tile-lg" data-tone="focus"><svg class="ic" aria-hidden="true"><use href="#i-hand"/></svg></span></div>
         <h3>Es tu decisión</h3>
         <p class="desc">No todas las paradas tienen que producirse. Decidir con criterio también es parte del trabajo.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-          <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">🔁 Repetir</button>
+          <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">Repetir</button>
         </div>
       </div>
     `);
     return;
   }
-  openTool('👋 El momento de decidir', `
+  openTool('El momento de decidir', `
     <div class="card" style="text-align:center;">
-      <p style="font-size:36px;">👋</p>
+      <div class="tool-hero"><span class="tile tile-lg" data-tone="focus"><svg class="ic" aria-hidden="true"><use href="#i-hand"/></svg></span></div>
       <h3>Solo necesitas decidir</h3>
       <p class="quote-strong">«No necesito sentirme seguro. Solo necesito decidir.»</p>
       <div class="btn-row" style="margin-top:14px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">🔁 Repetir</button>
+        <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">Repetir</button>
       </div>
     </div>
   `);
@@ -3186,10 +3226,10 @@ function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(
    la sensación de que se ignoran las demás respuestas. */
 function nsqnRecommendations(){
   const list = [];
-  if(nsqnAnswers.dias === true) list.push({title:'🆘 Modo Reset', desc:'Si esto se repite varios días, el modo Reset te ayuda a revisar qué está cambiando y a elegir un ajuste.', action:()=>{ closeTool(); openReset(); }, cta:'Ir a Reset'});
-  if(nsqnAnswers.evitando === true) list.push({title:'🛑 Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:startPauseDecision, cta:'Empezar'});
-  if(nsqnAnswers.acelerado === true) list.push({title:'🌬️ Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:()=>startBreath(60), cta:'Respirar 60 s'});
-  if(nsqnAnswers.cabeza === true) list.push({title:'👀 Grounding 5-4-3-2-1', desc:'Puede ayudarte a sacar la atención del bucle de pensamientos y volver al presente.', action:startGrounding, cta:'Empezar'});
+  if(nsqnAnswers.dias === true) list.push({title:'Modo Reset', desc:'Si esto se repite varios días, el modo Reset te ayuda a revisar qué está cambiando y a elegir un ajuste.', action:()=>{ closeTool(); openReset(); }, cta:'Ir a Reset'});
+  if(nsqnAnswers.evitando === true) list.push({title:'Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:startPauseDecision, cta:'Empezar'});
+  if(nsqnAnswers.acelerado === true) list.push({title:'Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:()=>startBreath(60), cta:'Respirar 60 s'});
+  if(nsqnAnswers.cabeza === true) list.push({title:'Grounding 5-4-3-2-1', desc:'Puede ayudarte a sacar la atención del bucle de pensamientos y volver al presente.', action:startGrounding, cta:'Empezar'});
   return list;
 }
 function renderNoSeQueNecesito(){
@@ -3226,7 +3266,7 @@ function renderNoSeQueNecesito(){
         </div>
       </div>`;
   }
-  openTool('🤔 No sé qué necesito', `
+  openTool('No sé qué necesito', `
     <div class="card" style="text-align:left;">
       <p class="desc">Responde 4 preguntas rápidas y te sugeriré por dónde empezar. Es solo una ayuda para elegir herramienta, no una evaluación de cómo estás.</p>
       ${NSQN_QUESTIONS.map(q=>`
@@ -3338,7 +3378,7 @@ function runAnchorGuide(i){
 
 /* ---- Tense & Release ---- */
 const tenseGroups = [
-  {name:'Puños', emoji:'✊'}, {name:'Brazos', emoji:'💪'}, {name:'Hombros', emoji:'🤷'}, {name:'Piernas', emoji:'🦵'}
+  {name:'Puños', emoji:''}, {name:'Brazos', emoji:''}, {name:'Hombros', emoji:''}, {name:'Piernas', emoji:''}
 ];
 let tenseIdx = 0, tensePhase = 'tense';
 function startTense(){ tenseIdx=0; announce(`Tense & Release: ${tenseGroups.length} grupos musculares, 5 segundos de tensión y 5 de relajación cada uno.`); runTensePhase('tense',5); }
@@ -3348,7 +3388,7 @@ function runTensePhase(phase, secs){
   openTool('Tense & Release', `
     <div class="card" style="text-align:center;">
       <div class="step-dots">${tenseGroups.map((_,i)=>`<span class="${i<=tenseIdx?'on':''}"></span>`).join('')}</div>
-      <p style="font-size:40px;">${g.emoji}</p>
+      <div class="tool-hero"><span class="tile tile-lg" data-tone="relief"><svg class="ic" aria-hidden="true"><use href="#i-squeeze"/></svg></span></div>
       <h3>${g.name}</h3>
       <p class="desc">${phase==='tense' ? 'Tensa de forma firme pero cómoda, sin dolor...' : 'Suelta lentamente y nota la liberación...'}</p>
       <div class="timer-big" role="timer" id="tenseTimer">${secs}</div>
@@ -3379,7 +3419,7 @@ function openVisualAnchor(){
 }
 function renderVisualAnchorModal(){
   openModal(`
-    <h2>👁️ Recordatorio visual</h2>
+    <h2>Recordatorio visual</h2>
     <p class="desc">Guarda una frase o recordatorio de enfoque que puedas consultar rápidamente cuando lo necesites.</p>
     <label for="newVisualPhrase">Nuevo recordatorio</label>
     <input type="text" id="newVisualPhrase" placeholder="Ej: Me centro en hacer bien la siguiente parada">
@@ -3389,7 +3429,7 @@ function renderVisualAnchorModal(){
         <div class="history-item">
           <button type="button" class="del" data-action="delVisualAnchor" data-idx="${i}">Eliminar</button>
           <p style="font-weight:700;">"${escapeHtml(p)}"</p>
-          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="usarRecordatorioVisual" data-idx="${i}">👁️ Usar ahora</button>
+          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" data-action="usarRecordatorioVisual" data-idx="${i}">Usar ahora</button>
         </div>`).join('') : '<div class="empty-state">Aún no has guardado recordatorios.</div>'}
     </div>
   `);
@@ -3409,7 +3449,7 @@ function usarRecordatorioVisual(i){
   const v = state.visualAnchors[i];
   if(v===undefined) return;
   closeModal();
-  openTool('👁️ Recordatorio visual', `
+  openTool('Recordatorio visual', `
     <div class="card" style="text-align:center;">
       <p style="font-size:20px;font-weight:700;line-height:1.5;">«${escapeHtml(v)}»</p>
       <button type="button" class="btn btn-outline" style="margin-top:16px;" onclick="closeTool()">Cerrar</button>
@@ -3425,11 +3465,11 @@ function activarRecordatorioVisual(){
 
 /* ---- Pide feedback (concreta una peticion de observacion en vez de un generico "dime si lo hago bien") ---- */
 const PEDIR_FEEDBACK_OPCIONES = [
-  {em:'👀', v:'Obsérvame en una parada'},
-  {em:'🎙️', v:'Escucha mi apertura'},
-  {em:'🧠', v:'Dime si estoy anticipando demasiado'},
-  {em:'⏱️', v:'Mira mi ritmo'},
-  {em:'💬', v:'Ayúdame con esta objeción'}
+  {em:'', v:'Obsérvame en una parada'},
+  {em:'', v:'Escucha mi apertura'},
+  {em:'', v:'Dime si estoy anticipando demasiado'},
+  {em:'', v:'Mira mi ritmo'},
+  {em:'', v:'Ayúdame con esta objeción'}
 ];
 let pedirFeedbackSel = '';
 let pedirFeedbackOtro = '';
@@ -3437,13 +3477,13 @@ let pedirFeedbackFinal = '';
 function startPedirFeedback(){ pedirFeedbackSel=''; pedirFeedbackOtro=''; renderPedirFeedback(); }
 function selectPedirFeedback(v){ pedirFeedbackSel = v; renderPedirFeedback(); }
 function renderPedirFeedback(){
-  openTool('🗣️ Pide feedback', `
+  openTool('Pide feedback', `
     <div class="card" style="text-align:left;">
       <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Necesito una observación, no que me digas si lo hago bien o mal."</p>
       <p id="pedirLabel"><b>Elige una sola petición concreta</b></p>
       <div class="chip-group" id="pedirChips" role="group" aria-labelledby="pedirLabel">
-        ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<button type="button" ${chipAttrs(pedirFeedbackSel===o.v)} data-action="selectPedirFeedback" data-value="${escapeHtml(o.v)}"><span aria-hidden="true">${o.em}</span> ${escapeHtml(o.v)}</button>`).join('')}
-        <button type="button" ${chipAttrs(pedirFeedbackSel==='Otro')} data-action="selectPedirFeedback" data-value="Otro"><span aria-hidden="true">✍️</span> Otra petición</button>
+        ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<button type="button" ${chipAttrs(pedirFeedbackSel===o.v)} data-action="selectPedirFeedback" data-value="${escapeHtml(o.v)}">${escapeHtml(o.v)}</button>`).join('')}
+        <button type="button" ${chipAttrs(pedirFeedbackSel==='Otro')} data-action="selectPedirFeedback" data-value="Otro">Otra petición</button>
       </div>
       <div id="pedirFeedbackOtroWrap" style="${pedirFeedbackSel==='Otro'?'':'display:none;'}">
         <textarea id="pedirFeedbackOtroInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe qué quieres pedir...">${escapeHtml(pedirFeedbackOtro)}</textarea>
@@ -3460,14 +3500,14 @@ function finalizarPedirFeedback(){
   }
   if(!peticion){ fieldError('pedirChips', 'Elige una petición.'); return; }
   pedirFeedbackFinal = peticion;
-  openTool('🗣️ Pide feedback', `
+  openTool('Pide feedback', `
     <div class="card" style="text-align:center;">
       <p><b>¿Qué quiero saber?</b></p>
       <p class="quote-strong">«${escapeHtml(peticion)}»</p>
       ${state.kitPersona ? `<p class="desc" style="margin-top:10px;">Puedes pedírselo a: <b>${escapeHtml(state.kitPersona)}</b></p>` : ''}
       <div class="btn-row" style="margin-top:14px;flex-wrap:wrap;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startPedirFeedback()">🔁 Repetir</button>
+        <button type="button" class="btn btn-blue" onclick="startPedirFeedback()">Repetir</button>
       </div>
       <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" data-action="guardarPedirFeedbackEnKit">Guardar como mi petición del Kit</button>
     </div>
@@ -3565,7 +3605,7 @@ function activarKitPlan(){
   const match = KIT_TOOL_MATCHERS.find(m=>m.re.test(txt));
   kitSuggestedTool = match ? match.name : null;
   openModal(`
-    <h2>🧩 Este es tu recurso personal</h2>
+    <h2>Este es tu recurso personal</h2>
     <p style="font-size:18px;font-weight:800;line-height:1.45;">«${escapeHtml(txt)}»</p>
     ${state.kitAjuste?`<p class="desc"><b>Después, ajusto:</b> ${escapeHtml(state.kitAjuste)}</p>`:''}
     ${(state.kitPersona || state.kitPedira)?`<p class="desc"><b>Si sigo atascado, pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}</b>${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : '.'}</p>`:''}
