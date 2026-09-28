@@ -737,6 +737,49 @@ header :focus-visible{outline-color:var(--wesser-red);}
 .ds .flow-diagram .fbox{background:var(--ds-canvas);border-color:var(--ds-line);color:var(--ds-ink);}
 .ds .card.card-full{background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-md);box-shadow:none;}
 @media (prefers-reduced-motion: reduce){ .ds details.help-item > summary::after{transition:none;} }
+
+/* ---------- Formularios en el sistema de diseño (Diario) ---------- */
+.ds .card{background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-lg);padding:var(--sp-5);box-shadow:var(--ds-shadow);}
+.ds .card h3{font-family:var(--font-brand);font-size:var(--fs-lg);font-weight:700;color:var(--ds-ink);margin:0 0 var(--sp-4);}
+.ds .card h4{font-family:var(--font-brand);font-size:var(--fs-md);font-weight:700;color:var(--ds-ink);margin:var(--sp-4) 0 var(--sp-2);}
+.ds label{font-family:var(--font-brand);font-size:11.5px;font-weight:700;letter-spacing:.07em;color:var(--ds-ink-2);margin-top:var(--sp-4);}
+.ds .card h3 + label{margin-top:0;}
+.ds label + .desc{font-size:var(--fs-sm);color:var(--ds-ink-3);}
+.ds select, .ds input[type=text], .ds textarea{background:var(--ds-surface);border:1px solid var(--ds-line-strong);border-radius:12px;color:var(--ds-ink);
+  transition:border-color .15s ease, box-shadow .15s ease;}
+.ds select:focus, .ds input[type=text]:focus, .ds textarea:focus{border-color:var(--wesser-red);outline:none;
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--wesser-red) 20%, transparent);}
+.ds textarea::placeholder, .ds input::placeholder{color:var(--ds-ink-3);}
+/* Chips: seleccionado = tinte suave de marca, no rojo sólido */
+.ds .chip{background:var(--ds-surface);border:1px solid var(--ds-line-strong);color:var(--ds-ink);font-weight:600;}
+.ds .chip.selected, .ds .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--wesser-red) 10%, var(--ds-surface));border-color:var(--wesser-red);color:#A8242A;}
+:root[data-theme="dark"] .ds .chip.selected, :root[data-theme="dark"] .ds .chip[aria-pressed="true"]{background:color-mix(in srgb, #EF6A6E 16%, var(--ds-surface));border-color:#EF6A6E;color:#F4A3A6;}
+.ds .chip-info{background:var(--ds-surface);border:1px solid var(--ds-line-strong);color:var(--ds-ink-2);}
+.ds .chip-info .ic{width:20px;height:20px;}
+/* Botones */
+.ds .btn{border-radius:var(--ds-radius-md);}
+.ds .btn-primary{min-height:52px;box-shadow:0 2px 8px rgba(204,46,52,.22);}
+@media (hover:hover){ .ds .btn-primary:hover{background:var(--wesser-red-dark);} }
+.ds .btn-outline{border:1px solid var(--ds-line-strong);color:var(--ds-ink);background:var(--ds-surface);}
+.ds .btn .ic-sm{margin-right:2px;}
+/* Recuerda */
+.ds .ds-remember{margin:var(--sp-5) 0;}
+.ds .ds-remember .desc{color:var(--ds-ink);}
+/* Selector de periodo: control segmentado */
+.ds .btn-row.seg{display:inline-flex;flex-wrap:nowrap;gap:2px;padding:3px;background:var(--ds-canvas);border:1px solid var(--ds-line);border-radius:12px;max-width:none !important;}
+.ds .btn-row.seg .btn{flex:0 0 auto;width:auto;min-height:40px;padding:8px 14px;border:none;border-radius:9px;box-shadow:none;font-size:var(--fs-sm);}
+.ds .btn-row.seg .btn-outline{background:transparent;color:var(--ds-ink-2);}
+.ds .btn-row.seg .btn-navy{background:var(--ds-surface);color:var(--ds-ink);box-shadow:0 1px 3px rgba(28,31,33,.12);}
+.ds > h2 + .desc{margin-bottom:var(--sp-4) !important;}
+/* Patrones e historial */
+.ds .patron-block{margin-top:var(--sp-4);}
+.ds .patron-count{font-size:var(--fs-sm);color:var(--ds-ink-3);}
+.ds .history-item{background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-md);padding:var(--sp-3) var(--sp-4);margin-bottom:var(--sp-2);}
+.ds .history-item .meta{color:var(--ds-ink-3);}
+.ds .history-item p{color:var(--ds-ink-2);}
+.ds .history-item b{color:var(--ds-ink);font-weight:650;}
+.ds > h3{font-family:var(--font-brand);font-size:var(--fs-lg);font-weight:700;color:var(--ds-ink);margin:var(--sp-6) 0 var(--sp-2);}
+@media (prefers-reduced-motion: reduce){ .ds select, .ds input[type=text], .ds textarea{transition:none;} }
 </style>
 </head>
 <body>
@@ -781,6 +824,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
   <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></symbol>
   <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M6 3h12"/><path d="M6 21h12"/><path d="M7 3c0 5 5 6 5 9s-5 4-5 9"/><path d="M17 3c0 5-5 6-5 9s5 4 5 9"/></symbol>
   <symbol id="i-mountain" viewBox="0 0 24 24"><path d="M3 20l6-10 4 6 3-4 5 8z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6h.01"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
 </svg>
 <!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
@@ -1315,28 +1359,28 @@ header :focus-visible{outline-color:var(--wesser-red);}
   </section>
 
   <!-- DIARIO SEPA -->
-  <section class="view" id="view-diario">
-    <h2>📓 Registro S‑E‑P‑A</h2>
+  <section class="view ds" id="view-diario">
+    <h2>Registro S‑E‑P‑A</h2>
     <p class="desc" style="margin-bottom:16px;"><b>Situación → Emoción → Pensamiento → Acción</b></p>
 
     <!-- Explicación plegable: abierta la primera vez; la app recuerda si la cierras (ver initSepaIntro) -->
-    <details class="help-item" id="sepaIntro" open style="background:var(--card-bg);margin-bottom:16px;">
-      <summary>💡 ¿Cómo funciona el S-E-P-A?</summary>
+    <details class="help-item" id="sepaIntro" open style="margin-bottom:16px;">
+      <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg></span><span class="sum-title">¿Cómo funciona el S-E-P-A?</span></summary>
       <div class="help-body">
       <p class="desc">El S-E-P-A te ayuda a <b>parar, entender qué te está pasando y elegir una respuesta más útil</b>.</p>
 
-      <p class="desc" style="font-weight:700;margin-bottom:4px;">💡 ¿Cómo funciona?</p>
+      <p class="desc"><b>¿Cómo funciona?</b></p>
       <p class="desc"><b>S · Situación:</b> ¿Qué ha pasado?<br>
       <b>E · Emoción:</b> ¿Qué estoy sintiendo?<br>
       <b>P · Pensamiento:</b> ¿Qué me estoy diciendo?<br>
       <b>A · Acción:</b> ¿Qué voy a hacer ahora?</p>
 
-      <p class="desc" style="font-weight:700;margin-bottom:4px;">🔴 Ejemplo automático</p>
-      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«Esta zona es horrible. No vale la pena ni intentar parar.»</p>
+      <p class="desc"><b>Ejemplo automático</b></p>
+      <p class="desc quote">«Esta zona es horrible. No vale la pena ni intentar parar.»</p>
       <p class="desc">Este pensamiento puede llevarte a <b>hacer las paradas con menos energía, adoptar una postura más cerrada o abandonar antes de tiempo</b>.</p>
 
-      <p class="desc" style="font-weight:700;margin-bottom:4px;">🟢 Ejemplo útil</p>
-      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">«El flujo es menor, pero puedo adaptar mi entrada, mantener la calma y centrarme en hacer buenas conversaciones.»</p>
+      <p class="desc"><b>Ejemplo útil</b></p>
+      <p class="desc quote">«El flujo es menor, pero puedo adaptar mi entrada, mantener la calma y centrarme en hacer buenas conversaciones.»</p>
       <p class="desc">→ <b>Me centro en lo que sí puedo hacer:</b> cuidar mi técnica, mi actitud y la calidad de la interacción.</p>
       </div>
     </details>
@@ -1384,21 +1428,21 @@ header :focus-visible{outline-color:var(--wesser-red);}
         <textarea id="sepaPensDestructivoLibre" placeholder="Escribe tu pensamiento..."></textarea>
       </div>
 
-      <label for="sepaPensConstructivo">P+ · Pensamiento útil 💡</label>
+      <label for="sepaPensConstructivo">P+ · Pensamiento útil</label>
       <p class="desc" style="margin-top:-6px;">¿Cómo puedo interpretar la situación de una forma más realista y útil?</p>
-      <button type="button" class="btn btn-outline btn-sm" style="margin-bottom:10px;" onclick="sugerirReencuadre()">💡 Sugerir reencuadre</button>
+      <button type="button" class="btn btn-outline btn-sm" style="margin-bottom:10px;" onclick="sugerirReencuadre()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-bulb"/></svg>Sugerir reencuadre</button>
       <textarea id="sepaPensConstructivo" placeholder="Es una zona difícil, pero todavía puedo aplicar técnica y centrarme en hacer buenas conversaciones..."></textarea>
 
       <label for="sepaAccion">A · Acción inmediata</label>
       <p class="desc" style="margin-top:-6px;">¿Qué voy a hacer ahora?</p>
       <div class="chip-group" role="group" aria-label="Acciones rápidas (se añaden al texto)">
-        <button type="button" class="chip" onclick="insertAccion('Pausa consciente')">⏸️ Pausa consciente</button>
-        <button type="button" class="chip" onclick="insertAccion('Respiración lenta')">🌬️ Respiración lenta</button>
-        <button type="button" class="chip" onclick="insertAccion('Ajustar el ritmo')">🎯 Ajustar el ritmo</button>
-        <button type="button" class="chip" onclick="insertAccion('Revisar mi técnica')">🔍 Revisar mi técnica</button>
-        <button type="button" class="chip" onclick="insertAccion('Adaptar el speech')">🗣️ Adaptar el speech</button>
-        <button type="button" class="chip" onclick="insertAccion('Cambiar el enfoque o la ubicación')">🚶 Cambiar el enfoque o la ubicación</button>
-        <button type="button" class="chip" onclick="insertAccion('Pedir apoyo')">🤝 Pedir apoyo</button>
+        <button type="button" class="chip" onclick="insertAccion('Pausa consciente')">Pausa consciente</button>
+        <button type="button" class="chip" onclick="insertAccion('Respiración lenta')">Respiración lenta</button>
+        <button type="button" class="chip" onclick="insertAccion('Ajustar el ritmo')">Ajustar el ritmo</button>
+        <button type="button" class="chip" onclick="insertAccion('Revisar mi técnica')">Revisar mi técnica</button>
+        <button type="button" class="chip" onclick="insertAccion('Adaptar el speech')">Adaptar el speech</button>
+        <button type="button" class="chip" onclick="insertAccion('Cambiar el enfoque o la ubicación')">Cambiar el enfoque o la ubicación</button>
+        <button type="button" class="chip" onclick="insertAccion('Pedir apoyo')">Pedir apoyo</button>
       </div>
       <textarea id="sepaAccion" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
 
@@ -1406,20 +1450,20 @@ header :focus-visible{outline-color:var(--wesser-red);}
       <button type="button" class="btn btn-outline" id="sepaCancelBtn" style="display:none;margin-top:10px;" onclick="cancelarEdicionSepa()">Cancelar edición</button>
     </div>
 
-    <p class="desc" style="font-weight:700;margin-bottom:4px;">🎯 Recuerda</p>
-    <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-bottom:16px;">El objetivo no es <b>pensar en positivo</b>, sino <b>pasar de una interpretación automática a una respuesta más realista y útil</b>.</p>
+    <div class="quote ds-remember"><span class="eyebrow">Recuerda</span>
+    <p class="desc" style="margin:0;">El objetivo no es <b>pensar en positivo</b>, sino <b>pasar de una interpretación automática a una respuesta más realista y útil</b>.</p></div>
 
     <div class="card card-full">
-      <h3 style="margin-top:0;">📊 Mis patrones</h3>
+      <h3 style="margin-top:0;">Mis patrones</h3>
       <p class="desc">Solo muestra lo que has registrado. No es un diagnóstico.</p>
-      <div class="btn-row" style="max-width:280px;margin-bottom:12px;">
+      <div class="btn-row seg" role="group" aria-label="Periodo" style="max-width:280px;margin-bottom:12px;">
         <button type="button" class="btn btn-sm" id="patronesBtn7" onclick="setPatronesRango(7)">Últimos 7 días</button>
         <button type="button" class="btn btn-sm" id="patronesBtn30" onclick="setPatronesRango(30)">Últimos 30 días</button>
       </div>
       <div id="patronesBody"></div>
     </div>
 
-    <h3>📚 Historial</h3>
+    <h3>Historial</h3>
     <p class="desc" style="margin-bottom:10px;">Revisa tus registros S-E-P-A para <b>detectar situaciones que se repiten, observar tus patrones y descubrir qué respuestas te funcionan mejor</b>.</p>
     <div id="sepaHistorial"></div>
   </section>
@@ -2334,7 +2378,7 @@ function renderEmocionChips(){
   // Dos botones hermanos (no anidados): el chip marca/desmarca y ℹ️ abre la ficha
   c.innerHTML = EMOTIONS.map(e=>`<span class="emo-pair">`
     + `<button type="button" ${chipAttrs(false)} data-action="toggleEmocion" data-id="${escapeHtml(e.id)}"><span aria-hidden="true">${emoji(e.id)}</span> ${escapeHtml(e.nombre)}</button>`
-    + `<button type="button" class="chip-info" data-action="showEmotion" data-value="${escapeHtml(e.id)}" title="Ver ficha de ${escapeHtml(e.nombre)}" aria-label="Ver ficha de ${escapeHtml(e.nombre)}" aria-haspopup="dialog">ℹ️</button>`
+    + `<button type="button" class="chip-info" data-action="showEmotion" data-value="${escapeHtml(e.id)}" title="Ver ficha de ${escapeHtml(e.nombre)}" aria-label="Ver ficha de ${escapeHtml(e.nombre)}" aria-haspopup="dialog"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg></button>`
     + `</span>`).join('');
 }
 function syncEmocionChips(){
@@ -2484,8 +2528,8 @@ function renderPatrones(){
   if(!body) return;
   const btn7 = document.getElementById('patronesBtn7');
   const btn30 = document.getElementById('patronesBtn30');
-  if(btn7) btn7.className = 'btn btn-sm ' + (patronesRango===7 ? 'btn-navy' : 'btn-outline');
-  if(btn30) btn30.className = 'btn btn-sm ' + (patronesRango===30 ? 'btn-navy' : 'btn-outline');
+  if(btn7){ btn7.className = 'btn btn-sm ' + (patronesRango===7 ? 'btn-navy' : 'btn-outline'); btn7.setAttribute('aria-pressed', patronesRango===7); }
+  if(btn30){ btn30.className = 'btn btn-sm ' + (patronesRango===30 ? 'btn-navy' : 'btn-outline'); btn30.setAttribute('aria-pressed', patronesRango===30); }
 
   const cutoff = Date.now() - patronesRango*24*60*60*1000;
   const entries = state.sepaEntries.filter(e=>createdAfter(e, cutoff));
@@ -2507,12 +2551,12 @@ function renderPatrones(){
 
   const diarioHtml = `
     <div class="patron-block">
-      <h4>📓 Diario S-E-P-A</h4>
+      <h4>Diario S-E-P-A</h4>
       <p class="patron-count">${entries.length} registro${entries.length===1?'':'s'} · ${patronesTier(entries.length)}</p>
       ${entries.length===0 ? '' : `
-        <div class="mini-card">😣 <b>Emoción más registrada</b><p>${emoTop ? `${emoji(emoTop.key)} ${escapeHtml(EMOTIONS.find(x=>x.id===emoTop.key)?.nombre||emoTop.key)} (${emoTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-        <div class="mini-card">📍 <b>Situación más repetida</b><p>${sitTop ? `${escapeHtml(sitTop.key)} (${sitTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-        <div class="mini-card">🛠️ <b>Acción más utilizada</b><p>${accTop ? `${escapeHtml(accTop.key)} (${accTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Emoción más registrada</b><p>${emoTop ? `${emoji(emoTop.key)} ${escapeHtml(EMOTIONS.find(x=>x.id===emoTop.key)?.nombre||emoTop.key)} (${emoTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Situación más repetida</b><p>${sitTop ? `${escapeHtml(sitTop.key)} (${sitTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Acción más utilizada</b><p>${accTop ? `${escapeHtml(accTop.key)} (${accTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
       `}
     </div>`;
 
@@ -2526,11 +2570,11 @@ function renderPatrones(){
 
   const resetHtml = `
     <div class="patron-block">
-      <h4>🆘 Reset</h4>
+      <h4>Reset</h4>
       <p class="patron-count">${resets.length===1?'1 sesión':resets.length+' sesiones'} · ${patronesTier(resets.length)}</p>
       ${resets.length===0 ? '' : `
-        <div class="mini-card">🎯 <b>Ajuste más repetido</b><p>${ajusteTop ? `${escapeHtml(ajusteTop.key)} (${ajusteTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
-        <div class="mini-card">🚦 <b>Señal más repetida</b><p>${senalTop ? `${escapeHtml(senalTop.key)} (${senalTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Ajuste más repetido</b><p>${ajusteTop ? `${escapeHtml(ajusteTop.key)} (${ajusteTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Señal más repetida</b><p>${senalTop ? `${escapeHtml(senalTop.key)} (${senalTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
       `}
     </div>`;
 
@@ -2542,10 +2586,10 @@ function renderPatrones(){
 
   const exitosHtml = `
     <div class="patron-block">
-      <h4>🟢 Qué ha funcionado</h4>
+      <h4>Qué ha funcionado</h4>
       <p class="patron-count">${exitos.length} registro${exitos.length===1?'':'s'} · ${patronesTier(exitos.length)}</p>
       ${exitos.length===0 ? '' : `
-        <div class="mini-card">🔁 <b>Conducta más repetida</b><p>${conductaTop ? `${escapeHtml(conductaTop.key)} (${conductaTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
+        <div class="mini-card"><b>Conducta más repetida</b><p>${conductaTop ? `${escapeHtml(conductaTop.key)} (${conductaTop.count})` : 'Aún no hay suficientes datos.'}</p></div>
       `}
     </div>`;
 
