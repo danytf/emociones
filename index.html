@@ -878,6 +878,26 @@ header :focus-visible{outline-color:var(--wesser-red);}
 @media (max-width:600px){ .ql-toggle{min-height:44px;} }
 .modal-sheet.ds .badge.emo-badge{background:color-mix(in srgb, var(--emo) 14%, var(--ds-surface));color:color-mix(in srgb, var(--emo) 70%, var(--ds-ink));}
 :root[data-theme="dark"] .modal-sheet.ds .badge.emo-badge{background:color-mix(in srgb, var(--emo) 24%, var(--ds-surface));color:color-mix(in srgb, var(--emo) 45%, var(--ds-ink));}
+/* ---------- Reserva para navegadores sin color-mix() (p. ej. iOS anterior a 16.2) ---------- */
+@supports not (color: color-mix(in srgb, red 50%, blue)){
+  .ds .tile{background:var(--ds-canvas);}
+  @media (hover:hover){ .ds .trow:hover{border-color:var(--ds-line-strong);} }
+  .header-tabs button.active{background:rgba(204,46,52,.10);}
+  :root[data-theme="dark"] .header-tabs button.active{background:rgba(239,106,110,.16);}
+  .header-tabs button.tab-reset{background:rgba(224,160,48,.18);}
+  :root[data-theme="dark"] .header-tabs button.tab-reset{background:rgba(240,203,133,.16);}
+  .ql-btn.ql-reset{background:rgba(224,160,48,.18);border-color:rgba(224,160,48,.4);}
+  :root[data-theme="dark"] .ql-btn.ql-reset{background:rgba(240,203,133,.16);border-color:rgba(240,203,133,.35);}
+  .ql-btn.ql-success{background:var(--ds-canvas);border-color:var(--tone-anchor);}
+  .ds select:focus, .ds input[type=text]:focus, .ds textarea:focus{box-shadow:0 0 0 3px rgba(204,46,52,.2);}
+  .ds .chip.selected, .ds .chip[aria-pressed="true"]{background:rgba(204,46,52,.10);}
+  :root[data-theme="dark"] .ds .chip.selected, :root[data-theme="dark"] .ds .chip[aria-pressed="true"]{background:rgba(239,106,110,.16);}
+  .ds .badge.amber{background:rgba(224,160,48,.18);}
+  .ds .check-item.checked{background:var(--ds-canvas);}
+  .ds .wheel-btn, :root[data-theme="dark"] .ds .wheel-btn{background:var(--ds-canvas);border:1px solid var(--emo);}
+  .ds .breath-circle{background:var(--ds-canvas);box-shadow:none;}
+  .modal-sheet.ds .badge.emo-badge, :root[data-theme="dark"] .modal-sheet.ds .badge.emo-badge{background:var(--ds-canvas);color:var(--ds-ink);}
+}
 </style>
 </head>
 <body>
@@ -1598,7 +1618,7 @@ header :focus-visible{outline-color:var(--wesser-red);}
 <!-- RESET FLOW OVERLAY -->
 <div class="overlay ds" id="resetOverlay" role="dialog" aria-modal="true" aria-label="Modo Reset" tabindex="-1">
   <div class="overlay-header">
-    <b><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg>Modo Reset</b>
+    <b id="resetTitle"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg>Modo Reset</b>
     <div class="oh-actions">
       <button type="button" class="close-x labeled" onclick="startCheckin()" title="Señales de alerta" aria-label="Señales de alerta"><svg class="ic" aria-hidden="true"><use href="#i-traffic"/></svg><span class="lbl">Señales</span></button>
       <button type="button" class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset" aria-label="Iniciar Modo Reset"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg><span class="lbl">Iniciar</span></button>
@@ -3802,6 +3822,11 @@ function saveCheckin(){
 
 function renderResetStep(){
   const body = document.getElementById('resetBody');
+  // Preparar o activar el Kit no es estar en mala racha: el Kit lleva su propia cabecera
+  const isKit = resetStep === 'kit';
+  const title = isKit ? 'Kit de Emergencia' : 'Modo Reset';
+  document.getElementById('resetTitle').innerHTML = `<svg class="ic" aria-hidden="true"><use href="#i-${isKit ? 'backpack' : 'lifebuoy'}"/></svg>${title}`;
+  document.getElementById('resetOverlay').setAttribute('aria-label', title);
   body.classList.toggle('center-short', resetStep===0 || resetStep==='resume');
   clearToolTimers();
 
