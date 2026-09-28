@@ -3466,7 +3466,7 @@ function renderResetStep(){
   else if(resetStep===1){
     const chips = resetCheckinItems.length ? `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>De lo marcado en tu check-in, elige la principal.</p>
-      <div class="chip-group" id="resetSenalChips" role="group" aria-label="Señal principal">${resetCheckinItems.map(s=>`<button type="button" ${chipAttrs(resetSenal===checkinTitle(s)).replace('class="chip', 'class="chip chip-block')} data-action="selectSenal" data-value="${escapeHtml(checkinTitle(s))}">${a11yLabel(s)}</button>`).join('')}</div>
+      <div class="chip-group" id="resetSenalChips" role="group" aria-label="Señal principal">${resetCheckinItems.map(s=>`<button type="button" ${chipAttrs(resetSenal===checkinTitle(s)).replace('class="chip', 'class="chip chip-block')} data-action="selectSenal" data-value="${escapeHtml(checkinTitle(s))}">${CHECKIN_LABELS.has(s) ? a11yLabel(s) : escapeHtml(s)}</button>`).join('')}</div>
     ` : `
       <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el «no», cansancio previo, hacer menos paradas, trabajar en automático…</p>
       <textarea id="resetSenalInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe tu señal principal..." oninput="resetSenal=this.value;saveResetProgressSoon();">${escapeHtml(resetSenal)}</textarea>
