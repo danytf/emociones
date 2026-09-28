@@ -569,7 +569,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
       <details class="help-item">
         <summary>🎭 Las 6 Emociones</summary>
         <div class="help-body">
-          <p>Aquí conocerás <b>6 emociones básicas asociadas al modelo clásico de Paul Ekman</b>. Pulsa en una emoción para descubrir <b>para qué puede servir, cómo puede manifestarse en tu cuerpo y cómo puedes responder cuando aparezca en la calle</b>.</p>
+          <p>Aquí conocerás <b>6 emociones básicas asociadas al modelo clásico de Paul Ekman</b>. Es un modelo práctico, no una clasificación única de todas las emociones. Pulsa en una emoción para descubrir <b>para qué puede servir, cómo puede manifestarse en tu cuerpo y cómo puedes responder cuando aparezca en la calle</b>.</p>
           <p>🎯 <b>Recuerda:</b> el objetivo <b>no es eliminar lo que sientes</b>, sino <b>entender qué te está señalando y aprender a responder mejor</b>.</p>
           <div class="wheel-grid" id="wheelGrid"></div>
         </div>
@@ -1850,38 +1850,35 @@ function closeModal(){ Overlays.close('modal'); }
 /* ============ DATA: EMOTIONS (enfoque autogestión del captador) ============ */
 const EMOTIONS = [
   {id:'alegria', nombre:'Alegría', color:'var(--reset-amber)', textColor:'var(--wesser-navy)', tipo:'Básica', finalidad:'CONEXIÓN Y ENERGÍA',
-    funcion:'Nos ayuda a acercarnos a los demás, conectar y afrontar lo que hacemos con más energía y motivación.',
+    funcion:'Puede ayudarnos a acercarnos a los demás, conectar y afrontar lo que hacemos con más energía y motivación.',
     expresion:'Sonrisa, sensación de bienestar y energía, mayor apertura y ganas de relacionarnos.',
     reencuadre:'Disfruto la conversación, conecto con la persona y doy lo mejor de mí.'},
   {id:'tristeza', nombre:'Tristeza', color:'var(--wesser-navy)', tipo:'Básica', finalidad:'ASIMILACIÓN',
-    funcion:'Nos ayuda a asimilar una pérdida, una decepción o algo que nos ha afectado, y puede llevarnos a buscar apoyo o a bajar el ritmo.',
+    funcion:'Puede ayudarnos a asimilar una pérdida, una decepción o algo que nos ha afectado, y también puede llevarnos a buscar apoyo o a bajar el ritmo.',
     expresion:'Menos energía, necesidad de estar más tranquilos o solos, llanto o sensación de pesadez.',
     reencuadre:'Esto me ha afectado, pero un rechazo no define mi capacidad. Puedo aprender de lo ocurrido y seguir.'},
   {id:'miedo', nombre:'Miedo', color:'var(--calm-blue)', tipo:'Básica', finalidad:'SEGURIDAD',
-    funcion:'Nos ayuda a detectar posibles amenazas o riesgos y prepararnos para responder ante ellos.',
+    funcion:'Puede ayudarnos a detectar posibles amenazas o riesgos y prepararnos para responder ante ellos.',
     expresion:'Tensión muscular, aceleración del pulso, respiración más rápida y mayor estado de alerta.',
     reencuadre:'Puedo mantener la calma y hacer bien mi parte. La primera reacción de la persona no define cómo terminará la conversación.'},
   {id:'ira', nombre:'Ira', color:'var(--alert-coral)', tipo:'Básica', finalidad:'LÍMITES',
-    funcion:'Nos ayuda a reaccionar cuando percibimos una amenaza, un obstáculo o un límite que sentimos que ha sido sobrepasado, y nos moviliza para defenderlo.',
+    funcion:'Puede ayudarnos a reaccionar cuando percibimos una amenaza, un obstáculo o un límite que sentimos que ha sido sobrepasado, y movilizarnos para defenderlo.',
     expresion:'Tensión muscular, aumento del ritmo cardíaco, más energía y ganas de actuar o defendernos.',
     reencuadre:'Puedo notar la rabia sin dejar que me dirija. Mantengo el control y uso esa energía para comunicarme mejor, no para entrar en conflicto.'},
   {id:'sorpresa', nombre:'Sorpresa', color:'var(--success-green)', tipo:'Básica', finalidad:'ATENCIÓN',
-    funcion:'Nos ayuda a detenernos y prestar atención cuando ocurre algo inesperado, para valorar rápidamente qué está pasando y adaptarnos.',
+    funcion:'Puede ayudarnos a detenernos y prestar atención cuando ocurre algo inesperado, para valorar rápidamente qué está pasando y adaptarnos.',
     expresion:'Ojos más abiertos, pausa momentánea y aumento de la atención.',
     reencuadre:'Ha ocurrido algo inesperado. Observo, me adapto y continúo con calma.'},
   {id:'asco', nombre:'Asco', color:'var(--asco-purple)', tipo:'Básica', finalidad:'PROTECCIÓN',
-    funcion:'Nos ayuda a alejarnos o evitar aquello que percibimos como contaminante, desagradable o potencialmente dañino.',
+    funcion:'Puede ayudarnos a alejarnos o evitar aquello que percibimos como contaminante, desagradable o potencialmente dañino.',
     expresion:'Gesto de rechazo, ganas de alejarnos, náusea o sensación de repulsión.',
     reencuadre:'Puedo sentir rechazo sin reaccionar impulsivamente. Mantengo la calma y sigo tratando a la otra persona con respeto.'}
 ];
 
+/* EMOTIONS es la única fuente del contenido de las emociones: la rueda, las fichas, los chips
+   del Diario y «Sugerir reencuadre» leen de ahí. Aquí solo se añade el reencuadre genérico. */
 const REENCUADRES = {
-  alegria:'Disfruto la conversación, conecto con la persona y doy lo mejor de mí.',
-  tristeza:'Esto me ha afectado, pero un rechazo no define mi capacidad. Puedo aprender de lo ocurrido y seguir.',
-  miedo:'Puedo mantener la calma y hacer bien mi parte. La primera reacción de la persona no define cómo terminará la conversación.',
-  ira:'Puedo notar la rabia sin dejar que me dirija. Mantengo el control y uso esa energía para comunicarme mejor, no para entrar en conflicto.',
-  sorpresa:'Ha ocurrido algo inesperado. Observo, me adapto y continúo con calma.',
-  asco:'Puedo sentir rechazo sin reaccionar impulsivamente. Mantengo la calma y sigo tratando a la otra persona con respeto.',
+  ...Object.fromEntries(EMOTIONS.map(e=>[e.id, e.reencuadre])),
   generico:'Es una zona difícil, pero todavía puedo aplicar técnica y centrarme en hacer buenas conversaciones.'
 };
 const SITUACION_HOOKS = {
