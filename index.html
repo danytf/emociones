@@ -184,6 +184,7 @@ main{
 .kit-flow{margin-top:6px;}
 .kit-flow-step{background:var(--bg-main);border:1px solid var(--border-color);border-radius:10px;padding:8px 12px;}
 .kit-flow-step p{margin:2px 0 0;font-size:14.5px;font-weight:700;color:var(--text-primary);}
+.kit-flow-step p.kit-flow-empty{font-weight:400;font-style:italic;color:var(--text-secondary);}
 .kit-flow-label{font-size:11px;font-weight:800;letter-spacing:.4px;color:var(--reset-amber-dark);}
 .kit-flow-arrow{text-align:center;font-size:14px;color:var(--text-secondary);line-height:1.4;}
 .tool-group.tracking .tool-cards{grid-template-columns:repeat(auto-fit, minmax(min(320px,100%),480px));}
@@ -2717,7 +2718,7 @@ function renderResetStep(){
       <div class="card">
         <span class="badge amber">Kit de Emergencia</span>
         <h3>🎒 Prepara tu plan antes de necesitarlo</h3>
-        <p class="desc">Cuando aparezcan tus primeras señales de que algo empieza a ir mal, <b>no improvises</b>. Decide de antemano qué harás, qué ajustarás y a quién pedirás ayuda.</p>
+        <p class="desc">Cuando aparezcan tus primeras señales de alerta, <b>no improvises</b>. Decide de antemano qué harás, qué ajustarás y a quién pedirás ayuda.</p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Primera señal → activo mi plan. No espero a estar al límite.</b></p>
       </div>
 
@@ -2726,22 +2727,22 @@ function renderResetStep(){
         <div class="kit-flow">
           <div class="kit-flow-step">
             <span class="kit-flow-label">CUANDO NOTO</span>
-            <p>${state.kitSenales.length ? state.kitSenales.map(escapeHtml).join(' · ') : '—'}</p>
+            ${state.kitSenales.length ? `<p>${state.kitSenales.map(escapeHtml).join(' · ')}</p>` : '<p class="kit-flow-empty">Mis señales de alerta</p>'}
           </div>
           <div class="kit-flow-arrow">↓</div>
           <div class="kit-flow-step">
             <span class="kit-flow-label">ME REGULO CON</span>
-            <p>${escapeHtml(state.kitHerramienta) || '—'}</p>
+            ${state.kitHerramienta ? `<p>${escapeHtml(state.kitHerramienta)}</p>` : '<p class="kit-flow-empty">Una herramienta que me ayude a recuperar el foco</p>'}
           </div>
           <div class="kit-flow-arrow">↓</div>
           <div class="kit-flow-step">
             <span class="kit-flow-label">AJUSTO</span>
-            <p>${escapeHtml(state.kitAjuste) || '—'}</p>
+            ${state.kitAjuste ? `<p>${escapeHtml(state.kitAjuste)}</p>` : '<p class="kit-flow-empty">Una sola conducta concreta</p>'}
           </div>
           <div class="kit-flow-arrow">↓</div>
           <div class="kit-flow-step">
             <span class="kit-flow-label">SI SIGO ATASCADO</span>
-            <p>${escapeHtml(state.kitPersona) || '—'}${state.kitPedira ? ` · ${escapeHtml(state.kitPedira)}` : ''}</p>
+            ${(state.kitPersona || state.kitPedira) ? `<p>${escapeHtml(state.kitPersona) || '—'}${state.kitPedira ? ` · ${escapeHtml(state.kitPedira)}` : ''}</p>` : '<p class="kit-flow-empty">Pido apoyo</p>'}
           </div>
         </div>
         ${state.kitHerramienta ? `<button class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
