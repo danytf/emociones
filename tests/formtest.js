@@ -87,6 +87,21 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   ok(reenc.sola && reenc.repetida === reenc.sola && !reenc.sola.includes('zona difícil'), 'reencuadre: con el campo vacío se rellena; al repetir no se duplica; sin «zona difícil» genérica');
   ok(reenc.conPropia.startsWith('Mi propia idea') && reenc.conPropia.includes(reenc.sola) && reenc.otraVez === reenc.conPropia, 'reencuadre: conserva lo escrito y añade la sugerencia debajo, una sola vez');
 
+  // Guardar confirma con un aviso (Diario y Checkpoint)
+  const avisos = await page.evaluate(() => {
+    goto('diario');
+    selectedEmociones = ['ira']; syncEmocionChips();
+    document.getElementById('sepaSituacion').value = 'Zona con poco flujo';
+    document.getElementById('sepaPensConstructivo').value = 'Otra forma de verlo';
+    document.getElementById('sepaAccion').value = 'Pausa consciente';
+    guardarSepa();
+    const diario = document.getElementById('toastMsg').textContent;
+    openCheckpoint(); guardarCheckpoint();
+    const cp = document.getElementById('toastMsg').textContent;
+    return { diario, cp };
+  });
+  ok(avisos.diario.startsWith('Registro guardado') && avisos.cp.startsWith('Checkpoint guardado'), `guardar confirma con aviso (${avisos.diario} | ${avisos.cp})`);
+
   // Error al guardar: aviso no modal, sin repetir
   await page.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('QuotaExceeded'); }; save(); save(); });
   ok(await page.locator('#toast').evaluate(t => t.classList.contains('show') && t.classList.contains('error')), 'error de guardado como aviso no modal');

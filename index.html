@@ -2069,11 +2069,13 @@ function flushSave(){ if(saveTimer) save(); }
 // Si se oculta o cierra la página con un guardado pendiente, se escribe ya para no perder texto
 window.addEventListener('pagehide', flushSave);
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') flushSave(); });
+/* Devuelve true si se ha guardado: los avisos de «guardado» solo se muestran entonces */
 function save(){
   clearTimeout(saveTimer);
   saveTimer = null;
   try{
     localStorage.setItem(LS_KEY, JSON.stringify(state));
+    return true;
   }catch(e){
     console.error('No se pudo guardar en localStorage', e);
     // Aviso no modal; con guardado diferido se evita repetirlo en cada intento seguido
@@ -2081,6 +2083,7 @@ function save(){
       save.lastErrorAt = Date.now();
       notify('No se ha podido guardar. Puede que el almacenamiento del navegador esté lleno o desactivado (por ejemplo, en navegación privada).', 'error');
     }
+    return false;
   }
 }
 function escapeHtml(str){
@@ -2579,6 +2582,7 @@ function guardarSepa(){
   if(!pensC) errores.push(['sepaPensConstructivo', 'Escribe un pensamiento útil (o pulsa «Sugerir reencuadre»).']);
   if(!accion) errores.push(['sepaAccion', 'Indica qué vas a hacer ahora.']);
   if(!showFieldErrors(errores)) return;
+  const editando = !!editingSepaId;
   if(editingSepaId){
     const entry = state.sepaEntries.find(x=>x.id===editingSepaId);
     if(entry){
@@ -2592,7 +2596,7 @@ function guardarSepa(){
       situacion, emociones: [...selectedEmociones], pensD, pensC, accion
     }));
   }
-  save();
+  const ok = save();
   selectedEmociones = [];
   syncEmocionChips();
   document.getElementById('sepaSituacionOtra').value='';
@@ -2602,6 +2606,8 @@ function guardarSepa(){
   document.getElementById('sepaPensConstructivo').value='';
   document.getElementById('sepaAccion').value='';
   renderSepaHistorial();
+  lastReencuadre = '';
+  if(ok) notify(editando ? 'Registro actualizado.' : 'Registro guardado. Lo tienes en el Historial.');
 }
 function editarSepa(id){
   const e = state.sepaEntries.find(x=>x.id===id);
@@ -2804,6 +2810,7 @@ function guardarCheckpoint(){
   const emocional = cleanInt(document.getElementById('cpEmocional').value, 1, 10, 5);
   const nota = document.getElementById('cpNota').value.trim();
   const decision = document.getElementById('cpDecision').value;
+  const editando = !!editingCheckpointId;
   if(editingCheckpointId){
     const entry = state.checkpoints.find(x=>x.id===editingCheckpointId);
     if(entry){ entry.fatiga = fatiga; entry.emocional = emocional; entry.nota = nota; entry.decision = decision; touch(entry); }
@@ -2811,7 +2818,8 @@ function guardarCheckpoint(){
   } else {
     state.checkpoints.unshift(newRecord({fatiga, emocional, nota, decision}));
   }
-  save(); closeTool(); renderCheckpointHistorial();
+  const ok = save(); closeTool(); renderCheckpointHistorial();
+  if(ok) notify(editando ? 'Checkpoint actualizado.' : 'Checkpoint guardado. Lo tienes en «Tus checkpoints».');
 }
 async function borrarCheckpoint(id){
   if(!(await confirmDelete('este checkpoint'))) return;
