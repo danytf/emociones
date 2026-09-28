@@ -3458,7 +3458,7 @@ function renderResetStep(){
           <li>Actitud y energía</li>
           <li>Forma de hacer la parada</li>
         </ul>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando corresponde al contexto y qué parte puedo revisar y ajustar yo?</b></p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando viene del contexto y qué parte puedo revisar y ajustar yo?</b></p>
         <label>El contexto → no lo controlo directamente</label>
         <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgressSoon();">${escapeHtml(resetExamResultado)}</textarea>
         <label>Mi forma de trabajar → puedo revisarla y ajustarla</label>
@@ -3614,7 +3614,7 @@ function continuarReconoce(){
 }
 function continuarExamina(){
   const errores = [];
-  if(!resetExamResultado.trim()) errores.push(['resetExamResultadoInput', 'Describe qué parte corresponde al contexto.']);
+  if(!resetExamResultado.trim()) errores.push(['resetExamResultadoInput', 'Describe qué parte viene del contexto.']);
   if(!resetExamRendimiento.trim()) errores.push(['resetExamRendimientoInput', 'Describe qué parte puedes revisar en tu forma de trabajar.']);
   if(!showFieldErrors(errores)) return;
   resetGoto(3);
