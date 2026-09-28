@@ -47,7 +47,7 @@
 p, li, summary, label, h2, h3, h4, .chip, .desc, .meta, .mini-card, .kit-flow-step, .toast, .field-error, .field-ok, textarea{overflow-wrap:anywhere;}
 html,body{margin:0;padding:0;height:100%;overflow:hidden;}
 body{
-  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   background:var(--bg-main);
   color:var(--text-primary);
   font-size:16px;
@@ -3231,15 +3231,21 @@ function renderResetTab(){
   b.title = pending ? 'Tienes un Reset a medias' : 'Abrir el Modo Reset';
 }
 
+/* Único punto que deja la sesión de Reset en blanco (en memoria). Si se añade un campo nuevo
+   al protocolo, se pone a cero aquí y, si se guarda, en syncResetProgress/resumeReset. */
+function clearResetSession(){
+  resetStep = 0; resetMicro = null; resetStops = 0;
+  resetSenal = ''; resetExamResultado = ''; resetExamRendimiento = '';
+  resetAspecto1 = ''; resetAspecto2 = ''; resetPacto = '';
+  resetAprendizaje = ''; resetObservacion = '';
+  resetCheckinItems = [];
+}
 function openReset(){
   Overlays.open('reset');
   if(state.resetProgress && state.resetProgress.step>=1){
     resetStep = 'resume';
   } else {
-    resetStep = 0; resetMicro=null; resetStops=0;
-    resetSenal=''; resetExamResultado=''; resetExamRendimiento=''; resetAspecto1=''; resetAspecto2=''; resetPacto='';
-    resetAprendizaje=''; resetObservacion='';
-    resetCheckinItems = [];
+    clearResetSession();
   }
   renderResetStep();
 }
@@ -3260,10 +3266,7 @@ function resumeReset(){
 }
 function startFreshReset(){
   clearResetProgress();
-  resetStep = 0; resetMicro=null; resetStops=0;
-  resetSenal=''; resetExamResultado=''; resetExamRendimiento=''; resetAspecto1=''; resetAspecto2=''; resetPacto='';
-  resetAprendizaje=''; resetObservacion='';
-  resetCheckinItems = [];
+  clearResetSession();
   renderResetStep();
 }
 function closeReset(){ Overlays.close('reset'); }
@@ -3701,9 +3704,8 @@ function repetirAjuste(id){
   if(!r || !r.micro) return;
   const micro = r.micro, senal = r.senal;
   clearResetProgress();
-  resetMicro = micro; resetSenal = senal || ''; resetStops = 0;
-  resetExamResultado=''; resetExamRendimiento=''; resetAspecto1=''; resetAspecto2=''; resetPacto='';
-  resetAprendizaje=''; resetObservacion='';
+  clearResetSession();
+  resetMicro = micro; resetSenal = senal || '';
   resetStep = 5;
   saveResetProgress();
   Overlays.open('reset');
