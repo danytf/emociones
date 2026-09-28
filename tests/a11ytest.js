@@ -96,6 +96,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   ok(help.includes('/ ""') || help.includes("/ ''"), 'el +/– de los desplegables no se lee (texto alternativo vacío): ' + help);
 
   // ---- 4.5 Temporizadores ----
+  await page.waitForTimeout(500);   // deja salir los avisos pendientes de pruebas anteriores (announce() agrupa con retardo)
   await page.evaluate(() => { window.__ann = []; startBreath(60); });
   await page.waitForTimeout(6500);
   const ann = await page.evaluate(() => window.__ann.map(a => a[1]));
