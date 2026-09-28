@@ -45,7 +45,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   ok(await page.evaluate(() => document.getElementById('resetOverlay').inert && !document.getElementById('toolOverlay').inert), 'el Reset queda inert bajo la Herramienta');
   await page.keyboard.press('Escape');
   ok(JSON.stringify(await openSet()) === '["resetOverlay"]', 'Escape cierra solo la Herramienta');
-  ok((await active()).includes('ACTIVAR MI PLAN'), 'foco vuelve a «Activar mi plan» dentro del Reset: ' + await active());
+  ok((await active()).includes('Activar mi plan'), 'foco vuelve a «Activar mi plan» dentro del Reset: ' + await active());
   ok(await page.evaluate(() => toolTimers.length === 0), 'al cerrar la herramienta se paran sus temporizadores');
 
   // Cerrar el Reset cierra lo que tenga encima; Ayuda y Reset son excluyentes

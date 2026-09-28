@@ -780,6 +780,45 @@ header :focus-visible{outline-color:var(--wesser-red);}
 .ds .history-item b{color:var(--ds-ink);font-weight:650;}
 .ds > h3{font-family:var(--font-brand);font-size:var(--fs-lg);font-weight:700;color:var(--ds-ink);margin:var(--sp-6) 0 var(--sp-2);}
 @media (prefers-reduced-motion: reduce){ .ds select, .ds input[type=text], .ds textarea{transition:none;} }
+
+/* ---------- Modo Reset y Kit en el sistema de diseño ---------- */
+#resetOverlay{--tone:#B7791F;--tone-ink:#7A4F12;}
+:root[data-theme="dark"] #resetOverlay{--tone:#E2B25C;--tone-ink:#F0CB85;}
+#resetOverlay .overlay-header{background:var(--ds-surface) !important;color:var(--ds-ink);border-bottom:1px solid var(--ds-line);}
+#resetOverlay .overlay-header b{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--tone-ink);}
+#resetOverlay .overlay-header b .ic{width:22px;height:22px;}
+#resetOverlay .close-x{background:transparent;border:1px solid var(--ds-line);color:var(--ds-ink-2);}
+#resetOverlay .close-x .ic{width:20px;height:20px;}
+#resetOverlay .close-x.labeled .lbl{font-family:var(--font-brand);font-weight:650;}
+@media (hover:hover){ #resetOverlay .close-x:hover{background:var(--ds-canvas);} }
+#resetOverlay .overlay-header :focus-visible{outline-color:var(--wesser-red);}
+/* Insignia del paso y progreso */
+.ds .badge.amber{background:color-mix(in srgb, #E0A030 18%, var(--ds-surface));color:var(--tone-ink);font-family:var(--font-brand);letter-spacing:.06em;}
+.ds .step-dots{gap:4px;}
+.ds .step-dots span{width:28px;height:4px;border-radius:2px;background:var(--ds-line-strong);}
+.ds .step-dots span.on{background:var(--tone);}
+/* Acción del Reset: ámbar sólido con texto antracita (contraste 6,6:1) */
+.ds .btn-amber{background:#E0A030;color:#292C2F;min-height:52px;box-shadow:0 2px 8px rgba(224,160,48,.25);}
+@media (hover:hover){ .ds .btn-amber:hover{background:#D4942A;} }
+.ds .btn-green{background:var(--tone-anchor);color:#fff;}
+:root[data-theme="dark"] .ds .btn-green{color:#1B1D1F;}
+.ds .timer-big{font-family:var(--font-brand);color:var(--ds-ink);}
+/* ¿Qué está en mis manos? */
+.ds .circle-control .cc-col{background:var(--ds-canvas);border:none;border-radius:12px;}
+:root .ds .circle-control .cc-col b{color:var(--ds-ink);}
+/* Kit: protocolo */
+.ds .kit-flow-step{background:var(--ds-canvas);border:none;border-radius:12px;}
+:root .ds .kit-flow-label{color:var(--tone-ink);}
+.ds .kit-flow-arrow{color:var(--ds-ink-3);}
+/* Check-in */
+.ds .check-item{background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:14px;color:var(--ds-ink);}
+.ds .check-item.checked{background:color-mix(in srgb, var(--tone-anchor) 10%, var(--ds-surface));border-color:var(--tone-anchor);}
+.ds .check-item input{accent-color:var(--tone-anchor);}
+.ds .empty-state{color:var(--ds-ink-3);}
+/* Check-in: la etiqueta de la casilla es texto de lectura, no rótulo de campo */
+.ds label.check-item{font-family:inherit;font-size:var(--fs-md);font-weight:400;letter-spacing:normal;margin-top:0;line-height:1.45;}
+.ds label.check-item b{font-weight:700;}
+.ds .mini-card > b + p{margin-top:4px;}
 </style>
 </head>
 <body>
@@ -825,6 +864,10 @@ header :focus-visible{outline-color:var(--wesser-red);}
   <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M6 3h12"/><path d="M6 21h12"/><path d="M7 3c0 5 5 6 5 9s-5 4-5 9"/><path d="M17 3c0 5-5 6-5 9s5 4 5 9"/></symbol>
   <symbol id="i-mountain" viewBox="0 0 24 24"><path d="M3 20l6-10 4 6 3-4 5 8z"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6h.01"/></symbol>
+  <symbol id="i-traffic" viewBox="0 0 24 24"><rect x="8" y="2.5" width="8" height="19" rx="4"/><circle cx="12" cy="7" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="17" r="1.4"/></symbol>
+  <symbol id="i-backpack" viewBox="0 0 24 24"><path d="M5 10a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M9 6V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V6"/><path d="M8.5 13h7v4h-7z"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
 </svg>
 <!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
@@ -1489,15 +1532,15 @@ header :focus-visible{outline-color:var(--wesser-red);}
 </div>
 
 <!-- RESET FLOW OVERLAY -->
-<div class="overlay" id="resetOverlay" role="dialog" aria-modal="true" aria-label="Modo Reset" tabindex="-1">
+<div class="overlay ds" id="resetOverlay" role="dialog" aria-modal="true" aria-label="Modo Reset" tabindex="-1">
   <div class="overlay-header">
-    <b>🆘 MODO RESET</b>
+    <b><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg>Modo Reset</b>
     <div class="oh-actions">
-      <button type="button" class="close-x labeled" onclick="startCheckin()" title="Señales de alerta" aria-label="Señales de alerta">🚦<span class="lbl">Señales</span></button>
-      <button type="button" class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset" aria-label="Iniciar Modo Reset">🆘<span class="lbl">Iniciar</span></button>
-      <button type="button" class="close-x labeled" onclick="openKit()" title="Kit de Emergencia" aria-label="Kit de Emergencia">🎒<span class="lbl">Kit</span></button>
-      <button type="button" class="close-x labeled" onclick="openCheckinHistorial()" title="Historial" aria-label="Ver historial">📚<span class="lbl">Historial</span></button>
-      <button type="button" class="close-x" onclick="Overlays.requestClose('reset')" title="Cerrar" aria-label="Cerrar Modo Reset">✕</button>
+      <button type="button" class="close-x labeled" onclick="startCheckin()" title="Señales de alerta" aria-label="Señales de alerta"><svg class="ic" aria-hidden="true"><use href="#i-traffic"/></svg><span class="lbl">Señales</span></button>
+      <button type="button" class="close-x labeled" onclick="resetGoto(1)" title="Iniciar Modo Reset" aria-label="Iniciar Modo Reset"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg><span class="lbl">Iniciar</span></button>
+      <button type="button" class="close-x labeled" onclick="openKit()" title="Kit de Emergencia" aria-label="Kit de Emergencia"><svg class="ic" aria-hidden="true"><use href="#i-backpack"/></svg><span class="lbl">Kit</span></button>
+      <button type="button" class="close-x labeled" onclick="openCheckinHistorial()" title="Historial" aria-label="Ver historial"><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span class="lbl">Historial</span></button>
+      <button type="button" class="close-x" onclick="Overlays.requestClose('reset')" title="Cerrar" aria-label="Cerrar Modo Reset"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
   </div>
   <div class="overlay-body" id="resetBody"></div>
@@ -3533,36 +3576,36 @@ function activarKitPlan(){
 
 /* ============ MODO RESET FLOW (Protocolo R.E.S.E.T.) ============ */
 const MICROAUDITORIA = {
-  '🗣️ Ritmo y voz': ['Bajar un poco el ritmo del saludo','Hacer una pausa antes de continuar','Mantener un ritmo más calmado al hablar'],
-  '👂 Escucha': ['Escuchar hasta el final antes de responder','Reconocer lo que dice la persona antes de responder','Dejar un silencio sin intentar llenarlo'],
-  '👀 Presencia y parada': ['Buscar contacto visual antes de hablar','Iniciar la parada con una actitud abierta y natural','Revisar mi posición o ángulo de parada'],
-  '🎯 Apertura y adaptación': ['Simplificar la apertura','Adaptar mi respuesta a lo que la persona acaba de decir','No anticipar una objeción antes de que aparezca'],
-  '⚠️ Un hábito que quiero corregir': ['Reducir las muletillas','Evitar explicar de más','No apresurar el cierre','No responder automáticamente','No repetir la misma respuesta']
+  'Ritmo y voz': ['Bajar un poco el ritmo del saludo','Hacer una pausa antes de continuar','Mantener un ritmo más calmado al hablar'],
+  'Escucha': ['Escuchar hasta el final antes de responder','Reconocer lo que dice la persona antes de responder','Dejar un silencio sin intentar llenarlo'],
+  'Presencia y parada': ['Buscar contacto visual antes de hablar','Iniciar la parada con una actitud abierta y natural','Revisar mi posición o ángulo de parada'],
+  'Apertura y adaptación': ['Simplificar la apertura','Adaptar mi respuesta a lo que la persona acaba de decir','No anticipar una objeción antes de que aparezca'],
+  'Un hábito que quiero corregir': ['Reducir las muletillas','Evitar explicar de más','No apresurar el cierre','No responder automáticamente','No repetir la misma respuesta']
 };
 
 const CHECKIN_SECTIONS = [
-  {title:'1️⃣ 🔄 La espiral de la mala racha', items:[
+  {title:'1. La espiral de la mala racha', items:[
     '<b>Anticipo el rechazo</b><br>Doy por hecho que la persona dirá que «no» antes de terminar siquiera el saludo.',
     '<b>El «no» me afecta más de lo habitual</b><br>Cada rechazo me pesa, me irrita o me desanima más de lo normal.',
     '<b>Empiezo ya cansado</b><br>Llego a trabajar con pesadez física o mental, incluso antes de empezar.',
     '<b>Sigo dándole vueltas al turno</b><br>Después de terminar, sigo pensando mucho en los rechazos, los resultados o lo ocurrido en calle.',
     '<b>Me quedo atrapado en la queja</b><br>Paso demasiado tiempo centrado en lo mal que está la situación o tiendo a alejarme del equipo.'
   ]},
-  {title:'2️⃣ 🎯 Mi valor frente al resultado', items:[
+  {title:'2. Mi valor frente al resultado', items:[
     '<b>Mi valor depende del número</b><br>Empiezo a medir cómo de buen captador soy según los socios que consigo.',
     '<b>Un turno a cero me arrastra</b><br>Un mal turno condiciona demasiado cómo veo el resto de la semana o del mes.',
     '<b>Me comparo demasiado con los demás</b><br>El resultado de otros captadores influye demasiado en cómo valoro mi propio trabajo.',
     '<b>Pienso que «ya debería saber hacerlo»</b><br>Me cuesta aceptar una mala racha porque siento que, por mi experiencia, esto no debería estar ocurriendo.',
     '<b>Me desgasto con lo que no controlo</b><br>Gasto mucha energía preocupándome por el tráfico, el clima, los permisos u otros factores externos.'
   ]},
-  {title:'3️⃣ 🎙️ Cambios en mi forma de captar', items:[
+  {title:'3. Cambios en mi forma de captar', items:[
     '<b>Funciono en piloto automático</b><br>Hago el speech de forma mecánica y con poca presencia.',
     '<b>Me acelero y sobreexplico</b><br>Hablo más rápido, explico demasiado o me cuesta tolerar los silencios.',
     '<b>Dejo de escuchar</b><br>Mientras la otra persona habla, estoy pensando en qué responder en lugar de escuchar de verdad.',
     '<b>Hago menos paradas</b><br>Después de varios rechazos, reduzco el número de personas a las que intento parar.',
     '<b>Cambio de método constantemente</b><br>Después de unos pocos rechazos, cambio continuamente mi forma de hacer la parada buscando una solución inmediata.'
   ]},
-  {title:'4️⃣ ⏱️ Fugas de energía y evitación', items:[
+  {title:'4. Fugas de energía y evitación', items:[
     '<b>Alargo los descansos</b><br>Empiezo a utilizar el café, el móvil u otras pausas para retrasar la siguiente parada.',
     '<b>Evito pedir ayuda</b><br>No pido feedback rápido o apoyo aunque sé que podría ayudarme.'
   ]}
@@ -3711,13 +3754,13 @@ function renderResetStep(){
     body.innerHTML = `
       <div class="card">
         <span class="badge amber">Kit de Emergencia</span>
-        <h3>🎒 Prepara tu plan antes de necesitarlo</h3>
+        <h3>Prepara tu plan antes de necesitarlo</h3>
         <p class="desc">Cuando aparezcan tus primeras señales de alerta, <b>no improvises</b>. Decide de antemano qué harás, qué ajustarás y a quién pedirás ayuda.</p>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Primera señal → activo mi plan. No espero a estar al límite.</b></p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Primera señal → activo mi plan. No espero a estar al límite.</b></p>
       </div>
 
       <div class="card kit-summary">
-        <h3>🎒 Mi protocolo personal</h3>
+        <h3>Mi protocolo personal</h3>
         <div class="kit-flow">
           <div class="kit-flow-step">
             <span class="kit-flow-label">CUANDO NOTO</span>
@@ -3739,15 +3782,15 @@ function renderResetStep(){
             ${(state.kitPersona || state.kitPedira) ? `<p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>` : '<p class="kit-flow-empty">Pido apoyo</p>'}
           </div>
         </div>
-        ${state.kitHerramienta ? `<button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()">🚨 ACTIVAR MI PLAN</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
+        ${state.kitHerramienta ? `<button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-zap"/></svg> Activar mi plan</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
       </div>
 
       <div class="card">
-        <p><b>🚨 Mis señales de alerta</b></p>
+        <p><b>Mis señales de alerta</b></p>
         <p class="desc">Selecciona las señales que más suelen avisarte de que estás entrando en una dinámica que no te está ayudando. <b>Elige hasta 3</b>: así tu plan es fácil de recordar cuando lo necesites.</p>
         <div class="chip-group" id="kitSenalChips" role="group" aria-label="Mis señales de alerta (máximo 3)">${CHECKIN_TITLES.map(s=>`<button type="button" ${chipAttrs(state.kitSenales.includes(s))} data-action="toggleKitSenal" data-value="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('')}</div>
 
-        <p><b>1️⃣ 🌬️ Me regulo</b></p>
+        <p><b>1. Me regulo</b></p>
         <p class="desc">Elige <b>una herramienta concreta</b> de la Caja de Herramientas.</p>
         <label for="kitHerramientaSelect">Mi herramienta</label>
         <select id="kitHerramientaSelect" onchange="onKitHerramientaChange()">
@@ -3757,25 +3800,25 @@ function renderResetStep(){
           <input type="text" id="kitHerramientaOtraInput" value="${KIT_HERRAMIENTAS_FIJAS.includes(state.kitHerramienta)?'':escapeHtml(state.kitHerramienta)}" placeholder="Describe tu recurso personal" oninput="state.kitHerramienta=this.value;saveSoon();">
         </div>
 
-        <p><b>2️⃣ 🎙️ Ajusto una cosa</b></p>
+        <p><b>2. Ajusto una cosa</b></p>
         <p class="desc">Elige <b>un solo ajuste técnico</b> para aplicar cuando actives tu plan.</p>
         <label for="kitAjusteInput">Mi ajuste</label>
         <input type="text" id="kitAjusteInput" value="${escapeHtml(state.kitAjuste)}" placeholder="Ej: ralentizar el saludo, escuchar hasta el final, simplificar la apertura…" oninput="state.kitAjuste=this.value;saveSoon();">
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una sola variable. Una cosa cada vez.</b></p>
 
-        <p><b>3️⃣ 🤝 Pido apoyo si lo necesito</b></p>
+        <p><b>3. Pido apoyo si lo necesito</b></p>
         <p class="desc">Elige de antemano <b>a quién acudir</b> y qué pedir.</p>
         <label for="kitPersonaInput">Mi persona de apoyo</label>
         <input type="text" id="kitPersonaInput" value="${escapeHtml(state.kitPersona)}" oninput="state.kitPersona=this.value;saveSoon();">
         <label for="kitPediraInput">¿Qué pediré?</label>
         <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: Quiero que observes dos paradas y me digas una cosa que estoy haciendo bien y una que pueda ajustar." oninput="state.kitPedira=this.value;saveSoon();">
 
-        <p><b>🚨 ¿Cuándo pediré ayuda?</b></p>
+        <p><b>¿Cuándo pediré ayuda?</b></p>
         <p class="desc"><b>Si, después de regularme y aplicar mi ajuste, sigo bloqueado, evitando paradas o trabajando en automático.</b></p>
 
-        <p><b>🔑 Mi regla de emergencia</b></p>
+        <p><b>Mi regla de emergencia</b></p>
         <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Si detecto mis señales → me regulo → aplico un ajuste → y pido apoyo si sigo atascado.</b></p>
-        <p class="desc">🎯 <b>No espero a estar al límite. Actúo cuando aparecen las primeras señales.</b></p>
+        <p class="desc"><b>No espero a estar al límite. Actúo cuando aparecen las primeras señales.</b></p>
       </div>
       <button type="button" class="btn btn-amber" onclick="saveKitPlan()">Guardar mi plan</button>
       <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
@@ -3785,7 +3828,7 @@ function renderResetStep(){
     body.innerHTML = `
       <div class="card">
         <span class="badge amber">Historial</span>
-        <h3>🔄 Sesiones Reset</h3>
+        <h3>Sesiones Reset</h3>
       </div>
       ${state.resetHistory.length ? state.resetHistory.slice(0, resetHistorialLimit).map(r=>`
         <details class="help-item">
@@ -3801,13 +3844,13 @@ function renderResetStep(){
             <p><b>Qué he aprendido:</b> ${escapeHtml(r.aprendizaje)||'—'}</p>
             <p><b>Observación:</b> ${escapeHtml(r.observacion)||'—'}</p>
             <p><b>Pacto de permanencia:</b> ${escapeHtml(r.pacto)||'—'}</p>
-            ${r.micro ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" data-action="repetirAjuste" data-id="${escapeHtml(r.id)}">🔁 Repetir este ajuste</button>` : ''}
+            ${r.micro ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" data-action="repetirAjuste" data-id="${escapeHtml(r.id)}">Repetir este ajuste</button>` : ''}
           </div>
         </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has completado ninguna sesión de Reset.
-          <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="resetGoto(1)">🆘 Empezar un Reset</button></div></div>`}
+          <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="resetGoto(1)">Empezar un Reset</button></div></div>`}
 
       <div class="card">
-        <h3>📋 Historial de check-ins</h3>
+        <h3>Historial de check-ins</h3>
       </div>
       ${state.checkins.length ? state.checkins.slice(0, checkinHistorialLimit).map(c=>`
         <div class="card history-item">
@@ -3815,7 +3858,7 @@ function renderResetStep(){
           <div class="meta">${escapeHtml(fechaDe(c))} · ${escapeHtml(c.total)} ${c.total===1?'señal marcada':'señales marcadas'}</div>
           ${c.items.length? `<ul>${c.items.map(i=>`<li>${checkinItemTitleHtml(i)}</li>`).join('')}</ul>` : '<p class="desc">Sin señales marcadas esta vez.</p>'}
         </div>`).join('') + (state.checkins.length > checkinHistorialLimit ? `<button type="button" class="btn btn-outline" style="margin-top:8px;" onclick="verMasCheckins()">Mostrar más</button>` : '') : `<div class="card empty-state">Aún no has hecho ningún check-in.
-          <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="startCheckin()">🚦 Hacer un check-in</button></div></div>`}
+          <div style="margin-top:10px;"><button type="button" class="btn btn-outline btn-sm" onclick="startCheckin()">Hacer un check-in</button></div></div>`}
       <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
     `;
   }
@@ -3838,10 +3881,10 @@ function renderResetStep(){
         </div>
       `).join('')}
       <div class="card">
-        <h3>🎯 ¿Qué busca este check-in?</h3>
+        <h3>¿Qué busca este check-in?</h3>
         <p class="desc">No se trata de contar «cuántas señales tienes» ni de ponerte una etiqueta.</p>
         <p class="desc">Se trata de detectar <b>qué está empezando a cambiar en ti</b> para poder decidir antes <b>qué necesitas ajustar, practicar o hablar con alguien</b>.</p>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🔑 <b>Detectarlo pronto te da más margen para actuar.</b></p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Detectarlo pronto te da más margen para actuar.</b></p>
       </div>
       <button type="button" class="btn btn-amber" onclick="saveCheckin()">Guardar check-in y continuar</button>
       <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
@@ -3857,26 +3900,26 @@ function renderResetStep(){
       </div>
       <div class="card">
         <details class="help-item">
-          <summary>🔄 ¿Qué hago cuando estoy en mala racha?</summary>
+          <summary>¿Qué hago cuando estoy en mala racha?</summary>
           <div class="help-body">
-            <div class="mini-card"><b>1️⃣ Normalizar</b><p>Reconoce lo que está pasando <b>sin convertir una mala racha en un juicio sobre tu capacidad</b>.</p><p style="font-style:italic;">💬 «Estoy pasando por una mala racha. Esto no define cómo capto.»</p></div>
-            <div class="mini-card"><b>2️⃣ Revisar</b><p>Antes de asumir que «no funciona nada», observa <b>qué puede haber cambiado</b>.</p><p>¿Estoy haciendo menos paradas? ¿Estoy anticipando el «no»? ¿Estoy más tenso o con menos energía? ¿Estoy funcionando en automático? ¿He cambiado mi forma de trabajar?</p><p><b>Busca cambios concretos, no culpables.</b></p></div>
-            <div class="mini-card"><b>3️⃣ Rescatar</b><p>Recupera lo que <b>ya te ha funcionado</b>: vuelve a lo básico del speech, pide feedback, observa a alguien que esté fluyendo o haz una pausa real.</p><p>Durante unos días, <b>reduce el foco en el resultado y vuelve a centrarte en el proceso</b>.</p></div>
-            <div class="mini-card"><b>4️⃣ Regular</b><p>Utiliza las herramientas de la app para <b>bajar la tensión, recuperar la concentración y afrontar mejor la siguiente parada</b>.</p><p>Fuera del turno, favorece la <b>desconexión y la recuperación</b>.</p></div>
-            <div class="mini-card"><b>5️⃣ Pedir ayuda 🤝</b><p>Habla con tu responsable o con un compañero. <b>Una mirada externa puede ayudarte a detectar qué está cambiando y qué puedes ajustar.</b></p></div>
+            <div class="mini-card"><b>1. Normalizar</b><p>Reconoce lo que está pasando <b>sin convertir una mala racha en un juicio sobre tu capacidad</b>.</p><p style="font-style:italic;">«Estoy pasando por una mala racha. Esto no define cómo capto.»</p></div>
+            <div class="mini-card"><b>2. Revisar</b><p>Antes de asumir que «no funciona nada», observa <b>qué puede haber cambiado</b>.</p><p>¿Estoy haciendo menos paradas? ¿Estoy anticipando el «no»? ¿Estoy más tenso o con menos energía? ¿Estoy funcionando en automático? ¿He cambiado mi forma de trabajar?</p><p><b>Busca cambios concretos, no culpables.</b></p></div>
+            <div class="mini-card"><b>3. Rescatar</b><p>Recupera lo que <b>ya te ha funcionado</b>: vuelve a lo básico del speech, pide feedback, observa a alguien que esté fluyendo o haz una pausa real.</p><p>Durante unos días, <b>reduce el foco en el resultado y vuelve a centrarte en el proceso</b>.</p></div>
+            <div class="mini-card"><b>4. Regular</b><p>Utiliza las herramientas de la app para <b>bajar la tensión, recuperar la concentración y afrontar mejor la siguiente parada</b>.</p><p>Fuera del turno, favorece la <b>desconexión y la recuperación</b>.</p></div>
+            <div class="mini-card"><b>5. Pedir ayuda </b><p>Habla con tu responsable o con un compañero. <b>Una mirada externa puede ayudarte a detectar qué está cambiando y qué puedes ajustar.</b></p></div>
           </div>
         </details>
       </div>
       <div class="card">
         <details class="help-item">
-          <summary>🎯 ¿Qué está en mis manos?</summary>
+          <summary>¿Qué está en mis manos?</summary>
           <div class="help-body">
             <div class="circle-control">
-              <div class="cc-col"><b>❌ No controlo</b><ul><li>El flujo de gente</li><li>Que alguien tenga prisa</li><li>Que una persona ya colabore con otra ONG</li><li>Que alguien rechace</li></ul></div>
-              <div class="cc-col"><b>🟡 Puedo influir</b><ul><li>Cómo hago la parada</li><li>Mi energía, actitud y escucha</li><li>La adaptación del speech</li><li>Cómo gestiono las objeciones</li><li>Dónde y cuándo hago la parada, cuando tengo margen para ello</li></ul></div>
-              <div class="cc-col"><b>🔍 Puedo revisar</b><ul><li>Si estoy haciendo menos paradas</li><li>Si anticipo el «no»</li><li>Si estoy funcionando en automático</li><li>Si he cambiado demasiado mi forma de trabajar</li><li>Si necesito feedback</li></ul></div>
+              <div class="cc-col"><b>No controlo</b><ul><li>El flujo de gente</li><li>Que alguien tenga prisa</li><li>Que una persona ya colabore con otra ONG</li><li>Que alguien rechace</li></ul></div>
+              <div class="cc-col"><b>Puedo influir</b><ul><li>Cómo hago la parada</li><li>Mi energía, actitud y escucha</li><li>La adaptación del speech</li><li>Cómo gestiono las objeciones</li><li>Dónde y cuándo hago la parada, cuando tengo margen para ello</li></ul></div>
+              <div class="cc-col"><b>Puedo revisar</b><ul><li>Si estoy haciendo menos paradas</li><li>Si anticipo el «no»</li><li>Si estoy funcionando en automático</li><li>Si he cambiado demasiado mi forma de trabajar</li><li>Si necesito feedback</li></ul></div>
             </div>
-            <p class="desc"><b>🔑 La clave.</b> Cuando llevamos varios días malos, es fácil gastar energía intentando controlar <b>lo que no depende de nosotros</b>.</p>
+            <p class="desc"><b>La clave.</b> Cuando llevamos varios días malos, es fácil gastar energía intentando controlar <b>lo que no depende de nosotros</b>.</p>
             <p class="desc"><b>El Reset consiste en volver al proceso: observar, ajustar, pedir ayuda y seguir.</b></p>
           </div>
         </details>
@@ -3885,10 +3928,10 @@ function renderResetStep(){
   }
   else if(resetStep===1){
     const chips = resetCheckinItems.length ? `
-      <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>De lo marcado en tu check-in, elige la principal.</p>
+      <p class="desc"><b>¿Qué señal estás notando con más fuerza hoy?</b><br>De lo marcado en tu check-in, elige la principal.</p>
       <div class="chip-group" id="resetSenalChips" role="group" aria-label="Señal principal">${resetCheckinItems.map(s=>`<button type="button" ${chipAttrs(resetSenal===checkinTitle(s)).replace('class="chip', 'class="chip chip-block')} data-action="selectSenal" data-value="${escapeHtml(checkinTitle(s))}">${CHECKIN_LABELS.has(s) ? a11yLabel(s) : escapeHtml(s)}</button>`).join('')}</div>
     ` : `
-      <p class="desc">👀 <b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el «no», cansancio previo, hacer menos paradas, trabajar en automático…</p>
+      <p class="desc"><b>¿Qué señal estás notando con más fuerza hoy?</b><br>Por ejemplo: aceleración, anticipar el «no», cansancio previo, hacer menos paradas, trabajar en automático…</p>
       <textarea id="resetSenalInput" maxlength="${LIMITS.shortStr}" placeholder="Escribe tu señal principal..." oninput="resetSenal=this.value;saveResetProgressSoon();">${escapeHtml(resetSenal)}</textarea>
     `;
     body.innerHTML = `
@@ -3909,7 +3952,7 @@ function renderResetStep(){
         <span class="badge amber">E · Examina</span>
         <h3>Separa el contexto de tu forma de trabajar</h3>
         <p class="desc">Cuando llevas varios días malos, distingue entre <b>lo que está ocurriendo a tu alrededor</b> y <b>lo que puedes revisar y ajustar en tu forma de trabajar</b>.</p>
-        <p><b>🌍 El contexto</b></p>
+        <p><b>El contexto</b></p>
         <p class="desc">Factores que <b>no controlas directamente</b>:</p>
         <ul>
           <li>Flujo de gente</li>
@@ -3918,7 +3961,7 @@ function renderResetStep(){
           <li>Prisa o situación de la persona</li>
           <li>Que alguien rechace</li>
         </ul>
-        <p><b>🎯 Mi forma de trabajar</b></p>
+        <p><b>Mi forma de trabajar</b></p>
         <p class="desc">Aspectos que <b>sí puedo revisar y ajustar</b>:</p>
         <ul>
           <li>Escucha</li>
@@ -3928,7 +3971,7 @@ function renderResetStep(){
           <li>Actitud y energía</li>
           <li>Forma de hacer la parada</li>
         </ul>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>¿Qué parte de lo que está pasando viene del contexto y qué parte puedo revisar y ajustar yo?</b></p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>¿Qué parte de lo que está pasando viene del contexto y qué parte puedo revisar y ajustar yo?</b></p>
         <label for="resetExamResultadoInput">El contexto → no lo controlo directamente</label>
         <textarea id="resetExamResultadoInput" placeholder="Ej: hoy hay muy poco flujo de personas..." oninput="resetExamResultado=this.value;saveResetProgressSoon();">${escapeHtml(resetExamResultado)}</textarea>
         <label for="resetExamRendimientoInput">Mi forma de trabajar → puedo revisarla y ajustarla</label>
@@ -3948,7 +3991,7 @@ function renderResetStep(){
         <input type="text" id="resetAspecto1Input" value="${escapeHtml(resetAspecto1)}" placeholder="Ej: mantengo la sonrisa en el saludo" oninput="resetAspecto1=this.value;saveResetProgressSoon();">
         <label for="resetAspecto2Input">Conducta 2</label>
         <input type="text" id="resetAspecto2Input" value="${escapeHtml(resetAspecto2)}" placeholder="Ej: sigo escuchando antes de responder" oninput="resetAspecto2=this.value;saveResetProgressSoon();">
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>Piensa en cosas que haces tú y que puedes repetir:</b> cómo haces la parada, cómo escuchas, cómo explicas, cómo gestionas una objeción, cómo mantienes la actitud o cómo adaptas tu forma de trabajar.</p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Piensa en cosas que haces tú y que puedes repetir:</b> cómo haces la parada, cómo escuchas, cómo explicas, cómo gestionas una objeción, cómo mantienes la actitud o cómo adaptas tu forma de trabajar.</p>
       </div>
       <button type="button" class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Continuar</button>
     `;
@@ -3966,20 +4009,20 @@ function renderResetStep(){
         <p class="desc"><b>No necesitas cambiarlo todo. Elige una sola conducta, pruébala y observa qué ocurre.</b></p>
       </div>
       <div class="card">
-        <h3>🎯 Elige 1 ajuste</h3>
+        <h3>Elige 1 ajuste</h3>
         <p class="desc">Selecciona <b>una conducta concreta que puedas aplicar durante las próximas 10 paradas</b>.</p>
         ${Object.entries(MICROAUDITORIA).map(([cat,items])=>`
           <div class="chip-cat" aria-hidden="true">${cat}</div>
-          <div class="chip-group" role="group" aria-label="${escapeHtml(cat.replace(/^\S+\s/, ''))}">
+          <div class="chip-group" role="group" aria-label="${escapeHtml(cat)}">
             ${items.map(m=>`<button type="button" ${chipAttrs(resetMicro===m)} data-action="selectMicro" data-value="${escapeHtml(m)}">${escapeHtml(m)}</button>`).join('')}
           </div>
         `).join('')}
       </div>
       <div class="card">
-        <h3>🔬 Después, a prueba</h3>
+        <h3>Después, a prueba</h3>
         <p class="desc">El ajuste que elijas pasará directamente a <b>T · Testea</b>.</p>
         <p class="desc"><b>Mantén este único ajuste durante las próximas 10 oportunidades de parada</b> y observa cómo lo aplicas, cómo te sientes y qué ocurre en las conversaciones.</p>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">💡 <b>No busques arreglarlo todo. Elige una cosa, pruébala y aprende de lo que ocurra.</b></p>
+        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>No busques arreglarlo todo. Elige una cosa, pruébala y aprende de lo que ocurra.</b></p>
       </div>
       <button type="button" class="btn btn-amber" ${resetMicro?'':'disabled'} onclick="resetGoto(5)">Continuar</button>
     `;
@@ -3996,32 +4039,32 @@ function renderResetStep(){
         ${resetStops<=7 ? '<button type="button" class="btn btn-green" id="incrementStop3Btn" onclick="incrementStop(3)">+3 paradas</button>' : ''}
         ${resetStops>0 ? '<button type="button" class="btn btn-outline" id="decrementStopBtn" onclick="decrementStop()">↩ Deshacer última</button>' : ''}
       </div>
-      ${resetStops<10 ? '<button type="button" class="btn btn-outline btn-sm" id="allStopsBtn" style="margin-top:10px;" onclick="marcarTodasParadas()">✔️ Ya he hecho las 10</button>' : ''}
+      ${resetStops<10 ? '<button type="button" class="btn btn-outline btn-sm" id="allStopsBtn" style="margin-top:10px;" onclick="marcarTodasParadas()">Ya he hecho las 10</button>' : ''}
       <p class="desc" style="margin-top:10px;">Pruébalo durante <b>las próximas 10 oportunidades de parada</b>. Mantén el mismo ajuste y evita cambiar otras cosas al mismo tiempo.</p>
       <p class="desc">No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, cómo te sientes al hacerlo y qué ocurre en las conversaciones.</b></p>
-      <p><b>🔎 Al terminar</b></p>
+      <p><b>Al terminar</b></p>
       <p class="desc">Pregúntate:</p>
       <p class="desc"><b>¿He podido aplicar el ajuste como quería?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Qué ha ocurrido en las conversaciones?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
-      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">🎯 <b>Una mala conversación no demuestra que el ajuste no sirva. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
-      ${resetStops>=10 ? '<p class="desc text-ok" style="font-weight:700;">✅ Test completado.</p>' : `<p class="desc">${10-resetStops===1 ? "Te falta <b>1</b> parada" : `Te faltan <b>${10-resetStops}</b> paradas`} para poder continuar.</p>`}
+      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Una mala conversación no demuestra que el ajuste no sirva. Una buena tampoco demuestra por sí sola que sea la solución.</b></p>
+      ${resetStops>=10 ? '<p class="desc text-ok" style="font-weight:700;">Test completado.</p>' : `<p class="desc">${10-resetStops===1 ? "Te falta <b>1</b> parada" : `Te faltan <b>${10-resetStops}</b> paradas`} para poder continuar.</p>`}
       <button type="button" class="btn btn-primary" style="margin-top:8px;" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Continuar</button>
       <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="closeReset()">Cerrar y seguir luego</button>
     `;
   }
   else if(resetStep===6){
     const opciones = [
-      {v:'Lo mantengo', em:'✅'},
-      {v:'Lo ajusto', em:'🔧'},
-      {v:'Pruebo otra cosa', em:'🔄'}
+      {v:'Lo mantengo', em:''},
+      {v:'Lo ajusto', em:''},
+      {v:'Pruebo otra cosa', em:''}
     ];
     body.innerHTML = `
       ${resetDots()}
       <div class="card">
         <span class="badge amber">¿Qué he aprendido?</span>
-        <h3>🔎 ¿Qué he aprendido?</h3>
+        <h3>¿Qué he aprendido?</h3>
         <p class="desc">Después de probar el ajuste durante 10 paradas, ¿qué quieres hacer ahora?</p>
         <div class="btn-row" style="flex-wrap:wrap;">
-          ${opciones.map(o=>`<button type="button" class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" aria-pressed="${resetAprendizaje===o.v}" data-action="setAprendizaje" data-value="${escapeHtml(o.v)}">${o.em} ${o.v}</button>`).join('')}
+          ${opciones.map(o=>`<button type="button" class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" aria-pressed="${resetAprendizaje===o.v}" data-action="setAprendizaje" data-value="${escapeHtml(o.v)}">${o.v}</button>`).join('')}
         </div>
         <label for="resetObservacionInput" style="margin-top:14px;">¿Qué has observado? (opcional)</label>
         <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgressSoon();">${escapeHtml(resetObservacion)}</textarea>
@@ -4042,13 +4085,13 @@ function renderResetStep(){
         </ul>
       </div>
       <div class="card">
-        <h3>🆘 Guía rápida de emergencia</h3>
+        <h3>Guía rápida de emergencia</h3>
         <div class="mini-card"><b>PARA</b><p>No significa abandonar la jornada. Significa <b>cortar el automático</b>: tómate 2 minutos, respira o pide un relevo de aire para recuperar el foco.</p><p style="font-style:italic;">¿Necesito seguir empujando o necesito 2 minutos para volver mejor?</p></div>
         <div class="mini-card"><b>REVISA</b><p>Antes de cambiar cosas, <b>separa el resultado de tu forma de trabajar y elige un solo ajuste concreto</b>.</p><p style="font-style:italic;">¿Qué está cambiando realmente en mi forma de captar?</p></div>
         <div class="mini-card"><b>PIDE</b><p>No hace falta llegar a «no puedo más».</p><p style="font-style:italic;">¿Hay algo que otra persona pueda ayudarme a ver o ajustar ahora mismo?</p></div>
       </div>
       <div class="card">
-        <h3>🤝 Pacto de permanencia</h3>
+        <h3>Pacto de permanencia</h3>
         <p class="desc"><b>«Cuando el resultado no acompañe, me comprometo a...»</b></p>
         <textarea id="resetPactoInput" placeholder="Algo concreto y realista: algo que dejar de hacer, algo que revisar, algo que probar en el próximo speech..." oninput="resetPacto=this.value;saveResetProgressSoon();">${escapeHtml(resetPacto)}</textarea>
       </div>
