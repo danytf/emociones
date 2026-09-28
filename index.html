@@ -2694,16 +2694,16 @@ let nsqnAnswers = {};
 let nsqnRecs = [];
 function startNoSeQueNecesito(){ nsqnAnswers = {}; renderNoSeQueNecesito(); }
 function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(); }
-/* Orden de prioridad: un patrón de varios días pesa más que un automatismo puntual,
-   que a su vez pesa más que la activación o la rumiación de este momento.
-   Devuelve TODAS las recomendaciones que aplican, no solo la primera, para no dar
-   la sensación de que se ignoran las demás señales marcadas. */
+/* Orientación sencilla para elegir herramienta, no un diagnóstico ni un triaje: el orden solo
+   decide qué paso se sugiere primero (un patrón de varios días, luego la evitación, luego la
+   activación o las vueltas de cabeza). Devuelve TODAS las opciones que aplican, para no dar
+   la sensación de que se ignoran las demás respuestas. */
 function nsqnRecommendations(){
   const list = [];
-  if(nsqnAnswers.dias === true) list.push({title:'🆘 Puede ser una mala racha', desc:'Cuando la sensación se repite varios días, tiene sentido pasar por el modo Reset.', action:()=>{ closeTool(); openReset(); }, cta:'Ir a Reset'});
+  if(nsqnAnswers.dias === true) list.push({title:'🆘 Modo Reset', desc:'Si esto se repite varios días, el modo Reset te ayuda a revisar qué está cambiando y a elegir un ajuste.', action:()=>{ closeTool(); openReset(); }, cta:'Ir a Reset'});
   if(nsqnAnswers.evitando === true) list.push({title:'🛑 Parar y decidir', desc:'Puede ayudarte a cortar el automatismo y recuperar margen para decidir.', action:startPauseDecision, cta:'Empezar'});
   if(nsqnAnswers.acelerado === true) list.push({title:'🌬️ Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:()=>startBreath(60), cta:'Respirar 60 s'});
-  if(nsqnAnswers.cabeza === true) list.push({title:'👀 Grounding 5-4-3-2-1', desc:'Puede ayudarte a salir de la rumiación y volver al presente.', action:startGrounding, cta:'Empezar'});
+  if(nsqnAnswers.cabeza === true) list.push({title:'👀 Grounding 5-4-3-2-1', desc:'Puede ayudarte a sacar la atención del bucle de pensamientos y volver al presente.', action:startGrounding, cta:'Empezar'});
   return list;
 }
 function renderNoSeQueNecesito(){
@@ -2714,14 +2714,14 @@ function renderNoSeQueNecesito(){
     const [primary, ...rest] = recs;
     resultHtml = `
       <div class="card kit-summary">
-        ${recs.length>1 ? `<p class="desc" style="font-style:italic;">Has marcado varias señales. Empieza por esta, es la más urgente ahora mismo:</p>` : ''}
+        <p class="desc" style="font-style:italic;">Empieza por este paso sugerido:</p>
         <h3>${primary.title}</h3>
         <p class="desc">${primary.desc}</p>
         <button class="btn btn-primary" data-action="nsqnGo" data-idx="0">${primary.cta}</button>
       </div>
       ${rest.length ? `
         <div class="card">
-          <p><b>También podría ayudarte</b></p>
+          <p><b>Otras opciones que también pueden ayudarte</b></p>
           ${rest.map((r,i)=>`
             <div class="history-item" style="margin-bottom:8px;">
               <p style="font-weight:700;">${r.title}</p>
@@ -2733,13 +2733,16 @@ function renderNoSeQueNecesito(){
   } else if(answered === NSQN_QUESTIONS.length){
     resultHtml = `
       <div class="card" style="text-align:center;">
-        <p class="desc">Ahora mismo no parece que necesites una herramienta de regulación. Puedes seguir con tu turno, o hacer un Checkpoint mental si quieres registrar cómo estás.</p>
-        <button class="btn btn-outline" onclick="closeTool();openCheckpoint();">Checkpoint Mental</button>
+        <p class="desc">Con estas respuestas no tengo una herramienta clara para recomendarte. Puedes hacer un Checkpoint o elegir una herramienta manualmente.</p>
+        <div class="btn-row" style="margin-top:10px;">
+          <button type="button" class="btn btn-outline" onclick="closeTool();openCheckpoint();">Hacer un Checkpoint</button>
+          <button type="button" class="btn btn-outline" onclick="closeTool();goto('herramientas');">Ver herramientas</button>
+        </div>
       </div>`;
   }
   openTool('🤔 No sé qué necesito', `
     <div class="card" style="text-align:left;">
-      <p class="desc">Responde estas 4 preguntas rápidas y te sugerimos una herramienta.</p>
+      <p class="desc">Responde 4 preguntas rápidas y te sugeriré por dónde empezar. Es solo una ayuda para elegir herramienta, no una evaluación de cómo estás.</p>
       ${NSQN_QUESTIONS.map(q=>`
         <p style="margin-top:14px;" id="nsqn-${q.key}"><b>${q.q}</b></p>
         <div class="btn-row" role="group" aria-labelledby="nsqn-${q.key}">
