@@ -2809,10 +2809,10 @@ function renderResetStep(){
             <p><b>Pacto de permanencia:</b> ${escapeHtml(r.pacto)||'—'}</p>
             ${r.micro ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="repetirAjuste('${r.micro.replace(/'/g,"\\'")}','${(r.senal||'').replace(/'/g,"\\'")}')">🔁 Repetir este ajuste</button>` : ''}
           </div>
-        </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : '<div class="card empty-state">Aún no has completado ninguna sesión Reset.</div>'}
+        </details>`).join('') + (state.resetHistory.length > resetHistorialLimit ? `<button class="btn btn-outline" style="margin-top:8px;" onclick="verMasReset()">Mostrar más</button>` : '') : '<div class="card empty-state">Aún no has completado ninguna sesión de Reset.</div>'}
 
       <div class="card">
-        <h3>📋 Historial de Check-ins</h3>
+        <h3>📋 Historial de check-ins</h3>
       </div>
       ${state.checkins.length ? state.checkins.map(c=>`
         <div class="card history-item">
