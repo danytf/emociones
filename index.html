@@ -905,6 +905,16 @@ header :focus-visible{outline-color:var(--wesser-red);}
 .ds .kit-plan-next{text-align:left;background:var(--ds-canvas);border-radius:12px;padding:var(--sp-3) var(--sp-4);margin-top:var(--sp-3);}
 .ds .eyebrow{display:block;font-family:var(--font-brand);font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ds-ink-3);margin:0 0 var(--sp-1);}
 .ds .kit-plan-next .desc{margin:var(--sp-1) 0 0;}
+/* ---------- Accesibilidad visual y táctil ---------- */
+/* Preguntas como etiqueta de campo: se leen como texto, no como rótulo en mayúsculas */
+.ds label.q-label{font-family:inherit;font-size:var(--fs-md);font-weight:650;letter-spacing:normal;text-transform:none;color:var(--ds-ink);line-height:1.4;}
+.ds .range-labels{font-size:12px;}
+/* Botones de la cabecera y selector de periodo: 44 px */
+.icon-btn{width:44px;height:44px;}
+@media (max-width:480px), (max-height:500px){ .icon-btn{width:44px;height:44px;} }
+.ds .btn-row.seg .btn{min-height:44px;}
+/* «Editar» separado de «Eliminar» */
+.history-item .edit, .help-body .edit{margin-right:12px;}
 </style>
 </head>
 <body>
@@ -2866,7 +2876,7 @@ function renderExito(){
       <div id="exitoOtraWrap" style="${exitoConducta==='Otra'?'':'display:none;'}">
         <textarea id="exitoOtraInput" placeholder="Escribe qué ha funcionado..." oninput="exitoOtraTexto=this.value;">${escapeHtml(exitoOtraTexto)}</textarea>
       </div>
-      <label for="exitoRepetirInput" style="margin-top:14px;">¿Qué quiero repetir en el siguiente?</label>
+      <label class="q-label" for="exitoRepetirInput" style="margin-top:14px;">¿Qué quiero repetir en el siguiente?</label>
       <textarea id="exitoRepetirInput" placeholder="Sé concreto: una sola cosa..." oninput="exitoRepetirTexto=this.value;">${escapeHtml(exitoRepetirTexto)}</textarea>
       <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">Ha ido bien no significa que tengas que cambiarlo todo. Mantén lo que ya funciona.</p>
       <button type="button" class="btn btn-green" style="margin-top:6px;" onclick="guardarExito()">Guardar</button>
@@ -2989,9 +2999,9 @@ function startPreTurno(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">30–45 segundos</p>
       <p class="desc" data-no-guarda>Tres preguntas rápidas antes de empezar el turno. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label for="preTurno1">¿Cómo llego hoy?</label>
+      <label class="q-label" for="preTurno1">¿Cómo llego hoy?</label>
       <textarea id="preTurno1" placeholder="Una palabra o frase corta..."></textarea>
-      <label for="preTurno2">¿Qué quiero cuidar en mi forma de captar?</label>
+      <label class="q-label" for="preTurno2">¿Qué quiero cuidar en mi forma de captar?</label>
       <textarea id="preTurno2" placeholder="Ej: escuchar hasta el final, sonreír más..."></textarea>
       <label for="preTurno3">Si aparece mi primera señal, ¿qué haré?</label>
       <textarea id="preTurno3" placeholder="${tienePlan ? 'Ya lo tienes en tu plan de arriba; añade algo solo si quieres' : 'Tu respuesta de emergencia...'}"></textarea>
@@ -3026,11 +3036,11 @@ function startCierreTurno(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">30 segundos</p>
       <p class="desc" data-no-guarda>Tres preguntas rápidas para cerrar el turno antes de volver a casa. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label for="cierreTurno1">¿Qué dejo hoy en el trabajo?</label>
+      <label class="q-label" for="cierreTurno1">¿Qué dejo hoy en el trabajo?</label>
       <textarea id="cierreTurno1" placeholder="Una palabra o frase corta..."></textarea>
-      <label for="cierreTurno2">¿Qué quiero llevarme?</label>
+      <label class="q-label" for="cierreTurno2">¿Qué quiero llevarme?</label>
       <textarea id="cierreTurno2" placeholder="Ej: un aprendizaje, una buena conversación..."></textarea>
-      <label for="cierreTurno3">¿Qué necesito hacer ahora para cambiar de contexto?</label>
+      <label class="q-label" for="cierreTurno3">¿Qué necesito hacer ahora para cambiar de contexto?</label>
       <textarea id="cierreTurno3" placeholder="Ej: cambiarme de ropa, caminar, llamar a alguien..."></textarea>
       <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarCierreTurno()">Turno cerrado</button>
     </div>
@@ -3065,9 +3075,9 @@ function startVolverCalle(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">15–20 segundos</p>
       <p class="desc" data-no-guarda>Dos preguntas rápidas para retomar el turno después de la pausa. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label for="volverCalle1">¿Cómo estoy?</label>
+      <label class="q-label" for="volverCalle1">¿Cómo estoy?</label>
       <textarea id="volverCalle1" placeholder="Una palabra o frase corta..."></textarea>
-      <label for="volverCalle2">¿Qué quiero hacer en la primera parada?</label>
+      <label class="q-label" for="volverCalle2">¿Qué quiero hacer en la primera parada?</label>
       <textarea id="volverCalle2" placeholder="Ej: sonreír, escuchar bien, ritmo tranquilo..."></textarea>
       <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarVolverCalle()">Vuelvo a calle</button>
     </div>
@@ -3968,7 +3978,7 @@ function renderResetStep(){
         <p class="desc">Elige de antemano <b>a quién acudir</b> y qué pedir.</p>
         <label for="kitPersonaInput">Mi persona de apoyo</label>
         <input type="text" id="kitPersonaInput" value="${escapeHtml(state.kitPersona)}" oninput="state.kitPersona=this.value;saveSoon();">
-        <label for="kitPediraInput">¿Qué pediré?</label>
+        <label class="q-label" for="kitPediraInput">¿Qué pediré?</label>
         <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: Quiero que observes dos paradas y me digas una cosa que estoy haciendo bien y una que pueda ajustar." oninput="state.kitPedira=this.value;saveSoon();">
 
         <p><b>¿Cuándo pediré ayuda?</b></p>
@@ -4224,7 +4234,7 @@ function renderResetStep(){
         <div class="btn-row" style="flex-wrap:wrap;">
           ${opciones.map(o=>`<button type="button" class="btn ${resetAprendizaje===o.v?'btn-amber':'btn-outline'}" aria-pressed="${resetAprendizaje===o.v}" data-action="setAprendizaje" data-value="${escapeHtml(o.v)}">${o.v}</button>`).join('')}
         </div>
-        <label for="resetObservacionInput" style="margin-top:14px;">¿Qué has observado? (opcional)</label>
+        <label class="q-label" for="resetObservacionInput" style="margin-top:14px;">¿Qué has observado? (opcional)</label>
         <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgressSoon();">${escapeHtml(resetObservacion)}</textarea>
       </div>
       <button type="button" class="btn btn-amber" ${resetAprendizaje?'':'disabled'} onclick="resetGoto(7)">Continuar</button>
