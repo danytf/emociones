@@ -38,7 +38,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   // ---- Reset + Kit + Herramienta apilada ----
   await page.locator('button.tab-reset').click();
   ok(JSON.stringify(await openSet()) === '["resetOverlay"]', 'Reset abierto');
-  await page.locator('#resetOverlay button[aria-label="Kit de Emergencia"]').click();
+  await page.locator('#resetBody button:has-text("Mi Kit de Emergencia")').click();
   await page.locator('#resetBody button:has-text("ACTIVAR MI PLAN")').focus();
   await page.keyboard.press('Enter');
   ok(JSON.stringify(await openSet()) === '["toolOverlay","resetOverlay"]', 'Herramienta apilada sobre el Reset');
@@ -130,7 +130,8 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
 
   // Reset: lo escrito se guarda solo, no pregunta
   await page.evaluate(() => { openReset(); resetGoto(2); });
-  await page.locator('#resetExamResultadoInput').fill('poco flujo');
+  await page.locator('#rc-contexto [data-action="resetOtro"]').click();
+  await page.locator('#rco-contexto').fill('poco flujo');
   await page.keyboard.press('Escape');
   ok(await noConfirm() && (await openSet()).length === 0, 'Reset se cierra sin preguntar (su progreso se guarda solo)');
   ok(await page.evaluate(() => JSON.parse(localStorage.getItem('wesserAppState')).resetProgress.examResultado) === 'poco flujo', 'y lo escrito queda guardado al cerrar');

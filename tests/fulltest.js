@@ -160,24 +160,31 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
 
   // ================= RESET COMPLETO =================
   section('Reset');
+  const resetNext = () => page.locator('#resetBody .reset-actions .btn-amber').click();
   await page.locator('#tabReset').click();
-  await page.locator('#resetOverlay button[aria-label="Señales de alerta"]').click();
+  ok(await page.locator('#resetBody .reset-hero button:has-text("Empezar el Reset")').isVisible(), 'la entrada del Reset tiene botón visible para empezar');
+  await page.locator('#resetBody button:has-text("Revisar antes mis señales")').click();
   await page.locator('.check-item').nth(0).click();
-  await page.locator('.check-item').nth(12).click();
-  await page.locator('#resetBody button:has-text("Guardar check-in y continuar")').click();
-  ok((await st()).checkins.length === 1 && (await st()).checkins[0].total === 2 && await page.evaluate(() => resetStep) === 1, 'check-in guardado y paso a R');
+  await resetNext(); await resetNext();
+  await page.locator('.check-item').nth(2).click();
+  await resetNext();
+  await page.locator('#resetBody button:has-text("Guardar y continuar")').click();
+  ok((await st()).checkins.length === 1 && (await st()).checkins[0].total === 2 && await page.evaluate(() => resetStep) === 1, 'check-in por bloques guardado y paso a R');
   ok(await page.locator('#resetBody .breath-circle').count() === 0, 'R sin respiración automática');
-  await page.locator('#resetBody [data-action="selectSenal"]').nth(1).click();
-  await page.locator('#resetBody button.btn:text-is("Continuar")').click();
-  await page.fill('#resetExamResultadoInput', 'Poco flujo');
-  await page.fill('#resetExamRendimientoInput', 'Paro menos');
-  await page.locator('#resetBody button.btn:text-is("Continuar")').click();
-  await page.fill('#resetAspecto1Input', 'Sonrío');
-  await page.fill('#resetAspecto2Input', 'Escucho');
-  await page.locator('#resetBody button.btn:text-is("Continuar")').click();
+  await page.locator('#rc-senal [data-action="resetChip"]').nth(1).click();
+  await resetNext();
+  await page.locator('#rc-contexto [data-value="Flujo de gente"]').click();
+  await page.locator('#rc-forma [data-action="resetOtro"]').click();
+  await page.fill('#rco-forma', 'Paro menos');
+  await resetNext();
+  await page.locator('#rc-funciona [data-action="resetChip"]').nth(0).click();
+  await page.locator('#rc-funciona [data-action="resetChip"]').nth(1).click();
+  await page.locator('#rc-funciona [data-action="resetChip"]').nth(2).click();
+  await resetNext();
   await page.locator('#resetBody [data-value="Simplificar la apertura"]').click();
-  await page.locator('#resetBody button.btn:text-is("Continuar")').click();
-  ok(await page.evaluate(() => resetStep) === 5, 'R → E → S → E completados');
+  await resetNext();
+  ok(await page.evaluate(() => resetStep) === 5, 'R → E → S → E completados con toques');
+  ok(await page.evaluate(() => resetExamResultado === 'Flujo de gente' && resetExamRendimiento === 'Paro menos' && resetAspecto1 === 'Mantengo la sonrisa en el saludo' && resetAspecto2 === 'Sigo escuchando antes de responder'), 'las respuestas rápidas se guardan en los campos de siempre (y como máximo 2 conductas)');
   for (let i = 0; i < 3; i++) await page.locator('#incrementStopBtn').click();
   await page.locator('#decrementStopBtn').click();
   ok(await page.evaluate(() => resetStops) === 2, 'contador +3 y deshacer → 2');
@@ -194,15 +201,15 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#resetBody [data-value="Lo mantengo"]').click();
   await page.fill('#resetObservacionInput', 'Más conversaciones largas');
   await page.locator('#resetBody button.btn:text-is("Continuar")').click();
-  ok((await page.locator('#resetBody').innerText()).includes('Pacto de permanencia'), 'aprendizaje → cierre');
-  await page.locator('#resetBody button:has-text("Finalizar")').click();
-  ok(!!(await page.locator('#resetBody .field-error').count()), 'finalizar sin pacto muestra error en línea');
-  await page.fill('#resetPactoInput', 'Volver a lo básico');
-  await page.locator('#resetBody button:has-text("Finalizar")').click();
+  const cierre = await page.locator('#resetBody').innerText();
+  ok(cierre.includes('Vuelve a calle con esto') && cierre.includes('Simplificar la apertura') && cierre.includes('Mi próximo paso'), 'aprendizaje → cierre con el ajuste elegido y «Mi próximo paso»');
+  await page.locator('#rc-paso [data-action="resetOtro"]').click();
+  await page.fill('#rco-paso', 'Volver a lo básico');
+  await page.locator('#resetBody button:has-text("Hecho, vuelvo a calle")').click();
   s = await st();
   ok(s.resetHistory.length === 1 && s.resetHistory[0].stops === 10 && s.resetHistory[0].pacto === 'Volver a lo básico' && s.resetProgress === null && await top() === null, 'finalizar guarda la sesión y limpia el progreso');
   await page.locator('#tabReset').click();
-  await page.locator('#resetOverlay button[aria-label="Ver historial"]').click();
+  await page.locator('#resetBody button:has-text("Historial")').click();
   ok((await page.locator('#resetBody').evaluate(e => e.textContent)).includes('Volver a lo básico'), 'historial muestra la sesión');
   await page.evaluate(() => document.querySelector('#resetBody [data-action="repetirAjuste"]').click());
   ok(await page.evaluate(() => resetStep === 5 && resetStops === 0 && resetMicro === 'Simplificar la apertura'), 'repetir ajuste va a Testea desde 0');
@@ -215,7 +222,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   // ================= KIT =================
   section('Kit');
   await page.locator('#tabReset').click();
-  await page.locator('#resetOverlay button[aria-label="Kit de Emergencia"]').click();
+  await page.locator('#resetBody button:has-text("Mi Kit de Emergencia")').click();
   for (let i = 0; i < 4; i++) await page.locator('#kitSenalChips button').nth(i).click();
   ok((await st()).kitSenales.length === 3 && await page.locator('#kitSenalChips + .field-error').count() === 1, 'máximo 3 señales con aviso');
   await page.selectOption('#kitHerramientaSelect', 'Otro recurso personal');
@@ -228,7 +235,8 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.reload();
   s = await st();
   ok(s.kitHerramienta === 'Salir a respirar al parque' && s.kitAjuste === 'Simplificar la apertura' && s.kitPersona === 'Laura' && s.kitPedira === 'Que me observe dos paradas' && s.kitSenales.length === 3, 'plan persistido tras recargar');
-  await page.locator('#qlKitSlot button').click();
+  // Tras recargar se está en Aprender: «Activar mi plan» sigue a mano en la fila compacta del lanzador
+  await page.locator('#qlKitSlotCompact button').click();
   ok(await top() === 'modal' && (await page.locator('#modalSheet').innerText()).includes('Este es tu recurso personal'), 'activar con recurso personal lo muestra');
   await page.keyboard.press('Escape');
   await page.evaluate(() => { openReset(); openKit(); });

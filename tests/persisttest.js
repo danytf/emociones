@@ -71,8 +71,9 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   ok(afterPause === 1 && stored === 'escuchar hasta el final', `una sola escritura tras la pausa (${afterPause}) con el texto completo`);
 
   await page.evaluate(() => { resetGoto(2); });
+  await page.locator('#rc-contexto [data-action="resetOtro"]').click();
   await page.evaluate(() => { window.__writes = 0; });
-  await page.locator('#resetExamResultadoInput').pressSequentially('poco flujo', { delay: 20 });
+  await page.locator('#rco-contexto').pressSequentially('poco flujo', { delay: 20 });
   await page.evaluate(() => { Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true }); document.dispatchEvent(new Event('visibilitychange')); });
   const flushed = await page.evaluate(() => JSON.parse(localStorage.getItem('wesserAppState')).resetProgress.examResultado);
   ok(flushed === 'poco flujo', 'al ocultar la página se vuelca el guardado pendiente');

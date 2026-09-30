@@ -43,13 +43,27 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   ok(await page.evaluate(() => document.activeElement.id === 'exitoOtraInput' && document.querySelector('#toolBody .field-error').textContent === 'Indica qué ha funcionado antes de guardar.'), '«Otra» vacía: «Indica qué ha funcionado antes de guardar.» con foco en el campo');
   await page.evaluate(() => closeTool());
 
-  // Reset: Continuar sin rellenar
+  // Reset: Continuar sin elegir nada
+  const resetNext = () => page.locator('#resetBody .reset-actions .btn-amber').click();
   await page.evaluate(() => { openReset(); resetGoto(2); });
-  await page.locator('#resetBody button:has-text("Continuar")').click();
-  ok(await page.evaluate(() => resetStep === 2 && document.querySelectorAll('#resetBody .field-error').length === 2 && document.activeElement.id === 'resetExamResultadoInput'), 'Examina: dos errores en línea y se queda en el paso');
+  await resetNext();
+  ok(await page.evaluate(() => resetStep === 2 && document.querySelectorAll('#resetBody .field-error').length === 2 && !!document.activeElement.closest('#rc-contexto')), 'Examina: dos errores en línea, foco en el primer grupo y se queda en el paso');
   await page.evaluate(() => { resetGoto(1); });
-  await page.locator('#resetBody button:has-text("Continuar")').click();
-  ok(await page.evaluate(() => resetStep === 1 && document.activeElement.id === 'resetSenalInput' && !!document.querySelector('#resetBody .field-error')), 'Reconoce: error en línea con foco en el campo');
+  await resetNext();
+  ok(await page.evaluate(() => resetStep === 1 && !!document.activeElement.closest('#rc-senal') && document.querySelector('#resetBody .field-error').textContent === 'Elige tu señal principal antes de continuar.'), 'Reconoce: error en línea con foco en los chips');
+  await page.locator('#rc-senal [data-action="resetOtro"]').click();
+  await resetNext();
+  ok(await page.evaluate(() => resetStep === 1 && document.activeElement.id === 'rco-senal' && !!document.querySelector('#resetBody .field-error')), 'Reconoce con «Otra señal…» vacía: error con foco en el campo');
+  await page.fill('#rco-senal', 'Me cuesta arrancar');
+  await resetNext();
+  ok(await page.evaluate(() => resetStep === 2 && resetSenal === 'Me cuesta arrancar'), 'Reconoce: la señal escrita en «Otra…» se guarda y se continúa');
+  await page.evaluate(() => { resetMicro = null; resetGoto(4); });
+  await resetNext();
+  ok(await page.evaluate(() => resetStep === 4 && !document.querySelector('#resetBody .reset-actions .btn-amber').disabled && !!document.querySelector('#resetBody .field-error')), 'Elige: el botón no está deshabilitado y explica qué falta');
+  await page.evaluate(() => { resetAprendizaje = ''; resetGoto(6); });
+  await resetNext();
+  ok(await page.evaluate(() => resetStep === 6 && document.querySelector('#resetBody .field-error').textContent === 'Elige una opción para continuar.'), '¿Qué he aprendido?: explica qué falta en lugar de un botón deshabilitado');
+  await page.evaluate(() => startFreshReset());
 
   // Kit: límite de 3 señales
   await page.evaluate(() => { state.kitSenales = []; openKit(); });

@@ -5,7 +5,7 @@ await p.goto('file:///'+require('path').resolve(__dirname, '..', 'index.html').s
 await p.evaluate(()=>{openReset(); resetMicro='Simplificar la apertura'; resetStops=0; resetGoto(5);});
 ok(await p.locator('#decrementStopBtn').count()===0, 'con 0 paradas no aparece «Deshacer»');
 await p.locator('#incrementStopBtn').click(); await p.locator('#incrementStopBtn').click();
-ok(await p.evaluate(()=>resetStops)===2 && await p.locator('#decrementStopBtn').innerText()==='↩ Deshacer última', 'con paradas aparece «↩ Deshacer última»');
+ok(await p.evaluate(()=>resetStops)===2 && (await p.locator('#decrementStopBtn').innerText()).trim()==='Deshacer última' && await p.locator('#decrementStopBtn use').getAttribute('href')==='#i-undo', 'con paradas aparece «Deshacer última» con icono del sprite');
 await p.locator('#decrementStopBtn').focus(); await p.keyboard.press('Enter');
 ok(await p.evaluate(()=>resetStops===1 && JSON.parse(localStorage.getItem('wesserAppState')).resetProgress.stops===1), 'resta una y se guarda');
 ok(await p.evaluate(()=>document.activeElement.id)==='decrementStopBtn', 'el foco sigue en «Deshacer»');
@@ -13,9 +13,10 @@ await p.keyboard.press('Enter');
 ok(await p.evaluate(()=>resetStops)===0 && await p.locator('#decrementStopBtn').count()===0 && await p.evaluate(()=>document.activeElement.id)==='incrementStopBtn', 'a 0 desaparece y el foco pasa a «+1»');
 await p.evaluate(()=>decrementStop());
 ok(await p.evaluate(()=>resetStops)===0, 'nunca baja de 0');
-const t=await p.locator('#resetBody').innerText();
-ok(t.includes('cómo te sientes al hacerlo') && t.includes('¿Cómo me he sentido al aplicarlo?') && t.includes('¿Qué ha ocurrido en las conversaciones?'), 'Testea mantiene cómo te sientes');
+// «cómo te sientes» sigue a la vista; las preguntas de cierre van en «Qué observar al terminar» (plegable)
+const t=await p.locator('#resetBody').innerText(), tAll=await p.locator('#resetBody').textContent();
+ok(t.includes('cómo te sientes al hacerlo') && tAll.includes('¿Cómo me he sentido al aplicarlo?') && tAll.includes('¿Qué ha ocurrido en las conversaciones?'), 'Testea mantiene cómo te sientes');
 await p.evaluate(()=>{resetGoto(7);});
-ok((await p.locator('#resetBody').innerText()).includes('tómate 2 minutos, respira o pide un relevo de aire para recuperar el foco.'), 'PARA con relevo de aire');
+ok((await p.locator('#resetBody').textContent()).includes('tómate 2 minutos, respira o pide un relevo de aire para recuperar el foco.'), 'PARA con relevo de aire (en la guía plegable del cierre)');
 ok(errs.length===0,'sin errores de JS '+errs.join('|'));
 await b.close();})();

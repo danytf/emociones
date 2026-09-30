@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "tests/fulltest.js"
+        ],
+        "createdAt": "2026-09-30T21:32:43.573Z",
+        "reason": "Claude: fixture de la prueba XSS; el <img src=x> es la carga maliciosa que se comprueba que NO se inyecta, no una imagen de la interfaz"
+      }
+    ]
+  }
+}

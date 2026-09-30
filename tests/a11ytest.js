@@ -36,11 +36,11 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   const r = await page.evaluate(() => ({ circle: !!document.querySelector('#resetBody .breath-circle'), timer: !!document.querySelector('#resetBody [role="timer"]'), timers: toolTimers.length, text: document.getElementById('resetBody').innerText }));
   ok(!r.circle && !r.timer && r.timers === 0, 'R · Reconoce sin respiración automática ni temporizador');
   ok(r.text.includes('Reconoce lo que está pasando') && r.text.includes('Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.') && r.text.includes('¿Qué señal estás notando con más fuerza hoy?'), 'R · Reconoce con el copy aprobado');
-  await page.locator('#resetBody [data-action="selectSenal"]').nth(1).click();
-  await page.locator('#resetBody button:has-text("Continuar")').click();
+  await page.locator('#rc-senal [data-action="resetChip"]').nth(1).click();
+  await page.locator('#resetBody .reset-actions .btn-amber').click();
   ok(await page.evaluate(() => resetStep === 2), 'se elige la señal y se continúa al momento');
   await page.evaluate(() => resetGoto(1));
-  const senal = await page.evaluate(() => ({ s: resetSenal, p: [...document.querySelectorAll('#resetBody [data-action="selectSenal"]')].map(b => b.getAttribute('aria-pressed')) }));
+  const senal = await page.evaluate(() => ({ s: resetSenal, p: [...document.querySelectorAll('#rc-senal [data-action="resetChip"]')].map(b => b.getAttribute('aria-pressed')) }));
   ok(senal.s === 'El «no» me afecta más de lo habitual' && senal.p.join() === 'false,true', 'señal guardada como título + aria-pressed: ' + JSON.stringify(senal));
   await page.evaluate(() => { startFreshReset(); closeReset(); });
 
