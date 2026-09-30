@@ -301,10 +301,6 @@ main{
   cursor:pointer;transition:transform .12s ease;
 }
 .btn:active{transform:scale(.98);}
-@media (hover:hover){
-  .btn:hover, .ql-btn:hover, .wheel-btn:hover, .chip:hover, .icon-btn:hover{transform:translateY(-1px);}
-  .btn:active{transform:scale(.98);}
-}
 @media (prefers-reduced-motion: reduce){
   *, *::before, *::after{
     animation-duration:0.01ms !important;
@@ -313,7 +309,6 @@ main{
     scroll-behavior:auto !important;
   }
   .view{animation:none;}
-  .btn:hover, .ql-btn:hover, .wheel-btn:hover, .chip:hover, .icon-btn:hover,
   .btn:active, .reset-btn:active{transform:none !important;}
   /* Respiración: el círculo no cambia de tamaño; la fase se indica con el texto (y el borde) */
   .breath-circle, .breath-circle.grow{transform:none !important;}
@@ -919,6 +914,26 @@ header :focus-visible{outline-color:var(--wesser-red);}
 .ds .btn-row.seg .btn{min-height:44px;}
 /* «Editar» separado de «Eliminar» */
 .history-item .edit, .help-body .edit{margin-right:12px;}
+/* ---------- Cifras y cortes de línea ---------- */
+/* Contadores y valores con cifras de ancho fijo: al contar atrás el número no se desplaza */
+.timer-big, .range-val{font-variant-numeric:tabular-nums;}
+/* Títulos repartidos en líneas parejas; párrafos sin una palabra sola en la última línea */
+h1, h2, h3, h4, .sum-title, .trow-title{text-wrap:balance;}
+p, li, .desc, .trow-desc{text-wrap:pretty;}
+/* ---------- Hover sobrio y uniforme: cambia fondo o borde, nunca la posición ---------- */
+.btn{transition:transform .12s ease, background-color .15s ease, border-color .15s ease;}
+.chip, .wheel-btn, .icon-btn, .chip-info{transition:background-color .15s ease, border-color .15s ease;}
+@media (hover:hover){
+  .ds .btn-outline:hover{background:var(--ds-canvas);}
+  .ds .btn-row.seg .btn-outline:hover{background:var(--ds-surface);}
+  .ds .btn-blue:hover, .ds .btn-navy:hover{background:var(--ds-ink-2);}
+  .ds .btn-row.seg .btn-navy:hover{background:var(--ds-surface);}
+  .ds .btn-green:hover{background:var(--tone-anchor-ink);}
+  .btn-danger:hover{background:#991B1B;}
+  .ds .chip:not(.selected):not([aria-pressed="true"]):hover, .ds .chip-info:hover{border-color:var(--ds-ink-3);}
+  .ds .wheel-btn:hover{border-color:var(--emo);}
+}
+@media (prefers-reduced-motion: reduce){ .btn, .chip, .wheel-btn, .icon-btn, .chip-info{transition:none;} }
 </style>
 </head>
 <body>
