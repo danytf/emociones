@@ -352,7 +352,7 @@ Pantalla completa sobre Gris niebla con título en Ocre tinta y cabecera fija al
 - **Do** dar color a un grupo con su tono en el cuadrado tintado (al 12 %) y en un punto de 8 px.
 - **Do** reservar el ámbar al Modo Reset y al Kit de Emergencia.
 - **Do** mantener 44 × 44 px como mínimo en todo lo táctil y 56 px en la barra inferior.
-- **Do** usar iconos SVG de línea del sprite (`stroke-width: 1.75`) que heredan el color del texto.
+- **Do** usar iconos SVG de línea del sprite (`stroke-width: 1.75`) que heredan el color del texto. Las 6 emociones básicas tienen su propia cara de línea (`i-emo-alegria`, `i-emo-tristeza`, `i-emo-miedo`, `i-emo-ira`, `i-emo-sorpresa`, `i-emo-asco`) en el color de la emoción, siempre con el nombre al lado.
 - **Do** cumplir 4,5:1 en todo texto, en claro y en oscuro. Tinta suave es el tono más claro permitido para texto.
 - **Do** cambiar fondo o borde en el hover (0,15 s) y respetar `prefers-reduced-motion`.
 - **Do** ofrecer una alternativa sin `color-mix()` para iOS anterior a 16.2 (bloque `@supports not`).

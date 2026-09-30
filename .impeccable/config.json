@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-09-30T21:32:43.573Z",
         "reason": "Claude: fixture de la prueba XSS; el <img src=x> es la carga maliciosa que se comprueba que NO se inyecta, no una imagen de la interfaz"
+      },
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "tests/sectest.js"
+        ],
+        "createdAt": "2026-09-30T22:20:09.659Z",
+        "reason": "Claude: carga XSS de la prueba de seguridad; se comprueba que el <img src=x> NO llega al DOM, no es una imagen de la interfaz"
       }
     ]
   }

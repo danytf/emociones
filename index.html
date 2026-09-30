@@ -115,7 +115,6 @@ header{
    al contenido. Las pestañas mantienen 44 px de alto; en tablet y escritorio no cambia nada. */
 @media (max-width:480px), (max-height:500px){
   header{padding:8px 12px 8px;padding-top:calc(8px + env(safe-area-inset-top,0px));}
-  .brand .brand-sub{font-size:10px;}
   .header-tabs{margin-top:6px;}
   .tabs-fade{top:6px;}
 }
@@ -256,7 +255,6 @@ main{
   padding:3px 9px;border-radius:99px;letter-spacing:.4px;
   text-transform:uppercase;margin-bottom:8px;
 }
-:root[data-theme="dark"] .badge.amber{background:#3a2a05;color:#fbbf24;}
 
 .btn{
   border:none;border-radius:12px;padding:14px 18px;
@@ -356,7 +354,6 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 }
 .breath-circle.grow{transform:scale(1.3);}
 .timer-big{font-size:44px;font-weight:800;text-align:center;margin:8px 0;}
-:root[data-theme="dark"] .timer-big{color:#fff;}
 /* Cada señal del check-in es un <label> con su casilla nativa: se anula el estilo global de label */
 .check-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:10px;cursor:pointer;
   font-size:14px;font-weight:400;color:var(--text-primary);text-transform:none;letter-spacing:normal;}
@@ -427,7 +424,7 @@ input[type=range]{width:100%;accent-color:var(--wesser-red);}
 
 .compare-row{display:flex;gap:10px;margin-bottom:10px;}
 .compare-col{flex:1;background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px 12px;}
-.compare-col b{font-size:12px;text-transform:uppercase;letter-spacing:.3px;color:var(--wesser-red);}
+.compare-col b{font-size:12px;text-transform:uppercase;letter-spacing:.3px;color:var(--brand-ink);}
 .compare-col p{font-size:13.5px;margin:4px 0 0;color:var(--text-secondary);}
 
 
@@ -442,8 +439,6 @@ input[type=range]{width:100%;accent-color:var(--wesser-red);}
 .mini-card p{font-size:13px;margin:4px 0 0;color:var(--text-secondary);}
 /* Modo oscuro: el rojo, el ámbar oscuro y el azul marino usados como COLOR DE TEXTO no llegan
    a 4,5:1 sobre el fondo oscuro; se sustituyen por tonos claros equivalentes. */
-:root[data-theme="dark"] .mini-card b,
-:root[data-theme="dark"] .compare-col b{color:#F87171;}
 /* Frases destacadas de herramientas y confirmaciones «hecho» */
 .quote-strong{font-size:19px;font-weight:800;color:var(--wesser-navy);}
 :root[data-theme="dark"] .quote-strong{color:var(--text-primary);}
@@ -636,7 +631,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px));}
   header{padding-bottom:10px;}
 }
-@media (max-width:350px){ .header-tabs{gap:0;} .header-tabs button{font-size:10px;letter-spacing:-.02em;padding-left:0;padding-right:0;} }
+@media (max-width:350px){ .header-tabs{gap:0;grid-template-columns:1fr 1fr 1.3fr 1fr 1fr;} .header-tabs button{font-size:11px;letter-spacing:-.03em;padding-left:0;padding-right:0;} }
 
 /* ---------- Pantallas de lectura (Aprender, Bienestar) en el sistema de diseño ---------- */
 .ds [data-tone="neutral"], .ds[data-tone="neutral"]{--tone:var(--ds-ink-2);--tone-ink:var(--ds-ink);}
@@ -801,8 +796,6 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .thist-title, #resetBody h3{font-family:var(--font-brand);}
 .toast button .ic{width:18px;height:18px;}
 @media (max-width:600px){ .ql-toggle{min-height:44px;} }
-.modal-sheet.ds .badge.emo-badge{background:color-mix(in srgb, var(--emo) 14%, var(--ds-surface));color:color-mix(in srgb, var(--emo) 70%, var(--ds-ink));}
-:root[data-theme="dark"] .modal-sheet.ds .badge.emo-badge{background:color-mix(in srgb, var(--emo) 24%, var(--ds-surface));color:color-mix(in srgb, var(--emo) 45%, var(--ds-ink));}
 /* ---------- Reserva para navegadores sin color-mix() (p. ej. iOS anterior a 16.2) ---------- */
 @supports not (color: color-mix(in srgb, red 50%, blue)){
   .ds .tile{background:var(--ds-canvas);}
@@ -821,7 +814,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   .ds .check-item.checked{background:var(--ds-canvas);}
   .ds .wheel-btn, :root[data-theme="dark"] .ds .wheel-btn{background:var(--ds-canvas);border:1px solid var(--emo);}
   .ds .breath-circle{background:var(--ds-canvas);box-shadow:none;}
-  .modal-sheet.ds .badge.emo-badge, :root[data-theme="dark"] .modal-sheet.ds .badge.emo-badge{background:var(--ds-canvas);color:var(--ds-ink);}
+  .ds .emo-ic{color:var(--emo);}
 }
 .ds .kit-plan-next{text-align:left;background:var(--ds-canvas);border-radius:12px;padding:var(--sp-3) var(--sp-4);margin-top:var(--sp-3);}
 .ds .eyebrow{display:block;font-family:var(--font-brand);font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ds-ink-3);margin:0 0 var(--sp-1);}
@@ -916,6 +909,20 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .reset-decision{display:table;margin-top:6px;padding:2px 10px;border-radius:999px;
   font-size:var(--fs-sm);font-weight:650;color:var(--tone-ink);background:color-mix(in srgb, var(--amber) 18%, var(--ds-surface));}
 @supports not (color: color-mix(in srgb, red 50%, blue)){ .ds .reset-decision{background:rgba(224,160,48,.18);} }
+/* ---------- Emociones: icono de línea propio (en lugar de emojis) ---------- */
+.emo-ic{color:var(--emo);}
+.ds .emo-ic{color:color-mix(in srgb, var(--emo) 80%, var(--ds-ink));}
+.ds .wheel-btn .em{display:inline-flex;}
+.ds .wheel-btn .emo-ic{width:30px;height:30px;stroke-width:1.6;}
+.ds .chip .emo-ic{width:18px;height:18px;margin-right:2px;}
+.ds .emo-name{display:inline-flex;align-items:center;gap:4px;vertical-align:-3px;}
+.ds .emo-name .emo-ic{width:16px;height:16px;}
+.modal-sheet.ds h2.emo-title{display:flex;align-items:center;gap:10px;margin-bottom:2px;}
+.modal-sheet.ds .emo-title .emo-ic{width:30px;height:30px;}
+.ds .emo-meta{margin:0 0 var(--sp-2);font-size:var(--fs-sm);font-weight:600;color:var(--ds-ink-3);}
+/* ---------- Ancho de lectura: párrafos de 68 caracteres como máximo también en escritorio ---------- */
+.ds .desc{max-width:68ch;}
+.ds .card[style*="text-align:center"] .desc{margin-left:auto;margin-right:auto;}
 /* ---------- Cifras y cortes de línea ---------- */
 /* Contadores y valores con cifras de ancho fijo: al contar atrás el número no se desplaza */
 .timer-big, .range-val{font-variant-numeric:tabular-nums;}
@@ -992,6 +999,13 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
   <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4"/><path d="M7.5 8.5L12 4l4.5 4.5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
   <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+  <!-- Las 6 emociones básicas: misma cara, cambia la expresión (en lugar de emojis) -->
+  <symbol id="i-emo-alegria" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9.5h.01M15 9.5h.01"/><path d="M8 13.5c1 1.8 2.4 2.7 4 2.7s3-.9 4-2.7"/></symbol>
+  <symbol id="i-emo-tristeza" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.5 8.8l2.5-1M16.5 8.8l-2.5-1"/><path d="M9 11h.01M15 11h.01"/><path d="M8.5 16.6c.9-1.3 2.1-1.9 3.5-1.9s2.6.6 3.5 1.9"/></symbol>
+  <symbol id="i-emo-miedo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.8 7.6l2.4-.8M16.2 7.6l-2.4-.8"/><circle cx="9" cy="10.6" r="1.1"/><circle cx="15" cy="10.6" r="1.1"/><path d="M9.5 16.4c.7-.9 1.5-1.3 2.5-1.3s1.8.4 2.5 1.3"/></symbol>
+  <symbol id="i-emo-ira" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.5 8l3 1.4M16.5 8l-3 1.4"/><path d="M9 11.2h.01M15 11.2h.01"/><path d="M8.8 16h6.4"/></symbol>
+  <symbol id="i-emo-sorpresa" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.8 7.2c.7-.6 1.5-.8 2.4-.6M16.2 7.2c-.7-.6-1.5-.8-2.4-.6"/><path d="M9 10h.01M15 10h.01"/><circle cx="12" cy="15.2" r="1.8"/></symbol>
+  <symbol id="i-emo-asco" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.6 9.2l2.6-.4M16.4 8.4l-2.4.8"/><path d="M9 11h.01M15 11h.01"/><path d="M8.3 15.8c.8-.8 1.6-.8 2.4 0s1.6.8 2.4 0 1.6-.8 2.4 0"/></symbol>
 </svg>
 <!-- Región viva para anuncios del lector de pantalla (inicio, fase y fin de los temporizadores) -->
 <div id="srStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -1738,7 +1752,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         Al acabar, registra una situación concreta: qué pasó, qué sentiste, qué pensaste y qué harás. Para cerrar la jornada en 30 segundos, sin registrar nada, tienes <b>Cierre de turno</b>.</p>
         <p><b>4. ¿Llevas varios días de mala racha? Reset</b><br>
         Cuando sientas que has <b>«chocado con la pared»</b>, utiliza <b>Reset</b> para parar, recolocarte y volver a la calle con otra perspectiva.</p>
-        <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;"><b>Aprende → Aplica → Reflexiona → Resetea.</b> No necesitas usarlo todo a la vez. <b>Empieza por lo que necesites en cada momento.</b></p>
+        <p class="quote"><b>Aprende → Aplica → Reflexiona → Resetea.</b> No necesitas usarlo todo a la vez. <b>Empieza por lo que necesites en cada momento.</b></p>
       </div>
     </details>
 
@@ -2372,7 +2386,7 @@ function importarDatos(input){
 async function borrarTodosDatos(){
   const ok = await confirmDialog({
     title:'¿Borrar todos tus datos?',
-    message:'Esto borrará TODOS tus datos guardados en este dispositivo (diario, checkpoints, historial de Reset, kit, recordatorios...). Esta acción no se puede deshacer.',
+    message:'Esto borrará todos tus datos guardados en este dispositivo (diario, checkpoints, historial de Reset, kit, recordatorios...). Esta acción no se puede deshacer.',
     confirmText:'Borrar todo', danger:true
   });
   if(!ok) return;
@@ -2571,24 +2585,26 @@ function renderWheel(){
   const grid = document.getElementById('wheelGrid');
   grid.innerHTML = EMOTIONS.map(e=>`
     <button type="button" class="wheel-btn" style="--emo:${e.color};" data-action="showEmotion" data-value="${escapeHtml(e.id)}">
-      <span class="em">${emoji(e.id)}</span>${e.nombre}
+      <span class="em">${emoIcon(e.id)}</span>${e.nombre}
     </button>`).join('');
 }
-function emoji(id){
-  return {alegria:'😊',tristeza:'😢',miedo:'😨',ira:'😡',sorpresa:'😲',asco:'🤢'}[id]||'🙂';
+/* Icono de línea de cada emoción (sprite i-emo-*): decorativo, el nombre va siempre al lado */
+function emoIcon(id){
+  const e = EMOTIONS.find(x=>x.id===id);
+  return e ? `<svg class="ic emo-ic" style="--emo:${e.color};" aria-hidden="true"><use href="#i-emo-${id}"/></svg>` : '';
 }
 function showEmotion(id){
   const e = EMOTIONS.find(x=>x.id===id);
   if(!e) return;
   openModal(`
-    <span class="badge navy emo-badge" style="--emo:${e.color};">${e.tipo} · Busca ${e.finalidad}</span>
-    <h2>${emoji(e.id)} ${e.nombre}</h2>
+    <h2 class="emo-title" style="--emo:${e.color};">${emoIcon(e.id)}${e.nombre}</h2>
+    <p class="emo-meta">Emoción ${e.tipo.toLowerCase()} · Busca ${e.finalidad.toLowerCase()}</p>
     <h3 style="margin-top:14px;">¿Para qué sirve?</h3>
     <p class="desc">${e.funcion}</p>
     <h3 style="margin-top:14px;">¿Cómo se nota?</h3>
     <p class="desc">${e.expresion}</p>
     <h3 style="margin-top:14px;">¿Qué me puedo decir?</h3>
-    <p style="font-weight:700;font-style:italic;">«${e.reencuadre}»</p>
+    <p class="quote"><b>«${e.reencuadre}»</b></p>
     <button type="button" class="btn btn-outline" style="margin-top:14px;" onclick="closeModal()">Cerrar</button>
   `);
 }
@@ -2602,7 +2618,7 @@ function renderEmocionChips(){
   const c = document.getElementById('sepaEmocionChips');
   // Dos botones hermanos (no anidados): el chip marca/desmarca y ℹ️ abre la ficha
   c.innerHTML = EMOTIONS.map(e=>`<span class="emo-pair">`
-    + `<button type="button" ${chipAttrs(false)} data-action="toggleEmocion" data-id="${escapeHtml(e.id)}"><span aria-hidden="true">${emoji(e.id)}</span> ${escapeHtml(e.nombre)}</button>`
+    + `<button type="button" ${chipAttrs(false)} data-action="toggleEmocion" data-id="${escapeHtml(e.id)}">${emoIcon(e.id)}${escapeHtml(e.nombre)}</button>`
     + `<button type="button" class="chip-info" data-action="showEmotion" data-value="${escapeHtml(e.id)}" title="Ver ficha de ${escapeHtml(e.nombre)}" aria-label="Ver ficha de ${escapeHtml(e.nombre)}" aria-haspopup="dialog"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg></button>`
     + `</span>`).join('');
 }
@@ -2735,7 +2751,7 @@ function renderSepaHistorial(){
   const visibles = state.sepaEntries.slice(0, sepaHistorialLimit);
   wrap.innerHTML = visibles.map(e=>{
     const emos = e.emociones || [];
-    const emosTxt = emos.map(id=>`${emoji(id)} ${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||'')}`).join(' · ');
+    const emosTxt = emos.map(id=>`<span class="emo-name">${emoIcon(id)}${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||'')}</span>`).join(' · ');
     return `
     <div class="history-item">
       <button type="button" class="del" data-action="borrarSepa" data-id="${escapeHtml(e.id)}" aria-label="Eliminar registro del ${escapeHtml(fechaDe(e))}${e.situacion ? `: ${escapeHtml(e.situacion)}` : ''}">Eliminar</button>
@@ -2800,7 +2816,7 @@ function renderPatrones(){
       <h4>Diario S-E-P-A</h4>
       <p class="patron-count">${entries.length} registro${entries.length===1?'':'s'} · ${patronesTier(entries.length)}</p>
       ${entries.length===0 ? '' : `
-        <div class="mini-card"><b>Emoción más registrada</b><p>${topText(emoTop, true, id=>`${emoji(id)} ${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||id)}`)}</p></div>
+        <div class="mini-card"><b>Emoción más registrada</b><p>${topText(emoTop, true, id=>`<span class="emo-name">${emoIcon(id)}${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||id)}</span>`)}</p></div>
         <div class="mini-card"><b>Situación más repetida</b><p>${topText(sitTop, true)}</p></div>
         <div class="mini-card"><b>Acción más utilizada</b><p>${topText(accTop, true)}</p></div>
       `}
@@ -2958,7 +2974,7 @@ function renderExito(){
       </div>
       <label class="q-label" for="exitoRepetirInput" style="margin-top:14px;">¿Qué quiero repetir en el siguiente?</label>
       <textarea id="exitoRepetirInput" placeholder="Sé concreto: una sola cosa..." oninput="exitoRepetirTexto=this.value;">${escapeHtml(exitoRepetirTexto)}</textarea>
-      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">Ha ido bien no significa que tengas que cambiarlo todo. Mantén lo que ya funciona.</p>
+      <p class="quote">Ha ido bien no significa que tengas que cambiarlo todo. Mantén lo que ya funciona.</p>
       <button type="button" class="btn btn-green" style="margin-top:6px;" onclick="guardarExito()">Guardar</button>
     </div>
   `);
@@ -3141,7 +3157,7 @@ function finalizarCierreTurno(){
       <p class="desc"><b>Dejo en el trabajo:</b><br>${escapeHtml(dejo)||'—'}</p>
       <p class="desc"><b>Me llevo:</b><br>${escapeHtml(llevo)||'—'}</p>
       <p class="desc"><b>Para cambiar de contexto:</b><br>${escapeHtml(contexto)||'—'}</p>
-      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"El turno ha terminado. No necesito seguir resolviéndolo ahora."</p>
+      <p class="quote">"El turno ha terminado. No necesito seguir resolviéndolo ahora."</p>
       <div class="btn-row" style="margin-top:10px;flex-wrap:wrap;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
         <button type="button" class="btn btn-blue" onclick="startCierreTurno()">Repetir</button>
@@ -3175,7 +3191,7 @@ function finalizarVolverCalle(){
       <h3 style="text-align:center;">Vuelvo a calle</h3>
       <p class="desc"><b>¿Cómo estoy?</b><br>${escapeHtml(como)||'—'}</p>
       <p class="desc"><b>Primera parada:</b><br>${escapeHtml(primero)||'—'}</p>
-      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;margin-top:10px;">"No necesito recuperar el día. Solo hacer bien la siguiente parada."</p>
+      <p class="quote">"No necesito recuperar el día. Solo hacer bien la siguiente parada."</p>
       <div class="btn-row" style="margin-top:10px;">
         <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
         <button type="button" class="btn btn-blue" onclick="startVolverCalle()">Repetir</button>
@@ -3338,7 +3354,7 @@ function selectRP(val){
   }
   openTool('Resultado vs. Proceso', `
     <div class="card" style="text-align:left;">
-      <p style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">Vuelve a una conducta que sí puedas ejecutar ahora.</p>
+      <p class="quote">Vuelve a una conducta que sí puedas ejecutar ahora.</p>
       <p id="rpLabel"><b>Elige tu foco para la siguiente parada</b></p>
       <div class="chip-group" role="group" aria-labelledby="rpLabel">
         ${RP_PROCESO_OPCIONES.map(o=>`<button type="button" class="chip" data-action="finalizarRP" data-value="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join('')}
@@ -3687,7 +3703,7 @@ function selectPedirFeedback(v){ pedirFeedbackSel = v; renderPedirFeedback(); }
 function renderPedirFeedback(){
   openTool('Pide feedback', `
     <div class="card" style="text-align:left;">
-      <p class="desc" style="font-style:italic;border-left:3px solid var(--wesser-red);padding-left:10px;">"Necesito una observación, no que me digas si lo hago bien o mal."</p>
+      <p class="quote">"Necesito una observación, no que me digas si lo hago bien o mal."</p>
       <p id="pedirLabel"><b>Elige una sola petición concreta</b></p>
       <div class="chip-group" id="pedirChips" role="group" aria-labelledby="pedirLabel">
         ${PEDIR_FEEDBACK_OPCIONES.map(o=>`<button type="button" ${chipAttrs(pedirFeedbackSel===o.v)} data-action="selectPedirFeedback" data-value="${escapeHtml(o.v)}">${escapeHtml(o.v)}</button>`).join('')}

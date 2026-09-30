@@ -83,7 +83,7 @@ const v1 = {
   ok(await page.evaluate(sb => document.getElementById('modalBack').classList.contains('active') && JSON.stringify(selectedEmociones) === sb, selBefore), 'ℹ️ abre la ficha sin cambiar la selección');
   await page.evaluate(() => closeModal());
   await page.evaluate(() => document.querySelectorAll('#wheelGrid [data-action="showEmotion"]')[2].click());
-  ok(await page.locator('#modalSheet h2').innerText() === '😨 Miedo', 'rueda de emociones abre la ficha');
+  ok((await page.locator('#modalSheet h2').innerText()).trim() === 'Miedo' && await page.locator('#modalSheet h2 use').getAttribute('href') === '#i-emo-miedo', 'rueda de emociones abre la ficha (título con icono de línea, sin emoji)');
   await page.evaluate(() => closeModal());
 
   // Otra… muestra el campo libre
