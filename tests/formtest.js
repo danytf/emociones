@@ -17,15 +17,17 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#sepaSaveBtn').click();
   const e1 = await page.evaluate(() => ({
     msgs: [...document.querySelectorAll('#view-diario .field-error')].map(p => p.textContent),
-    focus: document.activeElement.dataset.action, groupDesc: document.getElementById('sepaEmocionChips').getAttribute('aria-describedby'),
+    focusId: document.activeElement.id, groupDesc: document.getElementById('sepaEmocionChips').getAttribute('aria-describedby'),
     invalid: document.getElementById('sepaPensConstructivo').getAttribute('aria-invalid'),
     desc: document.getElementById(document.getElementById('sepaPensConstructivo').getAttribute('aria-describedby')).textContent,
     saved: state.sepaEntries.length
   }));
-  ok(e1.msgs.length === 3 && e1.saved === 0, 'Diario: se muestran los 3 errores a la vez y no se guarda: ' + e1.msgs.join(' | '));
-  ok(e1.focus === 'toggleEmocion' && !!e1.groupDesc, 'foco en el primer campo con error (emociones) y grupo enlazado al mensaje');
+  ok(e1.msgs.length === 5 && e1.saved === 0, 'Diario: se muestran los 5 errores a la vez (situación y pensamiento ya no vienen elegidos) y no se guarda: ' + e1.msgs.join(' | '));
+  ok(e1.focusId === 'sepaSituacion' && !!e1.groupDesc, 'foco en el primer campo con error (situación) y grupo de emociones enlazado a su mensaje');
   ok(e1.invalid === 'true' && e1.desc.startsWith('Escribe un pensamiento útil'), 'aria-invalid + aria-describedby en el campo');
   await page.locator('#view-diario').screenshot({ path: S + '/err-sepa.png' });
+  await page.selectOption('#sepaSituacion', 'Zona con poco flujo');
+  await page.selectOption('#sepaPensDestructivo', 'No vale la pena');
   await page.locator('#sepaEmocionChips [data-id="ira"]').click();
   await page.locator('#sepaPensConstructivo').fill('algo');
   const e2 = await page.evaluate(() => ({ n: document.querySelectorAll('#view-diario .field-error').length, inv: document.getElementById('sepaPensConstructivo').hasAttribute('aria-invalid'), d: document.getElementById('sepaPensConstructivo').hasAttribute('aria-describedby') }));
@@ -33,6 +35,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#sepaAccion').fill('pausa');
   await page.locator('#sepaSaveBtn').click();
   ok(await page.evaluate(() => state.sepaEntries.length === 1 && !document.querySelector('#view-diario .field-error')), 'con todo relleno se guarda (misma lógica que antes)');
+  ok(await page.evaluate(() => document.getElementById('sepaSituacion').value === '' && document.getElementById('sepaPensDestructivo').value === ''), 'tras guardar, situación y pensamiento vuelven a «Elige…» (nada preseleccionado)');
 
   // Qué ha funcionado
   await page.evaluate(() => startExito());

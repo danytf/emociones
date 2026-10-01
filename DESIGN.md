@@ -370,5 +370,6 @@ Pantalla completa sobre Gris niebla con título en Ocre tinta y cabecera fija al
 - **Don't** bajar el texto funcional de 11 px.
 - **Don't** poner una insignia o rótulo en mayúsculas encima de un título: el título habla solo; si hace falta situar al usuario, usa el progreso.
 - **Don't** pedir texto escrito obligatorio en un flujo que se usa en calle: ofrece opciones pulsables y un «Otra…» opcional.
+- **Don't** dejar un desplegable con una respuesta ya elegida: empieza en «Elige…» (opción vacía) y, si no se elige, se avisa en línea. Una opción preseleccionada se guarda sin que nadie la haya elegido.
 - **Don't** usar el rojo de marca para medir o marcar estados del captador (fatiga, selección dentro del Reset, avisos de Reset a medias): deslizadores en Tinta media, selección y avisos del Reset en Ocre.
 - **Don't** dejar que el contorno de error de un grupo pise su mensaje ni que la barra fija lo tape: el mensaje va a 14 px del contorno y el overlay reserva espacio de desplazamiento arriba y abajo.

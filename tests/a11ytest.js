@@ -62,7 +62,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   const gap = await page.evaluate(() => { const a = document.querySelector('#sepaEmocionChips [data-id="miedo"]').getBoundingClientRect(), b = document.querySelector('#sepaEmocionChips [data-value="miedo"]').getBoundingClientRect(); return b.left - a.right; });
   ok(gap >= 4, `chip y ℹ️ separados (${gap}px): sin doble activación`);
   await page.evaluate(() => { const c = document.querySelector('#sepaEmocionChips [data-id="ira"]'); c.click(); editarSepa; });
-  await page.evaluate(() => { selectedEmociones = ['ira']; document.getElementById('sepaPensConstructivo').value = 'a'; document.getElementById('sepaAccion').value = 'b'; guardarSepa(); });
+  await page.evaluate(() => { selectedEmociones = ['ira']; document.getElementById('sepaSituacion').value = 'Permiso difícil'; document.getElementById('sepaPensDestructivo').value = 'No voy a poder'; document.getElementById('sepaPensConstructivo').value = 'a'; document.getElementById('sepaAccion').value = 'b'; guardarSepa(); });
   ok(await page.evaluate(() => [...document.querySelectorAll('#sepaEmocionChips [aria-pressed="true"]')].length) === 0, 'al guardar se desmarcan (aria-pressed sincronizado)');
 
   // ---- Check-in: casillas nativas ----
