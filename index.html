@@ -1835,8 +1835,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-rocket"/></svg></span><span class="sum-title">¿Por dónde empiezo?</span></summary>
       <div class="help-body">
         <p><button type="button" class="btn btn-outline btn-sm" onclick="closeHelp();showWelcome(0);">Ver la bienvenida</button></p>
-        <p><b>1. Empieza por Aprender</b><br>
-        Lee esa sección con calma una vez para entender las bases. <b>Puedes abrir solo las fichas que te interesen.</b></p>
+        <p><b>1. Aprende las bases cuando tengas un rato</b><br>
+        Fuera del turno, lee <b>Aprender</b> con calma una vez para entender las bases. <b>Puedes abrir solo las fichas que te interesen.</b></p>
         <p><b>2. Usa «¿Qué necesitas ahora?» cuando lo necesites</b><br>
         ¿Notas <b>tensión, rabia, frustración o bloqueo</b> en calle? En <b>Herramientas</b>, arriba del todo, tienes accesos directos a las situaciones más comunes y, debajo, todas las herramientas por categorías. Desde cualquier otra sección llegas con <b>¿Qué necesitas ahora?</b>. Si no sabes cuál elegir, pulsa <b>No sé qué necesito</b>.</p>
         <p><b>3. Revisa en el Diario S-E-P-A lo que te haya costado</b><br>
@@ -2850,7 +2850,7 @@ function verMasSepa(){ sepaHistorialLimit += 10; renderSepaHistorial(); }
 function renderSepaHistorial(){
   renderPatrones();
   const wrap = document.getElementById('sepaHistorial');
-  if(!state.sepaEntries.length){ wrap.innerHTML = '<div class="empty-state">Aún no hay registros. ¡Anota tu primer S‑E‑P‑A!</div>'; return; }
+  if(!state.sepaEntries.length){ wrap.innerHTML = '<div class="empty-state">Aún no hay registros. Anota tu primer S‑E‑P‑A.</div>'; return; }
   const visibles = state.sepaEntries.slice(0, sepaHistorialLimit);
   wrap.innerHTML = visibles.map(e=>{
     const emos = e.emociones || [];
@@ -3598,7 +3598,11 @@ function renderNoSeQueNecesito(){
   `);
   const result = recs.length ? `Paso sugerido: ${recs[0].title}.`
     : (answered === NSQN_QUESTIONS.length ? 'Sin herramienta clara: puedes hacer un Checkpoint o ver las herramientas.' : '');
-  if(result && result !== nsqnLastResult) announce(result);
+  if(result && result !== nsqnLastResult){
+    announce(result);
+    // Con las 4 respuestas, la sugerencia queda a la vista (aparece debajo de las preguntas)
+    if(answered === NSQN_QUESTIONS.length){ const r = document.getElementById('toolBody').lastElementChild; if(r) r.scrollIntoView({block:'nearest', behavior: motionOK() ? 'smooth' : 'auto'}); }
+  }
   nsqnLastResult = result;
 }
 
@@ -5083,11 +5087,11 @@ try{
   const pendingNotice = sessionStorage.getItem('wesserNotice');
   if(pendingNotice){ sessionStorage.removeItem('wesserNotice'); notify(pendingNotice); }
 }catch(e){}
-// Se abre en la última sección usada (Aprender la primera vez): la herramienta de calle, a un toque
+// Se abre en la última sección usada (Herramientas la primera vez): la herramienta de calle, a un toque
 (function(){
   let v = null;
   try{ v = localStorage.getItem('wesserLastView'); }catch(e){}
-  goto(v && document.getElementById('view-' + v) ? v : 'aprender');
+  goto(v && document.getElementById('view-' + v) ? v : 'herramientas');
 })();
 </script>
 </body>
