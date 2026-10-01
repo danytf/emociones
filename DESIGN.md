@@ -337,6 +337,11 @@ Ficha de Aprender, Bienestar y Ayuda: fila de 64 px con cuadrado tintado de 36 p
 ### Quick launcher (signature)
 «¿Qué necesitas ahora?»: botones compactos de 48 px con icono de 18 px y texto del sistema de 13,5 px/650. Neutros por defecto; «Activar mi plan» va en Rojo Wesser sólido, «Estoy en una mala racha» con tinte ámbar y «Qué ha funcionado» con tinte Verde pino. **Completo solo en Herramientas**; en Aprender, Bienestar y Diario se reduce a una fila de 48 px («¿Qué necesitas ahora?», que lleva a Herramientas) más «Activar mi plan» si hay plan guardado; ahí va **neutro, con el rayo en rojo**, para no competir con el título ni con «Guardar» (en el lanzador completo sigue en Rojo Wesser sólido). En escritorio, una sola fila de botones de 190 px como mínimo.
 
+El lanzador completo va en dos grupos con rótulo en minúscula: **«Momentos del turno»** (Antes de salir, Volver a calle, Cierre de turno; tres columnas) y **«Ahora mismo»** (Activar mi plan si hay plan, Estoy en una mala racha y tres estados más, a la vista). «Más situaciones» es la última casilla de esa rejilla y despliega el resto. No repite herramientas que ya están en la lista de debajo con el mismo nombre.
+
+### Tool (pantalla completa) en móvil
+La tarjeta de cada herramienta y su acción se anclan abajo, cerca del pulgar. En «Hecho», el botón principal es «Vuelvo a calle» y «Repetir» es secundario. Si la herramienta se abrió desde «Activar mi plan», «Terminar» antes de tiempo también lleva a «Hecho» con el resto del plan (ajuste y persona de apoyo).
+
 ### Tool row en móvil
 Hasta 600 px, la fila baja a 64 px de alto como mínimo, con cuadrado tintado de 36 px y menos relleno: caben 3 herramientas bajo el lanzador sin cortar ningún texto.
 
@@ -349,6 +354,7 @@ Pantalla completa sobre Gris niebla con título en Ocre tinta y cabecera fija al
 - **Títulos con el verbo del paso:** Reconoce…, Examina…, Separa…, Elige…, Testea…, para que el progreso R·E·S·E·T y el título digan lo mismo.
 - **Barra de acciones:** fija abajo sobre Gris niebla con borde superior Línea; el botón de continuar nunca está deshabilitado sin motivo: si falta algo, lo dice en línea, **en Ocre tinta y con icono de información** (dentro del Reset, nunca en rojo).
 - **Cabecera en móvil:** una sola fila; Kit e Historial como botones de icono de 44 px con nombre accesible.
+- **Atrás:** en los pasos 1–7, «Atrás» (estrecho, contorno) va a la izquierda del botón principal en la barra fija; lo elegido se conserva. El gesto «atrás» del móvil hace lo mismo y, en la entrada, cierra el Reset en lugar de salir de la app (cada pantalla completa deja una entrada en el historial del navegador).
 - **Cierre:** «Vuelve a calle con esto», con el ajuste elegido y lo que sigue funcionando en bloques Gris niebla; «Mi próximo paso» es opcional.
 
 ## Do's and Don'ts

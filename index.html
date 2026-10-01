@@ -849,6 +849,23 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ql-compact-btn:active{background:var(--ds-canvas);}
 @media (max-width:420px){ .ql-compact-btn .ql-go{font-size:0;} .ql-compact-btn .ql-go .ic{width:18px;height:18px;} }
 @media (min-width:601px){ .ql-row{grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));} }
+/* Lanzador en dos grupos: momentos del turno y cómo estoy ahora */
+.ql-sub{margin:var(--sp-3) 0 var(--sp-2);font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);}
+.ql-head + .ql-sub{margin-top:0;}
+.ql-sub-head{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);margin:var(--sp-3) 0 var(--sp-2);}
+.ql-sub-head .ql-sub{margin:0;}
+.ql-row.ql-momentos{grid-template-columns:repeat(3, minmax(0, 1fr));}
+.quick-launcher.ql-compact .ql-sub{display:none;}
+/* «Más situaciones» es una casilla más de la rejilla (al final): no añade una fila propia */
+.ql-row .ql-toggle{width:100%;min-height:48px;justify-content:center;border-radius:var(--ds-radius-md);}
+.ds .reset-row .btn.reset-atras{flex:0 0 auto;width:auto;padding:0 18px;}
+.ic-atras{transform:rotate(180deg);}
+@media (max-width:420px){ .view h2, .ds .ds-page-head h2{font-size:22px;} }
+/* Herramientas en móvil: la tarjeta y su acción se anclan abajo, cerca del pulgar */
+@media (max-width:600px){
+  #toolBody.center-short{justify-content:flex-start;}
+  #toolBody.center-short > :first-child{margin-top:auto;}
+}
 /* ---------- Modo Reset ---------- */
 /* Progreso R-E-S-E-T: barra y letra por paso; el nombre del paso actual siempre visible */
 .ds .reset-steps{display:grid;grid-template-columns:repeat(6, minmax(0, 1fr));gap:4px;list-style:none;margin:0 0 var(--sp-4);padding:0;}
@@ -1093,26 +1110,28 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       <span id="qlKitSlotCompact"></span>
     </div>
     <div class="ql-head">
-      <div class="ql-title">¿Qué necesitas ahora?</div>
-      <button type="button" class="ql-toggle" id="qlToggleBtn" aria-expanded="false" aria-controls="qlMoreWrap" onclick="toggleQlMore()"><span class="ql-lb">Más situaciones</span><span class="ql-em" aria-hidden="true"><svg class="ic ic-sm"><use href="#i-chevron"/></svg></span></button>
+      <h2 class="ql-title">¿Qué necesitas ahora?</h2>
     </div>
-    <div class="ql-row" id="qlRow">
-      <span id="qlKitSlot"></span>
-      <button type="button" class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span><span class="ql-lb">No sé qué necesito</span></button>
+    <!-- Dos grupos: momentos del turno y cómo estoy ahora. Sin repetir las herramientas que están justo debajo -->
+    <p class="ql-sub" id="qlMomentosLbl">Momentos del turno</p>
+    <div class="ql-row ql-momentos" role="group" aria-labelledby="qlMomentosLbl">
       <button type="button" class="ql-btn" onclick="startPreTurno()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-sunrise"/></svg></span><span class="ql-lb">Antes de salir</span></button>
       <button type="button" class="ql-btn" onclick="startVolverCalle()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-return"/></svg></span><span class="ql-lb">Volver a calle</span></button>
       <button type="button" class="ql-btn" onclick="startCierreTurno()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg></span><span class="ql-lb">Cierre de turno</span></button>
+    </div>
+    <p class="ql-sub" id="qlAhoraLbl">Ahora mismo</p>
+    <div class="ql-row" id="qlRow" role="group" aria-labelledby="qlAhoraLbl">
+      <span id="qlKitSlot"></span>
       <button type="button" class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset(true)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg></span><span class="ql-lb">Estoy en una mala racha</span></button>
+      <button type="button" class="ql-btn" onclick="startBreath(60)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span><span class="ql-lb">Estoy acelerado</span></button>
+      <button type="button" class="ql-btn" onclick="startGrounding()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg></span><span class="ql-lb">No paro de darle vueltas</span></button>
+      <button type="button" class="ql-btn" onclick="startNoSeQueNecesito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span><span class="ql-lb">No sé qué necesito</span></button>
       <div id="qlMoreWrap" class="ql-more-collapsed">
-        <button type="button" class="ql-btn ql-success" onclick="startExito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span><span class="ql-lb">Qué ha funcionado</span></button>
-        <button type="button" class="ql-btn" onclick="startBadApproach()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-msg-x"/></svg></span><span class="ql-lb">Mala interacción</span></button>
-        <button type="button" class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span class="ql-lb">Presión por objetivo</span></button>
-        <button type="button" class="ql-btn" onclick="startBreath(60)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span><span class="ql-lb">Estoy acelerado</span></button>
-        <button type="button" class="ql-btn" onclick="startGrounding()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg></span><span class="ql-lb">No paro de darle vueltas</span></button>
         <button type="button" class="ql-btn" onclick="startPauseDecision()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-pause-oct"/></svg></span><span class="ql-lb">Reacciono en automático</span></button>
         <button type="button" class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-split"/></svg></span><span class="ql-lb">Dudo en la parada</span></button>
-        <button type="button" class="ql-btn" onclick="startTense()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-squeeze"/></svg></span><span class="ql-lb">Estoy muy tenso</span></button>
+        <button type="button" class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span class="ql-lb">Presión por objetivo</span></button>
       </div>
+      <button type="button" class="ql-toggle" id="qlToggleBtn" aria-expanded="false" aria-controls="qlMoreWrap" onclick="toggleQlMore()"><span class="ql-lb">Más situaciones</span><span class="ql-em" aria-hidden="true"><svg class="ic ic-sm"><use href="#i-chevron"/></svg></span></button>
     </div>
   </div>
 
@@ -1801,7 +1820,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         ¿Notas <b>tensión, rabia, frustración o bloqueo</b> en calle? En <b>Herramientas</b>, arriba del todo, tienes accesos directos a las situaciones más comunes y, debajo, todas las herramientas por categorías. Desde cualquier otra sección llegas con <b>¿Qué necesitas ahora?</b>. Si no sabes cuál elegir, pulsa <b>No sé qué necesito</b>.</p>
         <p><b>3. Revisa en el Diario S-E-P-A lo que te haya costado</b><br>
         Al acabar, registra una situación concreta: qué pasó, qué sentiste, qué pensaste y qué harás. Para cerrar la jornada en 30 segundos, sin registrar nada, tienes <b>Cierre de turno</b>.</p>
-        <p><b>4. ¿Llevas varios días de mala racha? Reset</b><br>
+        <p><b>4. ¿No encuentras tu ritmo? Reset</b><br>
         Cuando sientas que has <b>«chocado con la pared»</b>, utiliza <b>Reset</b> para parar, recolocarte y volver a la calle con otra perspectiva.</p>
         <p class="quote"><b>Aprende → Aplica → Reflexiona → Resetea.</b> No necesitas usarlo todo a la vez. <b>Empieza por lo que necesites en cada momento.</b></p>
       </div>
@@ -2542,7 +2561,7 @@ const WELCOME_STEPS = [
       <p class="desc"><b>Aprender</b> y <b>Bienestar</b>: léelos con calma, fuera de la calle.</p>
       <p class="desc"><b>Herramientas</b> y <b>«¿Qué necesitas ahora?»</b>: para un momento difícil en calle. Si dudas, pulsa <b>No sé qué necesito</b>.</p>
       <p class="desc"><b>Diario</b>: al acabar, para entender qué pasó y qué hacer la próxima vez.</p>
-      <p class="desc"><b>Reset</b>: cuando llevas varios días sin encontrar tu ritmo.</p>` },
+      <p class="desc"><b>Reset</b>: cuando no encuentras tu ritmo.</p>` },
   { title:'Prepara tu Kit', html:`
       <p class="desc">El <b>Kit de Emergencia</b> es tu plan para cuando aparezcan tus primeras señales: qué notas, con qué te regulas, qué ajustas y a quién pides apoyo.</p>
       <p class="desc"><b>Prepararlo ahora lleva un par de minutos</b> y después lo tienes a mano con «Activar mi plan».</p>` }
@@ -3095,11 +3114,16 @@ function openTool(title, html){
 /* Tramo recorrido del deslizador (lo pinta el CSS con --fill) */
 function rangeFill(el){ el.style.setProperty('--fill', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); }
 document.addEventListener('input', e=>{ if(e.target.matches('input[type=range]')) rangeFill(e.target); });
-function closeTool(){ Overlays.close('tool'); }
+/* Desde «Activar mi plan», terminar antes de tiempo no hace perder el plan: se muestra igual el resto */
+function closeTool(){
+  if(kitPlanActivo && !kitPlanResumen && kitPlanTool && kitPlanRestoHtml('Ahora, ajusto:')){ showToolDone(kitPlanTool, KIT_TOOL_EXACT[kitPlanTool]); return; }
+  Overlays.close('tool');
+}
 let toolRepeatFn = null;
 function showToolDone(title, repeatFn){
   clearToolTimers();
   toolRepeatFn = repeatFn;
+  if(kitPlanActivo) kitPlanResumen = true;
   announce(`${title}: completado.`);
   openTool(title, `
     <div class="card" style="text-align:center;">
@@ -3108,8 +3132,8 @@ function showToolDone(title, repeatFn){
       <p class="desc">Puedes volver a la calle o repetirla si lo necesitas.</p>
       ${kitPlanActivo && kitPlanRestoHtml('Ahora, ajusto:') ? `<div class="kit-plan-next"><p class="eyebrow">Sigue tu plan</p>${kitPlanRestoHtml('Ahora, ajusto:')}</div>` : ''}
       <div class="btn-row" style="margin-top:10px;">
-        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" data-action="toolRepeat">Repetir</button>
+        <button type="button" class="btn btn-outline" data-action="toolRepeat">Repetir</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Vuelvo a calle</button>
       </div>
     </div>
   `);
@@ -3891,12 +3915,13 @@ function kitPlanRestoHtml(ajusteLbl){
 /* true mientras se usa la herramienta abierta desde «Activar mi plan»: su pantalla «Hecho»
    recuerda el resto del plan. Se apaga al cerrar la herramienta. */
 let kitPlanActivo = false;
+let kitPlanTool = null, kitPlanResumen = false;   // herramienta del plan en curso y si ya se ha mostrado el resto
 function activarKitPlan(){
   const txt = (state.kitHerramienta||'').trim();
   if(!txt) return;
   // Herramienta interna conocida: se abre directamente
   const tool = kitToolName(txt);
-  if(tool){ kitPlanActivo = true; KIT_TOOL_EXACT[tool](); return; }
+  if(tool){ kitPlanActivo = true; kitPlanTool = tool; kitPlanResumen = false; KIT_TOOL_EXACT[tool](); return; }
   // Recurso personal: se muestra lo guardado, sin decir que se abre ninguna herramienta
   const match = KIT_TOOL_MATCHERS.find(m=>m.re.test(txt));
   kitSuggestedTool = match ? match.name : null;
@@ -4223,7 +4248,26 @@ function resetFalta(f, msg){
   const input = document.getElementById('rco-' + f);
   return [input && !input.closest('[hidden]') ? input : document.getElementById('rc-' + f), msg];
 }
-function resetAcciones(html, fija){ return `<div class="reset-actions${fija === false ? ' no-fija' : ''}">${html}</div>`; }
+/* Barra de acciones del Reset. En los pasos 1-7, «Atrás» va a la izquierda del botón principal */
+function resetAcciones(html, fija){
+  if(typeof resetStep === 'number' && resetStep >= 1){
+    const i = html.indexOf('<button type="button" class="btn btn-amber"');
+    if(i >= 0){
+      const j = html.indexOf('</button>', i) + 9;
+      html = html.slice(0, i) + `<div class="reset-row"><button type="button" class="btn btn-outline reset-atras" onclick="resetAtras()"><svg class="ic ic-sm ic-atras" aria-hidden="true"><use href="#i-arrow"/></svg> Atrás</button>${html.slice(i, j)}</div>` + html.slice(j);
+    }
+  }
+  return `<div class="reset-actions${fija === false ? ' no-fija' : ''}">${html}</div>`;
+}
+/* Un paso atrás (también lo usa el gesto «atrás» del móvil). Lo elegido se conserva. */
+function resetAtras(){
+  if(resetStep === 'checkin'){ if(checkinPage > 0) checkinIr(checkinPage - 1); else resetGoto(0); return; }
+  if(resetStep === 'kit' || resetStep === 'historial' || resetStep === 'resume'){ resetGoto(0); return; }
+  if(typeof resetStep !== 'number' || resetStep < 1) return;
+  if(resetStep === 2 && examinaParte === 1){ examinaParte = 0; renderResetStep(); document.getElementById('resetOverlay').scrollTo(0, 0); return; }
+  if(resetStep === 3){ resetGoto(2); examinaParte = 1; renderResetStep(); return; }
+  resetGoto(resetStep - 1);
+}
 
 /* El check-in va por bloques: una sección por pantalla, para leer y marcar sin hacer scroll */
 let checkinPage = 0;
@@ -4423,7 +4467,7 @@ function renderResetStep(){
     const ultimo = state.resetHistory.find(r=>r.micro);
     body.innerHTML = `
       <div class="card reset-hero">
-        <h3>¿Llevas varios días sin encontrar tu ritmo?</h3>
+        <h3>¿No encuentras tu ritmo?</h3>
         <p class="desc">Una mala racha no significa que hayas dejado de saber captar. <b>Reconoce, separa, elige un solo ajuste y pruébalo en 10 paradas.</b></p>
         <button type="button" class="btn btn-amber" onclick="resetGoto(1)"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-lifebuoy"/></svg> Empezar el Reset</button>
         ${ultimo ? `<button type="button" class="btn btn-outline reset-repetir" data-action="repetirAjuste" data-id="${escapeHtml(ultimo.id)}"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-refresh"/></svg><span>Repetir mi último ajuste<small>${escapeHtml(ultimo.micro)}</small></span></button>` : ''}
@@ -4727,6 +4771,11 @@ applyInputLimits();
      que quede debajo); Tab/Mayús+Tab circulan solo dentro del diálogo superior.
    - Cierres del usuario (✕, Escape, fondo del modal) pasan por requestClose(): si hay texto
      escrito sin guardar, se pide confirmación. Los cierres del propio código no preguntan. */
+/* Gesto «atrás» del móvil: abrir una pantalla completa deja una entrada en el historial; «atrás»
+   retrocede un paso del Reset o cierra la pantalla en vez de salir de la app. */
+let overlayIgnorarPop = false, overlayEntrada = false;   // overlayEntrada: hay una entrada del historial puesta por la app
+// Una marca que sobrevive a una recarga no es nuestra: se limpia
+try{ if(history.state && history.state.gestorOverlay) history.replaceState(null, ''); }catch(e){}
 const Overlays = (()=>{
   const DEFS = {
     reset: { root:'resetOverlay', dialog:'resetOverlay', level:1, persistent:true,
@@ -4786,6 +4835,7 @@ const Overlays = (()=>{
       stack.push(n);
       root(n).classList.add('active');
       baseline[n] = formSig(n);
+      try{ if(!overlayEntrada){ history.pushState({gestorOverlay:true}, ''); overlayEntrada = true; } }catch(e){}
     } else if(baseline[n] == null){
       baseline[n] = formSig(n);   // el formulario aparece en un repintado posterior
     }
@@ -4807,6 +4857,8 @@ const Overlays = (()=>{
     root(n).classList.remove('active');
     if(DEFS[n].onClose) DEFS[n].onClose();
     sync();
+    // Cerrado desde la propia app: se retira la entrada del historial que se puso al abrir
+    if(!stack.length && overlayEntrada){ overlayEntrada = false; try{ overlayIgnorarPop = true; history.back(); }catch(e){ overlayIgnorarPop = false; } }
     const opener = openers[n];
     openers[n] = null;
     if(!restoreFocus) return;
@@ -4903,6 +4955,17 @@ const Overlays = (()=>{
 
   return { open, close, requestClose, isOpen, top, resetBaseline };
 })();
+window.addEventListener('popstate', ()=>{
+  overlayEntrada = false;   // la entrada que pusimos acaba de consumirse
+  if(overlayIgnorarPop){ overlayIgnorarPop = false; return; }
+  const t = Overlays.top();
+  if(!t) return;
+  // En el Reset, «atrás» retrocede un paso; en la entrada, cierra
+  const pasoReset = t === 'reset' && ((typeof resetStep === 'number' && resetStep >= 1) || ['checkin','kit','historial'].includes(resetStep));
+  if(pasoReset) resetAtras(); else Overlays.requestClose(t);
+  // Si sigue abierta alguna pantalla (o se ha pedido confirmación), se repone la entrada del historial
+  try{ if(Overlays.top() && !overlayEntrada){ history.pushState({gestorOverlay:true}, ''); overlayEntrada = true; } }catch(e){}
+});
 
 
 /* ============ REGISTRO DE ACCIONES ============ */

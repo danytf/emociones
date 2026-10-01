@@ -146,16 +146,16 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
     if (await top() !== null) await page.evaluate(() => { Overlays.close('modal'); Overlays.close('tool'); Overlays.close('reset'); });
   }
   ok(opened === toolButtons && await page.evaluate(() => toolTimers.length === 0), `las ${toolButtons} herramientas abren y cierran (temporizadores parados)`);
-  const qlCount = await page.evaluate(() => { toggleQlMore(); return document.querySelectorAll('#qlRow .ql-btn').length; });
+  const qlCount = await page.evaluate(() => { toggleQlMore(); return document.querySelectorAll('#quickLauncher .ql-row .ql-btn').length; });
   let qlOpened = 0;
   for (let i = 0; i < qlCount; i++) {
-    const b = page.locator('#qlRow .ql-btn').nth(i);
+    const b = page.locator('#quickLauncher .ql-row .ql-btn').nth(i);
     if (!(await b.isVisible())) continue;
     await b.click();
     if (await top()) { qlOpened++; await page.keyboard.press('Escape'); if (await top() === 'confirm') await confirmOk(); }
     await page.evaluate(() => { ['confirm', 'modal', 'tool', 'reset', 'help'].forEach(n => Overlays.close(n)); });
   }
-  ok(qlOpened >= 13, `accesos rápidos: ${qlOpened} abren su herramienta y se cierran`);
+  ok(qlOpened >= 10, `accesos rápidos (momentos del turno + ahora mismo): ${qlOpened} abren su herramienta y se cierran`);
   await page.evaluate(() => toggleQlMore());
 
   // ================= RESET COMPLETO =================
