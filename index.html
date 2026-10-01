@@ -1006,6 +1006,8 @@ main:focus{outline:none;}
 .ds .emo-meta{margin:0 0 var(--sp-2);font-size:var(--fs-sm);font-weight:600;color:var(--ds-ink-3);}
 /* ---------- Ancho de lectura: párrafos de 68 caracteres como máximo también en escritorio ---------- */
 .ds .desc{max-width:68ch;}
+/* La introducción de cada sección ocupa el mismo ancho que sus tarjetas (un solo bloque en tablet y escritorio) */
+.ds > .desc{max-width:none;}
 .ds .card[style*="text-align:center"] .desc{margin-left:auto;margin-right:auto;}
 /* ---------- Cifras y cortes de línea ---------- */
 /* Contadores y valores con cifras de ancho fijo: al contar atrás el número no se desplaza */
