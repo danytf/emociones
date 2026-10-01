@@ -908,6 +908,32 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .reset-resumen dt{font-size:var(--fs-xs);font-weight:650;color:var(--ds-ink-3);margin:0 0 2px;}
 .ds .reset-resumen dd{margin:0;font-size:var(--fs-lg);font-weight:650;line-height:1.35;color:var(--ds-ink);}
 #resetOverlay.reset-inicio .close-x.labeled{display:none;}
+/* Cabecera del Reset en una fila en móvil: Kit e Historial como iconos (conservan aria-label y title) */
+@media (max-width:480px){
+  #resetOverlay .overlay-header{flex-wrap:nowrap;}
+  #resetOverlay .overlay-header .oh-actions{width:auto;}
+  #resetOverlay .close-x.labeled{width:44px;padding:0;justify-content:center;}
+  #resetOverlay .close-x.labeled .lbl{display:none;}
+}
+/* Avisos del Reset en el ocre del Reset y con icono de información: en mala racha, el rojo riñe */
+#resetOverlay .field-error{color:var(--tone-ink);--msg-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5'/%3E%3Cpath d='M12 7.8h.01'/%3E%3C/svg%3E");}
+#resetOverlay .has-error{outline-color:var(--tone) !important;}
+#resetOverlay input[aria-invalid="true"]{border-color:var(--tone) !important;}
+/* Chips del Reset algo mayores para leer al sol */
+#resetOverlay .chip{font-size:14px;line-height:1.35;}
+.ds .reset-sub{margin:0 0 var(--sp-1);font-size:var(--fs-md);color:var(--ds-ink-2);}
+/* «Activar mi plan» en la fila compacta: neutro, con el rayo en rojo (no compite con el título ni con «Guardar») */
+#qlKitSlotCompact .ql-btn.ql-kit{background:var(--ds-surface);border-color:var(--ds-line);color:var(--ds-ink);box-shadow:0 1px 2px rgba(28,31,33,.04);}
+#qlKitSlotCompact .ql-btn.ql-kit .ql-em{color:var(--brand-accent);}
+@media (hover:hover){ #qlKitSlotCompact .ql-btn.ql-kit:hover{background:var(--ds-surface);border-color:var(--ds-line-strong);} }
+/* Filas de herramientas más compactas en móvil: caben más sin cortar ningún texto */
+@media (max-width:600px){
+  .ds .trow{min-height:64px;gap:10px;padding:10px 12px 10px 10px;}
+  .ds .trow .tile{width:36px;height:36px;border-radius:10px;}
+  .ds .trow .tile .ic{width:19px;height:19px;}
+  .ds .trow > .ic{width:16px;height:16px;}
+  .ds .trow-desc{line-height:1.35;}
+}
 /* Deslizadores en neutro: medir fatiga o activación no es una alarma */
 .ds input[type=range]{--slider:var(--ds-ink-2);}
 /* Dentro del Reset, lo elegido va en el ocre del Reset (el rojo se lee como «error») */
@@ -3995,7 +4021,7 @@ function clearResetSession(){
   resetAprendizaje = ''; resetObservacion = '';
   resetCheckinItems = [];
   resetStopsUndo = [];
-  examinaParte = 0; resetTodosAbierto = false;
+  examinaParte = 0; resetTodosAbierto = false; resetMasAbierto.clear();
 }
 /* directo: desde «Estoy en una mala racha» se entra al primer paso sin pasar por la explicación */
 function openReset(directo){
@@ -4049,17 +4075,19 @@ function resetDots(){
 const RESET_SEP = ' · ';
 const RESET_SENALES_BASE = ['Anticipo el rechazo','El «no» me afecta más de lo habitual','Empiezo ya cansado','Funciono en piloto automático','Me acelero y sobreexplico','Hago menos paradas'];
 const RESET_CAMPOS = {
-  senal: { label:'Señal principal', otro:'Otra señal', get:()=>resetSenal, set:v=>{ resetSenal = v; },
+  senal: { label:'Señal principal', otro:'Otra señal', mas:'Otras señales', get:()=>resetSenal, set:v=>{ resetSenal = v; },
+    // Si vienes del check-in, a la vista solo lo que marcaste (hasta 4)
+    visibles:()=>resetCheckinItems.length ? Math.min(resetCheckinItems.length, 4) : 4,
+    /* Primero lo marcado en el check-in (o las del Kit y las más frecuentes); después, el resto de las 17 */
     opciones:()=>{
       const base = resetCheckinItems.length ? resetCheckinItems.map(checkinTitle) : [...(state.kitSenales || []), ...RESET_SENALES_BASE];
-      if(CHECKIN_TITLES.includes(resetSenal) && !base.includes(resetSenal)) base.unshift(resetSenal);
-      return [...new Set(base)].slice(0, resetCheckinItems.length ? 19 : 6);
+      return [...new Set([...base, ...CHECKIN_TITLES])];
     } },
   contexto: { label:'Lo que viene del contexto', otro:'Otro factor', multi:true, get:()=>resetExamResultado, set:v=>{ resetExamResultado = v; },
     opciones:()=>['Flujo de gente','Clima','Permisos','Prisa o situación de la persona','Que alguien rechace'] },
-  forma: { label:'Lo que puedo revisar en mi forma de trabajar', otro:'Otro aspecto', multi:true, get:()=>resetExamRendimiento, set:v=>{ resetExamRendimiento = v; },
+  forma: { label:'Lo que puedo revisar en mi forma de trabajar', otro:'Otro aspecto', mas:'Más aspectos', multi:true, get:()=>resetExamRendimiento, set:v=>{ resetExamRendimiento = v; },
     opciones:()=>['Escucha','Ritmo de la parada','Adaptación del speech','Gestión de objeciones','Actitud y energía','Forma de hacer la parada'] },
-  funciona: { label:'Lo que sigue funcionando (hasta 2)', otro:'Otra conducta', multi:true, max:2,
+  funciona: { label:'Lo que sigue funcionando (hasta 2)', otro:'Otra conducta', mas:'Más conductas', multi:true, max:2,
     get:()=>[resetAspecto1, resetAspecto2].filter(Boolean).join(RESET_SEP),
     set:v=>{ const p = v ? v.split(RESET_SEP) : []; resetAspecto1 = p[0] || ''; resetAspecto2 = p.slice(1).join(RESET_SEP); },
     opciones:()=>['Mantengo la sonrisa en el saludo','Sigo escuchando antes de responder','Hago la parada con actitud abierta','Explico con claridad','Gestiono bien las objeciones','Mantengo la actitud tras un «no»','Adapto mi forma de trabajar'] },
@@ -4099,6 +4127,8 @@ const RESET_SUGERIDOS = {
   'Evito pedir ayuda': ['Pedir feedback sobre una parada concreta','Pedir ayuda a un responsable cuando me atasco','Pedir ayuda antes de encadenar varias paradas con la misma dificultad']
 };
 let resetTodosAbierto = false;
+const resetMasAbierto = new Set();
+function resetMasToggle(f, abierto){ if(abierto) resetMasAbierto.add(f); else resetMasAbierto.delete(f); }
 const resetOtroAbierto = new Set();
 function resetOpcionesDe(f){ const c = RESET_CAMPOS[f]; return c.grupos ? c.grupos().flatMap(([, items])=>items) : c.opciones(); }
 function leerCampoReset(f){
@@ -4125,6 +4155,13 @@ function resetCampoHtml(f){
     const titulo = RESET_SUGERIDOS[resetSenal] ? `Sugeridos para «${escapeHtml(resetSenal)}»` : 'Tu ajuste del Kit';
     grupos = `<div class="chip-cat">${titulo}</div><div class="chip-group">${sug.map(chip).join('')}</div>
       <details class="reset-todos"${abrir ? ' open' : ''} ontoggle="resetTodosAbierto=this.open"><summary>Ver todos los ajustes</summary>${todos}</details>
+      <div class="chip-group reset-otro-row">${otroBtn}</div>`;
+  } else if(!c.grupos && c.mas && c.opciones().length > (c.visibles ? c.visibles() : 4) + 1){
+    // Más de 5 opciones: 4 a la vista (o las del check-in) y el resto plegado (abierto si lo elegido está ahí)
+    const ops = c.opciones(), n = c.visibles ? c.visibles() : 4, vis = ops.slice(0, n), resto = ops.slice(n);
+    const abrir = resetMasAbierto.has(f) || sel.some(x=>resto.includes(x));
+    grupos = `<div class="chip-group">${vis.map(chip).join('')}</div>
+      <details class="reset-todos"${abrir ? ' open' : ''} ontoggle="resetMasToggle('${f}', this.open)"><summary>${escapeHtml(c.mas)}</summary><div class="chip-group">${resto.map(chip).join('')}</div></details>
       <div class="chip-group reset-otro-row">${otroBtn}</div>`;
   } else {
     grupos = c.grupos ? todos + `<div class="chip-group reset-otro-row">${otroBtn}</div>`
@@ -4433,9 +4470,9 @@ function renderResetStep(){
       ${resetDots()}
       <div class="card">
         <h3>Reconoce lo que está pasando</h3>
-        <p class="quote"><b>Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.</b></p>
+        <p class="desc reset-sub">Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.</p>
         <p class="q">¿Qué señal estás notando con más fuerza hoy?</p>
-        <p class="desc">${resetCheckinItems.length ? 'De lo marcado en tu check-in, elige la principal.' : 'Elige la principal.'}</p>
+        ${resetCheckinItems.length ? '<p class="desc">De lo marcado en tu check-in, elige la principal.</p>' : ''}
         ${resetCampo('senal')}
       </div>
       ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="continuarReconoce()">Continuar</button>`)}`;

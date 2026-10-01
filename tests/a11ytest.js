@@ -40,8 +40,8 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await page.locator('#resetBody .reset-actions .btn-amber').click();
   ok(await page.evaluate(() => resetStep === 2), 'se elige la señal y se continúa al momento');
   await page.evaluate(() => resetGoto(1));
-  const senal = await page.evaluate(() => ({ s: resetSenal, p: [...document.querySelectorAll('#rc-senal [data-action="resetChip"]')].map(b => b.getAttribute('aria-pressed')) }));
-  ok(senal.s === 'El «no» me afecta más de lo habitual' && senal.p.join() === 'false,true', 'señal guardada como título + aria-pressed: ' + JSON.stringify(senal));
+  const senal = await page.evaluate(() => ({ s: resetSenal, vis: document.querySelectorAll('#rc-senal > .chip-group:first-child [data-action="resetChip"]').length, p: [...document.querySelectorAll('#rc-senal [data-action="resetChip"]')].map(b => b.getAttribute('aria-pressed')) }));
+  ok(senal.s === 'El «no» me afecta más de lo habitual' && senal.p.slice(0, 2).join() === 'false,true' && senal.p.slice(2).every(x => x === 'false') && senal.vis === 2, 'señal guardada como título + aria-pressed; a la vista solo las 2 del check-in: ' + JSON.stringify({ s: senal.s, vis: senal.vis }));
   await page.evaluate(() => { startFreshReset(); closeReset(); });
 
   // ---- 4.2 Emociones: chip y ℹ️ independientes ----

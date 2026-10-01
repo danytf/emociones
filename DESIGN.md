@@ -335,16 +335,20 @@ Toda la fila es el botón (72 px de alto como mínimo): cuadrado tintado de 44 p
 Ficha de Aprender, Bienestar y Ayuda: fila de 64 px con cuadrado tintado de 36 px, título en Montserrat 15 px/650 y chevron que gira. El cuerpo se lee a 15 px/1,65 y admite citas, mini-tarjetas y diagramas de flujo en Gris niebla. Las fichas anidadas son más ligeras: Gris niebla, sin borde ni sombra.
 
 ### Quick launcher (signature)
-«¿Qué necesitas ahora?»: botones compactos de 48 px con icono de 18 px y texto del sistema de 13,5 px/650. Neutros por defecto; «Activar mi plan» va en Rojo Wesser sólido, «Estoy en una mala racha» con tinte ámbar y «Qué ha funcionado» con tinte Verde pino. **Completo solo en Herramientas**; en Aprender, Bienestar y Diario se reduce a una fila de 48 px («¿Qué necesitas ahora?», que lleva a Herramientas) más «Activar mi plan» si hay plan guardado. En escritorio, una sola fila de botones de 190 px como mínimo.
+«¿Qué necesitas ahora?»: botones compactos de 48 px con icono de 18 px y texto del sistema de 13,5 px/650. Neutros por defecto; «Activar mi plan» va en Rojo Wesser sólido, «Estoy en una mala racha» con tinte ámbar y «Qué ha funcionado» con tinte Verde pino. **Completo solo en Herramientas**; en Aprender, Bienestar y Diario se reduce a una fila de 48 px («¿Qué necesitas ahora?», que lleva a Herramientas) más «Activar mi plan» si hay plan guardado; ahí va **neutro, con el rayo en rojo**, para no competir con el título ni con «Guardar» (en el lanzador completo sigue en Rojo Wesser sólido). En escritorio, una sola fila de botones de 190 px como mínimo.
+
+### Tool row en móvil
+Hasta 600 px, la fila baja a 64 px de alto como mínimo, con cuadrado tintado de 36 px y menos relleno: caben 3 herramientas bajo el lanzador sin cortar ningún texto.
 
 ### Reset step (signature)
 Pantalla completa sobre Gris niebla con título en Ocre tinta y cabecera fija al desplazarse.
 - **Entrada:** la acción primero. Tarjeta con la pregunta (22 px), una línea que tranquiliza y el botón «Empezar el Reset» en Ámbar Reset; debajo, «Mi Kit de Emergencia» e «Historial» al alcance del pulgar, y la explicación en fichas plegables. «Estoy en una mala racha» entra directo al primer paso.
 - **Progreso R·E·S·E·T:** seis segmentos (R, E, S, E, T y cierre) con barra de 4 px y la letra debajo; el paso actual en Ocre tinta con su nombre visible. Sustituye a la insignia sobre el título.
 - **Respuestas rápidas:** cada pregunta se responde con chips (una o varias opciones) y un chip «Otra…» que abre un campo para escribir con tus palabras. Nada obligatorio se escribe. Dentro del Reset, lo elegido va en tinte Ocre (nunca en rojo: en mala racha el rojo se lee como «error»).
-- **Pocas opciones a la vista:** una decisión por pantalla y como máximo 3–4 sugerencias visibles. «Elige un solo ajuste» muestra los ajustes asociados a la señal elegida en R (y el del Kit) y pliega el resto en «Ver todos los ajustes». Examina va en dos pantallas (contexto, luego forma de trabajar). La entrada ofrece «Repetir mi último ajuste».
+- **Pocas opciones a la vista:** una decisión por pantalla y como máximo 3–4 sugerencias visibles. «Elige un solo ajuste» muestra los ajustes asociados a la señal elegida en R (y el del Kit) y pliega el resto en «Ver todos los ajustes». Cualquier lista de más de 5 opciones muestra 4 y pliega el resto («Otras señales», «Más aspectos», «Más conductas»); en R, si vienes del check-in, a la vista solo lo que marcaste. Examina va en dos pantallas (contexto, luego forma de trabajar). La entrada ofrece «Repetir mi último ajuste».
 - **Títulos con el verbo del paso:** Reconoce…, Examina…, Separa…, Elige…, Testea…, para que el progreso R·E·S·E·T y el título digan lo mismo.
-- **Barra de acciones:** fija abajo sobre Gris niebla con borde superior Línea; el botón de continuar nunca está deshabilitado sin motivo: si falta algo, lo dice en línea.
+- **Barra de acciones:** fija abajo sobre Gris niebla con borde superior Línea; el botón de continuar nunca está deshabilitado sin motivo: si falta algo, lo dice en línea, **en Ocre tinta y con icono de información** (dentro del Reset, nunca en rojo).
+- **Cabecera en móvil:** una sola fila; Kit e Historial como botones de icono de 44 px con nombre accesible.
 - **Cierre:** «Vuelve a calle con esto», con el ajuste elegido y lo que sigue funcionando en bloques Gris niebla; «Mi próximo paso» es opcional.
 
 ## Do's and Don'ts
