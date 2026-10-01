@@ -341,7 +341,9 @@ Ficha de Aprender, Bienestar y Ayuda: fila de 64 px con cuadrado tintado de 36 p
 Pantalla completa sobre Gris niebla con título en Ocre tinta y cabecera fija al desplazarse.
 - **Entrada:** la acción primero. Tarjeta con la pregunta (22 px), una línea que tranquiliza y el botón «Empezar el Reset» en Ámbar Reset; debajo, «Mi Kit de Emergencia» e «Historial» al alcance del pulgar, y la explicación en fichas plegables. «Estoy en una mala racha» entra directo al primer paso.
 - **Progreso R·E·S·E·T:** seis segmentos (R, E, S, E, T y cierre) con barra de 4 px y la letra debajo; el paso actual en Ocre tinta con su nombre visible. Sustituye a la insignia sobre el título.
-- **Respuestas rápidas:** cada pregunta se responde con chips (una o varias opciones) y un chip «Otra…» que abre un campo para escribir con tus palabras. Nada obligatorio se escribe.
+- **Respuestas rápidas:** cada pregunta se responde con chips (una o varias opciones) y un chip «Otra…» que abre un campo para escribir con tus palabras. Nada obligatorio se escribe. Dentro del Reset, lo elegido va en tinte Ocre (nunca en rojo: en mala racha el rojo se lee como «error»).
+- **Pocas opciones a la vista:** una decisión por pantalla y como máximo 3–4 sugerencias visibles. «Elige un solo ajuste» muestra los ajustes asociados a la señal elegida en R (y el del Kit) y pliega el resto en «Ver todos los ajustes». Examina va en dos pantallas (contexto, luego forma de trabajar). La entrada ofrece «Repetir mi último ajuste».
+- **Títulos con el verbo del paso:** Reconoce…, Examina…, Separa…, Elige…, Testea…, para que el progreso R·E·S·E·T y el título digan lo mismo.
 - **Barra de acciones:** fija abajo sobre Gris niebla con borde superior Línea; el botón de continuar nunca está deshabilitado sin motivo: si falta algo, lo dice en línea.
 - **Cierre:** «Vuelve a calle con esto», con el ajuste elegido y lo que sigue funcionando en bloques Gris niebla; «Mi próximo paso» es opcional.
 
@@ -368,3 +370,5 @@ Pantalla completa sobre Gris niebla con título en Ocre tinta y cabecera fija al
 - **Don't** bajar el texto funcional de 11 px.
 - **Don't** poner una insignia o rótulo en mayúsculas encima de un título: el título habla solo; si hace falta situar al usuario, usa el progreso.
 - **Don't** pedir texto escrito obligatorio en un flujo que se usa en calle: ofrece opciones pulsables y un «Otra…» opcional.
+- **Don't** usar el rojo de marca para medir o marcar estados del captador (fatiga, selección dentro del Reset, avisos de Reset a medias): deslizadores en Tinta media, selección y avisos del Reset en Ocre.
+- **Don't** dejar que el contorno de error de un grupo pise su mensaje ni que la barra fija lo tape: el mensaje va a 14 px del contorno y el overlay reserva espacio de desplazamiento arriba y abajo.

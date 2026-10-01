@@ -131,7 +131,7 @@ header{
   .tabs-fade{top:0;}
 }
 /* Reset a medias: punto visible (y aria-label descriptivo, ver renderResetTab) */
-.header-tabs button.tab-reset.pending::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--wesser-red);box-shadow:0 0 0 2px var(--ds-surface);}
+.header-tabs button.tab-reset.pending::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--tone-track-ink);box-shadow:0 0 0 2px var(--ds-surface);}
 
 /* MAIN */
 main{
@@ -765,7 +765,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .btn-row.seg .btn-navy{background:var(--ds-surface);color:var(--ds-ink);}
 .ds .compare-col{background:var(--ds-canvas);border:none;border-radius:12px;}
 .ds .tool-meta{color:var(--ds-ink-3);}
-.ds input[type=range]{accent-color:var(--wesser-red);}
+.ds input[type=range]{accent-color:var(--slider);}
 .ds .range-val{font-family:var(--font-brand);color:var(--ds-ink);}
 /* Diálogos */
 .modal-sheet.ds, .confirm-box.ds{background:var(--ds-surface);color:var(--ds-ink);border:1px solid var(--ds-line);}
@@ -786,10 +786,10 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   box-shadow:0 0 0 14px color-mix(in srgb, var(--tone-relief) 7%, transparent);}
 /* Deslizador propio: pista del tema y tramo recorrido en rojo (--fill lo pone rangeFill) */
 .ds input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;margin:14px 0 10px;
-  background:linear-gradient(to right, var(--wesser-red) var(--fill,50%), var(--ds-line-strong) var(--fill,50%));}
-.ds input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--wesser-red);
+  background:linear-gradient(to right, var(--slider) var(--fill,50%), var(--ds-line-strong) var(--fill,50%));}
+.ds input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--slider);
   border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
-.ds input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--wesser-red);border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
+.ds input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--slider);border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
 .ds input[type=range]:focus-visible{outline-offset:6px;}
 :root[data-theme="dark"] .ds .range-val{color:var(--ds-ink);}
 /* ---------- Detalles finales ---------- */
@@ -906,6 +906,28 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .reset-resumen dt{font-size:var(--fs-xs);font-weight:650;color:var(--ds-ink-3);margin:0 0 2px;}
 .ds .reset-resumen dd{margin:0;font-size:var(--fs-lg);font-weight:650;line-height:1.35;color:var(--ds-ink);}
 #resetOverlay.reset-inicio .close-x.labeled{display:none;}
+/* Deslizadores en neutro: medir fatiga o activación no es una alarma */
+.ds input[type=range]{--slider:var(--ds-ink-2);}
+/* Dentro del Reset, lo elegido va en el ocre del Reset (el rojo se lee como «error») */
+#resetOverlay .chip.selected, #resetOverlay .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--tone) 16%, var(--ds-surface));border-color:var(--tone);color:var(--tone-ink);}
+@supports not (color: color-mix(in srgb, red 50%, blue)){ #resetOverlay .chip.selected, #resetOverlay .chip[aria-pressed="true"]{background:var(--ds-canvas);} }
+/* Al llevar el foco a un error, que no quede bajo la cabecera ni bajo la barra fija */
+#resetOverlay{scroll-padding-top:120px;scroll-padding-bottom:140px;}
+/* El contorno del grupo con error no pisa el mensaje */
+.chip-group.has-error + .field-error, .btn-row.has-error + .field-error, .ds .reset-chips.has-error + .field-error{margin-top:14px;}
+/* Ficha plegable dentro de una tarjeta: sin borde ni sombra propios (nunca tarjeta sobre tarjeta) */
+.ds .card details.help-item{background:var(--ds-canvas);border-color:transparent;box-shadow:none;}
+/* Ajustes: «Ver todos» plegado bajo los sugeridos */
+.ds .reset-todos{margin-top:var(--sp-3);}
+.ds .reset-todos > summary{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 var(--sp-1);cursor:pointer;list-style:none;
+  font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);text-decoration:underline;text-underline-offset:3px;}
+.ds .reset-todos > summary::-webkit-details-marker{display:none;}
+.ds .reset-todos > summary::after{content:'';width:7px;height:7px;margin-left:4px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);}
+.ds .reset-todos[open] > summary::after{transform:rotate(-135deg) translateY(-2px);}
+/* Repetir el último ajuste: el ajuste visible debajo del texto del botón */
+.ds .reset-repetir{text-align:left;}
+.ds .reset-repetir span{display:flex;flex-direction:column;}
+.ds .reset-repetir small{font-size:var(--fs-sm);font-weight:600;color:var(--ds-ink-2);}
 .ds .reset-decision{display:table;margin-top:6px;padding:2px 10px;border-radius:999px;
   font-size:var(--fs-sm);font-weight:650;color:var(--tone-ink);background:color-mix(in srgb, var(--amber) 18%, var(--ds-surface));}
 @supports not (color: color-mix(in srgb, red 50%, blue)){ .ds .reset-decision{background:rgba(224,160,48,.18);} }
@@ -2419,6 +2441,7 @@ function goto(view){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+view).classList.add('active');
   document.getElementById('quickLauncher').classList.toggle('ql-compact', view !== 'herramientas');
+  try{ localStorage.setItem('wesserLastView', view); }catch(e){}
   const activeBtn = document.querySelector(`#headerTabs button[data-view="${view}"]`);
   // Navegación sencilla (no tabs ARIA): la sección activa se marca con aria-current
   document.querySelectorAll('#headerTabs button[data-view]').forEach(b=>{
@@ -3859,7 +3882,10 @@ const MICROAUDITORIA = {
   'Escucha': ['Escuchar hasta el final antes de responder','Reconocer lo que dice la persona antes de responder','Dejar un silencio sin intentar llenarlo'],
   'Presencia y parada': ['Buscar contacto visual antes de hablar','Iniciar la parada con una actitud abierta y natural','Revisar mi posición o ángulo de parada'],
   'Apertura y adaptación': ['Simplificar la apertura','Adaptar mi respuesta a lo que la persona acaba de decir','No anticipar una objeción antes de que aparezca'],
-  'Un hábito que quiero corregir': ['Reducir las muletillas','Evitar explicar de más','No apresurar el cierre','No responder automáticamente','No repetir la misma respuesta']
+  'Un hábito que quiero corregir': ['Reducir las muletillas','Evitar explicar de más','No apresurar el cierre','No responder automáticamente','No repetir la misma respuesta'],
+  /* Para señales que no son de técnica (rumiación, queja, comparación, descansos, pedir ayuda):
+     conductas igual de concretas y comprobables en las siguientes paradas */
+  'Foco y gestión del turno': ['Cerrar la parada anterior antes de empezar la siguiente','Fijar un objetivo sencillo para la siguiente parada','Dejar la queja fuera de la siguiente parada','Valorar cómo he ejecutado la parada, no solo su resultado','No intentar compensar un mal resultado en las siguientes paradas','No exigirme hacerlo perfecto en cada parada','Mantener el mismo enfoque durante varias paradas antes de cambiarlo','Marcar antes de descansar cuándo retomaré','Volver a la parada al terminar el descanso previsto','Pedir feedback sobre una parada concreta','Pedir ayuda a un responsable cuando me atasco','Pedir ayuda antes de encadenar varias paradas con la misma dificultad']
 };
 
 const CHECKIN_SECTIONS = [
@@ -3962,6 +3988,7 @@ function clearResetSession(){
   resetAprendizaje = ''; resetObservacion = '';
   resetCheckinItems = [];
   resetStopsUndo = [];
+  examinaParte = 0; resetTodosAbierto = false;
 }
 /* directo: desde «Estoy en una mala racha» se entra al primer paso sin pasar por la explicación */
 function openReset(directo){
@@ -3990,6 +4017,7 @@ function resumeReset(){
   resetAprendizaje = p.aprendizaje || '';
   resetObservacion = p.observacion || '';
   resetStopsUndo = [];
+  examinaParte = 0; resetTodosAbierto = false;
   renderResetStep();
 }
 function startFreshReset(){
@@ -4033,10 +4061,37 @@ const RESET_CAMPOS = {
       const g = Object.entries(MICROAUDITORIA);
       const kit = (state.kitAjuste || '').trim();
       return kit && !g.some(([, items])=>items.includes(kit)) ? [['El ajuste de tu Kit', [kit]], ...g] : g;
+    },
+    /* 3 o 4 ajustes a la vista: el del Kit (si hay) y los asociados a la señal elegida en R */
+    sugeridos:()=>{
+      const kit = (state.kitAjuste || '').trim();
+      return [...new Set([kit, ...(RESET_SUGERIDOS[resetSenal] || [])].filter(Boolean))].slice(0, 4);
     } },
   paso: { label:'Mi próximo paso', otro:'Otro paso', get:()=>resetPacto, set:v=>{ resetPacto = v; },
     opciones:()=>['Paro 2 minutos antes de seguir empujando','Mantengo un solo ajuste en las próximas paradas','Pido feedback a un compañero o a mi responsable','Vuelvo a lo básico del speech'] }
 };
+/* Señal (título del check-in) → ajustes de MICROAUDITORIA que más encajan. Propuesta pendiente de
+   validar con Formación; si la señal no está aquí (p. ej. escrita en «Otra…»), se muestran todos. */
+const RESET_SUGERIDOS = {
+  'Anticipo el rechazo': ['Iniciar la parada con una actitud abierta y natural','No anticipar una objeción antes de que aparezca','Buscar contacto visual antes de hablar'],
+  'El «no» me afecta más de lo habitual': ['Hacer una pausa antes de continuar','No responder automáticamente','Mantener un ritmo más calmado al hablar'],
+  'Empiezo ya cansado': ['Mantener un ritmo más calmado al hablar','Simplificar la apertura','Hacer una pausa antes de continuar'],
+  'Sigo dándole vueltas al turno': ['Cerrar la parada anterior antes de empezar la siguiente','Fijar un objetivo sencillo para la siguiente parada','Hacer una pausa antes de continuar'],
+  'Me quedo atrapado en la queja': ['Dejar la queja fuera de la siguiente parada','Cerrar la parada anterior antes de empezar la siguiente','Iniciar la parada con una actitud abierta y natural'],
+  'Mi valor depende del número': ['Valorar cómo he ejecutado la parada, no solo su resultado','Fijar un objetivo sencillo para la siguiente parada','No apresurar el cierre'],
+  'Un turno a cero me arrastra': ['No intentar compensar un mal resultado en las siguientes paradas','Simplificar la apertura','Iniciar la parada con una actitud abierta y natural'],
+  'Me comparo demasiado con los demás': ['Valorar cómo he ejecutado la parada, no solo su resultado','Fijar un objetivo sencillo para la siguiente parada','Adaptar mi respuesta a lo que la persona acaba de decir'],
+  'Pienso que «ya debería saber hacerlo»': ['No exigirme hacerlo perfecto en cada parada','Fijar un objetivo sencillo para la siguiente parada','Simplificar la apertura'],
+  'Me desgasto con lo que no controlo': ['Revisar mi posición o ángulo de parada','Fijar un objetivo sencillo para la siguiente parada','Iniciar la parada con una actitud abierta y natural'],
+  'Funciono en piloto automático': ['No responder automáticamente','Adaptar mi respuesta a lo que la persona acaba de decir','No repetir la misma respuesta'],
+  'Me acelero y sobreexplico': ['Bajar un poco el ritmo del saludo','Evitar explicar de más','Dejar un silencio sin intentar llenarlo'],
+  'Dejo de escuchar': ['Escuchar hasta el final antes de responder','Reconocer lo que dice la persona antes de responder','Dejar un silencio sin intentar llenarlo'],
+  'Hago menos paradas': ['Iniciar la parada con una actitud abierta y natural','Buscar contacto visual antes de hablar','Simplificar la apertura'],
+  'Cambio de método constantemente': ['Mantener el mismo enfoque durante varias paradas antes de cambiarlo','Simplificar la apertura','Hacer una pausa antes de continuar'],
+  'Alargo los descansos': ['Marcar antes de descansar cuándo retomaré','Volver a la parada al terminar el descanso previsto','Simplificar la apertura'],
+  'Evito pedir ayuda': ['Pedir feedback sobre una parada concreta','Pedir ayuda a un responsable cuando me atasco','Pedir ayuda antes de encadenar varias paradas con la misma dificultad']
+};
+let resetTodosAbierto = false;
 const resetOtroAbierto = new Set();
 function resetOpcionesDe(f){ const c = RESET_CAMPOS[f]; return c.grupos ? c.grupos().flatMap(([, items])=>items) : c.opciones(); }
 function leerCampoReset(f){
@@ -4054,9 +4109,20 @@ function resetCampoHtml(f){
   const abierto = !!otro || resetOtroAbierto.has(f);
   const chip = o => `<button type="button" ${chipAttrs(sel.includes(o))} data-action="resetChip" data-f="${f}" data-value="${escapeHtml(o)}">${escapeHtml(o)}</button>`;
   const otroBtn = `<button type="button" ${chipAttrs(abierto)} data-action="resetOtro" data-f="${f}" aria-expanded="${abierto}" aria-controls="rco-wrap-${f}">${escapeHtml(c.otro)}…</button>`;
-  const grupos = c.grupos
-    ? c.grupos().map(([cat, items])=>`<div class="chip-cat" aria-hidden="true">${escapeHtml(cat)}</div><div class="chip-group">${items.map(chip).join('')}</div>`).join('') + `<div class="chip-group reset-otro-row">${otroBtn}</div>`
-    : `<div class="chip-group">${c.opciones().map(chip).join('')}${otroBtn}</div>`;
+  const todos = c.grupos ? c.grupos().map(([cat, items])=>`<div class="chip-cat" aria-hidden="true">${escapeHtml(cat)}</div><div class="chip-group">${items.map(chip).join('')}</div>`).join('') : '';
+  const sug = c.sugeridos ? c.sugeridos() : [];
+  let grupos;
+  if(sug.length){
+    // Sugeridos a la vista; el resto, plegado (abierto si lo elegido no está entre los sugeridos)
+    const abrir = resetTodosAbierto || (sel.length && !sug.includes(sel[0]));
+    const titulo = RESET_SUGERIDOS[resetSenal] ? `Sugeridos para «${escapeHtml(resetSenal)}»` : 'Tu ajuste del Kit';
+    grupos = `<div class="chip-cat">${titulo}</div><div class="chip-group">${sug.map(chip).join('')}</div>
+      <details class="reset-todos"${abrir ? ' open' : ''} ontoggle="resetTodosAbierto=this.open"><summary>Ver todos los ajustes</summary>${todos}</details>
+      <div class="chip-group reset-otro-row">${otroBtn}</div>`;
+  } else {
+    grupos = c.grupos ? todos + `<div class="chip-group reset-otro-row">${otroBtn}</div>`
+      : `<div class="chip-group">${c.opciones().map(chip).join('')}${otroBtn}</div>`;
+  }
   return `<div class="reset-chips" id="rc-${f}" role="group" aria-label="${escapeHtml(c.label)}">${grupos}</div>
     <div class="reset-otro" id="rco-wrap-${f}"${abierto ? '' : ' hidden'}>
       <label for="rco-${f}">${escapeHtml(c.otro)}, con tus palabras</label>
@@ -4310,11 +4376,13 @@ function renderResetStep(){
     `;
   }
   else if(resetStep===0){
+    const ultimo = state.resetHistory.find(r=>r.micro);
     body.innerHTML = `
       <div class="card reset-hero">
         <h3>¿Llevas varios días sin encontrar tu ritmo?</h3>
         <p class="desc">Una mala racha no significa que hayas dejado de saber captar. <b>Reconoce, separa, elige un solo ajuste y pruébalo en 10 paradas.</b></p>
         <button type="button" class="btn btn-amber" onclick="resetGoto(1)"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-lifebuoy"/></svg> Empezar el Reset</button>
+        ${ultimo ? `<button type="button" class="btn btn-outline reset-repetir" data-action="repetirAjuste" data-id="${escapeHtml(ultimo.id)}"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-refresh"/></svg><span>Repetir mi último ajuste<small>${escapeHtml(ultimo.micro)}</small></span></button>` : ''}
         <button type="button" class="btn btn-outline" onclick="startCheckin()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-traffic"/></svg> Revisar antes mis señales</button>
       </div>
       <div class="reset-links">
@@ -4366,24 +4434,30 @@ function renderResetStep(){
       ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="continuarReconoce()">Continuar</button>`)}`;
   }
   else if(resetStep===2){
-    body.innerHTML = `
+    // Examina en dos pantallas: primero el contexto, luego tu forma de trabajar (no se guarda: al reanudar empieza por el contexto)
+    body.innerHTML = examinaParte === 0 ? `
       ${resetDots()}
       <div class="card">
-        <h3>Separa el contexto de tu forma de trabajar</h3>
-        <p class="desc">Distingue entre <b>lo que está ocurriendo a tu alrededor</b> y <b>lo que puedes revisar y ajustar tú</b>. Marca lo que aplique hoy.</p>
-        <p class="q">El contexto: no lo controlas directamente</p>
+        <h3>Examina lo que viene del contexto</h3>
+        <p class="desc">Lo que está pasando a tu alrededor y <b>no controlas directamente</b>. Marca lo que aplique hoy.</p>
         ${resetCampo('contexto')}
-        <p class="q">Tu forma de trabajar: puedes revisarla y ajustarla</p>
+      </div>
+      ${resetAcciones(`<p class="reset-falta">1 de 2</p><button type="button" class="btn btn-amber" onclick="continuarExamina()">Continuar</button>`)}
+    ` : `
+      ${resetDots()}
+      <div class="card">
+        <h3>Examina tu forma de trabajar</h3>
+        <p class="desc">Lo que <b>sí puedes revisar y ajustar tú</b>. Marca lo que aplique hoy.</p>
         ${resetCampo('forma')}
       </div>
-      ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="continuarExamina()">Continuar</button>`)}
+      ${resetAcciones(`<p class="reset-falta">2 de 2</p><button type="button" class="btn btn-amber" onclick="continuarExamina()">Continuar</button>`)}
     `;
   }
   else if(resetStep===3){
     body.innerHTML = `
       ${resetDots()}
       <div class="card">
-        <h3>Lo que sigue funcionando</h3>
+        <h3>Separa lo que sigue funcionando</h3>
         <p class="desc">Elige <b>una o dos cosas que estás haciendo bien y quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
         ${resetCampo('funciona')}
       </div>
@@ -4394,7 +4468,7 @@ function renderResetStep(){
     body.innerHTML = `
       ${resetDots()}
       <div class="card">
-        <h3>Un solo ajuste</h3>
+        <h3>Elige un solo ajuste</h3>
         <p class="desc">Cuando no sale, es fácil cambiar más cosas, gastar más energía y captar con más tensión. <b>No necesitas cambiarlo todo: elige una conducta y aplícala durante las próximas 10 paradas.</b></p>
         ${resetCampo('micro')}
       </div>
@@ -4405,7 +4479,7 @@ function renderResetStep(){
     body.innerHTML = `
       ${resetDots()}
       <div class="card reset-test">
-        <h3>Prueba el ajuste</h3>
+        <h3>Testea el ajuste en 10 paradas</h3>
         <p class="reset-ajuste"><span>Tu ajuste</span><b>${escapeHtml(resetMicro)}</b></p>
         <div class="timer-big" aria-hidden="true">${escapeHtml(resetStops)} / 10</div>
         <p class="sr-only">${escapeHtml(resetStops)} de 10 paradas.</p>
@@ -4515,8 +4589,16 @@ function continuarReconoce(){
   if(e) return fieldError(...e);
   resetGoto(2);
 }
+let examinaParte = 0;
 function continuarExamina(){
-  if(!showFieldErrors([resetFalta('contexto', 'Marca qué parte viene del contexto.'), resetFalta('forma', 'Marca qué parte puedes revisar en tu forma de trabajar.')].filter(Boolean))) return;
+  if(examinaParte === 0){
+    const e = resetFalta('contexto', 'Marca qué parte viene del contexto.');
+    if(e) return fieldError(...e);
+    examinaParte = 1; renderResetStep(); document.getElementById('resetOverlay').scrollTo(0, 0);
+    return;
+  }
+  const e = resetFalta('forma', 'Marca qué parte puedes revisar en tu forma de trabajar.');
+  if(e) return fieldError(...e);
   resetGoto(3);
 }
 function guardarSepara(){
@@ -4546,7 +4628,7 @@ function repetirAjuste(id){
   renderResetStep();
 }
 /* Cada paso nuevo empieza arriba (el overlay conserva su desplazamiento entre pantallas) */
-function resetGoto(step){ resetStep = step; saveResetProgress(); renderResetStep(); document.getElementById('resetOverlay').scrollTo(0, 0); }
+function resetGoto(step){ resetStep = step; if(step === 2) examinaParte = 0; if(step === 4) resetTodosAbierto = false; saveResetProgress(); renderResetStep(); document.getElementById('resetOverlay').scrollTo(0, 0); }
 /* Cuánto sumó cada pulsación (+1 / +3), para que «Deshacer última» revierta la última acción
    completa. Es solo de esta sesión: tras recargar, deshacer resta de 1 en 1. */
 let resetStopsUndo = [];
@@ -4841,7 +4923,12 @@ try{
   const pendingNotice = sessionStorage.getItem('wesserNotice');
   if(pendingNotice){ sessionStorage.removeItem('wesserNotice'); notify(pendingNotice); }
 }catch(e){}
-goto('aprender');
+// Se abre en la última sección usada (Aprender la primera vez): la herramienta de calle, a un toque
+(function(){
+  let v = null;
+  try{ v = localStorage.getItem('wesserLastView'); }catch(e){}
+  goto(v && document.getElementById('view-' + v) ? v : 'aprender');
+})();
 </script>
 </body>
 </html>

@@ -47,7 +47,9 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   const resetNext = () => page.locator('#resetBody .reset-actions .btn-amber').click();
   await page.evaluate(() => { openReset(); resetGoto(2); });
   await resetNext();
-  ok(await page.evaluate(() => resetStep === 2 && document.querySelectorAll('#resetBody .field-error').length === 2 && !!document.activeElement.closest('#rc-contexto')), 'Examina: dos errores en línea, foco en el primer grupo y se queda en el paso');
+  ok(await page.evaluate(() => resetStep === 2 && examinaParte === 0 && document.querySelectorAll('#resetBody .field-error').length === 1 && !!document.activeElement.closest('#rc-contexto')), 'Examina (contexto): error en línea, foco en los chips y se queda en el paso');
+  ok(await page.evaluate(() => { const e = document.querySelector('#resetBody .field-error').getBoundingClientRect(), bar = document.querySelector('#resetBody .reset-actions').getBoundingClientRect(); return e.bottom <= bar.top && e.top >= 0; }), 'el mensaje de error queda a la vista, por encima de la barra fija');
+  ok(await page.evaluate(() => { const g = document.getElementById('rc-contexto').getBoundingClientRect(), e = document.querySelector('#resetBody .field-error').getBoundingClientRect(); return e.top >= g.bottom + 6; }), 'el contorno del grupo no pisa el mensaje');
   await page.evaluate(() => { resetGoto(1); });
   await resetNext();
   ok(await page.evaluate(() => resetStep === 1 && !!document.activeElement.closest('#rc-senal') && document.querySelector('#resetBody .field-error').textContent === 'Elige tu señal principal antes de continuar.'), 'Reconoce: error en línea con foco en los chips');

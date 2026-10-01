@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-30T21:54:47.976Z",
+  "generatedAt": "2026-10-01T07:55:04.001Z",
   "title": "Design System: Gestión emocional · Wesser",
   "extensions": {
     "colorMeta": {
@@ -747,7 +747,7 @@
       "Do dar color a un grupo con su tono en el cuadrado tintado (al 12 %) y en un punto de 8 px.",
       "Do reservar el ámbar al Modo Reset y al Kit de Emergencia.",
       "Do mantener 44 × 44 px como mínimo en todo lo táctil y 56 px en la barra inferior.",
-      "Do usar iconos SVG de línea del sprite (`stroke-width: 1.75`) que heredan el color del texto.",
+      "Do usar iconos SVG de línea del sprite (`stroke-width: 1.75`) que heredan el color del texto. Las 6 emociones básicas tienen su propia cara de línea (`i-emo-alegria`, `i-emo-tristeza`, `i-emo-miedo`, `i-emo-ira`, `i-emo-sorpresa`, `i-emo-asco`) en el color de la emoción, siempre con el nombre al lado.",
       "Do cumplir 4,5:1 en todo texto, en claro y en oscuro. Tinta suave es el tono más claro permitido para texto.",
       "Do cambiar fondo o borde en el hover (0,15 s) y respetar `prefers-reduced-motion`.",
       "Do ofrecer una alternativa sin `color-mix()` para iOS anterior a 16.2 (bloque `@supports not`)."
@@ -762,7 +762,9 @@
       "Don't usar Montserrat por debajo de 600 ni cargar fuentes o librerías de internet.",
       "Don't bajar el texto funcional de 11 px.",
       "Don't poner una insignia o rótulo en mayúsculas encima de un título: el título habla solo; si hace falta situar al usuario, usa el progreso.",
-      "Don't pedir texto escrito obligatorio en un flujo que se usa en calle: ofrece opciones pulsables y un «Otra…» opcional."
+      "Don't pedir texto escrito obligatorio en un flujo que se usa en calle: ofrece opciones pulsables y un «Otra…» opcional.",
+      "Don't usar el rojo de marca para medir o marcar estados del captador (fatiga, selección dentro del Reset, avisos de Reset a medias): deslizadores en Tinta media, selección y avisos del Reset en Ocre.",
+      "Don't dejar que el contorno de error de un grupo pise su mensaje ni que la barra fija lo tape: el mensaje va a 14 px del contorno y el overlay reserva espacio de desplazamiento arriba y abajo."
     ]
   }
 }

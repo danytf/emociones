@@ -174,6 +174,8 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#rc-senal [data-action="resetChip"]').nth(1).click();
   await resetNext();
   await page.locator('#rc-contexto [data-value="Flujo de gente"]').click();
+  await resetNext();
+  ok(await page.evaluate(() => resetStep === 2 && examinaParte === 1 && document.querySelector('#resetBody h3').textContent === 'Examina tu forma de trabajar'), 'Examina en dos pantallas: contexto y después forma de trabajar');
   await page.locator('#rc-forma [data-action="resetOtro"]').click();
   await page.fill('#rco-forma', 'Paro menos');
   await resetNext();
@@ -181,7 +183,10 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#rc-funciona [data-action="resetChip"]').nth(1).click();
   await page.locator('#rc-funciona [data-action="resetChip"]').nth(2).click();
   await resetNext();
-  await page.locator('#resetBody [data-value="Simplificar la apertura"]').click();
+  const sug = await page.evaluate(() => ({ senal: resetSenal, sug: RESET_CAMPOS.micro.sugeridos(), visibles: [...document.querySelectorAll('#rc-micro > .chip-cat + .chip-group [data-action="resetChip"]')].map(b => b.dataset.value), todosAbierto: document.querySelector('#rc-micro details.reset-todos').open }));
+  ok(sug.sug.length >= 3 && sug.sug.length <= 4 && sug.visibles.join() === sug.sug.join() && !sug.todosAbierto, `Elige: ${sug.sug.length} ajustes sugeridos para «${sug.senal}» y el resto plegado`);
+  await page.locator('#rc-micro details.reset-todos > summary').click();
+  await page.locator('#rc-micro details.reset-todos [data-value="Simplificar la apertura"]').click();
   await resetNext();
   ok(await page.evaluate(() => resetStep) === 5, 'R → E → S → E completados con toques');
   ok(await page.evaluate(() => resetExamResultado === 'Flujo de gente' && resetExamRendimiento === 'Paro menos' && resetAspecto1 === 'Mantengo la sonrisa en el saludo' && resetAspecto2 === 'Sigo escuchando antes de responder'), 'las respuestas rápidas se guardan en los campos de siempre (y como máximo 2 conductas)');
@@ -213,6 +218,10 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   ok((await page.locator('#resetBody').evaluate(e => e.textContent)).includes('Volver a lo básico'), 'historial muestra la sesión');
   await page.evaluate(() => document.querySelector('#resetBody [data-action="repetirAjuste"]').click());
   ok(await page.evaluate(() => resetStep === 5 && resetStops === 0 && resetMicro === 'Simplificar la apertura'), 'repetir ajuste va a Testea desde 0');
+  // Vistazo a la entrada sin tocar el Reset a medias que usa la prueba siguiente
+  await page.evaluate(() => { resetStep = 0; renderResetStep(); });
+  ok((await page.locator('#resetBody .reset-repetir').innerText()).includes('Simplificar la apertura'), 'la entrada del Reset ofrece «Repetir mi último ajuste» con el ajuste a la vista');
+  await page.evaluate(() => { resetStep = 5; renderResetStep(); });
   await page.keyboard.press('Escape');
   await page.locator('#tabReset').click();
   await page.locator('#resetBody button:has-text("Empezar de nuevo")').click();
@@ -235,8 +244,10 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.reload();
   s = await st();
   ok(s.kitHerramienta === 'Salir a respirar al parque' && s.kitAjuste === 'Simplificar la apertura' && s.kitPersona === 'Laura' && s.kitPedira === 'Que me observe dos paradas' && s.kitSenales.length === 3, 'plan persistido tras recargar');
-  // Tras recargar se está en Aprender: «Activar mi plan» sigue a mano en la fila compacta del lanzador
-  await page.locator('#qlKitSlotCompact button').click();
+  // Tras recargar se abre la última sección usada; «Activar mi plan» está a mano en cualquiera de ellas
+  const ultima = await page.evaluate(() => localStorage.getItem('wesserLastView'));
+  ok(!ultima || ultima === 'aprender' || await page.evaluate(v => document.getElementById('view-' + v).classList.contains('active'), ultima), `al recargar se abre la última sección usada (${ultima || 'aprender'})`);
+  await page.locator('#quickLauncher .ql-kit:visible').first().click();
   ok(await top() === 'modal' && (await page.locator('#modalSheet').innerText()).includes('Este es tu recurso personal'), 'activar con recurso personal lo muestra');
   await page.keyboard.press('Escape');
   await page.evaluate(() => { openReset(); openKit(); });
