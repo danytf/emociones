@@ -11,6 +11,8 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   for (const v of ['bienestar', 'herramientas', 'diario', 'aprender']) await p.locator(`#headerTabs [data-view="${v}"]`).click();
   ok(await p.evaluate(() => document.getElementById('view-aprender').classList.contains('active')), 'navegación entre secciones');
   await p.locator('#headerTabs [data-view="diario"]').click();
+  await p.selectOption('#sepaSituacion', 'Zona con poco flujo');
+  await p.selectOption('#sepaPensDestructivo', 'No vale la pena');
   await p.locator('#sepaEmocionChips [data-id="ira"]').click();
   await p.fill('#sepaPensConstructivo', 'prueba en producción');
   await p.fill('#sepaAccion', 'pausa');
