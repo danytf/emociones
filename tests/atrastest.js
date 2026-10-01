@@ -65,6 +65,14 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await p.evaluate(() => startBreath(60)); await p.locator('#toolBody button:has-text("Terminar")').click();
   ok(await p.evaluate(() => Overlays.top()) === null, 'fuera del plan, «Terminar» cierra la herramienta');
 
+  // ---- Enlace «Saltar al contenido» ----
+  await p.reload(); await p.waitForTimeout(200);
+  await p.keyboard.press('Tab');
+  const salto = await p.evaluate(() => ({ cls: document.activeElement.className, txt: document.activeElement.textContent, visible: document.activeElement.getBoundingClientRect().top >= 0 }));
+  ok(salto.cls === 'skip-link' && salto.txt === 'Saltar al contenido' && salto.visible, 'el primer Tab llega a «Saltar al contenido» y se ve');
+  await p.keyboard.press('Enter');
+  ok(await p.evaluate(() => document.activeElement.id) === 'contenido', '«Saltar al contenido» lleva el foco al contenido principal');
+
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));
   await b.close();
 })();

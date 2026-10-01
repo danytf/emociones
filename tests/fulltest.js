@@ -183,7 +183,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#rc-funciona [data-action="resetChip"]').nth(1).click();
   await page.locator('#rc-funciona [data-action="resetChip"]').nth(2).click();
   await resetNext();
-  const sug = await page.evaluate(() => ({ senal: resetSenal, sug: RESET_CAMPOS.micro.sugeridos(), visibles: [...document.querySelectorAll('#rc-micro > .chip-cat + .chip-group [data-action="resetChip"]')].map(b => b.dataset.value), todosAbierto: document.querySelector('#rc-micro details.reset-todos').open }));
+  const sug = await page.evaluate(() => ({ senal: resetSenal, sug: RESET_CAMPOS.micro.sugeridos(), visibles: [...document.querySelectorAll('#rc-micro > .reset-sug-title + .chip-group [data-action="resetChip"]')].map(b => b.dataset.value), todosAbierto: document.querySelector('#rc-micro details.reset-todos').open }));
   ok(sug.sug.length >= 3 && sug.sug.length <= 4 && sug.visibles.join() === sug.sug.join() && !sug.todosAbierto, `Elige: ${sug.sug.length} ajustes sugeridos para «${sug.senal}» y el resto plegado`);
   await page.locator('#rc-micro details.reset-todos > summary').click();
   await page.locator('#rc-micro details.reset-todos [data-value="Simplificar la apertura"]').click();
@@ -193,19 +193,26 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   for (let i = 0; i < 3; i++) await page.locator('#incrementStopBtn').click();
   await page.locator('#decrementStopBtn').click();
   ok(await page.evaluate(() => resetStops) === 2, 'contador +3 y deshacer → 2');
-  ok(await page.locator('#resetBody button.btn-amber:text-is("Continuar")').isDisabled(), 'no se puede continuar antes de 10');
+  ok(await page.locator('#resetBody button:text-is("Ver qué he aprendido")').isDisabled() && await page.locator('#resetBody .btn-amber:text-is("Ver qué he aprendido")').count() === 0, 'no se puede continuar antes de 10 (y el botón no compite en ámbar con +1)');
   // Cerrar a medias y reanudar
   await page.locator('#resetBody button:has-text("Cerrar y seguir luego")').click();
   await page.reload();
   ok(await page.locator('#tabReset').evaluate(b => b.classList.contains('pending')), 'aviso de Reset a medias tras recargar');
   await page.locator('#tabReset').click();
-  await page.locator('#resetBody button.btn:text-is("Continuar")').click();
+  const reanudar = await page.locator('#resetBody').innerText();
+  ok(reanudar.includes('Tu test está a medias') && reanudar.includes('Simplificar la apertura') && reanudar.includes('2 de 10'), 'al volver, la tarjeta muestra el ajuste y las paradas que llevas');
+  await page.locator('#resetBody button:text-is("Seguir con mis paradas")').click();
   ok(await page.evaluate(() => resetStep === 5 && resetStops === 2 && resetMicro === 'Simplificar la apertura'), 'reanudar donde se dejó');
+  await page.evaluate(() => { closeReset(); goto('herramientas'); });
+  ok((await page.locator('#qlRow .ql-reset').innerText()).includes('Seguir mi test · 2/10'), 'el lanzador muestra «Seguir mi test · 2/10»');
+  await page.locator('#qlRow .ql-reset').click();
+  ok(await page.evaluate(() => resetStep === 5 && resetStops === 2), '«Seguir mi test» lleva directo al contador');
   for (let i = 0; i < 8; i++) await page.locator('#incrementStopBtn').click();
-  await page.locator('#resetBody button.btn-amber:text-is("Continuar")').click();
+  await page.locator('#resetBody button:text-is("Ver qué he aprendido")').click();
   await page.locator('#resetBody [data-value="Lo mantengo"]').click();
+  ok(await page.evaluate(() => { const b = document.querySelector('#resetBody [data-value="Lo mantengo"]'); return b.classList.contains('is-sel') && !b.classList.contains('btn-amber'); }), 'la opción elegida se marca con el tinte del Reset, no como botón de acción');
   await page.fill('#resetObservacionInput', 'Más conversaciones largas');
-  await page.locator('#resetBody button.btn:text-is("Continuar")').click();
+  await page.locator('#resetBody button:text-is("Ver mi resumen")').click();
   const cierre = await page.locator('#resetBody').innerText();
   ok(cierre.includes('Vuelve a calle con esto') && cierre.includes('Simplificar la apertura') && cierre.includes('Mi próximo paso'), 'aprendizaje → cierre con el ajuste elegido y «Mi próximo paso»');
   await page.locator('#rc-paso [data-action="resetOtro"]').click();
@@ -225,6 +232,8 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.keyboard.press('Escape');
   await page.locator('#tabReset').click();
   await page.locator('#resetBody button:has-text("Empezar de nuevo")').click();
+  ok(await top() === 'confirm' && await page.evaluate(() => state.resetProgress !== null), '«Empezar de nuevo» pide confirmación antes de borrar');
+  await confirmOk();
   ok(await page.evaluate(() => resetStep === 0 && state.resetProgress === null), 'empezar de nuevo descarta el progreso');
   await page.keyboard.press('Escape');
 
