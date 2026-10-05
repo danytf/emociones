@@ -860,6 +860,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ql-row .ql-toggle{width:100%;min-height:48px;justify-content:center;border-radius:var(--ds-radius-md);}
 .ds .reset-row .btn.reset-atras{flex:0 0 auto;width:auto;padding:0 18px;}
 .ic-atras{transform:rotate(180deg);}
+.ic-abajo{transform:rotate(90deg);}
 @media (max-width:420px){ .view h2, .ds .ds-page-head h2{font-size:22px;} }
 /* Herramientas en móvil: la tarjeta y su acción se anclan abajo, cerca del pulgar */
 @media (max-width:600px){
@@ -3180,21 +3181,21 @@ function startPreTurno(){
               <span class="kit-flow-label">SI APARECE</span>
               <p>${state.kitSenales.map(escapeHtml).join(' · ')}</p>
             </div>
-            <div class="kit-flow-arrow">↓</div>
+            <div class="kit-flow-arrow" aria-hidden="true"><svg class="ic ic-sm ic-abajo"><use href="#i-arrow"/></svg></div>
           ` : ''}
           <div class="kit-flow-step">
             <span class="kit-flow-label">ME REGULO CON</span>
             <p>${escapeHtml(state.kitHerramienta)}</p>
           </div>
           ${state.kitAjuste ? `
-            <div class="kit-flow-arrow">↓</div>
+            <div class="kit-flow-arrow" aria-hidden="true"><svg class="ic ic-sm ic-abajo"><use href="#i-arrow"/></svg></div>
             <div class="kit-flow-step">
               <span class="kit-flow-label">AJUSTO</span>
               <p>${escapeHtml(state.kitAjuste)}</p>
             </div>
           ` : ''}
           ${(state.kitPersona || state.kitPedira) ? `
-            <div class="kit-flow-arrow">↓</div>
+            <div class="kit-flow-arrow" aria-hidden="true"><svg class="ic ic-sm ic-abajo"><use href="#i-arrow"/></svg></div>
             <div class="kit-flow-step">
               <span class="kit-flow-label">SI SIGO ATASCADO</span>
               <p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>
@@ -4394,17 +4395,17 @@ function renderResetStep(){
             <span class="kit-flow-label">CUANDO NOTO</span>
             ${state.kitSenales.length ? `<p>${state.kitSenales.map(escapeHtml).join(' · ')}</p>` : '<p class="kit-flow-empty">Mis señales de alerta</p>'}
           </div>
-          <div class="kit-flow-arrow">↓</div>
+          <div class="kit-flow-arrow" aria-hidden="true"><svg class="ic ic-sm ic-abajo"><use href="#i-arrow"/></svg></div>
           <div class="kit-flow-step">
             <span class="kit-flow-label">ME REGULO CON</span>
             ${state.kitHerramienta ? `<p>${escapeHtml(state.kitHerramienta)}</p>` : '<p class="kit-flow-empty">Una herramienta que me ayude a recuperar el foco</p>'}
           </div>
-          <div class="kit-flow-arrow">↓</div>
+          <div class="kit-flow-arrow" aria-hidden="true"><svg class="ic ic-sm ic-abajo"><use href="#i-arrow"/></svg></div>
           <div class="kit-flow-step">
             <span class="kit-flow-label">AJUSTO</span>
             ${state.kitAjuste ? `<p>${escapeHtml(state.kitAjuste)}</p>` : '<p class="kit-flow-empty">Una sola conducta concreta</p>'}
           </div>
-          <div class="kit-flow-arrow">↓</div>
+          <div class="kit-flow-arrow" aria-hidden="true"><svg class="ic ic-sm ic-abajo"><use href="#i-arrow"/></svg></div>
           <div class="kit-flow-step">
             <span class="kit-flow-label">SI SIGO ATASCADO</span>
             ${(state.kitPersona || state.kitPedira) ? `<p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>` : '<p class="kit-flow-empty">Pido apoyo</p>'}
