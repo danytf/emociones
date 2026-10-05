@@ -4133,7 +4133,7 @@ function activarRecordatorioVisual(){
 function openMiMotivo(){
   const hay = !!state.miMotivo;
   openTool('Mi motivo', `
-    <div class="card" style="text-align:left;">
+    <div class="card" style="text-align:left;" data-guarda>
       <label for="miMotivoInput">¿Por qué estás en este trabajo?</label>
       <textarea id="miMotivoInput" class="mi-motivo-campo" maxlength="${LIMITS.shortStr}" aria-describedby="miMotivoAyuda miMotivoPrivado" oninput="miMotivoCuenta()">${escapeHtml(state.miMotivo)}</textarea>
       <p class="desc mi-motivo-cuenta" id="miMotivoCuenta" hidden></p>
@@ -4146,6 +4146,7 @@ function openMiMotivo(){
     </div>
   `);
   miMotivoCuenta();
+  Overlays.resetBaseline('tool');   // lo guardado es el punto de partida: solo avisa al cerrar si hay cambios sin guardar
 }
 /* El contador solo aparece cerca del límite */
 function miMotivoCuenta(){

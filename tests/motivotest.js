@@ -40,6 +40,27 @@ async function fichaDesanimo(p) {
     await escribirYGuardar(p, 'Para pagarme los estudios.');
     ok(await guardado(p) === 'Para pagarme los estudios.', M('guardar persiste en el dispositivo'));
     ok(await p.evaluate(() => document.activeElement.id === 'miMotivoInput' && /Borrar mi motivo/.test(document.getElementById('toolBody').textContent)), M('tras guardar: foco en el campo y aparece «Borrar mi motivo»'));
+    // Cerrar tras guardar no avisa de cambios sin guardar; editar sin guardar sí
+    await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => Overlays.top() === null), M('tras guardar, Escape cierra sin preguntar «¿Cerrar sin guardar?»'));
+    await p.evaluate(() => openMiMotivo()); await p.waitForTimeout(150);
+    await p.goBack().catch(() => {}); await p.waitForTimeout(450);
+    ok(await p.evaluate(() => Overlays.top() === null), M('abrir con un motivo guardado y volver atrás no pregunta nada'));
+    await p.evaluate(() => openMiMotivo()); await p.waitForTimeout(150);
+    await p.locator('#miMotivoInput').fill('Cambio sin guardar');
+    await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+    const aviso = await p.evaluate(() => ({ top: Overlays.top(), t: document.getElementById('confirmTitle').textContent }));
+    ok(aviso.top === 'confirm' && aviso.t === '¿Cerrar sin guardar?', M('con un cambio sin guardar, cerrar sí avisa'));
+    await p.locator('#confirmCancel').click(); await p.waitForTimeout(200);
+    ok(await p.evaluate(() => Overlays.top() === 'tool' && document.getElementById('miMotivoInput').value === 'Cambio sin guardar'), M('«Seguir editando» conserva lo escrito'));
+    await p.locator('#toolBody button:has-text("Guardar")').click(); await p.waitForTimeout(150);
+    await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => Overlays.top() === null && JSON.parse(localStorage.getItem('wesserAppState')).miMotivo === 'Cambio sin guardar'), M('guardar el cambio y cerrar: guardado y sin aviso'));
+    await escribirYGuardar(p, 'Para pagarme los estudios.');
+    await p.evaluate(() => { borrarMiMotivo(); }); await p.locator('#confirmOk').click(); await p.waitForTimeout(250);
+    await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => Overlays.top() === null), M('tras borrar, cerrar no pregunta nada'));
+    await escribirYGuardar(p, 'Para pagarme los estudios.');
 
     if (completo) {
       await p.reload(); await p.waitForTimeout(300);
