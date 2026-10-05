@@ -159,6 +159,15 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await p.click('#sepaSaveBtn');
   ok(await p.evaluate(() => state.sepaEntries.length >= 1 && document.querySelectorAll('#view-diario .field-error').length === 0), 'Diario: tras guardar, el formulario queda sin errores');
 
+  // ---- Menores de la 9ª crítica ----
+  await p.evaluate(() => { state.resetProgress = { step: 5, micro: 'Simplificar la apertura', stops: 3 }; renderResetTab(); goto('herramientas'); });
+  ok(await p.evaluate(() => getComputedStyle(document.querySelector('#qlRow .ql-reset')).backgroundColor !== getComputedStyle(document.querySelector('#qlRow .ql-kit')).backgroundColor && document.getElementById('qlRow').classList.contains('con-test')), 'con un test a medias, «Seguir mi test» es el principal del lanzador y «Activar mi plan» va neutro');
+  await p.evaluate(() => { state.resetProgress = null; renderResetTab(); openReset(); });
+  ok((await p.locator('#resetBody').innerText()).includes('Reconoce, examina, separa'), 'la entrada del Reset nombra los cinco pasos');
+  await p.evaluate(() => resetGoto(3));
+  ok((await p.locator('#resetBody').innerText()).includes('Marca una o dos cosas'), 'Separa no usa el verbo del paso siguiente');
+  await p.evaluate(() => closeReset());
+
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));
   await b.close();
 })();

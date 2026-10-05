@@ -536,6 +536,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .ds-page-head{margin-bottom:var(--sp-2);}
 .ds .ds-page-head h2{font-size:var(--fs-2xl);line-height:var(--lh-tight);font-weight:750;letter-spacing:-.02em;color:var(--ds-ink);margin:0 0 var(--sp-1);}
 .ds .ds-page-head p{font-size:var(--fs-md);line-height:var(--lh-body);color:var(--ds-ink-2);margin:0;max-width:60ch;}
+#view-herramientas .ds-page-head p{max-width:none;}
+.view.active > .ds-page-head{grid-column:1 / -1;}
 
 /* Icono dentro de un cuadrado tintado */
 .ds .tile{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;flex-shrink:0;
@@ -867,6 +869,11 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 #qlTestSlotCompact:empty{display:none;}
 #qlTestSlotCompact .ql-btn{flex:1;white-space:nowrap;}
 .ql-compact-bar.con-test #qlKitSlotCompact{display:none;}
+/* Lanzador completo con un test a medias: «Seguir mi test» en ámbar sólido; «Activar mi plan», neutro con el rayo en ocre */
+#qlRow.con-test .ql-btn.ql-reset{background:var(--amber);border-color:var(--amber);color:#292C2F;box-shadow:0 2px 8px rgba(224,160,48,.25);}
+#qlRow.con-test .ql-btn.ql-reset .ql-em{color:#292C2F;}
+#qlRow.con-test .ql-btn.ql-kit{background:var(--ds-surface);border-color:var(--ds-line);color:var(--ds-ink);box-shadow:none;}
+#qlRow.con-test .ql-btn.ql-kit .ql-em{color:var(--tone-track-ink);}
 @media (max-width:360px){ #qlTestSlotCompact{flex:1 1 0;min-width:0;} #qlTestSlotCompact .ql-btn{white-space:normal;} }
 #qlKitSlotCompact .ql-btn{flex:1;white-space:nowrap;}
 .quick-launcher.ql-compact .ql-compact-btn{display:flex;align-items:center;gap:var(--sp-2);flex:1 1 0;min-width:0;min-height:48px;padding:var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-3);
@@ -879,7 +886,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 @media (hover:hover){ .ql-compact-btn:hover{border-color:var(--ds-line-strong);} }
 .ql-compact-btn:active{background:var(--ds-canvas);}
 @media (max-width:420px){ .ql-compact-btn .ql-go{font-size:0;} .ql-compact-btn .ql-go .ic{width:18px;height:18px;} .ql-compact-bar:has(#qlKitSlotCompact .ql-kit) .ql-compact-btn > .ql-em, .ql-compact-bar:has(#qlTestSlotCompact .ql-btn) .ql-compact-btn > .ql-em{display:none;} }
-@media (min-width:601px){ .ql-row{grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));} }
+@media (min-width:601px){ .ql-row{grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));} .quick-launcher:not(.ql-compact) #qlRow{grid-template-columns:repeat(4, minmax(0, 1fr));} }
 /* Lanzador en dos grupos: momentos del turno y cómo estoy ahora */
 .ql-sub{margin:var(--sp-3) 0 var(--sp-2);font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);}
 .ql-head + .ql-sub{margin-top:0;}
@@ -2956,6 +2963,10 @@ function guardarSepa(){
   // Si no se guarda: se deshace el cambio y el formulario (y la edición) siguen tal cual
   if(!commitSave(()=>{ state.sepaEntries = prevEntries; })) return;
   if(editando) cancelarEdicionSepa();
+  if(!prevEntries.length){
+    let pref = null; try{ pref = localStorage.getItem('wesserSepaIntro'); }catch(e){}
+    const intro = document.getElementById('sepaIntro'); if(intro && !pref) intro.open = false;
+  }
   selectedEmociones = [];
   syncEmocionChips();
   document.getElementById('sepaSituacion').value='';
@@ -4293,6 +4304,7 @@ function renderResetTab(){
   const slot = document.getElementById('qlTestSlotCompact');
   if(slot) slot.innerHTML = enTest ? `<button type="button" class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset(true)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg></span><span class="ql-lb">Seguir mi test · ${p.stops || 0}/10</span></button>` : '';
   const barra = document.querySelector('.ql-compact-bar'); if(barra) barra.classList.toggle('con-test', enTest);
+  const fila = document.getElementById('qlRow'); if(fila) fila.classList.toggle('con-test', enTest);
 }
 
 /* Único punto que deja la sesión de Reset en blanco (en memoria). Si se añade un campo nuevo
@@ -4801,7 +4813,7 @@ function renderResetStep(){
     body.innerHTML = `
       <div class="card reset-hero">
         <h3>¿No encuentras tu ritmo?</h3>
-        <p class="desc">Una mala racha no significa que hayas dejado de saber captar. <b>Reconoce, separa, elige un solo ajuste y pruébalo en 10 paradas.</b></p>
+        <p class="desc">Una mala racha no significa que hayas dejado de saber captar. <b>Reconoce, examina, separa, elige un solo ajuste y pruébalo en 10 paradas.</b></p>
         <button type="button" class="btn btn-amber" onclick="resetGoto(1)"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-lifebuoy"/></svg> Empezar el Reset</button>
         ${ultimo ? `<button type="button" class="btn btn-outline reset-repetir" data-action="repetirAjuste" data-id="${escapeHtml(ultimo.id)}"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-refresh"/></svg><span>Repetir mi último ajuste<small>${escapeHtml(ultimo.ajusteNuevo || ultimo.micro)}</small></span></button>` : ''}
         <button type="button" class="btn btn-outline" onclick="startCheckin()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-traffic"/></svg> Revisar antes mis señales</button>
@@ -4880,7 +4892,7 @@ function renderResetStep(){
       ${resetDots()}
       <div class="card">
         <h3>Separa lo que sigue funcionando</h3>
-        <p class="desc">Elige <b>una o dos cosas que estás haciendo bien y quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
+        <p class="desc">Marca <b>una o dos cosas que estás haciendo bien y quieres mantener</b>, aunque los resultados no estén siendo los esperados.</p>
         ${resetCampo('funciona')}
       </div>
       ${resetAcciones(`<button type="button" class="btn btn-amber" id="separaBtn" onclick="guardarSepara()">Elegir mi ajuste</button>`)}
