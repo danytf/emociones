@@ -20,6 +20,7 @@ const LOCAL = [
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],
+  ['a11yguard', 'Accesibilidad real: foco no tapado, foco en oscuro, pestaña activa, zoom al 400 %'],
   ['axetest', 'axe-core WCAG 2.2 A/AA en claro y oscuro'],
   ['resp', 'Responsive: 9 anchos × 17 pantallas'],
   ['refcheck', 'Referencias: funciones, acciones e IDs'],

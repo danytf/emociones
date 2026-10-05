@@ -574,6 +574,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 @media (hover:hover){ .header-tabs button:hover{background:var(--ds-canvas);} }
 .header-tabs button.active{background:color-mix(in srgb, var(--brand-accent) 10%, transparent);color:var(--brand-ink);}
 :root[data-theme="dark"] .header-tabs button.active{background:color-mix(in srgb, var(--brand-accent) 16%, transparent);}
+/* La sección activa se reconoce también por forma, no solo por color (WCAG 1.4.1) */
+.header-tabs button.active{box-shadow:inset 0 -3px 0 currentColor;}
 .header-tabs button.tab-reset{background:color-mix(in srgb, var(--amber) 18%, transparent);color:var(--tone-track-ink);}
 :root[data-theme="dark"] .header-tabs button.tab-reset{background:color-mix(in srgb, var(--tone-track-ink) 16%, transparent);}
 /* Iconos del lanzador rápido */
@@ -634,8 +636,11 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   .tabs-fade{display:none;}
   .header-tabs button.tab-reset.pending::after{position:absolute;top:6px;right:calc(50% - 18px);}
   .header-tabs button{position:relative;}
+  .header-tabs button.active{box-shadow:inset 0 3px 0 currentColor;}
   /* Espacio para que la barra no tape el final del contenido ni los avisos */
   .content-wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));}
+  /* WCAG 2.4.11: lo que recibe el foco no queda debajo de la barra fija */
+  main{scroll-padding-bottom:calc(84px + env(safe-area-inset-bottom,0px));}
   .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px));}
   header{padding-bottom:10px;}
 }
@@ -844,6 +849,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
 .ds input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--slider);border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
 .ds input[type=range]:focus-visible{outline-offset:6px;}
+/* En oscuro, el contorno de foco usa el rojo noche: el rojo de marca no llega a 3:1 sobre las superficies oscuras */
+:root[data-theme="dark"] :focus-visible{outline-color:var(--brand-accent) !important;}
 :root[data-theme="dark"] .ds .range-val{color:var(--ds-ink);}
 /* ---------- Detalles finales ---------- */
 .ds .thist-title, #resetBody h3{font-family:var(--font-brand);}
@@ -1147,6 +1154,16 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
   .ds .wheel-btn:hover{border-color:var(--emo);}
 }
 @media (prefers-reduced-motion: reduce){ .btn, .chip, .wheel-btn, .icon-btn, .chip-info{transition:none;} }
+/* Zoom muy alto o pantalla muy baja (≤ 340 px de alto, p. ej. 400 % de zoom): sin barras fijas; todo se desplaza con el contenido */
+@media (max-height:340px){
+  html, body{height:auto;overflow:visible;}
+  body{min-height:100vh;}
+  main{overflow:visible;flex:none;}
+  .tabs-wrap{position:static !important;box-shadow:none !important;}
+  .content-wrap{padding-bottom:var(--sp-6) !important;}
+  .overlay-header{position:static;}
+  .ds .reset-actions{position:static;}
+}
 /* ---------- Tablet y escritorio: un solo borde ---------- */
 /* Cabecera y contenido comparten caja (1224 px de contenido, 28 px de margen): el logo, las pestañas,
    el título y las tarjetas empiezan en la misma línea vertical. */
@@ -2452,6 +2469,13 @@ document.addEventListener('click', e=>{
    notify(): aviso breve no modal para lo que no pertenece a un campo concreto. Se lee por la
    región viva y se cierra solo (los errores duran más) o con su botón. */
 let toastTimer = null;
+/* Fallo inesperado: se avisa en palabras normales (una vez cada pocos segundos); el detalle técnico solo en la consola */
+let ultimoFallo = 0;
+window.addEventListener('error', ()=>{
+  if(Date.now() - ultimoFallo < 5000) return;
+  ultimoFallo = Date.now();
+  try{ notify('Algo no ha funcionado. Cierra esta pantalla y vuelve a intentarlo; lo que has guardado sigue ahí.'); }catch(e){}
+});
 function notify(msg, type){
   const t = document.getElementById('toast');
   document.getElementById('toastMsg').textContent = msg;
@@ -2897,10 +2921,15 @@ function startEstados(){
       <button type="button" class="btn-quiet" style="margin-top:var(--sp-2);" onclick="startNoSeQueNecesito()">No lo tengo claro</button>
     </div>
   `);
+  // Al volver desde una ficha, el foco queda en el estado que se había abierto (no al principio de la lista)
+  const previo = ultimoEstado && document.querySelector(`#toolBody .estado-opcion[data-value="${ultimoEstado}"]`);
+  if(previo && Overlays.top() === 'tool') previo.focus();
 }
+let ultimoEstado = null;
 function openEstado(id){
   const e = ESTADOS_CAPTACION.find(x=>x.id===id);
   if(!e) return;
+  ultimoEstado = id;
   openTool(e.nombre, `
     <div class="card estado-ficha" style="text-align:left;">
       <p class="quote">${e.pensamiento}</p>
