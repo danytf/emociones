@@ -747,6 +747,15 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .check-item{background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:14px;color:var(--ds-ink);}
 .ds .check-item.checked{background:color-mix(in srgb, var(--tone-anchor) 10%, var(--ds-surface));border-color:var(--tone-anchor);}
 .ds .check-item input{accent-color:var(--tone-anchor);}
+/* Check-in del Reset: títulos a la vista, explicación a demanda y lo marcado en ocre (como todo el Reset) */
+.ds .checkin-card .check-item{margin-bottom:var(--sp-2);padding:10px 12px;align-items:center;}
+.ds .checkin-card .ci-desc{display:none;}
+.ds .checkin-card.con-desc .check-item{align-items:flex-start;}
+.ds .checkin-card.con-desc .ci-desc{display:block;margin-top:2px;font-size:var(--fs-sm);color:var(--ds-ink-2);}
+.ds .checkin-bloque{margin:var(--sp-4) 0 var(--sp-2);font-weight:700;color:var(--ds-ink);}
+.ds .checkin-desc-btn{margin-top:var(--sp-1);}
+#resetOverlay .check-item.checked{background:color-mix(in srgb, var(--tone) 12%, var(--ds-surface));border-color:var(--tone);}
+#resetOverlay .check-item input{accent-color:var(--tone-ink);}
 .ds .empty-state{color:var(--ds-ink-3);}
 /* Check-in: la etiqueta de la casilla es texto de lectura, no rótulo de campo */
 .ds label.check-item{font-family:inherit;font-size:var(--fs-md);font-weight:400;letter-spacing:normal;margin-top:0;line-height:1.45;}
@@ -4464,6 +4473,7 @@ function resetAtras(){
 
 /* El check-in va por bloques: una sección por pantalla, para leer y marcar sin hacer scroll */
 let checkinPage = 0;
+let checkinDescAbiertas = false;   // explicaciones de las señales: plegadas por defecto (el bloque cabe en una pantalla)
 function startCheckin(){
   checkinState = CHECKIN_SECTIONS.map(s=>s.items.map(()=>false));
   checkinPage = 0;
@@ -4634,32 +4644,42 @@ function renderResetStep(){
   else if(resetStep==='checkin'){
     const si = checkinPage, s = CHECKIN_SECTIONS[si], total = CHECKIN_SECTIONS.length, ultima = si === total - 1;
     const marcadas = checkinState.flat().filter(Boolean).length;
-    body.innerHTML = `
-      ${si === 0 ? `<div class="card">
-        <h3>¿Qué señales estás notando?</h3>
-        <p class="desc">Marca aquello con lo que <b>te identifiques ahora o que hayas notado en los últimos días</b>. No es un diagnóstico: sirve para <b>detectar qué está cambiando y decidir qué ajustar</b>.</p>
-        <details class="help-item">
-          <summary>¿Qué busca este check-in?</summary>
-          <div class="help-body">
-            <p>No se trata de contar «cuántas señales tienes» ni de ponerte una etiqueta.</p>
-            <p>Se trata de detectar <b>qué está empezando a cambiar en ti</b> para poder decidir antes <b>qué necesitas ajustar, practicar o hablar con alguien</b>.</p>
-            <p class="quote"><b>Detectarlo pronto te da más margen para actuar.</b></p>
-          </div>
-        </details>
-      </div>` : ''}
-      <div class="card">
-        <h3>${s.title.replace(/^\d+\.\s*/, '')}</h3>
-        ${s.items.map((label,ii)=>`
-          <label class="check-item ${checkinState[si][ii]?'checked':''}">
+    /* Barra de 4 segmentos, como la del Kit; el bloque actual, con su nombre */
+    const dots = `<ol class="reset-steps kit-steps" aria-label="Progreso del check-in">${CHECKIN_SECTIONS.map((_, i)=>{
+      const estado = i < si ? 'done' : i === si ? 'on' : '';
+      return `<li class="${estado}"${i === si ? ' aria-current="step"' : ''}><span class="rs-l" aria-hidden="true">${i + 1}</span><span class="rs-n">Bloque ${i + 1}</span></li>`;
+    }).join('')}</ol>`;
+    /* Cada señal: el título a la vista; su explicación, a demanda (un solo interruptor por bloque) */
+    const item = (label, ii) => {
+      const [titulo, ...resto] = label.split('<br>');
+      return `<label class="check-item ${checkinState[si][ii]?'checked':''}">
             <input type="checkbox" ${checkinState[si][ii]?'checked':''} data-action="toggleCheckinItem" data-si="${si}" data-ii="${ii}">
-            <span>${a11yLabel(label)}</span>
-          </label>`).join('')}
+            <span>${titulo}${resto.length ? `<span class="ci-desc"> ${resto.join(' ')}</span>` : ''}</span>
+          </label>`;
+    };
+    body.innerHTML = `
+      ${dots}
+      <div class="card checkin-card${checkinDescAbiertas ? ' con-desc' : ''}">
+        ${si === 0 ? `<h3>¿Qué señales estás notando?</h3>
+        <p class="desc">Marca lo que <b>notes ahora o en los últimos días</b>. No es un diagnóstico.</p>
+        <p class="checkin-bloque">${s.title.replace(/^\d+\.\s*/, '')}</p>`
+        : `<h3>${s.title.replace(/^\d+\.\s*/, '')}</h3>`}
+        ${s.items.map(item).join('')}
+        <button type="button" class="btn-quiet checkin-desc-btn" aria-expanded="${checkinDescAbiertas}" onclick="checkinDescAbiertas=!checkinDescAbiertas;renderResetStep();document.querySelector('.checkin-desc-btn').focus();">${checkinDescAbiertas ? 'Ocultar explicaciones' : 'Ver qué significa cada señal'}</button>
       </div>
-      ${resetAcciones(`<p class="reset-falta">Bloque ${si + 1} de ${total}${marcadas ? ` · ${marcadas} ${marcadas === 1 ? 'señal marcada' : 'señales marcadas'}` : ''}</p>
+      ${si === 0 ? `<details class="help-item">
+        <summary>¿Qué busca este check-in?</summary>
+        <div class="help-body">
+          <p>No se trata de contar «cuántas señales tienes» ni de ponerte una etiqueta.</p>
+          <p>Se trata de detectar <b>qué está empezando a cambiar en ti</b> para poder decidir antes <b>qué necesitas ajustar, practicar o hablar con alguien</b>.</p>
+          <p class="quote"><b>Detectarlo pronto te da más margen para actuar.</b></p>
+        </div>
+      </details>` : ''}
+      ${resetAcciones(`${marcadas ? `<p class="reset-falta">${marcadas} ${marcadas === 1 ? 'señal marcada' : 'señales marcadas'}</p>` : ''}
         <div class="reset-row">
-          <button type="button" class="btn btn-outline" onclick="${si === 0 ? 'resetGoto(0)' : `checkinIr(${si - 1})`}">Atrás</button>
+          <button type="button" class="btn btn-outline reset-atras" onclick="${si === 0 ? 'resetGoto(0)' : `checkinIr(${si - 1})`}"><svg class="ic ic-sm ic-atras" aria-hidden="true"><use href="#i-arrow"/></svg><span class="reset-atras-lb"> Atrás</span></button>
           ${ultima ? `<button type="button" class="btn btn-amber" onclick="saveCheckin()">Guardar y continuar</button>`
-            : `<button type="button" class="btn btn-amber" onclick="checkinIr(${si + 1})">Siguiente</button>`}
+            : `<button type="button" class="btn btn-amber" onclick="checkinIr(${si + 1})">Siguiente bloque</button>`}
         </div>`)}
     `;
   }
