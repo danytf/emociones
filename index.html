@@ -47,6 +47,7 @@
   --shadow:0 2px 10px rgba(0,0,0,0.4);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+[hidden]{display:none !important;}
 /* Palabras muy largas sin espacios (URLs, textos pegados) parten línea en vez de salirse de su caja */
 p, li, summary, label, h2, h3, h4, .chip, .desc, .meta, .mini-card, .kit-flow-step, .toast, .field-error, .field-ok, textarea{overflow-wrap:anywhere;}
 html,body{margin:0;padding:0;height:100%;overflow:hidden;}
@@ -1011,6 +1012,8 @@ main:focus{outline:none;}
 /* Cierre: «Mi próximo paso» plegado */
 .ds .reset-paso{margin-top:var(--sp-3);}
 .ds .reset-nota{margin-top:var(--sp-2);font-size:var(--fs-sm);}
+.ds .reset-aviso.reset-aviso-izq{justify-content:flex-start;margin:0 0 var(--sp-2);}
+.ds .reset-aviso{display:flex;align-items:center;justify-content:center;gap:6px;margin:var(--sp-2) 0 0;font-size:var(--fs-sm);font-weight:650;color:var(--tone-ink);}
 .ds .reset-opcional{font-weight:500;color:var(--ds-ink-3);}
 .ds .reset-hecho{display:flex;align-items:center;justify-content:center;gap:6px;font-size:var(--fs-lg);}
 /* Cierre: lo que te llevas a calle */
@@ -2881,6 +2884,7 @@ function syncEmocionChips(){
 function toggleEmocion(id){
   selectedEmociones = selectedEmociones.includes(id) ? selectedEmociones.filter(x=>x!==id) : [...selectedEmociones, id];
   syncEmocionChips();
+  clearFieldError(document.getElementById('sepaEmocionChips'));
 }
 renderEmocionChips();
 
@@ -2898,6 +2902,7 @@ function sugerirReencuadre(){
   const actual = el.value.trim();
   if(!actual || actual === lastReencuadre) el.value = texto;
   else if(!actual.includes(texto)) el.value = actual + '\n' + texto;
+  clearFieldError(el);
   lastReencuadre = texto;
   announce('Sugerencia añadida al pensamiento útil.');
 }
@@ -2905,6 +2910,7 @@ let lastReencuadre = '';
 function insertAccion(txt){
   const el = document.getElementById('sepaAccion');
   el.value = el.value ? el.value + '. ' + txt : txt;
+  clearFieldError(el);
   announce(`Añadido a la acción: ${txt}.`);
 }
 
@@ -2962,6 +2968,8 @@ function guardarSepa(){
   document.getElementById('sepaAccion').value='';
   renderSepaHistorial();
   lastReencuadre = '';
+  // Formulario limpio, sin avisos de un intento anterior
+  document.querySelectorAll('#view-diario [data-error-id]').forEach(clearFieldError);
   notify(editando ? 'Registro actualizado.' : 'Registro guardado. Lo tienes en el Historial.');
 }
 function editarSepa(id){
@@ -4236,7 +4244,10 @@ let resetAspecto1 = '', resetAspecto2 = '';
 let resetPacto = '';
 let resetPasoAbierto = false;   // «Mi próximo paso» plegado en el cierre salvo que se abra o ya tenga respuesta
 let resetAprendizaje = '', resetObservacion = '';
-let resetAjusteNuevo = '';   // «Lo ajusto»: la versión retocada del ajuste probado
+let resetAjusteNuevo = '';
+let resetAvisoCero = false;     // el ajuste cambió con paradas contadas: Testea lo dice una vez
+let resetDescartados = [];      // ajustes descartados con «Pruebo otra cosa» en esta sesión: no se vuelven a sugerir
+let resetNotaElige = '';        // aviso en línea al volver a Elige (en lugar de un aviso flotante que tape opciones)   // «Lo ajusto»: la versión retocada del ajuste probado
 let checkinState = [];
 let resetCheckinItems = [];
 let resetHistorialLimit = 5;
@@ -4291,6 +4302,7 @@ function clearResetSession(){
   resetSenal = ''; resetExamResultado = ''; resetExamRendimiento = '';
   resetAspecto1 = ''; resetAspecto2 = ''; resetPacto = '';
   resetAprendizaje = ''; resetObservacion = ''; resetAjusteNuevo = '';
+  resetAvisoCero = false; resetDescartados = []; resetNotaElige = '';
   resetCheckinItems = [];
   resetStopsUndo = [];
   examinaParte = 0; resetTodosAbierto = false; resetPasoAbierto = false; resetMasAbierto.clear();
@@ -4375,7 +4387,9 @@ const RESET_CAMPOS = {
     get:()=>[resetAspecto1, resetAspecto2].filter(Boolean).join(RESET_SEP),
     set:v=>{ const p = v ? v.split(RESET_SEP) : []; resetAspecto1 = p[0] || ''; resetAspecto2 = p.slice(1).join(RESET_SEP); },
     opciones:()=>['Mantengo la sonrisa en el saludo','Sigo escuchando antes de responder','Hago la parada con actitud abierta','Explico con claridad','Gestiono bien las objeciones','Mantengo la actitud tras un «no»','Adapto mi forma de trabajar'] },
-  micro: { label:'Ajuste para las próximas 10 paradas', otro:'Otro ajuste', get:()=>resetMicro || '', set:v=>{ resetMicro = v || null; },
+  micro: { label:'Ajuste para las próximas 10 paradas', otro:'Otro ajuste', get:()=>resetMicro || '',
+    // Las paradas son de un ajuste: si cambia con el test empezado, el contador vuelve a cero (y se avisa en Testea)
+    set:v=>{ const nuevo = v || null; if(resetStops > 0 && nuevo !== resetMicro){ resetStops = 0; resetStopsUndo = []; resetAvisoCero = true; } resetMicro = nuevo; },
     grupos:()=>{
       const g = Object.entries(MICROAUDITORIA);
       const kit = (state.kitAjuste || '').trim();
@@ -4384,7 +4398,8 @@ const RESET_CAMPOS = {
     /* 3 o 4 ajustes a la vista: el del Kit (si hay) y los asociados a la señal elegida en R */
     sugeridos:()=>{
       const kit = (state.kitAjuste || '').trim();
-      return [...new Set([kit, ...(RESET_SUGERIDOS[resetSenal] || [])].filter(Boolean))].slice(0, 4);
+      const base = RESET_SUGERIDOS[resetSenal] || KIT_AJUSTES_HABITUALES;
+      return [...new Set([kit, ...base].filter(x => x && !resetDescartados.includes(x)))].slice(0, 4);
     } },
   paso: { label:'Mi próximo paso', otro:'Otro paso', get:()=>resetPacto, set:v=>{ resetPacto = v; },
     opciones:()=>['Paro 2 minutos antes de seguir empujando','Mantengo un solo ajuste en las próximas paradas','Pido feedback a un compañero o a mi responsable','Vuelvo a lo básico del speech'] },
@@ -4455,7 +4470,7 @@ function resetCampoHtml(f){
     // Sugeridos a la vista; el resto, plegado (abierto si lo elegido no está entre los sugeridos)
     const abrir = resetTodosAbierto || (sel.length && !sug.includes(sel[0]));
     // Rótulo en minúscula y sin comillas anidadas; «Ver todos» no repite los sugeridos
-    const titulo = c.titulo ? escapeHtml(c.titulo()) : RESET_SUGERIDOS[resetSenal] ? `Para tu señal: <span>${escapeHtml(resetSenal.charAt(0).toLowerCase() + resetSenal.slice(1))}</span>` : 'Tu ajuste del Kit';
+    const titulo = c.titulo ? escapeHtml(c.titulo()) : !RESET_SUGERIDOS[resetSenal] ? 'Ajustes habituales' : RESET_SUGERIDOS[resetSenal] ? `Para tu señal: <span>${escapeHtml(resetSenal.charAt(0).toLowerCase() + resetSenal.slice(1))}</span>` : 'Tu ajuste del Kit';
     const resto = c.grupos().map(([cat, items])=>[cat, items.filter(x=>!sug.includes(x))]).filter(([, items])=>items.length)
       .map(([cat, items])=>`<div class="chip-cat" aria-hidden="true">${escapeHtml(cat)}</div><div class="chip-group">${items.map(chip).join('')}</div>`).join('');
     grupos = `<p class="reset-sug-title">${titulo}</p><div class="chip-group">${sug.map(chip).join('')}</div>
@@ -4876,6 +4891,7 @@ function renderResetStep(){
       ${resetDots()}
       <div class="card">
         <h3>Elige un solo ajuste</h3>
+        ${resetNotaElige ? `<p class="reset-aviso reset-aviso-izq" role="status"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-check"/></svg> ${escapeHtml(resetNotaElige)}</p>` : ''}
         <p class="desc">Cuando no sale, es fácil cambiar más cosas, gastar más energía y captar con más tensión. <b>No necesitas cambiarlo todo: elige una conducta y aplícala durante las próximas 10 paradas.</b></p>
         ${resetCampo('micro')}
       </div>
@@ -4888,6 +4904,7 @@ function renderResetStep(){
       <div class="card reset-test${resetStops>=10 ? ' is-completo' : ''}">
         ${resetStops<10 ? `<h3>Testea el ajuste en 10 paradas</h3>
         <p class="reset-ajuste"><span>Tu ajuste</span><b>${escapeHtml(resetMicro)}</b></p>
+        ${resetAvisoCero && resetStops === 0 ? '<p class="reset-aviso" role="status"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-info"/></svg> Has cambiado de ajuste: empiezas el test de cero.</p>' : ''}
         <div class="reset-cuenta" aria-hidden="true">
           <span class="timer-big">${escapeHtml(resetStops)}</span>
           <span class="reset-cuenta-lb">${resetStops === 1 ? 'parada probada' : 'paradas probadas'}</span>
@@ -5024,6 +5041,7 @@ function guardarSepara(){
   resetGoto(4);
 }
 function continuarElige(){
+  resetNotaElige = '';
   const e = resetFalta('micro', 'Elige un ajuste para probarlo en las próximas 10 paradas.');
   if(e) return fieldError(...e);
   resetGoto(5);
@@ -5034,6 +5052,7 @@ function continuarAprendizaje(){
   if(resetAprendizaje === 'Lo ajusto'){
     resetAjusteNuevo = (document.getElementById('resetAjusteNuevoInput')?.value || resetAjusteNuevo || '').trim();
     if(!resetAjusteNuevo) return fieldError('resetAjusteNuevoInput', 'Escribe cómo queda tu ajuste.');
+    if(resetAjusteNuevo === (resetMicro || '').trim()) return fieldError('resetAjusteNuevoInput', 'Cambia algo del ajuste, o elige «Lo mantengo» si lo dejas igual.');
   }
   if(resetAprendizaje === 'Pruebo otra cosa') return probarOtroAjuste();
   resetGoto(7);
@@ -5047,10 +5066,12 @@ function probarOtroAjuste(){
     aprendizaje: resetAprendizaje, ajusteNuevo: '', observacion: resetObservacion
   }), ...prevHistory];
   if(!commitSave(()=>{ state.resetHistory = prevHistory; })) return;
-  resetMicro = null; resetStops = 0; resetStopsUndo = [];
+  if(resetMicro && !resetDescartados.includes(resetMicro)) resetDescartados.push(resetMicro);
+  resetMicro = null; resetStops = 0; resetStopsUndo = []; resetAvisoCero = false;
   resetAprendizaje = ''; resetAjusteNuevo = ''; resetObservacion = ''; resetPacto = '';
+  resetNotaElige = 'Test guardado en tu Historial. Elige otro ajuste para probar.';
   resetGoto(4);
-  notify('Test guardado en tu Historial. Elige otro ajuste para probar.');
+  announce(resetNotaElige);
 }
 function repetirAjuste(id){
   const r = state.resetHistory.find(x=>x.id===id);
@@ -5072,7 +5093,7 @@ let resetStopsUndo = [];
 function incrementStop(n){
   const add = Math.min(n || 1, 10 - resetStops);
   if(add <= 0) return;
-  resetStops += add; resetStopsUndo.push(add);
+  resetStops += add; resetStopsUndo.push(add); resetAvisoCero = false;
   saveResetProgress(); renderResetStep();
   // Al llegar a 10 desaparecen los contadores: el foco pasa al título del momento completado
   if(resetStops >= 10){ const t = document.getElementById('resetCompletoTitulo'); if(t) t.focus(); announce('Test completado: 10 de 10 paradas.'); }

@@ -121,6 +121,44 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   ok(await p.evaluate(() => { const c = document.getElementById('breathCircle').getBoundingClientRect(); return [...document.querySelectorAll('#toolBody p')].every(x => { const r = x.getBoundingClientRect(); return r.bottom <= c.top - 14 || r.top >= c.bottom + 14; }); }), 'el círculo de respiración, crecido, no tapa ningún texto');
   await p.evaluate(() => closeTool());
 
+  // ---- Lote de la 9ª crítica ----
+  // Cambiar de ajuste con paradas contadas: el test empieza de cero y se avisa
+  await p.evaluate(() => { openReset(); resetSenal = 'Anticipo el rechazo'; resetMicro = 'Simplificar la apertura'; resetStops = 6; resetGoto(4); });
+  await p.locator('#rc-micro [data-action="resetChip"]').first().click();
+  await p.click('#resetBody .reset-actions .btn-amber');
+  ok(await p.evaluate(() => resetStep === 5 && resetStops === 0) && await p.locator('#resetBody .reset-aviso').isVisible(), 'cambiar de ajuste con 6 paradas: el test empieza de cero y lo dice');
+  await p.click('#incrementStopBtn');
+  ok(await p.locator('#resetBody .reset-aviso').count() === 0, 'el aviso desaparece al contar la primera parada');
+  // «Lo ajusto» sin cambiar nada no avanza
+  await p.evaluate(() => { resetMicro = 'Simplificar la apertura'; resetStops = 10; resetGoto(6); });
+  await p.click('#resetBody [data-value="Lo ajusto"]');
+  await p.click('#resetBody .reset-actions .btn-amber');
+  ok(await p.evaluate(() => resetStep === 6 && !!document.querySelector('#resetBody .field-error')), '«Lo ajusto» sin cambios pide cambiar algo o elegir «Lo mantengo»');
+  // «Pruebo otra cosa»: el descartado no vuelve a sugerirse y el aviso va en línea
+  await p.click('#resetBody [data-value="Pruebo otra cosa"]');
+  await p.click('#resetBody .reset-actions .btn-amber');
+  const sugeridos = await p.evaluate(() => [...document.querySelectorAll('#rc-micro > .reset-sug-title + .chip-group [data-action="resetChip"]')].map(b => b.dataset.value));
+  ok(!sugeridos.includes('Simplificar la apertura') && await p.locator('#resetBody .reset-aviso-izq').isVisible(), 'tras «Pruebo otra cosa», el ajuste descartado no sale en los sugeridos y el aviso va en la tarjeta');
+  await p.evaluate(() => { startFreshReset(); });
+  // Señal escrita a mano: ajustes habituales, no la lista entera
+  await p.evaluate(() => { resetSenal = 'Me noto sin fuerzas'; resetGoto(4); });
+  const habituales = await p.evaluate(() => ({ t: document.querySelector('#rc-micro .reset-sug-title').textContent, n: document.querySelectorAll('#rc-micro > .reset-sug-title + .chip-group [data-action="resetChip"]').length, todos: document.querySelector('#rc-micro details.reset-todos').open }));
+  ok(habituales.t === 'Ajustes habituales' && habituales.n <= 4 && !habituales.todos, 'señal escrita a mano: «Ajustes habituales» a la vista y el resto plegado');
+  // Dentro del Kit no se ve el botón «Kit»
+  await p.evaluate(() => openKit(0));
+  ok(!(await p.locator('#resetOverlay .oh-actions [onclick="openKit()"]').isVisible()), 'dentro del Kit no se ve el botón «Kit» de la cabecera');
+  await p.evaluate(() => { startFreshReset(); closeReset(); goto('diario'); });
+  // Diario: los errores se borran al rellenar con botones y al guardar
+  await p.click('#sepaSaveBtn');
+  await p.locator('#view-diario .chip:has-text("Pausa consciente")').click();
+  ok(await p.evaluate(() => !document.querySelector('#sepaAccion').hasAttribute('aria-invalid')), 'Diario: el error de A se borra al rellenarla con un chip');
+  await p.selectOption('#sepaSituacion', 'Zona con poco flujo');
+  await p.locator('#sepaEmocionChips [data-id="ira"]').click();
+  await p.selectOption('#sepaPensDestructivo', 'No vale la pena');
+  await p.click('button:has-text("Sugerir reencuadre")');
+  await p.click('#sepaSaveBtn');
+  ok(await p.evaluate(() => state.sepaEntries.length >= 1 && document.querySelectorAll('#view-diario .field-error').length === 0), 'Diario: tras guardar, el formulario queda sin errores');
+
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));
   await b.close();
 })();
