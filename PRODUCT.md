@@ -27,7 +27,7 @@ No es una app genérica de bienestar: traduce la formación de inteligencia emoc
 
 ## Operating Context
 
-- Se usa en el móvil y en la tablet del captador; también en escritorio.
+- Se usa sobre todo en el **móvil y en la tablet** del captador, que son superficies principales por igual (la tablet, en vertical y en horizontal); también en escritorio.
 - Momentos de uso reales: antes de salir, al volver a calle tras una mala interacción, a mitad de turno (Checkpoint), en mala racha (Reset), al cierre del turno y fuera del trabajo.
 - Se publica en GitHub Pages (`danytf/emociones`) y se abre por enlace.
 - Contenido basado en los documentos de formación de Wesser, resumidos en `compendio_inteligencia_emocional_wesser.md` y `prompt_claude_app_captadores_v5.md`.

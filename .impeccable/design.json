@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-01T10:56:56.820Z",
+  "generatedAt": "2026-10-05T09:03:12.104Z",
   "title": "Design System: Gestión emocional · Wesser",
   "extensions": {
     "colorMeta": {
@@ -702,8 +702,13 @@
     ],
     "rules": [
       {
+        "name": "The One Primary Rule",
+        "body": "Un solo botón principal por pantalla, y su color dice dónde estás: **ámbar** en el Reset y el Kit, **rojo Wesser** en las secciones (Diario, bienvenida) y **antracita** dentro de las herramientas, que se usan en plena calle y piden calma. Cuando «Activar mi plan» acompaña a otra pantalla (barra compacta, columna lateral) va neutro con el rayo en ocre, para no competir con el principal de esa pantalla. El verde no es color de botón.",
+        "section": "colors"
+      },
+      {
         "name": "The One Red Rule",
-        "body": "El rojo de marca marca la acción principal y lo que está activo. Un solo botón primario por pantalla; el resto es neutro, tintado o antracita.",
+        "body": "El rojo de marca marca la acción principal de las secciones y lo que está activo; el resto es neutro, tintado o antracita.",
         "section": "colors"
       },
       {
@@ -743,7 +748,7 @@
       }
     ],
     "dos": [
-      "Do usar Rojo Wesser para una sola acción principal por pantalla y Rojo Wesser hondo para texto rojo sobre claro.",
+      "Do usar un solo botón principal por pantalla, con el color de su contexto (ámbar en Reset y Kit, rojo Wesser en las secciones, antracita en las herramientas), y Rojo Wesser hondo para texto rojo sobre claro.",
       "Do dar color a un grupo con su tono en el cuadrado tintado (al 12 %) y en un punto de 8 px.",
       "Do reservar el ámbar al Modo Reset y al Kit de Emergencia.",
       "Do mantener 44 × 44 px como mínimo en todo lo táctil y 56 px en la barra inferior.",
