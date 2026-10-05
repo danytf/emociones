@@ -126,7 +126,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await page.keyboard.press('Escape');
   ok(await page.evaluate(() => Overlays.top() === 'confirm'), '«¿Qué ha funcionado?»: elegir solo una conducta y cerrar pide confirmación');
   await page.locator('#confirmOk').click();
-  await page.evaluate(() => { startNoSeQueNecesito(); setNsqnAnswer('cabeza', true); });
+  await page.evaluate(() => { startNoSeQueNecesito(); });
   await page.keyboard.press('Escape');
   ok(await noConfirm() && !(await openSet()).includes('toolOverlay'), '«No sé qué necesito» (no guarda nada) se cierra sin preguntar');
 

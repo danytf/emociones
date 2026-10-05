@@ -20,7 +20,7 @@ const SCREENS = [
   ['kit', () => { openReset(); state.kitSenales = ['El «no» me afecta más de lo habitual']; state.kitPedira = 'Quiero que observes dos paradas y me digas una cosa que estoy haciendo bien y una que pueda ajustar.'; openKit(); }],
   ['historial', () => { openReset(); openCheckinHistorial(); }],
   ['breath', () => startBreath(60)],
-  ['nsqn', () => { startNoSeQueNecesito(); ['acelerado', 'cabeza', 'evitando', 'dias'].forEach(k => setNsqnAnswer(k, true)); }],
+  ['nsqn', () => { startNoSeQueNecesito(); }],
   ['ficha', () => { goto('diario'); showEmotion('ira'); }],
   ['confirm', () => { openHelp(); borrarTodosDatos(); }],
 ];

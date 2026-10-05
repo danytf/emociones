@@ -44,7 +44,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
       checkpoint: () => { openCheckpoint(); },
       preTurno: () => { startPreTurno(); },
       reset7: () => { openReset(); resetGoto(7); },
-      nsqn: () => { startNoSeQueNecesito(); setNsqnAnswer('dias', true); setNsqnAnswer('cabeza', true); },
+      nsqn: () => { startNoSeQueNecesito(); },
       testeaOk: () => { openReset(); resetMicro = 'Simplificar la apertura'; resetStops = 10; resetGoto(5); },
     };
     for (const [name, fn] of Object.entries(states)) {

@@ -115,8 +115,7 @@ const v1 = {
 
   // No sé qué necesito + Repetir de herramienta
   await page.evaluate(() => startNoSeQueNecesito());
-  await page.locator('[data-action="nsqnAnswer"][data-value="acelerado"][data-answer="1"]').click();
-  await page.locator('[data-action="nsqnGo"]').first().click();
+  await page.locator('[data-action="nsqnGo"][data-value="acelerado"]').click();
   ok(await page.locator('#toolTitle').innerText() === 'Suspiro fisiológico', 'No sé qué necesito lanza la herramienta');
   await page.evaluate(() => showToolDone('Grounding 5‑4‑3‑2‑1', startGrounding));
   await page.locator('[data-action="toolRepeat"]').click();

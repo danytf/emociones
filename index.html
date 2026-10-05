@@ -786,6 +786,12 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .estado-opcion span{display:flex;flex-direction:column;gap:2px;}
 .ds .estado-opcion b{font-size:var(--fs-md);font-weight:700;}
 .ds .estado-opcion small{font-size:var(--fs-sm);color:var(--ds-ink-2);}
+/* «No sé qué necesito»: qué herramienta se abre al tocar */
+.ds .estado-opcion .nsqn-va{color:var(--ds-ink);font-weight:650;}
+.ds .nsqn-pregunta{margin:0 0 var(--sp-1);font-family:var(--font-brand);font-size:var(--fs-lg);}
+.ds .nsqn-ninguna{margin:var(--sp-4) 0 var(--sp-1);}
+.ds .nsqn-lista{grid-template-columns:1fr;}
+@media (min-width:640px){ .ds .nsqn-lista{grid-template-columns:1fr 1fr;} }
 .ds .estado-ficha h4{margin:var(--sp-4) 0 var(--sp-1);font-family:var(--font-brand);font-size:var(--fs-md);color:var(--ds-ink);}
 .ds .estado-frase{margin:var(--sp-3) 0 0;font-style:italic;color:var(--ds-ink);}
 .ds .estado-cta{width:auto;margin-top:var(--sp-2);}
@@ -3924,86 +3930,35 @@ function selectMomentoDecidir(val){
   `);
 }
 
-/* ---- No sé qué necesito (router de 4 preguntas hacia una herramienta existente) ---- */
-const NSQN_QUESTIONS = [
-  {key:'acelerado', q:'¿Tu cuerpo está acelerado?'},
-  {key:'cabeza', q:'¿Tu cabeza no para?'},
-  {key:'evitando', q:'¿Estás evitando hacer paradas?'},
-  {key:'dias', q:'¿Llevas varios días sin encontrar tu ritmo?'}
+/* ---- No sé qué necesito (elegir la situación y entrar en su herramienta) ---- */
+/* «No sé qué necesito»: se elige la situación que más se parece a lo que pasa ahora y se entra
+   directamente en su herramienta. Es una ayuda para elegir, no una evaluación; no guarda nada.
+   Si se repite desde hace días, Reset va primero aunque también se note lo demás. */
+const NSQN_OPCIONES = [
+  {key:'acelerado', titulo:'Tengo el cuerpo acelerado', desc:'Tensión, pulso rápido o respiración corta.', icono:'wind',
+    herramienta:'Suspiro fisiológico', cta:'Respirar 60 s', abrir:()=>startBreath(60)},
+  {key:'cabeza', titulo:'No paro de darle vueltas', desc:'La cabeza repite lo que ha pasado o lo que puede pasar.', icono:'refresh',
+    herramienta:'Grounding 5-4-3-2-1', cta:'Volver al presente', abrir:()=>startGrounding()},
+  {key:'evitando', titulo:'Me cuesta hacer paradas', desc:'Dejo pasar a gente sin tener claro si decido o evito.', icono:'split',
+    herramienta:'El momento de decidir', cta:'Empezar', abrir:()=>startMomentoDecidir()},
+  {key:'dias', titulo:'Llevo varios días sin encontrar mi ritmo', desc:'Si se repite desde hace días, empieza por aquí.', icono:'lifebuoy',
+    herramienta:'Modo Reset', cta:'Ir a Reset', abrir:()=>{ closeTool(); openReset(); }}
 ];
-let nsqnAnswers = {};
-let nsqnRecs = [];
-let nsqnLastResult = '';   // último resultado anunciado: solo se anuncia cuando cambia
-function startNoSeQueNecesito(){ nsqnAnswers = {}; nsqnLastResult = ''; renderNoSeQueNecesito(); }
-function setNsqnAnswer(key, val){ nsqnAnswers[key] = val; renderNoSeQueNecesito(); }
-/* Orientación sencilla para elegir herramienta, no un diagnóstico ni un triaje: el orden solo
-   decide qué paso se sugiere primero (un patrón de varios días, luego la evitación, luego la
-   activación o las vueltas de cabeza). Devuelve TODAS las opciones que aplican, para no dar
-   la sensación de que se ignoran las demás respuestas. */
-function nsqnRecommendations(){
-  const list = [];
-  if(nsqnAnswers.dias === true) list.push({title:'Modo Reset', desc:'Si esto se repite varios días, el modo Reset te ayuda a revisar qué está cambiando y a elegir un ajuste.', action:()=>{ closeTool(); openReset(); }, cta:'Ir a Reset'});
-  if(nsqnAnswers.evitando === true) list.push({title:'El momento de decidir', desc:'Puede ayudarte a distinguir si estás decidiendo o evitando antes de dejar pasar a alguien.', action:startMomentoDecidir, cta:'Empezar'});
-  if(nsqnAnswers.acelerado === true) list.push({title:'Suspiro fisiológico', desc:'Puede ayudarte a reducir rápidamente la activación.', action:()=>startBreath(60), cta:'Respirar 60 s'});
-  if(nsqnAnswers.cabeza === true) list.push({title:'Grounding 5-4-3-2-1', desc:'Puede ayudarte a sacar la atención del bucle de pensamientos y volver al presente.', action:startGrounding, cta:'Empezar'});
-  return list;
-}
-function renderNoSeQueNecesito(){
-  const answered = Object.keys(nsqnAnswers).length;
-  const recs = nsqnRecs = nsqnRecommendations();
-  let resultHtml = '';
-  if(recs.length){
-    const [primary, ...rest] = recs;
-    resultHtml = `
-      <div class="card kit-summary">
-        <p class="desc" style="font-style:italic;">Empieza por este paso sugerido:</p>
-        <h3>${primary.title}</h3>
-        <p class="desc">${primary.desc}</p>
-        <button type="button" class="btn btn-navy" data-action="nsqnGo" data-idx="0">${primary.cta}</button>
-      </div>
-      ${rest.length ? `
-        <div class="card">
-          <p><b>Otras opciones que también pueden ayudarte</b></p>
-          ${rest.map((r,i)=>`
-            <div class="history-item" style="margin-bottom:8px;">
-              <p style="font-weight:700;">${r.title}</p>
-              <p class="desc">${r.desc}</p>
-              <button type="button" class="btn btn-outline btn-sm" data-action="nsqnGo" data-idx="${i+1}">${r.cta}</button>
-            </div>`).join('')}
-        </div>` : ''}
-    `;
-  } else if(answered === NSQN_QUESTIONS.length){
-    resultHtml = `
-      <div class="card" style="text-align:center;">
-        <p class="desc">Con estas respuestas no tengo una herramienta clara para recomendarte. <b>Si lo que notas es cansancio o falta de energía, un Checkpoint puede ayudarte a decidir cómo seguir.</b> También puedes elegir una herramienta tú mismo.</p>
-        <div class="btn-row" style="margin-top:10px;">
-          <button type="button" class="btn btn-outline" onclick="closeTool();openCheckpoint();">Hacer un Checkpoint</button>
-          <button type="button" class="btn btn-outline" onclick="closeTool();goto('herramientas');">Ver herramientas</button>
-        </div>
-      </div>`;
-  }
+function startNoSeQueNecesito(){
   openTool('No sé qué necesito', `
     <div class="card" style="text-align:left;">
-      <p class="desc">Responde 4 preguntas rápidas y te sugeriré por dónde empezar. Es solo una ayuda para elegir herramienta, no una evaluación de cómo estás.</p>
-      ${NSQN_QUESTIONS.map(q=>`
-        <p style="margin-top:14px;" id="nsqn-${q.key}"><b>${q.q}</b></p>
-        <div class="btn-row" role="group" aria-labelledby="nsqn-${q.key}">
-          <button type="button" class="btn btn-sm ${nsqnAnswers[q.key]===true?'btn-navy':'btn-outline'}" aria-pressed="${nsqnAnswers[q.key]===true}" style="flex:1 1 80px;" data-action="nsqnAnswer" data-value="${escapeHtml(q.key)}" data-answer="1">Sí</button>
-          <button type="button" class="btn btn-sm ${nsqnAnswers[q.key]===false?'btn-navy':'btn-outline'}" aria-pressed="${nsqnAnswers[q.key]===false}" style="flex:1 1 80px;" data-action="nsqnAnswer" data-value="${escapeHtml(q.key)}" data-answer="0">No</button>
-        </div>
-      `).join('')}
+      <h3 class="nsqn-pregunta">¿Qué se parece más a lo que te pasa ahora?</h3>
+      <p class="desc">Elige una y empiezas ya. Es solo una ayuda para elegir herramienta, no una evaluación de cómo estás.</p>
+      <div class="estados-lista nsqn-lista">${NSQN_OPCIONES.map(o=>`<button type="button" class="estado-opcion" data-action="nsqnGo" data-value="${o.key}"><svg class="ic estado-ic" aria-hidden="true"><use href="#i-${o.icono}"/></svg><span><b>${o.titulo}</b><small>${o.desc}</small><small class="nsqn-va">${o.herramienta} · ${o.cta}</small></span></button>`).join('')}</div>
+      <p class="desc nsqn-ninguna"><b>¿Ninguna encaja?</b></p>
+      <div class="btn-row">
+        <button type="button" class="btn btn-outline" onclick="closeTool();goto('herramientas');">Ver herramientas</button>
+        <button type="button" class="btn btn-outline" onclick="startEstados()">Ponle nombre a lo que sientes</button>
+      </div>
     </div>
-    ${resultHtml}
   `);
-  const result = recs.length ? `Paso sugerido: ${recs[0].title}.`
-    : (answered === NSQN_QUESTIONS.length ? 'Sin herramienta clara: puedes hacer un Checkpoint o ver las herramientas.' : '');
-  if(result && result !== nsqnLastResult){
-    announce(result);
-    // Con las 4 respuestas, la sugerencia queda a la vista (aparece debajo de las preguntas)
-    if(answered === NSQN_QUESTIONS.length){ const r = document.getElementById('toolBody').lastElementChild; if(r) r.scrollIntoView({block:'nearest', behavior: motionOK() ? 'smooth' : 'auto'}); }
-  }
-  nsqnLastResult = result;
 }
+function nsqnGo(key){ const o = NSQN_OPCIONES.find(x => x.key === key); if(o) o.abrir(); }
 
 /* ---- Grounding 5-4-3-2-1 ---- */
 const groundingSteps = [
@@ -5642,8 +5597,7 @@ Object.assign(ACTIONS, {
   borrarExito: el => borrarExito(dataId(el)),
   toolRepeat: () => { if(typeof toolRepeatFn === 'function') toolRepeatFn(); },
   finalizarRP: el => finalizarRP(el.dataset.value),
-  nsqnAnswer: el => setNsqnAnswer(el.dataset.value, el.dataset.answer === '1'),
-  nsqnGo: el => { const rec = nsqnRecs[dataIdx(el)]; if(rec) rec.action(); },
+  nsqnGo: el => nsqnGo(el.dataset.value),
   delConfidenceAnchor: el => delConfidenceAnchor(dataIdx(el)),
   runAnchorGuide: el => runAnchorGuide(dataIdx(el)),
   delVisualAnchor: el => delVisualAnchor(dataIdx(el)),
