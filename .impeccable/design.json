@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-05T11:21:43.234Z",
+  "generatedAt": "2026-10-05T11:54:45.233Z",
   "title": "Design System: Gestión emocional · Wesser",
   "extensions": {
     "colorMeta": {
@@ -720,6 +720,11 @@
         "name": "The Tone Is a Dot Rule",
         "body": "Los tonos de grupo se aplican en el cuadrado tintado del icono (tono al 12 %) y en un punto de 8 px junto al título de sección. Nunca como fondo sólido con texto blanco.",
         "section": "colors"
+      },
+      {
+        "name": "The Neutral Voice Rule",
+        "body": "La interfaz habla en formas neutras de género: «Con calma», «Con cansancio», «Voy a mil», «Empiezo el turno», «Te damos la bienvenida», «Si sigo sin avanzar». Los textos de Formación se conservan tal cual hasta que Formación los revise.",
+        "section": "typography"
       },
       {
         "name": "The Brand Speaks, the System Reads Rule",

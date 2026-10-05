@@ -9,7 +9,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   const top = () => p.evaluate(() => Overlays.top());
   await p.goto(URL); await p.evaluate(() => localStorage.clear()); await p.reload();
-  ok(await top() === 'modal' && (await p.locator('#modalSheet h2').innerText()).includes('Bienvenido'), 'primera vez sin datos: aparece la bienvenida');
+  ok(await top() === 'modal' && (await p.locator('#modalSheet h2').innerText()).includes('Te damos la bienvenida'), 'primera vez sin datos: aparece la bienvenida');
   ok(await p.evaluate(() => document.getElementById('modalSheet').getAttribute('aria-labelledby') === 'modalTitle'), 'diálogo con nombre accesible');
   await p.locator('[data-action="welcomeNext"]').click();
   ok((await p.locator('#modalSheet h2').innerText()).includes('Cuándo usar'), 'paso 2');

@@ -355,6 +355,9 @@ label{font-size:var(--fs-sm);font-weight:700;color:var(--text-secondary);display
   transition:transform 1.6s ease-in-out;
 }
 .breath-circle.grow{transform:scale(1.3);}
+/* Al crecer (×1,3) el círculo no ocupa más sitio en el flujo: se le reserva el margen para que no tape el texto */
+.breath-circle{margin:56px auto;}
+@media (max-height:700px){ .breath-circle{width:130px;height:130px;margin:34px auto;font-size:var(--fs-md);} }
 .timer-big{font-size:44px;font-weight:800;text-align:center;margin:8px 0;}
 /* Cada señal del check-in es un <label> con su casilla nativa: se anula el estilo global de label */
 .check-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:10px;cursor:pointer;
@@ -736,6 +739,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .step-dots{gap:4px;}
 .ds .step-dots span{width:28px;height:4px;border-radius:999px;background:var(--ds-line-strong);}
 .ds .step-dots span.on{background:var(--tone);}
+#toolOverlay .step-dots span.on{background:var(--ds-ink);}
+.ds .grounding-lb{font-size:var(--fs-lg);font-weight:500;color:var(--ds-ink);}
+.ds .grounding-lb b{font-weight:800;}
 /* Acción del Reset: ámbar sólido con texto antracita (contraste 6,6:1) */
 .ds .btn-amber{background:var(--amber);color:#292C2F;min-height:52px;box-shadow:0 2px 8px rgba(224,160,48,.25);}
 @media (hover:hover){ .ds .btn-amber:hover{background:var(--amber-hover);} }
@@ -915,6 +921,7 @@ main:focus{outline:none;}
 .ds .reset-steps{display:grid;grid-template-columns:repeat(6, minmax(0, 1fr));gap:4px;list-style:none;margin:0 0 var(--sp-4);padding:0;}
 .ds .reset-steps.kit-steps{grid-template-columns:repeat(4, minmax(0, 1fr));}
 .ds .kit-summary .kit-regla{margin-top:var(--sp-4);}
+.ds .kit-guia{margin-top:var(--sp-3);}
 .ds .reset-steps li{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;margin:0;}
 .ds .reset-steps li::before{content:'';width:100%;height:4px;border-radius:999px;background:var(--ds-line-strong);}
 .ds .reset-steps li.done::before, .ds .reset-steps li.on::before{background:var(--tone);}
@@ -955,6 +962,10 @@ main:focus{outline:none;}
 #resetBody > .reset-actions{margin-top:auto;}
 #resetBody > :has(+ .reset-actions){margin-bottom:var(--sp-4);}
 #resetBody > :last-child:not(.reset-actions){margin-bottom:var(--sp-6);}
+@media (min-width:601px) and (max-width:1023px) and (orientation:portrait){
+  #resetBody > .reset-steps + *{margin-top:auto;}
+  #resetBody > .reset-steps ~ .reset-actions{margin-top:0;}
+}
 .ds .reset-row{display:flex;gap:var(--sp-2);}
 .ds .reset-row .btn-outline{flex:0 0 38%;}
 .ds .reset-row .btn-amber, .ds .reset-row .btn[data-principal]{flex:1 1 auto;}
@@ -982,7 +993,7 @@ main:focus{outline:none;}
 .ds .btn-quiet{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;background:none;border:0;border-radius:var(--ds-radius-sm);
   font-family:inherit;font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);cursor:pointer;
   text-decoration:underline;text-decoration-color:var(--ds-line);text-underline-offset:4px;transition:background-color .15s, color .15s;}
-.ds .btn-quiet:hover{background:var(--ds-canvas);color:var(--ds-ink);}
+@media (hover:hover){ .ds .btn-quiet:hover{background:var(--ds-canvas);color:var(--ds-ink);} }
 /* 10/10: el momento en que el método se cumple */
 .ds .reset-completo{display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);margin:0 0 var(--sp-1);padding:var(--sp-6) var(--sp-4) var(--sp-5);
   border-radius:var(--ds-radius-md);background:color-mix(in srgb, var(--amber) 16%, var(--ds-surface));}
@@ -999,6 +1010,7 @@ main:focus{outline:none;}
 @supports not (color: color-mix(in srgb, red 50%, blue)){ .ds .reset-completo{background:rgba(224,160,48,.16);} }
 /* Cierre: «Mi próximo paso» plegado */
 .ds .reset-paso{margin-top:var(--sp-3);}
+.ds .reset-nota{margin-top:var(--sp-2);font-size:var(--fs-sm);}
 .ds .reset-opcional{font-weight:500;color:var(--ds-ink-3);}
 .ds .reset-hecho{display:flex;align-items:center;justify-content:center;gap:6px;font-size:var(--fs-lg);}
 /* Cierre: lo que te llevas a calle */
@@ -1130,6 +1142,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
   .quick-launcher.ql-compact .ql-head{display:flex;}
   .quick-launcher.ql-compact .ql-sub{display:block;}
   .quick-launcher.ql-compact .ql-row, .quick-launcher.ql-compact .ql-row.ql-momentos{display:grid;grid-template-columns:minmax(0, 1fr);gap:var(--sp-2);}
+  .quick-launcher.ql-compact .ql-row.ql-momentos{grid-template-columns:repeat(3, minmax(0, 1fr));}
+  .quick-launcher.ql-compact .ql-momentos .ql-btn{flex-direction:column;justify-content:center;text-align:center;gap:4px;padding:8px 4px;font-size:var(--fs-xs);min-height:64px;}
   /* En la columna lateral el principal es el de la pantalla: «Activar mi plan» va neutro, con el rayo en ocre */
   .quick-launcher.ql-compact .ql-btn.ql-kit{background:var(--ds-surface);border-color:var(--ds-line);color:var(--ds-ink);box-shadow:none;}
   .quick-launcher.ql-compact .ql-btn.ql-kit .ql-em{color:var(--tone-track-ink);}
@@ -1258,10 +1272,10 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
     <div class="ql-row" id="qlRow" role="group" aria-labelledby="qlAhoraLbl">
       <span id="qlKitSlot"></span>
       <button type="button" class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset(true)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg></span><span class="ql-lb">Estoy en una mala racha</span></button>
-      <button type="button" class="ql-btn" onclick="startBreath(60)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span><span class="ql-lb">Estoy acelerado</span></button>
-      <button type="button" class="ql-btn" onclick="startGrounding()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg></span><span class="ql-lb">No paro de darle vueltas</span></button>
+      <button type="button" class="ql-btn" onclick="startBreath(60)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span><span class="ql-lb">Voy a mil</span></button>
       <button type="button" class="ql-btn ql-nsqn" onclick="startNoSeQueNecesito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span><span class="ql-lb">No sé qué necesito</span></button>
       <div id="qlMoreWrap" class="ql-more-collapsed">
+        <button type="button" class="ql-btn" onclick="startGrounding()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg></span><span class="ql-lb">No paro de darle vueltas</span></button>
         <button type="button" class="ql-btn ql-nsqn-alt" onclick="startNoSeQueNecesito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span><span class="ql-lb">No sé qué necesito</span></button>
         <button type="button" class="ql-btn" onclick="startPauseDecision()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-pause-oct"/></svg></span><span class="ql-lb">Reacciono en automático</span></button>
         <button type="button" class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-split"/></svg></span><span class="ql-lb">Dudo en la parada</span></button>
@@ -1701,7 +1715,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </button>
         <button type="button" class="trow" onclick="startBreath(60)">
           <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-wind"/></svg></span>
-          <span class="trow-body"><span class="trow-title">Suspiro fisiológico</span><span class="trow-desc"><span class="trow-meta">30–60 s</span> · Puede ayudarte a bajar la activación si estás nervioso o tenso.</span></span>
+          <span class="trow-body"><span class="trow-title">Suspiro fisiológico</span><span class="trow-desc"><span class="trow-meta">30–60 s</span> · Puede ayudarte a bajar la activación si notas nervios o tensión.</span></span>
           <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
         </button>
         <button type="button" class="trow" onclick="startPauseDecision()">
@@ -2001,7 +2015,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         <p><b>Reinicio y regulación</b><br>Para <b>bajar la activación o recuperar perspectiva</b> en el momento.</p>
         <ul>
           <li><b>Después de una mala interacción</b>: Corta → Separa → Aprende → Suelta → Vuelve. Puede ayudarte a que una interacción difícil no contamine las siguientes.</li>
-          <li><b>Suspiro fisiológico</b>: ejercicio respiratorio de hasta 60 segundos que puede ayudarte a bajar rápidamente la activación cuando estás acelerado o tenso.</li>
+          <li><b>Suspiro fisiológico</b>: ejercicio respiratorio de hasta 60 segundos que puede ayudarte a bajar rápidamente la activación cuando notas mucha activación o tensión.</li>
           <li><b>Parar y decidir</b>: PARA → Toma aire → Observa y nombra → Genera opciones → Actúa. Es la herramienta general para situaciones de tensión, rabia o bloqueo. <b>Úsala cuando no sepas cuál elegir.</b></li>
           <li><b>Grounding 5‑4‑3‑2‑1</b>: lleva tu atención a los 5 sentidos para volver al presente.</li>
           <li><b>Tense &amp; Release</b>: tensa y suelta puños, brazos, hombros y piernas para liberar la tensión física.</li>
@@ -2009,7 +2023,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         <p><b>Foco y rendimiento</b><br>Para <b>volver al proceso y tomar mejores decisiones</b>.</p>
         <ul>
           <li><b>El momento de decidir</b>: una sola pregunta para el instante justo antes de dejar pasar a alguien.</li>
-          <li><b>Resultado vs. Proceso</b>: te ayuda a identificar cuándo estás demasiado centrado en el resultado en lugar de en lo que sí puedes hacer ahora.</li>
+          <li><b>Resultado vs. Proceso</b>: te ayuda a identificar cuándo pones el foco en el resultado en lugar de en lo que sí puedes hacer ahora.</li>
           <li><b>Pide feedback</b>: elige una petición concreta de observación en lugar de un genérico «dime si lo hago bien».</li>
         </ul>
         <p><b>Preparación</b><br>Recursos que <b>se preparan antes de necesitarlos</b>.</p>
@@ -2278,6 +2292,7 @@ const SANITIZERS = {
     aspecto1: cleanStr(r.aspecto1), aspecto2: cleanStr(r.aspecto2),
     micro: cleanStr(r.micro, LIMITS.shortStr), stops: cleanInt(r.stops, 0, 10, 0),
     pacto: cleanStr(r.pacto), aprendizaje: cleanStr(r.aprendizaje, LIMITS.shortStr),
+    ajusteNuevo: cleanStr(r.ajusteNuevo, LIMITS.shortStr),
     observacion: cleanStr(r.observacion)
   } : null,
   exitos: r => isPlainObject(r) ? {
@@ -2295,6 +2310,7 @@ function cleanResetProgress(p){
     aspecto1: cleanStr(p.aspecto1), aspecto2: cleanStr(p.aspecto2),
     micro: cleanStr(p.micro, LIMITS.shortStr) || null, stops: cleanInt(p.stops, 0, 10, 0),
     pacto: cleanStr(p.pacto), aprendizaje: cleanStr(p.aprendizaje, LIMITS.shortStr),
+    ajusteNuevo: cleanStr(p.ajusteNuevo, LIMITS.shortStr),
     observacion: cleanStr(p.observacion)
   };
 }
@@ -2714,7 +2730,7 @@ function closeModal(){ Overlays.close('modal'); }
    Tres pasos en el modal. Se muestra una sola vez y solo si no hay datos guardados, así que
    quien ya usa la app no la ve. Se puede volver a abrir desde la Ayuda. */
 const WELCOME_STEPS = [
-  { title:'Bienvenido', html:`
+  { title:'Te damos la bienvenida', html:`
       <p class="desc">Esta app te ayuda a <b>entender y gestionar lo que sientes en la calle</b>: antes de salir, en un momento difícil y al terminar la jornada.</p>
       <p class="desc">Todo lo que guardas se queda <b>solo en este dispositivo</b>; no se envía a ningún sitio.</p>` },
   { title:'Cuándo usar cada parte', html:`
@@ -3036,6 +3052,10 @@ function renderPatrones(){
   if(btn7){ btn7.className = 'btn btn-sm ' + (patronesRango===7 ? 'btn-navy' : 'btn-outline'); btn7.setAttribute('aria-pressed', patronesRango===7); }
   if(btn30){ btn30.className = 'btn btn-sm ' + (patronesRango===30 ? 'btn-navy' : 'btn-outline'); btn30.setAttribute('aria-pressed', patronesRango===30); }
 
+  if(!state.sepaEntries.length && !state.resetHistory.length){
+    body.innerHTML = '<p class="desc">Aquí verás qué se repite cuando guardes registros en el Diario o termines un Reset.</p>';
+    return;
+  }
   const cutoff = Date.now() - patronesRango*24*60*60*1000;
   const entries = state.sepaEntries.filter(e=>createdAfter(e, cutoff));
   const resets = state.resetHistory.filter(r=>createdAfter(r, cutoff));
@@ -3297,7 +3317,7 @@ function showToolDone(title, repeatFn){
     <div class="card" style="text-align:center;">
       <div class="tool-hero"><span class="tile tile-lg" data-tone="anchor"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span></div>
       <h3>Hecho</h3>
-      <p class="desc">Puedes volver a la calle o repetirla si lo necesitas.</p>
+      <p class="desc">Puedes volver a calle o repetirla si lo necesitas.</p>
       ${kitPlanActivo && kitPlanRestoHtml('Ahora, ajusto:') ? `<div class="kit-plan-next"><p class="eyebrow">Sigue tu plan</p>${kitPlanRestoHtml('Ahora, ajusto:')}</div>` : ''}
       <div class="btn-row" style="margin-top:10px;">
         <button type="button" class="btn btn-outline" data-action="toolRepeat">Repetir</button>
@@ -3377,7 +3397,7 @@ function startPreTurno(){
           ${(state.kitPersona || state.kitPedira) ? `
             <div class="kit-flow-arrow" aria-hidden="true"><svg class="ic ic-sm ic-abajo"><use href="#i-arrow"/></svg></div>
             <div class="kit-flow-step">
-              <span class="kit-flow-label">SI SIGO ATASCADO</span>
+              <span class="kit-flow-label">SI SIGO SIN AVANZAR</span>
               <p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>
             </div>
           ` : ''}
@@ -3387,10 +3407,10 @@ function startPreTurno(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">30–45 segundos</p>
       <p class="desc" data-no-guarda>Tres preguntas rápidas antes de empezar el turno. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      ${toolCampo('preTurno1', '¿Cómo llego hoy?', ['Con energía', 'Tranquilo', 'Cansado', 'Acelerado'])}
+      ${toolCampo('preTurno1', '¿Cómo llego hoy?', ['Con energía', 'Con calma', 'Con cansancio', 'A mil por hora'])}
       ${toolCampo('preTurno2', '¿Qué quiero cuidar en mi forma de captar?', [state.kitAjuste, 'El ritmo', 'La escucha', 'Postura y contacto visual'])}
       ${toolCampo('preTurno3', 'Si aparece mi primera señal, ¿qué haré?', [state.kitHerramienta ? 'Activar mi plan' : '', 'Respirar entre paradas', 'Pedir un relevo de aire (2 minutos)', 'Hacer un Reset'])}
-      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarPreTurno()">Estoy preparado</button>
+      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarPreTurno()">Empiezo el turno</button>
     </div>
   `);
 }
@@ -3399,7 +3419,7 @@ function finalizarPreTurno(){
   clearToolTimers();
   openTool('Antes de salir', `
     <div class="card" style="text-align:left;">
-      <h3 style="text-align:center;">Estoy preparado</h3>
+      <h3 style="text-align:center;">Empiezo el turno</h3>
       <p><b>Mi enfoque para hoy</b></p>
       <p class="desc"><b>¿Cómo llego?</b><br>${escapeHtml(llego)||'—'}</p>
       <p class="desc"><b>Quiero cuidar:</b><br>${escapeHtml(cuidar)||'—'}</p>
@@ -3410,7 +3430,7 @@ function finalizarPreTurno(){
       </div>
     </div>
   `);
-  announce('Estoy preparado: resumen listo.');
+  announce('Empiezo el turno: resumen listo.');
 }
 
 /* ---- Cierre de turno (transición trabajo -> casa) ---- */
@@ -3420,7 +3440,7 @@ function startCierreTurno(){
       <p class="tool-meta">30 segundos</p>
       <p class="desc" data-no-guarda>Tres preguntas rápidas para cerrar el turno antes de volver a casa. No se guardan: son solo para ordenar tus ideas ahora.</p>
       ${toolCampo('cierreTurno1', '¿Qué dejo hoy en el trabajo?', ['El número del día', 'Los rechazos', 'Una conversación difícil', 'La comparación con otros'], 2)}
-      ${toolCampo('cierreTurno2', '¿Qué quiero llevarme?', ['Una buena conversación', 'Algo que he aprendido', 'Algo por lo que estar agradecido', 'Un buen momento con el equipo'])}
+      ${toolCampo('cierreTurno2', '¿Qué quiero llevarme?', ['Una buena conversación', 'Algo que he aprendido', 'Algo que agradecer', 'Un buen momento con el equipo'])}
       ${toolCampo('cierreTurno3', '¿Qué necesito hacer ahora para cambiar de contexto?', ['Cambiarme de ropa', 'Caminar un rato', 'Hablar con alguien', 'Hacer algo que me guste'])}
       <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarCierreTurno()">Turno cerrado</button>
     </div>
@@ -3453,7 +3473,7 @@ function startVolverCalle(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">15–20 segundos</p>
       <p class="desc" data-no-guarda>Dos preguntas rápidas para retomar el turno después de la pausa. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      ${toolCampo('volverCalle1', '¿Cómo estoy?', ['Más tranquilo', 'Todavía tenso', 'Cansado', 'Listo para seguir'])}
+      ${toolCampo('volverCalle1', '¿Cómo estoy?', ['Con más calma', 'Todavía con tensión', 'Con cansancio', 'Con ganas de seguir'])}
       ${toolCampo('volverCalle2', '¿Qué quiero hacer en la primera parada?', [state.kitAjuste, 'Tener una buena charla, sin pensar en el número', 'Escuchar hasta el final', 'Simplificar la apertura'])}
       <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarVolverCalle()">Vuelvo a calle</button>
     </div>
@@ -3776,11 +3796,11 @@ function renderNoSeQueNecesito(){
 
 /* ---- Grounding 5-4-3-2-1 ---- */
 const groundingSteps = [
-  {n:5, label:'cosas que puedes VER'},
-  {n:4, label:'sonidos que puedes ESCUCHAR'},
-  {n:3, label:'cosas que puedes TOCAR'},
-  {n:2, label:'olores que puedes OLER'},
-  {n:1, label:'cosa que puedes SABOREAR'}
+  {n:5, label:'cosas que puedes <b>ver</b>'},
+  {n:4, label:'sonidos que puedes <b>escuchar</b>'},
+  {n:3, label:'cosas que puedes <b>tocar</b>'},
+  {n:2, label:'olores que puedes <b>oler</b>'},
+  {n:1, label:'cosa que puedes <b>saborear</b>'}
 ];
 let groundingIdx = 0;
 function startGrounding(){
@@ -3793,12 +3813,12 @@ function renderGroundingStep(){
     <div class="card" style="text-align:center;">
       <div class="step-dots">${groundingSteps.map((_,i)=>`<span class="${i<=groundingIdx?'on':''}"></span>`).join('')}</div>
       <div class="timer-big">${s.n}</div>
-      <p style="font-size:var(--fs-lg);font-weight:700;">${s.label}</p>
+      <p class="grounding-lb">${s.label}</p>
       <p class="desc" style="font-size:var(--fs-sm);">Nómbralo mentalmente, sin hablar. Si no llegas a esa cifra, no pasa nada: pasa al siguiente sentido.</p>
       <button type="button" class="btn btn-navy" onclick="nextGrounding()">${groundingIdx<groundingSteps.length-1?'Siguiente':'Terminar'}</button>
     </div>
   `);
-  announce(`${s.n} ${s.label.toLowerCase()}.`);
+  announce(`${s.n} ${s.label.replace(/<[^>]+>/g, '')}.`);
 }
 function nextGrounding(){
   groundingIdx++;
@@ -4127,7 +4147,7 @@ function onKitHerramientaChange(){
 /* Ajuste y apoyo del plan. Vacío si el usuario no los ha rellenado. */
 function kitPlanRestoHtml(ajusteLbl){
   return (state.kitAjuste ? `<p class="desc"><b>${ajusteLbl}</b> ${escapeHtml(state.kitAjuste)}</p>` : '')
-    + ((state.kitPersona || state.kitPedira) ? `<p class="desc"><b>Si sigo atascado, pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}</b>${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : '.'}</p>` : '');
+    + ((state.kitPersona || state.kitPedira) ? `<p class="desc"><b>Si sigo sin avanzar, pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}</b>${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : '.'}</p>` : '');
 }
 /* true mientras se usa la herramienta abierta desde «Activar mi plan»: su pantalla «Hecho»
    recuerda el resto del plan. Se apaga al cerrar la herramienta. */
@@ -4216,6 +4236,7 @@ let resetAspecto1 = '', resetAspecto2 = '';
 let resetPacto = '';
 let resetPasoAbierto = false;   // «Mi próximo paso» plegado en el cierre salvo que se abra o ya tenga respuesta
 let resetAprendizaje = '', resetObservacion = '';
+let resetAjusteNuevo = '';   // «Lo ajusto»: la versión retocada del ajuste probado
 let checkinState = [];
 let resetCheckinItems = [];
 let resetHistorialLimit = 5;
@@ -4238,7 +4259,7 @@ function syncResetProgress(){
     examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
     aspecto1: resetAspecto1, aspecto2: resetAspecto2,
     micro: resetMicro, stops: resetStops, pacto: resetPacto,
-    aprendizaje: resetAprendizaje, observacion: resetObservacion
+    aprendizaje: resetAprendizaje, ajusteNuevo: resetAjusteNuevo, observacion: resetObservacion
   };
   return true;
 }
@@ -4269,7 +4290,7 @@ function clearResetSession(){
   resetStep = 0; resetMicro = null; resetStops = 0;
   resetSenal = ''; resetExamResultado = ''; resetExamRendimiento = '';
   resetAspecto1 = ''; resetAspecto2 = ''; resetPacto = '';
-  resetAprendizaje = ''; resetObservacion = '';
+  resetAprendizaje = ''; resetObservacion = ''; resetAjusteNuevo = '';
   resetCheckinItems = [];
   resetStopsUndo = [];
   examinaParte = 0; resetTodosAbierto = false; resetPasoAbierto = false; resetMasAbierto.clear();
@@ -4301,6 +4322,7 @@ function resumeReset(){
   resetStops = p.stops || 0;
   resetPacto = p.pacto || '';
   resetAprendizaje = p.aprendizaje || '';
+  resetAjusteNuevo = p.ajusteNuevo || '';
   resetObservacion = p.observacion || '';
   resetStopsUndo = [];
   examinaParte = 0; resetTodosAbierto = false;
@@ -4425,7 +4447,7 @@ function resetCampoHtml(f){
   const c = RESET_CAMPOS[f], {sel, otro} = leerCampoReset(f);
   const abierto = !!otro || resetOtroAbierto.has(f);
   const chip = o => `<button type="button" ${chipAttrs(sel.includes(o))} data-action="resetChip" data-f="${f}" data-value="${escapeHtml(o)}">${escapeHtml(o)}</button>`;
-  const otroBtn = `<button type="button" ${chipAttrs(abierto)} data-action="resetOtro" data-f="${f}" aria-expanded="${abierto}" aria-controls="rco-wrap-${f}">${escapeHtml(c.otro)}…</button>`;
+  const otroBtn = `<button type="button" ${chipAttrs(abierto)} data-action="resetOtro" data-f="${f}" aria-expanded="${abierto}" aria-controls="rco-wrap-${f}" aria-label="${escapeHtml(c.otro)}: escribir con tus palabras"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-notebook"/></svg> Con tus palabras…</button>`;
   const todos = c.grupos ? c.grupos().map(([cat, items])=>`<div class="chip-cat" aria-hidden="true">${escapeHtml(cat)}</div><div class="chip-group">${items.map(chip).join('')}</div>`).join('') : '';
   const sug = c.sugeridos ? c.sugeridos() : [];
   let grupos;
@@ -4563,7 +4585,15 @@ function saveCheckin(){
   resetGoto(1);
 }
 
+/* Cabecera del Reset: sin el botón de la pantalla en la que ya estás */
+function marcarCabeceraReset(){
+  const kit = document.querySelector('#resetOverlay .oh-actions [onclick="openKit()"]');
+  const hist = document.querySelector('#resetOverlay .oh-actions [onclick="openCheckinHistorial()"]');
+  if(kit) kit.hidden = resetStep === 'kit';
+  if(hist) hist.hidden = resetStep === 'historial';
+}
 function renderResetStep(){
+  marcarCabeceraReset();
   const body = document.getElementById('resetBody');
   // Preparar o activar el Kit no es estar en mala racha: el Kit lleva su propia cabecera
   const isKit = resetStep === 'kit';
@@ -4591,7 +4621,7 @@ function renderResetStep(){
       </div>
     `;
   }
-  else if(resetStep==='kit'){
+  else if(resetStep==='kit'){ /* (los botones de cabecera se ajustan en marcarCabeceraReset) */
     const flujo = `<div class="kit-flow">
           <div class="kit-flow-step">
             <span class="kit-flow-label">CUANDO NOTO</span>
@@ -4609,7 +4639,7 @@ function renderResetStep(){
           </div>
           <div class="kit-flow-arrow" aria-hidden="true"><svg class="ic ic-sm ic-abajo"><use href="#i-arrow"/></svg></div>
           <div class="kit-flow-step">
-            <span class="kit-flow-label">SI SIGO ATASCADO</span>
+            <span class="kit-flow-label">SI SIGO SIN AVANZAR</span>
             ${(state.kitPersona || state.kitPedira) ? `<p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>` : '<p class="kit-flow-empty">Pido apoyo</p>'}
           </div>
         </div>`;
@@ -4624,6 +4654,14 @@ function renderResetStep(){
         <p class="desc"><b>No espero a estar al límite. Actúo cuando aparecen las primeras señales.</b></p>
       </div>
       ${state.kitHerramienta ? `<button type="button" class="btn btn-outline" onclick="kitIr(1)">Editar mi plan</button>` : ''}
+      <details class="help-item kit-guia">
+        <summary>Guía rápida de emergencia: PARA, REVISA, PIDE</summary>
+        <div class="help-body">
+          <div class="mini-card"><b>PARA</b><p>No significa abandonar la jornada. Significa <b>cortar el automático</b>: tómate 2 minutos, respira o pide un relevo de aire para recuperar el foco.</p><p>¿Necesito seguir empujando o necesito 2 minutos para volver mejor?</p></div>
+          <div class="mini-card"><b>REVISA</b><p>Antes de cambiar cosas, <b>separa el resultado de tu forma de trabajar y elige un solo ajuste concreto</b>.</p><p>¿Qué está cambiando realmente en mi forma de captar?</p></div>
+          <div class="mini-card"><b>PIDE</b><p>No hace falta llegar a «no puedo más».</p><p>¿Hay algo que otra persona pueda ayudarme a ver o ajustar ahora mismo?</p></div>
+        </div>
+      </details>
       <div class="reset-actions"><div class="reset-row">
         <button type="button" class="btn btn-outline reset-atras" onclick="resetAtras()"><svg class="ic ic-sm ic-atras" aria-hidden="true"><use href="#i-arrow"/></svg><span class="reset-atras-lb"> Atrás</span></button>
         ${state.kitHerramienta ? `<button type="button" class="btn btn-amber" onclick="activarKitPlan()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-zap"/></svg> Activar mi plan</button>`
@@ -4653,7 +4691,7 @@ function renderResetStep(){
           <label for="kitPersonaInput">Mi persona de apoyo</label>
           <input type="text" id="kitPersonaInput" value="${escapeHtml(state.kitPersona)}" oninput="state.kitPersona=this.value;saveSoon();">
           <label class="q-label" for="kitPediraInput">¿Qué pediré?</label>
-          <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: Quiero que observes dos paradas y me digas una cosa que estoy haciendo bien y una que pueda ajustar." oninput="state.kitPedira=this.value;saveSoon();">
+          <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: que observes dos paradas y me digas qué ajustar" oninput="state.kitPedira=this.value;saveSoon();">
           <p><b>¿Cuándo pediré ayuda?</b></p>
           <p class="desc"><b>Si, después de regularme y aplicar mi ajuste, sigo bloqueado, evitando paradas o trabajando en automático.</b></p>`
       }[kitPaso];
@@ -4680,6 +4718,7 @@ function renderResetStep(){
             <p><b>Mi forma de trabajar:</b> ${escapeHtml(r.examRendimiento)||'—'}</p>
             <p><b>Lo que sigue funcionando:</b> ${[r.aspecto1,r.aspecto2].filter(Boolean).map(escapeHtml).join(' · ')||'—'}</p>
             <p><b>Ajuste elegido:</b> ${escapeHtml(r.micro)||'—'}</p>
+            ${r.ajusteNuevo ? `<p><b>Ajuste nuevo:</b> ${escapeHtml(r.ajusteNuevo)}</p>` : ''}
             <p><b>Paradas testeadas:</b> ${escapeHtml(r.stops||0)} / 10</p>
             <p><b>Qué he aprendido:</b> ${escapeHtml(r.aprendizaje)||'—'}</p>
             <p><b>Observación:</b> ${escapeHtml(r.observacion)||'—'}</p>
@@ -4743,13 +4782,13 @@ function renderResetStep(){
     `;
   }
   else if(resetStep===0){
-    const ultimo = state.resetHistory.find(r=>r.micro);
+    const ultimo = state.resetHistory.find(r=>r.micro && r.aprendizaje !== 'Pruebo otra cosa');
     body.innerHTML = `
       <div class="card reset-hero">
         <h3>¿No encuentras tu ritmo?</h3>
         <p class="desc">Una mala racha no significa que hayas dejado de saber captar. <b>Reconoce, separa, elige un solo ajuste y pruébalo en 10 paradas.</b></p>
         <button type="button" class="btn btn-amber" onclick="resetGoto(1)"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-lifebuoy"/></svg> Empezar el Reset</button>
-        ${ultimo ? `<button type="button" class="btn btn-outline reset-repetir" data-action="repetirAjuste" data-id="${escapeHtml(ultimo.id)}"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-refresh"/></svg><span>Repetir mi último ajuste<small>${escapeHtml(ultimo.micro)}</small></span></button>` : ''}
+        ${ultimo ? `<button type="button" class="btn btn-outline reset-repetir" data-action="repetirAjuste" data-id="${escapeHtml(ultimo.id)}"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-refresh"/></svg><span>Repetir mi último ajuste<small>${escapeHtml(ultimo.ajusteNuevo || ultimo.micro)}</small></span></button>` : ''}
         <button type="button" class="btn btn-outline" onclick="startCheckin()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-traffic"/></svg> Revisar antes mis señales</button>
       </div>
       <div class="reset-links">
@@ -4865,8 +4904,8 @@ function renderResetStep(){
         </div>`}
         <div class="reset-test-sec">
           ${resetStops>0 ? '<button type="button" class="btn-quiet" id="decrementStopBtn" onclick="decrementStop()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-undo"/></svg> Deshacer última</button>' : ''}
+          ${resetStops<10 ? '<button type="button" class="btn-quiet" onclick="closeReset()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg> Cerrar y seguir luego</button>' : ''}
           ${resetStops<10 ? '<button type="button" class="btn-quiet" id="allStopsBtn" onclick="marcarTodasParadas()">Ya he hecho las 10</button>' : ''}
-          <button type="button" class="btn-quiet" onclick="closeReset()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg> Cerrar y seguir luego</button>
         </div>
         ${resetStops<10 ? '<p class="desc">Mantén el mismo ajuste y evita cambiar otras cosas a la vez. No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, cómo te sientes al hacerlo y qué ocurre en las conversaciones.</b></p>' : ''}
         <details class="help-item"${resetStops>=10 ? ' open' : ''}>
@@ -4893,10 +4932,14 @@ function renderResetStep(){
         <div class="btn-row" id="resetAprendizajeRow" role="group" aria-label="Qué quieres hacer con el ajuste">
           ${opciones.map(o=>`<button type="button" class="btn btn-outline${resetAprendizaje===o?' is-sel':''}" aria-pressed="${resetAprendizaje===o}" data-action="setAprendizaje" data-value="${escapeHtml(o)}">${o}</button>`).join('')}
         </div>
+        ${resetAprendizaje === 'Lo ajusto' ? `<label class="q-label" for="resetAjusteNuevoInput" style="margin-top:14px;">¿Cómo queda tu ajuste?</label>
+        <input type="text" id="resetAjusteNuevoInput" maxlength="${LIMITS.shortStr}" value="${escapeHtml(resetAjusteNuevo || resetMicro || '')}" oninput="resetAjusteNuevo=this.value;saveResetProgressSoon();">
+        <p class="desc reset-nota">Cambia solo lo necesario: sigue siendo una sola cosa.</p>` : ''}
+        ${resetAprendizaje === 'Pruebo otra cosa' ? `<p class="desc reset-nota">Guardaremos este test en tu Historial y volverás a <b>Elige</b> para escoger otro ajuste. Lo que reconociste, examinaste y separaste se mantiene.</p>` : ''}
         <label class="q-label" for="resetObservacionInput" style="margin-top:14px;">¿Qué has observado? (opcional)</label>
         <textarea id="resetObservacionInput" placeholder="Escribe brevemente lo que has notado..." oninput="resetObservacion=this.value;saveResetProgressSoon();">${escapeHtml(resetObservacion)}</textarea>
       </div>
-      ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="continuarAprendizaje()">Ver mi resumen</button>`)}
+      ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="continuarAprendizaje()">${resetAprendizaje === 'Pruebo otra cosa' ? 'Elegir otro ajuste' : 'Ver mi resumen'}</button>`)}
     `;
   }
   else if(resetStep===7){
@@ -4906,7 +4949,9 @@ function renderResetStep(){
       <div class="card reset-cierre">
         <h3>Vuelve a calle con esto</h3>
         <dl class="reset-resumen">
-          <div><dt>Tu ajuste</dt><dd>${escapeHtml(resetMicro || '—')}${resetAprendizaje ? ` <span class="reset-decision">${escapeHtml(resetAprendizaje)}</span>` : ''}</dd></div>
+          ${resetAprendizaje === 'Lo ajusto' && resetAjusteNuevo
+            ? `<div><dt>Tu ajuste nuevo</dt><dd>${escapeHtml(resetAjusteNuevo)}</dd></div><div><dt>Lo que probaste</dt><dd>${escapeHtml(resetMicro || '—')}</dd></div>`
+            : `<div><dt>Tu ajuste</dt><dd>${escapeHtml(resetMicro || '—')}${resetAprendizaje ? ` <span class="reset-decision">${escapeHtml(resetAprendizaje)}</span>` : ''}</dd></div>`}
           ${funciona.length ? `<div><dt>Lo que sigue funcionando</dt><dd>${funciona.map(escapeHtml).join(RESET_SEP)}</dd></div>` : ''}
         </dl>
         <p class="quote"><b>Un resultado puntual no define tu rendimiento.</b></p>
@@ -4928,14 +4973,6 @@ function renderResetStep(){
           </ul>
         </div>
       </details>
-      <details class="help-item">
-        <summary>Guía rápida de emergencia: PARA, REVISA, PIDE</summary>
-        <div class="help-body">
-          <div class="mini-card"><b>PARA</b><p>No significa abandonar la jornada. Significa <b>cortar el automático</b>: tómate 2 minutos, respira o pide un relevo de aire para recuperar el foco.</p><p>¿Necesito seguir empujando o necesito 2 minutos para volver mejor?</p></div>
-          <div class="mini-card"><b>REVISA</b><p>Antes de cambiar cosas, <b>separa el resultado de tu forma de trabajar y elige un solo ajuste concreto</b>.</p><p>¿Qué está cambiando realmente en mi forma de captar?</p></div>
-          <div class="mini-card"><b>PIDE</b><p>No hace falta llegar a «no puedo más».</p><p>¿Hay algo que otra persona pueda ayudarme a ver o ajustar ahora mismo?</p></div>
-        </div>
-      </details>
       ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="finalizarReset()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-check"/></svg> Vuelvo a calle</button>`)}
     `;
   }
@@ -4946,7 +4983,7 @@ function finalizarReset(){
   state.resetHistory = [newRecord({
     senal: resetSenal, examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
     aspecto1: resetAspecto1, aspecto2: resetAspecto2, micro: resetMicro, stops: resetStops, pacto: resetPacto,
-    aprendizaje: resetAprendizaje, observacion: resetObservacion
+    aprendizaje: resetAprendizaje, ajusteNuevo: resetAprendizaje === 'Lo ajusto' ? (resetAjusteNuevo || '').trim() : '', observacion: resetObservacion
   }), ...prevHistory];
   state.resetProgress = null;
   // Si no se guarda: el Reset sigue abierto en el cierre, con su progreso, para reintentar
@@ -4991,14 +5028,34 @@ function continuarElige(){
   if(e) return fieldError(...e);
   resetGoto(5);
 }
+/* El final del método decide de verdad: mantener, retocar el ajuste o probar otro */
 function continuarAprendizaje(){
   if(!resetAprendizaje) return fieldError('resetAprendizajeRow', 'Elige una opción para continuar.');
+  if(resetAprendizaje === 'Lo ajusto'){
+    resetAjusteNuevo = (document.getElementById('resetAjusteNuevoInput')?.value || resetAjusteNuevo || '').trim();
+    if(!resetAjusteNuevo) return fieldError('resetAjusteNuevoInput', 'Escribe cómo queda tu ajuste.');
+  }
+  if(resetAprendizaje === 'Pruebo otra cosa') return probarOtroAjuste();
   resetGoto(7);
+}
+/* Guarda el test terminado en el Historial y vuelve a Elige conservando R, E y S */
+function probarOtroAjuste(){
+  const prevHistory = state.resetHistory;
+  state.resetHistory = [newRecord({
+    senal: resetSenal, examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
+    aspecto1: resetAspecto1, aspecto2: resetAspecto2, micro: resetMicro, stops: resetStops, pacto: '',
+    aprendizaje: resetAprendizaje, ajusteNuevo: '', observacion: resetObservacion
+  }), ...prevHistory];
+  if(!commitSave(()=>{ state.resetHistory = prevHistory; })) return;
+  resetMicro = null; resetStops = 0; resetStopsUndo = [];
+  resetAprendizaje = ''; resetAjusteNuevo = ''; resetObservacion = ''; resetPacto = '';
+  resetGoto(4);
+  notify('Test guardado en tu Historial. Elige otro ajuste para probar.');
 }
 function repetirAjuste(id){
   const r = state.resetHistory.find(x=>x.id===id);
   if(!r || !r.micro) return;
-  const micro = r.micro, senal = r.senal;
+  const micro = r.ajusteNuevo || r.micro, senal = r.senal;
   clearResetProgress();
   clearResetSession();
   resetMicro = micro; resetSenal = senal || '';
@@ -5298,7 +5355,7 @@ Object.assign(ACTIONS, {
   toggleEmocion: el => toggleEmocion(el.dataset.id),
   kitSuggestedTool: () => { const t = kitSuggestedTool; closeModal(); if(t && KIT_TOOL_EXACT[t]) KIT_TOOL_EXACT[t](); },
   welcomeNext: () => showWelcome(welcomeStep + 1),
-  // Al cerrar la bienvenida se empieza por Aprender, como recomienda la Ayuda
+  // Al cerrar la bienvenida se abre Herramientas: lo que se usa en calle, a un toque
   welcomeClose: () => { closeModal(); goto('herramientas'); },
   welcomeKit: () => { closeModal(); openReset(); openKit(); },
   confirmOk: () => settleConfirm(true),

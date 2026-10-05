@@ -10,7 +10,7 @@ ok(await p.locator('#toolTitle').innerText().then(t=>t.startsWith('Grounding')),
 await p.evaluate(()=>{closeTool(); state.kitHerramienta='Salir a respirar al parque'; state.kitPersona='Laura'; state.kitPedira='que me observe dos paradas'; activarKitPlan();});
 const t=await p.locator('#modalSheet').innerText();
 ok(await top()==='modal' && t.includes('Este es tu recurso personal') && t.includes('«Salir a respirar al parque»'), 'recurso personal: se muestra lo guardado, no abre el Suspiro');
-ok(t.includes('Si sigo atascado, pido apoyo a Laura: «que me observe dos paradas»'), 'incluye el apoyo con sentido');
+ok(t.includes('Si sigo sin avanzar, pido apoyo a Laura: «que me observe dos paradas»'), 'incluye el apoyo con sentido');
 await p.locator('[data-action="kitSuggestedTool"]').click();
 ok(await p.locator('#toolTitle').innerText()==='Suspiro fisiológico' && await top()==='tool', 'la herramienta parecida solo se abre si la eliges');
 await p.evaluate(()=>{closeTool(); state.kitHerramienta='Llamar a mi madre'; activarKitPlan();});

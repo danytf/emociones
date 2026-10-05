@@ -94,10 +94,31 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   // Herramientas de calle: pulsar en vez de escribir
   await p.evaluate(() => startVolverCalle());
   await p.locator('#tc-volverCalle1 [data-action="toolChip"]').first().click();
-  ok(await p.evaluate(() => document.querySelector('#tc-volverCalle1 [data-action="toolChip"]').textContent === 'Más tranquilo'), 'Volver a calle: opciones pulsables');
+  ok(await p.evaluate(() => document.querySelector('#tc-volverCalle1 [data-action="toolChip"]').textContent === 'Con más calma'), 'Volver a calle: opciones pulsables');
   ok(await p.evaluate(() => document.querySelector('#tc-volverCalle2 [data-action="toolChip"]').textContent) === 'Saludar más despacio', 'el ajuste del Kit es la primera opción de «primera parada» (sin marcar)');
   await p.locator('#toolBody button:has-text("Vuelvo a calle")').click();
-  ok((await p.locator('#toolBody').innerText()).includes('Más tranquilo'), 'el resumen muestra lo pulsado');
+  ok((await p.locator('#toolBody').innerText()).includes('Con más calma'), 'el resumen muestra lo pulsado');
+  await p.evaluate(() => closeTool());
+
+  // ---- Lote de la 8ª crítica: «¿Qué he aprendido?» decide de verdad ----
+  const prepAprendido = () => p.evaluate(() => { openReset(); resetSenal = 'Anticipo el rechazo'; resetExamResultado = 'Clima'; resetAspecto1 = 'Explico con claridad'; resetMicro = 'Simplificar la apertura'; resetStops = 10; resetGoto(6); });
+  await prepAprendido();
+  await p.click('#resetBody [data-value="Lo ajusto"]');
+  await p.fill('#resetAjusteNuevoInput', 'Simplificar la apertura y sonreír');
+  await p.click('#resetBody .reset-actions .btn-amber');
+  const cierreAjuste = await p.locator('#resetBody .reset-cierre').innerText();
+  ok(cierreAjuste.includes('Tu ajuste nuevo') && cierreAjuste.includes('Simplificar la apertura y sonreír') && cierreAjuste.includes('Lo que probaste'), '«Lo ajusto»: el cierre muestra el ajuste nuevo y el probado');
+  await p.click('#resetBody .reset-actions .btn-amber');
+  ok(await p.evaluate(() => state.resetHistory[0].ajusteNuevo === 'Simplificar la apertura y sonreír'), '«Lo ajusto»: el historial guarda el ajuste nuevo');
+  await prepAprendido();
+  await p.click('#resetBody [data-value="Pruebo otra cosa"]');
+  ok((await p.locator('#resetBody .reset-actions .btn-amber').innerText()).includes('Elegir otro ajuste'), '«Pruebo otra cosa»: el botón dice «Elegir otro ajuste»');
+  await p.click('#resetBody .reset-actions .btn-amber');
+  ok(await p.evaluate(() => resetStep === 4 && resetMicro === null && resetStops === 0 && resetSenal === 'Anticipo el rechazo' && resetAspecto1 === 'Explico con claridad' && state.resetHistory[0].aprendizaje === 'Pruebo otra cosa'), '«Pruebo otra cosa»: guarda el test y vuelve a Elige conservando R, E y S');
+  await p.evaluate(() => { startFreshReset(); closeReset(); });
+  // Círculo de respiración: al crecer no tapa el texto
+  await p.evaluate(() => { startBreath(60); const c = document.getElementById('breathCircle'); c.style.transition = 'none'; c.classList.add('grow'); });
+  ok(await p.evaluate(() => { const c = document.getElementById('breathCircle').getBoundingClientRect(); return [...document.querySelectorAll('#toolBody p')].every(x => { const r = x.getBoundingClientRect(); return r.bottom <= c.top - 14 || r.top >= c.bottom + 14; }); }), 'el círculo de respiración, crecido, no tapa ningún texto');
   await p.evaluate(() => closeTool());
 
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));
