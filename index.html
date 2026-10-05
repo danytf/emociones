@@ -938,6 +938,29 @@ main:focus{outline:none;}
 .ds .reset-test-sec{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--sp-2);margin:var(--sp-3) 0 var(--sp-4);}
 .ds .reset-test-sec:empty{display:none;}
 .ds .reset-test-sec .btn{width:auto;}
+/* Controles secundarios del test: una fila discreta de texto, sin competir con «+1 parada probada» */
+.ds .reset-test-sec{gap:0;margin:var(--sp-2) 0 var(--sp-3);}
+.ds .btn-quiet{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;background:none;border:0;border-radius:var(--ds-radius-sm);
+  font-family:inherit;font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);cursor:pointer;
+  text-decoration:underline;text-decoration-color:var(--ds-line);text-underline-offset:4px;transition:background-color .15s, color .15s;}
+.ds .btn-quiet:hover{background:var(--ds-canvas);color:var(--ds-ink);}
+/* 10/10: el momento en que el método se cumple */
+.ds .reset-completo{display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);margin:0 0 var(--sp-1);padding:var(--sp-6) var(--sp-4) var(--sp-5);
+  border-radius:var(--ds-radius-md);background:color-mix(in srgb, var(--amber) 16%, var(--ds-surface));}
+.ds .reset-completo-sello{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:var(--amber);color:#292C2F;
+  box-shadow:0 6px 18px -6px rgba(183,121,31,.55);animation:resetSello .55s cubic-bezier(.16,1,.3,1) both;}
+.ds .reset-completo-sello .ic{width:32px;height:32px;stroke-width:2.25;}
+.ds .reset-completo-n{margin:var(--sp-1) 0 0;font-family:var(--font-brand);font-size:var(--fs-sm);font-weight:700;letter-spacing:.04em;color:var(--tone-ink);}
+.ds .reset-completo h3{margin:0;font-size:26px;color:var(--ds-ink);}
+.ds .reset-completo h3:focus{outline:none;}
+.ds .reset-completo-txt{margin:0;max-width:34ch;font-size:var(--fs-md);line-height:var(--lh-body);color:var(--ds-ink-2);}
+.ds .reset-test.is-completo .help-item{text-align:left;}
+@keyframes resetSello{from{transform:scale(.6);opacity:0;}to{transform:none;opacity:1;}}
+@media (prefers-reduced-motion: reduce){ .ds .reset-completo-sello{animation:none;} .ds .btn-quiet{transition:none;} }
+@supports not (color: color-mix(in srgb, red 50%, blue)){ .ds .reset-completo{background:rgba(224,160,48,.16);} }
+/* Cierre: «Mi próximo paso» plegado */
+.ds .reset-paso{margin-top:var(--sp-3);}
+.ds .reset-opcional{font-weight:500;color:var(--ds-ink-3);}
 .ds .reset-hecho{display:flex;align-items:center;justify-content:center;gap:6px;font-size:var(--fs-lg);}
 /* Cierre: lo que te llevas a calle */
 .ds .reset-resumen{display:grid;gap:var(--sp-2);margin:0 0 var(--sp-3);}
@@ -4037,6 +4060,7 @@ let resetSenal = '';
 let resetExamResultado = '', resetExamRendimiento = '';
 let resetAspecto1 = '', resetAspecto2 = '';
 let resetPacto = '';
+let resetPasoAbierto = false;   // «Mi próximo paso» plegado en el cierre salvo que se abra o ya tenga respuesta
 let resetAprendizaje = '', resetObservacion = '';
 let checkinState = [];
 let resetCheckinItems = [];
@@ -4089,7 +4113,7 @@ function clearResetSession(){
   resetAprendizaje = ''; resetObservacion = '';
   resetCheckinItems = [];
   resetStopsUndo = [];
-  examinaParte = 0; resetTodosAbierto = false; resetMasAbierto.clear();
+  examinaParte = 0; resetTodosAbierto = false; resetPasoAbierto = false; resetMasAbierto.clear();
 }
 /* directo: desde «Estoy en una mala racha» se entra al primer paso sin pasar por la explicación */
 function openReset(directo){
@@ -4628,22 +4652,29 @@ function renderResetStep(){
   else if(resetStep===5){
     body.innerHTML = `
       ${resetDots()}
-      <div class="card reset-test">
-        <h3>Testea el ajuste en 10 paradas</h3>
+      <div class="card reset-test${resetStops>=10 ? ' is-completo' : ''}">
+        ${resetStops<10 ? `<h3>Testea el ajuste en 10 paradas</h3>
         <p class="reset-ajuste"><span>Tu ajuste</span><b>${escapeHtml(resetMicro)}</b></p>
         <div class="timer-big" aria-hidden="true">${escapeHtml(resetStops)} / 10</div>
         <p class="sr-only">${escapeHtml(resetStops)} de 10 paradas.</p>
-        ${resetStops<10 ? `<div class="btn-row">
+        <div class="btn-row">
           <button type="button" class="btn btn-amber" id="incrementStopBtn" onclick="incrementStop(1)">+1 parada probada</button>
           ${resetStops<=7 ? '<button type="button" class="btn btn-outline" id="incrementStop3Btn" onclick="incrementStop(3)">+3 paradas</button>' : ''}
-        </div>` : '<p class="desc text-ok reset-hecho"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg> <b>Test completado.</b></p>'}
+        </div>`
+        /* 10/10: el momento en que el método se cumple, con su propio peso */
+        : `<div class="reset-completo">
+          <span class="reset-completo-sello" aria-hidden="true"><svg class="ic"><use href="#i-check"/></svg></span>
+          <p class="reset-completo-n" aria-hidden="true">10 / 10</p>
+          <h3 id="resetCompletoTitulo" tabindex="-1">Test completado</h3>
+          <p class="reset-completo-txt">Has probado <b>${escapeHtml(resetMicro || 'tu ajuste')}</b> en 10 paradas. Lo que cuenta es haberlo sostenido, no el resultado de cada conversación.</p>
+        </div>`}
         <div class="reset-test-sec">
-          ${resetStops>0 ? '<button type="button" class="btn btn-outline btn-sm" id="decrementStopBtn" onclick="decrementStop()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-undo"/></svg> Deshacer última</button>' : ''}
-          ${resetStops<10 ? '<button type="button" class="btn btn-outline btn-sm" id="allStopsBtn" onclick="marcarTodasParadas()">Ya he hecho las 10</button>' : ''}
-          <button type="button" class="btn btn-outline btn-sm" onclick="closeReset()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg> Cerrar y seguir luego</button>
+          ${resetStops>0 ? '<button type="button" class="btn-quiet" id="decrementStopBtn" onclick="decrementStop()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-undo"/></svg> Deshacer última</button>' : ''}
+          ${resetStops<10 ? '<button type="button" class="btn-quiet" id="allStopsBtn" onclick="marcarTodasParadas()">Ya he hecho las 10</button>' : ''}
+          <button type="button" class="btn-quiet" onclick="closeReset()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-clock"/></svg> Cerrar y seguir luego</button>
         </div>
-        <p class="desc">Mantén el mismo ajuste y evita cambiar otras cosas a la vez. No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, cómo te sientes al hacerlo y qué ocurre en las conversaciones.</b></p>
-        <details class="help-item">
+        ${resetStops<10 ? '<p class="desc">Mantén el mismo ajuste y evita cambiar otras cosas a la vez. No necesitas que todas las conversaciones salgan bien. <b>Observa si puedes aplicar el ajuste, cómo te sientes al hacerlo y qué ocurre en las conversaciones.</b></p>' : ''}
+        <details class="help-item"${resetStops>=10 ? ' open' : ''}>
           <summary>Qué observar al terminar</summary>
           <div class="help-body">
             <p><b>¿He podido aplicar el ajuste como quería?</b><br><b>¿Cómo me he sentido al aplicarlo?</b><br><b>¿Qué ha ocurrido en las conversaciones?</b><br><b>¿Quiero mantenerlo, modificarlo o probar otra cosa?</b></p>
@@ -4683,11 +4714,13 @@ function renderResetStep(){
         </dl>
         <p class="quote"><b>Un resultado puntual no define tu rendimiento.</b></p>
       </div>
-      <div class="card">
-        <h3>Mi próximo paso</h3>
-        <p class="desc">Cuando el resultado no acompañe, ¿qué harás? <b>Es opcional.</b></p>
-        ${resetCampo('paso')}
-      </div>
+      <details class="help-item reset-paso"${resetPasoAbierto || resetPacto ? ' open' : ''} ontoggle="resetPasoAbierto=this.open">
+        <summary><span class="sum-title">Mi próximo paso <span class="reset-opcional">(opcional)</span></span></summary>
+        <div class="help-body">
+          <p class="desc">Cuando el resultado no acompañe, ¿qué harás?</p>
+          ${resetCampo('paso')}
+        </div>
+      </details>
       <details class="help-item">
         <summary>Tres ideas para llevarte</summary>
         <div class="help-body">
@@ -4787,7 +4820,9 @@ function incrementStop(n){
   if(add <= 0) return;
   resetStops += add; resetStopsUndo.push(add);
   saveResetProgress(); renderResetStep();
-  announce(`${resetStops} de 10 paradas.`);
+  // Al llegar a 10 desaparecen los contadores: el foco pasa al título del momento completado
+  if(resetStops >= 10){ const t = document.getElementById('resetCompletoTitulo'); if(t) t.focus(); announce('Test completado: 10 de 10 paradas.'); }
+  else announce(`${resetStops} de 10 paradas.`);
 }
 /* Corrige una pulsación por error; nunca baja de 0. Si el botón desaparece (0), el foco pasa a «+1». */
 function decrementStop(){
