@@ -613,8 +613,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 /* Móviles muy estrechos: el subtítulo no cabe sin apretar la cabecera */
 @media (max-width:360px){ .brand .brand-tagline{display:none;} }
 
-/* ---------- Móvil: navegación en barra inferior (siempre visible y al alcance del pulgar) ---------- */
-@media (max-width:600px){
+/* ---------- Móvil y tablet en vertical: navegación en barra inferior (siempre visible y al alcance del pulgar) ---------- */
+@media (max-width:600px), (max-width:1023px) and (orientation:portrait){
   .brand-logo{height:32px;}
   .tabs-wrap{position:fixed;left:0;right:0;bottom:0;z-index:150;margin:0;max-width:none;
     background:var(--ds-surface);border-top:1px solid var(--ds-line);
@@ -1058,6 +1058,44 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
   .ds .wheel-btn:hover{border-color:var(--emo);}
 }
 @media (prefers-reduced-motion: reduce){ .btn, .chip, .wheel-btn, .icon-btn, .chip-info{transition:none;} }
+/* ---------- Tablet y escritorio: un solo borde ---------- */
+/* Cabecera y contenido comparten caja (1224 px de contenido, 28 px de margen): el logo, las pestañas,
+   el título y las tarjetas empiezan en la misma línea vertical. */
+@media (min-width:601px){
+  header{padding-left:28px;padding-right:28px;}
+  .header-inner, .tabs-wrap{max-width:1224px;}
+  .content-wrap{max-width:calc(1224px + 56px);}
+  #view-aprender.ds.active, #view-bienestar.ds.active, #view-diario.active{margin:0;}
+}
+/* Tablet en vertical: barra inferior con etiquetas algo mayores y el logo a su tamaño */
+@media (min-width:601px) and (max-width:1023px) and (orientation:portrait){
+  .brand-logo{height:38px;}
+  .header-tabs{max-width:720px;margin:0 auto;}
+  .header-tabs button{font-size:12.5px;}
+}
+/* Tablet en horizontal y escritorio: lectura a la izquierda y «¿Qué necesitas ahora?» como columna fija
+   a la derecha, con los accesos abiertos (alineada con los botones de la cabecera). En Herramientas
+   el lanzador ya es el contenido: ocupa todo el ancho, arriba. */
+@media (min-width:1024px){
+  .content-wrap{display:grid;grid-template-columns:minmax(0, 760px) 300px;justify-content:space-between;column-gap:40px;align-items:start;}
+  .content-wrap > .view.active{grid-column:1;grid-row:1;}
+  .quick-launcher.ql-compact{grid-column:2;grid-row:1;position:sticky;top:0;margin:0;
+    max-height:calc(100dvh - var(--alto-cabecera, 150px) - 48px);overflow-y:auto;overscroll-behavior:contain;
+    padding:var(--sp-4);background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-lg);}
+  .quick-launcher.ql-compact .ql-compact-bar{display:none;}
+  .quick-launcher.ql-compact .ql-head{display:flex;}
+  .quick-launcher.ql-compact .ql-sub{display:block;}
+  .quick-launcher.ql-compact .ql-row, .quick-launcher.ql-compact .ql-row.ql-momentos{display:grid;grid-template-columns:minmax(0, 1fr);gap:var(--sp-2);}
+  /* Herramientas: lanzador y caja de herramientas a todo el ancho de la caja común */
+  .quick-launcher:not(.ql-compact){grid-column:1 / -1;grid-row:1;}
+  .content-wrap > #view-herramientas.active{grid-column:1 / -1;grid-row:2;width:auto;margin:0;padding:0;}
+}
+/* Móvil: el mismo borde de 16 px para el logo y el contenido */
+@media (max-width:600px){
+  header{padding-left:16px;padding-right:16px;}
+  .content-wrap{padding-left:16px;padding-right:16px;}
+  #view-herramientas.active{padding-left:16px;padding-right:16px;}
+}
 </style>
 </head>
 <body>
@@ -2528,6 +2566,13 @@ function applyTheme(){
   btn.setAttribute('aria-label', t === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
 }
 applyTheme();
+// Alto real de la cabecera: limita la columna fija «¿Qué necesitas ahora?» (tablet en horizontal y escritorio)
+(function(){
+  const h = document.querySelector('header');
+  const fijar = () => document.documentElement.style.setProperty('--alto-cabecera', h.offsetHeight + 'px');
+  fijar();
+  if(window.ResizeObserver) new ResizeObserver(fijar).observe(h);
+})();
 // Sin elección manual, se sigue el tema del sistema también si cambia con la app abierta
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ if(!state.theme) applyTheme(); });
 document.getElementById('themeToggle').onclick = ()=>{
