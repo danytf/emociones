@@ -32,6 +32,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await fila('Checkpoint'); await p.fill('#cpNota', 'cansancio');
   await cerrar('esc'); ok(await aviso(), 'Checkpoint A: escribir y cerrar → avisa');
   await p.locator('#confirmCancel').click(); await p.waitForTimeout(200);
+  await p.locator('#cpFatiga').fill('6'); await p.locator('#cpEmocional').fill('4');
   await p.locator('#cpDecisionRow [aria-pressed]').first().click();
   await p.locator('#toolBody button:has-text("Guardar")').first().click(); await p.waitForTimeout(400);
   await cerrar('esc'); ok(await top() === null && await p.evaluate(() => state.checkpoints.length === 1), 'Checkpoint B: guardar y cerrar → no avisa');

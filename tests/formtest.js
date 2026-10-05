@@ -120,7 +120,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
     openCheckpoint(); guardarCheckpoint();
     const sinDecision = { guardado: state.checkpoints.length !== nCp, abierto: Overlays.top() === 'tool',
       error: (document.querySelector('#cpDecisionRow + .field-error') || {}).textContent || '' };
-    setCpDecision('Hago una pausa'); guardarCheckpoint();
+    document.getElementById('cpFatiga').value = 6; document.getElementById('cpEmocional').value = 4; setCpDecision('Hago una pausa'); guardarCheckpoint();
     const cp = document.getElementById('toastMsg').textContent;
     return { diario, cp, sinDecision, conDecision: state.checkpoints.length === nCp + 1 };
   });
@@ -162,7 +162,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
     cancelarEdicionSepa();
     // Checkpoint: nuevo y edición
     const nC = state.checkpoints.length;
-    openCheckpoint(); document.getElementById('cpNota').value = 'Agua'; setCpDecision('Sigo igual'); guardarCheckpoint();
+    openCheckpoint(); document.getElementById('cpFatiga').value = 6; document.getElementById('cpEmocional').value = 4; document.getElementById('cpNota').value = 'Agua'; setCpDecision('Sigo igual'); guardarCheckpoint();
     r.cpNuevo = state.checkpoints.length === nC && Overlays.top() === 'tool' && document.getElementById('cpNota').value === 'Agua';
     Overlays.close('tool');
     const cid = state.checkpoints[0].id, notaOrig = state.checkpoints[0].nota;

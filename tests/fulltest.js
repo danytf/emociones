@@ -93,6 +93,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#headerTabs [data-view="herramientas"]').click();
   await page.locator('#view-herramientas .trow:has-text("Checkpoint de mitad de turno")').click();
   await page.locator('#cpFatiga').fill('8');
+  await page.locator('#cpEmocional').fill('4');
   await page.fill('#cpNota', 'Bajar ritmo');
   await page.locator('#cpDecisionRow button:has-text("Hago una pausa")').click();
   ok(await page.locator('#cpDecisionRow [aria-pressed="true"]').innerText().then(t => t.includes('Hago una pausa')), 'decisión marcada');

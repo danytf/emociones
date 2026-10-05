@@ -124,7 +124,7 @@ const v1 = {
   await page.evaluate(() => closeTool());
 
   // Checkpoint: guarda enteros
-  await page.evaluate(() => { openCheckpoint(); guardarCheckpoint(); });
+  await page.evaluate(() => { openCheckpoint(); document.getElementById('cpFatiga').value = 6; document.getElementById('cpEmocional').value = 4; setCpDecision('Sigo igual'); guardarCheckpoint(); });
   ok(await page.evaluate(() => typeof state.checkpoints[0].fatiga) === 'number', 'checkpoint guarda números');
   await page.evaluate(() => document.querySelector('#checkpointHistorial [data-action="editarCheckpoint"]').click());
   ok(await page.evaluate(() => document.getElementById('toolOverlay').classList.contains('active')), 'editar checkpoint por data-action');

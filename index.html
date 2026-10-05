@@ -844,6 +844,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
 .ds input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--slider);border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
 .ds input[type=range]:focus-visible{outline-offset:6px;}
+.ds input[type=range].sin-indicar::-webkit-slider-thumb{background:var(--ds-surface);border-color:var(--slider);}
+.ds input[type=range].sin-indicar::-moz-range-thumb{background:var(--ds-surface);border-color:var(--slider);}
 /* En oscuro, el contorno de foco usa el rojo noche: el rojo de marca no llega a 3:1 sobre las superficies oscuras */
 :root[data-theme="dark"] :focus-visible{outline-color:var(--brand-accent) !important;}
 :root[data-theme="dark"] .ds .range-val{color:var(--ds-ink);}
@@ -3269,8 +3271,9 @@ const CHECKPOINT_DECISIONES = [
 function openCheckpoint(editId){
   editingCheckpointId = editId || null;
   const existing = editingCheckpointId ? state.checkpoints.find(x=>x.id===editingCheckpointId) : null;
-  const fatiga = existing ? existing.fatiga : 5;
-  const emocional = existing ? existing.emocional : 5;
+  // Nuevo: 0 = «Sin indicar» (nunca se guarda). Al editar, los valores guardados (1–10) ya cuentan como indicados.
+  const fatiga = existing ? existing.fatiga : 0;
+  const emocional = existing ? existing.emocional : 0;
   const nota = existing ? (existing.nota||'') : '';
   const decision = existing ? (existing.decision||'') : '';
   openTool('Checkpoint de mitad de turno', `
@@ -3281,12 +3284,12 @@ function openCheckpoint(editId){
       <b>Emoción:</b> ¿qué estoy sintiendo?<br>
       <b>Estrategia:</b> ¿necesito cambiar algo?</p>
       <label for="cpFatiga">Nivel de fatiga física/mental (1‑10)</label>
-      <input type="range" id="cpFatiga" min="1" max="10" value="${escapeHtml(fatiga)}" oninput="document.getElementById('cpFatigaVal').textContent=this.value+'/10'">
-      <div class="range-val" id="cpFatigaVal">${escapeHtml(fatiga)}/10</div>
+      <input type="range" id="cpFatiga" min="0" max="10" value="${escapeHtml(fatiga)}" oninput="cpNivel(this)">
+      <div class="range-val" id="cpFatigaVal" aria-hidden="true"></div>
       <div class="range-labels"><span>1 = nada</span><span>10 = mucha</span></div>
       <label for="cpEmocional" style="margin-top:14px;">Activación emocional (1‑10)</label>
-      <input type="range" id="cpEmocional" min="1" max="10" value="${escapeHtml(emocional)}" oninput="document.getElementById('cpEmocionalVal').textContent=this.value+'/10'">
-      <div class="range-val" id="cpEmocionalVal">${escapeHtml(emocional)}/10</div>
+      <input type="range" id="cpEmocional" min="0" max="10" value="${escapeHtml(emocional)}" oninput="cpNivel(this)">
+      <div class="range-val" id="cpEmocionalVal" aria-hidden="true"></div>
       <div class="range-labels"><span>1 = baja</span><span>10 = alta</span></div>
       <label for="cpNota" style="margin-top:14px;">Ajuste táctico para el tramo final</label>
       <textarea id="cpNota" placeholder="Ej: bajar ritmo, hidratarme, cambiar de esquina...">${escapeHtml(nota)}</textarea>
@@ -3298,7 +3301,16 @@ function openCheckpoint(editId){
       <button type="button" class="btn btn-navy" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
     </div>
   `);
+  cpNivel(document.getElementById('cpFatiga')); cpNivel(document.getElementById('cpEmocional'));
   Overlays.resetBaseline('tool');   // punto de partida para detectar cambios sin guardar
+}
+/* Nivel del Checkpoint: 0 = «Sin indicar» (texto visible, aria-valuetext y aspecto vacío); 1–10 = valor elegido */
+function cpNivel(el){
+  const v = Number(el.value);
+  const txt = v ? v + '/10' : 'Sin indicar';
+  document.getElementById(el.id + 'Val').textContent = txt;
+  el.setAttribute('aria-valuetext', v ? v + ' de 10' : 'Sin indicar');
+  el.classList.toggle('sin-indicar', !v);
 }
 function setCpDecision(v){
   document.getElementById('cpDecision').value = v;
@@ -3308,14 +3320,16 @@ function setCpDecision(v){
   });
 }
 function guardarCheckpoint(){
-  const fatiga = cleanInt(document.getElementById('cpFatiga').value, 1, 10, 5);
-  const emocional = cleanInt(document.getElementById('cpEmocional').value, 1, 10, 5);
+  // 0 = «Sin indicar»: no se guarda; hay que elegir ambos niveles (1–10) y la decisión
+  const fatiga = cleanInt(document.getElementById('cpFatiga').value, 0, 10, 0);
+  const emocional = cleanInt(document.getElementById('cpEmocional').value, 0, 10, 0);
   const nota = document.getElementById('cpNota').value.trim();
   const decision = document.getElementById('cpDecision').value;
-  if(!decision){
-    fieldError('cpDecisionRow', 'Elige qué vas a hacer ahora.');   // también lleva el foco al grupo
-    return;
-  }
+  const errores = [];
+  if(!fatiga) errores.push(['cpFatiga', 'Indica tu nivel de fatiga, de 1 a 10.']);
+  if(!emocional) errores.push(['cpEmocional', 'Indica tu nivel de activación emocional, de 1 a 10.']);
+  if(!decision) errores.push(['cpDecisionRow', 'Elige qué vas a hacer ahora.']);
+  if(!showFieldErrors(errores)) return;   // el foco va al primero que falte
   const editando = !!editingCheckpointId;
   const prev = state.checkpoints;
   state.checkpoints = editando

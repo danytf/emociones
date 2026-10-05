@@ -95,6 +95,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   const noConfirm = async () => !(await confirmOpen());
   await page.evaluate(() => { openCheckpoint(); });
   await page.locator('#cpNota').fill('otra');
+  await page.locator('#cpFatiga').fill('6'); await page.locator('#cpEmocional').fill('4');
   await page.evaluate(() => { setCpDecision('Sigo igual'); guardarCheckpoint(); });
   ok(await noConfirm() && !(await openSet()).includes('toolOverlay'), 'guardar cierra sin preguntar');
   await page.evaluate(() => openCheckpoint(state.checkpoints[0].id));
@@ -116,7 +117,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await soloCambio('elegir solo «¿Qué hago ahora?»', () => page.locator('#cpDecisionRow button').nth(1).click());
   // Volver al valor inicial no cuenta como cambio
   await page.evaluate(() => openCheckpoint());
-  await page.locator('#cpFatiga').fill('8'); await page.locator('#cpFatiga').fill('5');
+  await page.locator('#cpFatiga').fill('8'); await page.locator('#cpFatiga').fill('0');   // 0 = «Sin indicar», el valor inicial
   await page.keyboard.press('Escape');
   ok(await noConfirm() && !(await openSet()).includes('toolOverlay'), 'volver al valor inicial no cuenta como cambio sin guardar');
   // «¿Qué ha funcionado?»: elegir solo un chip también cuenta; «No sé qué necesito» (no guarda) no pregunta

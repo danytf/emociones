@@ -20,6 +20,7 @@ const LOCAL = [
   ['motivotest', 'Mi motivo: preparar, borrar, exportar, Desánimo y atrás'],
   ['cierretest', 'Aviso al cerrar con cambios sin guardar, con Escape y gesto atrás'],
   ['ayudatest', 'La Ayuda describe todas las herramientas y cifras reales'],
+  ['cptest', 'Checkpoint: niveles «Sin indicar» hasta elegirlos; edición conserva los guardados'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],
