@@ -926,6 +926,11 @@ main:focus{outline:none;}
   background:var(--ds-canvas);border-top:1px solid var(--ds-line);}
 .ds .reset-actions .btn{margin:0;}
 .ds .reset-actions.no-fija{position:static;border-top:none;padding-top:0;}
+/* La barra va siempre abajo, aunque el paso sea corto: el pulgar encuentra el botón en el mismo sitio en cada paso */
+#resetBody{display:flex;flex-direction:column;padding-bottom:0;}
+#resetBody > .reset-actions{margin-top:auto;}
+#resetBody > :has(+ .reset-actions){margin-bottom:var(--sp-4);}
+#resetBody > :last-child:not(.reset-actions){margin-bottom:var(--sp-6);}
 .ds .reset-row{display:flex;gap:var(--sp-2);}
 .ds .reset-row .btn-outline{flex:0 0 38%;}
 .ds .reset-row .btn-amber, .ds .reset-row .btn[data-principal]{flex:1 1 auto;}
