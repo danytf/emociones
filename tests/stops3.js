@@ -28,6 +28,6 @@ await p.locator('#allStopsBtn').click(); await p.locator('#confirmOk').click();
 ok(await p.evaluate(()=>resetStep===6 && resetStops===10 && JSON.parse(localStorage.getItem('wesserAppState')).resetProgress.stops===10), 'confirmar marca 10 y pasa a «¿Qué he aprendido?»');
 await p.locator('#resetBody').screenshot({path:require('path').join(__dirname, 'out')+'/stops-row.png'}).catch(()=>{});
 await p.evaluate(()=>{resetStops=4; resetGoto(5);});
-await p.locator('#resetBody .btn-row').first().screenshot({path:require('path').join(__dirname, 'out')+'/stops-row.png'});
+await p.locator('#resetBody .reset-cuenta').first().screenshot({path:require('path').join(__dirname, 'out')+'/stops-row.png'});
 ok(errs.length===0,'sin errores de JS '+errs.join('|'));
 await b.close();})();

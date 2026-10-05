@@ -49,7 +49,8 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.selectOption('#sepaSituacion', 'Presión por el objetivo');
   await page.locator('#sepaEmocionChips [data-id="miedo"]').click();
   await page.locator('#sepaEmocionChips [data-id="ira"]').click();
-  await page.locator('#sepaEmocionChips [data-value="tristeza"]').click();
+  await page.locator('#view-diario .sepa-emo-ayuda').click();
+  await page.locator('#modalSheet [data-value="tristeza"]').click();
   ok(await top() === 'modal' && (await st()).sepaEntries.length === 0 && JSON.stringify(await page.evaluate(() => selectedEmociones)) === '["miedo","ira"]', 'ℹ️ abre la ficha sin tocar la selección (2 emociones marcadas)');
   await page.keyboard.press('Escape');
   await page.selectOption('#sepaPensDestructivo', '¿Y si me voy a 0?');
@@ -193,7 +194,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   for (let i = 0; i < 3; i++) await page.locator('#incrementStopBtn').click();
   await page.locator('#decrementStopBtn').click();
   ok(await page.evaluate(() => resetStops) === 2, 'contador +3 y deshacer → 2');
-  ok(await page.locator('#resetBody button:text-is("Ver lo aprendido")').isDisabled() && await page.locator('#resetBody .btn-amber:text-is("Ver lo aprendido")').count() === 0, 'no se puede continuar antes de 10 (y el botón no compite en ámbar con +1)');
+  ok(await page.locator('#resetBody button:text-is("Ver lo aprendido")').count() === 0 && await page.locator('#resetBody .reset-actions #incrementStopBtn').count() === 1 && (await page.locator('#resetBody .reset-cuenta').innerText()).includes('paradas probadas') && !(await page.locator('#resetBody').innerText()).includes('Te faltan'), 'antes de 10: cuenta hacia arriba, sin botón bloqueado; «+1 parada probada» en la barra fija');
   // Cerrar a medias y reanudar
   await page.locator('#resetBody button:has-text("Cerrar y seguir luego")').click();
   await page.reload();

@@ -73,6 +73,33 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await p.keyboard.press('Enter');
   ok(await p.evaluate(() => document.activeElement.id) === 'contenido', '«Saltar al contenido» lleva el foco al contenido principal');
 
+  // ---- Lote de la 7ª crítica ----
+  // Barra del Reset siempre al fondo, aunque el paso sea corto
+  await p.evaluate(() => { openReset(); resetGoto(2); });
+  const hueco = await p.evaluate(() => Math.round(innerHeight - document.querySelector('#resetBody .reset-actions .btn-amber').getBoundingClientRect().bottom));
+  ok(hueco >= 0 && hueco <= 20, `el botón principal del Reset queda al fondo en un paso corto (${hueco}px)`);
+  // Test a medias: «Seguir mi test» también en la fila compacta de otra sección
+  await p.evaluate(() => { resetMicro = 'Simplificar la apertura'; resetStops = 3; resetGoto(5); closeReset(); goto('diario'); });
+  const compacto = p.locator('#qlTestSlotCompact .ql-btn');
+  ok(await compacto.isVisible() && (await compacto.innerText()).includes('Seguir mi test · 3/10') && !(await p.locator('#qlKitSlotCompact').isVisible()), '«Seguir mi test · 3/10» en la fila compacta del Diario (en lugar de «Activar mi plan»)');
+  await compacto.click();
+  ok(await p.evaluate(() => resetStep === 5 && resetStops === 3), 'lleva directo al contador');
+  await p.evaluate(() => { startFreshReset(); closeReset(); });
+  // Check-in: títulos a la vista y explicaciones a demanda
+  await p.evaluate(() => { openReset(); startCheckin(); });
+  ok(!(await p.locator('#resetBody .ci-desc').first().isVisible()), 'check-in: las explicaciones empiezan ocultas');
+  await p.click('#resetBody .checkin-desc-btn');
+  ok(await p.locator('#resetBody .ci-desc').first().isVisible(), 'check-in: «Ver qué significa cada señal» las muestra');
+  await p.evaluate(() => closeReset());
+  // Herramientas de calle: pulsar en vez de escribir
+  await p.evaluate(() => startVolverCalle());
+  await p.locator('#tc-volverCalle1 [data-action="toolChip"]').first().click();
+  ok(await p.evaluate(() => document.querySelector('#tc-volverCalle1 [data-action="toolChip"]').textContent === 'Más tranquilo'), 'Volver a calle: opciones pulsables');
+  ok(await p.evaluate(() => document.querySelector('#tc-volverCalle2 [data-action="toolChip"]').textContent) === 'Saludar más despacio', 'el ajuste del Kit es la primera opción de «primera parada» (sin marcar)');
+  await p.locator('#toolBody button:has-text("Vuelvo a calle")').click();
+  ok((await p.locator('#toolBody').innerText()).includes('Más tranquilo'), 'el resumen muestra lo pulsado');
+  await p.evaluate(() => closeTool());
+
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));
   await b.close();
 })();

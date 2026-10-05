@@ -60,16 +60,17 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
 
   // ---- Modal: fondo cierra, contenido no ----
   await page.evaluate(() => goto('diario'));
-  await page.locator('#sepaEmocionChips [data-action="showEmotion"]').first().click();
+  await page.locator('#view-diario .sepa-emo-ayuda').click();
+  await page.locator('#modalSheet [data-action="showEmotion"]').first().click();
   ok(await active() === 'modalSheet', 'foco inicial en la ficha (modal)');
   ok(await page.evaluate(() => document.getElementById('modalSheet').getAttribute('aria-labelledby') === 'modalTitle' && document.getElementById('modalTitle').textContent.includes('Alegría')), 'modal etiquetado por su título');
   await page.locator('#modalSheet h2').click();
   ok((await openSet()).includes('modalBack'), 'clic dentro del modal no lo cierra');
   await page.mouse.click(10, 10);
   ok(!(await openSet()).includes('modalBack'), 'clic en el fondo del modal lo cierra');
-  ok((await active()) === 'Ver ficha de Alegría', 'foco vuelve al ℹ️ que abrió la ficha: ' + await active());
-  await page.locator('#sepaEmocionChips .chip-info').nth(1).focus(); await page.keyboard.press('Enter');
-  ok((await openSet()).includes('modalBack') && await page.evaluate(() => selectedEmociones.length === 0), 'ℹ️ se activa con teclado sin seleccionar la emoción');
+  ok((await active()) === '¿Qué es cada emoción?', 'foco vuelve al enlace que abrió las fichas: ' + await active());
+  await page.locator('#view-diario .sepa-emo-ayuda').focus(); await page.keyboard.press('Enter');
+  ok((await openSet()).includes('modalBack') && await page.evaluate(() => selectedEmociones.length === 0), '«¿Qué es cada emoción?» se activa con teclado sin seleccionar ninguna emoción');
   await page.keyboard.press('Escape');
 
   // ---- No perder lo escrito ----
@@ -156,7 +157,8 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
 
   // Rutinas rápidas que no guardan: el aviso no sugiere que falte guardar
   await page.evaluate(() => { Overlays.close('confirm'); Overlays.close('modal'); Overlays.close('tool'); Overlays.close('reset'); Overlays.close('help'); startCierreTurno(); });
-  await page.fill('#cierreTurno1', 'Un turno duro');
+  await page.locator('#tc-cierreTurno1 [data-action="toolOtro"]').click();
+  await page.fill('#tco-cierreTurno1', 'Un turno duro');
   await page.keyboard.press('Escape'); await page.waitForTimeout(150);
   const efimero = await page.evaluate(() => [document.getElementById('confirmTitle').textContent, document.getElementById('confirmMsg').textContent]);
   ok(efimero[0] === '¿Cerrar?' && efimero[1].includes('no se guarda'), 'Cierre de turno a medias: «¿Cerrar? Lo que has escrito aquí no se guarda»');

@@ -79,7 +79,9 @@ const v1 = {
   await page.evaluate(() => cancelarEdicionSepa());
 
   const selBefore = await page.evaluate(() => JSON.stringify(selectedEmociones));
-  await page.locator('#sepaEmocionChips [data-action="showEmotion"]').first().click();
+  ok(await page.locator('#sepaEmocionChips .chip-info').count() === 0, 'las emociones del Diario ya no llevan un ℹ️ por chip');
+  await page.locator('#view-diario .sepa-emo-ayuda').click();
+  await page.locator('#modalSheet [data-action="showEmotion"]').first().click();
   ok(await page.evaluate(sb => document.getElementById('modalBack').classList.contains('active') && JSON.stringify(selectedEmociones) === sb, selBefore), 'ℹ️ abre la ficha sin cambiar la selección');
   await page.evaluate(() => closeModal());
   await page.evaluate(() => document.querySelectorAll('#wheelGrid [data-action="showEmotion"]')[2].click());
