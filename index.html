@@ -307,12 +307,6 @@ label{font-size:var(--fs-sm);font-weight:700;color:var(--text-secondary);display
 }
 /* Chip con título y descripción (señal principal del Reset): texto en bloque, no en columnas */
 .chip.chip-block{display:block;border-radius:14px;padding:10px 14px;}
-/* Emoción del Diario: el chip selecciona y el botón ℹ️, independiente y separado, abre la ficha */
-.emo-pair{display:inline-flex;align-items:center;gap:6px;}
-.chip-info{
-  width:44px;height:44px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--border-color);
-  background:var(--card-bg);font-size:16px;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
-}
 .chip:focus-visible, button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible{outline:2.5px solid var(--wesser-red);outline-offset:2px;}
 .chip-cat{font-size:12px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.3px;margin:22px 0 8px;}
 .chip-cat:first-child{margin-top:2px;}
@@ -712,8 +706,6 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .chip{background:var(--ds-surface);border:1px solid var(--ds-line-strong);color:var(--ds-ink);font-weight:600;}
 .ds .chip.selected, .ds .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--brand-accent) 10%, var(--ds-surface));border-color:var(--brand-accent);color:var(--brand-ink);}
 :root[data-theme="dark"] .ds .chip.selected, :root[data-theme="dark"] .ds .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--brand-accent) 16%, var(--ds-surface));}
-.ds .chip-info{background:var(--ds-surface);border:1px solid var(--ds-line-strong);color:var(--ds-ink-2);}
-.ds .chip-info .ic{width:20px;height:20px;}
 /* Botones */
 .ds .btn{border-radius:var(--ds-radius-md);}
 .ds .btn-primary{min-height:52px;box-shadow:0 2px 8px rgba(204,46,52,.22);}
@@ -1142,7 +1134,7 @@ h1, h2, h3, h4, .sum-title, .trow-title{text-wrap:balance;}
 p, li, .desc, .trow-desc{text-wrap:pretty;}
 /* ---------- Hover sobrio y uniforme: cambia fondo o borde, nunca la posición ---------- */
 .btn{transition:transform .12s ease, background-color .15s ease, border-color .15s ease;}
-.chip, .wheel-btn, .icon-btn, .chip-info{transition:background-color .15s ease, border-color .15s ease;}
+.chip, .wheel-btn, .icon-btn{transition:background-color .15s ease, border-color .15s ease;}
 @media (hover:hover){
   .ds .btn-outline:hover{background:var(--ds-canvas);}
   .ds .btn-row.seg .btn-outline:hover{background:var(--ds-surface);}
@@ -1150,10 +1142,10 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
   .ds .btn-row.seg .btn-navy:hover{background:var(--ds-surface);}
   .ds .btn-green:hover{background:var(--tone-anchor-ink);}
   .btn-danger:hover{background:var(--danger-hover);}
-  .ds .chip:not(.selected):not([aria-pressed="true"]):hover, .ds .chip-info:hover{border-color:var(--ds-ink-3);}
+  .ds .chip:not(.selected):not([aria-pressed="true"]):hover{border-color:var(--ds-ink-3);}
   .ds .wheel-btn:hover{border-color:var(--emo);}
 }
-@media (prefers-reduced-motion: reduce){ .btn, .chip, .wheel-btn, .icon-btn, .chip-info{transition:none;} }
+@media (prefers-reduced-motion: reduce){ .btn, .chip, .wheel-btn, .icon-btn{transition:none;} }
 /* Zoom muy alto o pantalla muy baja (≤ 340 px de alto, p. ej. 400 % de zoom): sin barras fijas; todo se desplaza con el contenido */
 @media (max-height:340px){
   html, body{height:auto;overflow:visible;}
@@ -4197,21 +4189,6 @@ function kitSiguiente(){
   if(kitPaso < 4) return kitIr(kitPaso + 1);
   saveKitPlan();
 }
-function toggleKitSenal(s){
-  const prev = state.kitSenales;
-  if(prev.includes(s)){
-    state.kitSenales = prev.filter(x=>x!==s);
-  } else {
-    if(prev.length >= 3){
-      fieldError('kitSenalChips', 'Para que tu plan sea fácil de recordar, puedes elegir hasta 3 señales. Desmarca una para elegir otra.', {focus:false});
-      return;
-    }
-    state.kitSenales = [...prev, s];
-  }
-  // Si no se guarda, el chip no cambia de estado
-  if(!commitSave(()=>{ state.kitSenales = prev; })) return;
-  renderResetStep();
-}
 function saveKitPlan(){
   const prev = { kitAjuste: state.kitAjuste, kitPersona: state.kitPersona, kitPedira: state.kitPedira };
   state.kitAjuste = (state.kitAjuste || '').trim();
@@ -4258,20 +4235,6 @@ function kitToolName(txt){
   return Object.keys(KIT_TOOL_EXACT).find(k => normTxt(k) === normTxt(txt)) || null;
 }
 let kitSuggestedTool = null;
-function onKitHerramientaChange(){
-  const val = document.getElementById('kitHerramientaSelect').value;
-  const wrap = document.getElementById('kitHerramientaOtraWrap');
-  const prev = state.kitHerramienta;
-  if(val === 'Otro recurso personal'){
-    wrap.style.display = 'block';
-    state.kitHerramienta = document.getElementById('kitHerramientaOtraInput').value.trim();
-  } else {
-    wrap.style.display = 'none';
-    state.kitHerramienta = val;
-  }
-  // Si no se guarda, el selector vuelve a mostrar la herramienta que sigue guardada
-  if(!commitSave(()=>{ state.kitHerramienta = prev; })) renderResetStep();
-}
 /* Ajuste y apoyo del plan. Vacío si el usuario no los ha rellenado. */
 function kitPlanRestoHtml(ajusteLbl){
   return (state.kitAjuste ? `<p class="desc"><b>${ajusteLbl}</b> ${escapeHtml(state.kitAjuste)}</p>` : '')
@@ -5493,7 +5456,6 @@ Object.assign(ACTIONS, {
   usarRecordatorioVisual: el => usarRecordatorioVisual(dataIdx(el)),
   selectPedirFeedback: el => selectPedirFeedback(el.dataset.value),
   guardarPedirFeedbackEnKit: () => guardarPedirFeedbackEnKit(),
-  toggleKitSenal: el => toggleKitSenal(el.dataset.value),
   borrarResetHistorial: el => borrarResetHistorial(dataId(el)),
   borrarCheckin: el => borrarCheckin(dataId(el)),
   repetirAjuste: el => repetirAjuste(dataId(el)),
