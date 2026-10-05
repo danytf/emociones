@@ -2918,7 +2918,7 @@ function startEstados(){
     <div class="card" style="text-align:left;">
       <p class="desc">Elige lo que más se parece a lo que notas. <b>No es un diagnóstico</b>: sirve para encontrar qué hacer ahora.</p>
       <div class="estados-lista">${ESTADOS_CAPTACION.map(e=>`<button type="button" class="estado-opcion" data-action="abrirEstado" data-value="${escapeHtml(e.id)}">${estadoIcono(e, 'estado-ic')}<span><b>${escapeHtml(e.nombre)}</b><small>${e.resumen}</small></span></button>`).join('')}</div>
-      <button type="button" class="btn-quiet" style="margin-top:var(--sp-2);" onclick="startNoSeQueNecesito()">No lo tengo claro</button>
+      <button type="button" class="btn-quiet" style="margin-top:var(--sp-2);" onclick="startNoSeQueNecesito(); toolAtras = startEstados;">No lo tengo claro</button>
     </div>
   `);
   // Al volver desde una ficha, el foco queda en el estado que se había abierto (no al principio de la lista)
@@ -2945,12 +2945,14 @@ function openEstado(id){
       </div>
     </div>
   `);
+  toolAtras = startEstados;   // «atrás» desde la ficha vuelve a la lista
 }
 function abrirEstadoHerramienta(id){
   const e = ESTADOS_CAPTACION.find(x=>x.id===id);
   if(!e) return;
-  if(Overlays.top() === 'tool') closeTool();
-  e.abrir();
+  const desdeFicha = Overlays.top() === 'tool';
+  e.abrir();   // la herramienta sustituye a la ficha en la misma pantalla completa
+  if(desdeFicha && Overlays.top() === 'tool') toolAtras = ()=>openEstado(id);
 }
 
 function showEmotion(id){
@@ -3413,7 +3415,11 @@ renderExitoHistorial();
 /* ============ GENERIC TOOL OVERLAY ============ */
 let toolTimers = [];
 function clearToolTimers(){ toolTimers.forEach(t=>{ clearInterval(t); clearTimeout(t); }); toolTimers=[]; }
+/* Pantalla anterior para el gesto «atrás» dentro de un recorrido encadenado (lista → ficha → herramienta).
+   Se borra al abrir otra herramienta distinta o al cerrar; los repintados de la misma pantalla la conservan. */
+let toolAtras = null;
 function openTool(title, html){
+  if(Overlays.top() !== 'tool' || document.getElementById('toolTitle').textContent !== title) toolAtras = null;
   document.getElementById('toolTitle').textContent = title;
   const body = document.getElementById('toolBody');
   body.innerHTML = html;
@@ -5273,7 +5279,7 @@ const Overlays = (()=>{
     reset: { root:'resetOverlay', dialog:'resetOverlay', level:1, persistent:true,
              onClose(){ clearToolTimers(); flushSave(); renderResetTab(); } },   // el progreso del Reset y el Kit se guardan solos
     help:  { root:'helpOverlay',  dialog:'helpOverlay',  level:1 },
-    tool:  { root:'toolOverlay',  dialog:'toolOverlay',  level:2, onClose(){ clearToolTimers(); kitPlanActivo = false; } },
+    tool:  { root:'toolOverlay',  dialog:'toolOverlay',  level:2, onClose(){ clearToolTimers(); kitPlanActivo = false; toolAtras = null; } },
     // Si el modal da paso a una herramienta (p. ej. «Usar ahora» del anclaje), el plan sigue activo
     modal: { root:'modalBack',    dialog:'modalSheet',   level:3,
              onClose(){ setTimeout(()=>{ if(!document.getElementById('toolOverlay').classList.contains('active')) kitPlanActivo = false; }, 0); } },
@@ -5327,7 +5333,7 @@ const Overlays = (()=>{
       stack.push(n);
       root(n).classList.add('active');
       baseline[n] = formSig(n);
-      try{ if(!overlayEntrada){ history.pushState({gestorOverlay:true}, ''); overlayEntrada = true; } }catch(e){}
+      try{ if(!overlayEntrada && !overlayIgnorarPop){ history.pushState({gestorOverlay:true}, ''); overlayEntrada = true; } }catch(e){}
     } else if(baseline[n] == null){
       baseline[n] = formSig(n);   // el formulario aparece en un repintado posterior
     }
@@ -5449,12 +5455,19 @@ const Overlays = (()=>{
 })();
 window.addEventListener('popstate', ()=>{
   overlayEntrada = false;   // la entrada que pusimos acaba de consumirse
-  if(overlayIgnorarPop){ overlayIgnorarPop = false; return; }
+  if(overlayIgnorarPop){
+    overlayIgnorarPop = false;
+    // Se abrió otra pantalla mientras se retiraba la entrada anterior: se le pone la suya ahora
+    try{ if(Overlays.top() && !overlayEntrada){ history.pushState({gestorOverlay:true}, ''); overlayEntrada = true; } }catch(e){}
+    return;
+  }
   const t = Overlays.top();
   if(!t) return;
   // En el Reset, «atrás» retrocede un paso; en la entrada, cierra
   const pasoReset = t === 'reset' && ((typeof resetStep === 'number' && resetStep >= 1) || ['checkin','kit','historial'].includes(resetStep));
-  if(pasoReset) resetAtras(); else Overlays.requestClose(t);
+  if(pasoReset) resetAtras();
+  else if(t === 'tool' && toolAtras) toolAtras();   // vuelve a la pantalla anterior dentro de la misma herramienta
+  else Overlays.requestClose(t);
   // Si sigue abierta alguna pantalla (o se ha pedido confirmación), se repone la entrada del historial
   try{ if(Overlays.top() && !overlayEntrada){ history.pushState({gestorOverlay:true}, ''); overlayEntrada = true; } }catch(e){}
 });

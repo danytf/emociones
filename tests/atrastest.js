@@ -171,7 +171,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   // ---- Estados durante la captación: una sola fuente, acceso rápido y paso a la acción ----
   await p.evaluate(() => goto('herramientas'));
   await p.locator('.ql-nombre:visible').first().click();
-  ok(await p.evaluate(() => document.querySelectorAll('#toolBody .estado-opcion').length === 6 && !!document.querySelector('#toolBody [onclick="startNoSeQueNecesito()"]')), '«Ponle nombre a lo que sientes»: 6 estados y «No lo tengo claro»');
+  ok(await p.evaluate(() => document.querySelectorAll('#toolBody .estado-opcion').length === 6 && !!document.querySelector('#toolBody [onclick^="startNoSeQueNecesito()"]')), '«Ponle nombre a lo que sientes»: 6 estados y «No lo tengo claro»');
   const destinos = await p.evaluate(() => ESTADOS_CAPTACION.map(e => [e.id, e.herramienta]));
   for (const [id, herramienta] of destinos) {
     await p.evaluate(id => { startEstados(); openEstado(id); }, id);
@@ -197,6 +197,24 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   const fichasAp = p.locator('#view-aprender .accordion-block > details > summary');
   await fichasAp.nth(1).click(); await fichasAp.nth(3).click();
   ok(await p.evaluate(() => [...document.querySelectorAll('#view-aprender .accordion-block > details')].filter(d => d.open).length === 1), 'Aprender: al abrir una ficha se cierra la anterior');
+
+  // ---- Prompt 6: gesto atrás en el recorrido «Ponle nombre» (antes sacaba de la app tras «Probar ahora») ----
+  await p.evaluate(() => { while (Overlays.top()) Overlays.close(Overlays.top()); goto('herramientas'); }); await p.waitForTimeout(400);
+  const titulo = () => p.evaluate(() => typeof Overlays === 'undefined' ? 'fuera' : (Overlays.top() === 'tool' ? document.getElementById('toolTitle').textContent : Overlays.top() || 'app'));
+  await p.locator('.ql-nombre:visible').first().click();
+  await p.locator('#toolBody .estado-opcion[data-value="frustracion"]').click();
+  await p.locator('#toolBody button:has-text("Probar ahora")').click();
+  await p.goBack(); await p.waitForTimeout(400);
+  ok(await titulo() === 'Frustración', 'atrás desde la herramienta vuelve a la ficha del estado (y no sale de la app)');
+  await p.goBack(); await p.waitForTimeout(400);
+  ok(await titulo() === '¿Qué te está pasando?', 'atrás desde la ficha vuelve a la lista');
+  await p.goBack(); await p.waitForTimeout(400);
+  ok(await titulo() === 'app', 'atrás desde la lista cierra la pantalla y deja la app abierta');
+  // Cerrar y abrir seguidas no descuadra el historial
+  await p.evaluate(() => { startEstados(); }); await p.waitForTimeout(200);
+  await p.evaluate(() => { closeTool(); startBreath(60); }); await p.waitForTimeout(400);
+  await p.goBack(); await p.waitForTimeout(400);
+  ok(await titulo() === 'app', 'cerrar una pantalla y abrir otra seguidas: atrás cierra la nueva sin salir de la app');
 
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));
   await b.close();
