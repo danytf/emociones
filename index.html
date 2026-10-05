@@ -1753,7 +1753,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
           <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
         </button>
         <button type="button" class="trow" onclick="openMiMotivo()">
-          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span>
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg></span>
           <span class="trow-body"><span class="trow-title">Mi motivo</span><span class="trow-desc"><span class="trow-meta">Se prepara antes</span> · Por qué estás en este trabajo, con tus palabras.</span></span>
           <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
         </button>
@@ -2017,6 +2017,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         <ul>
           <li><b>Recordatorio de confianza</b>: guarda una o varias palabras clave con el recuerdo de seguridad asociado. Al usarlo, la app te guía 30 segundos mientras repites tu gesto discreto.</li>
           <li><b>Recordatorio visual</b>: guarda frases o recordatorios de enfoque para releerlos cuando lo necesites.</li>
+          <li><b>Mi motivo</b>: guarda por qué estás en este trabajo, con tus propias palabras, para poder releerlo cuando lo necesites.</li>
           <li><b>Kit de Emergencia</b>: tu plan (señales, herramienta, ajuste y apoyo) para activarlo con un toque cuando aparezcan las primeras señales.</li>
         </ul>
         <p><b>Seguimiento del turno</b><br>Para <b>observar cómo estás durante la jornada y registrar lo que te funciona</b>.</p>
@@ -2061,7 +2062,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         <p>Al terminar, decide qué quieres hacer con el ajuste: <b>Mantenerlo · Ajustarlo · Probar otra cosa</b>.</p>
         <p>Al cerrar verás el ajuste con el que vuelves a calle y podrás elegir <b>Mi próximo paso</b> (opcional) para cuando el resultado no acompañe. También tienes, plegada, la guía rápida <b>PARA → REVISA → PIDE</b>.</p>
         <p><b>Kit de Emergencia</b></p>
-        <p>El icono <svg class="ic ic-sm" aria-label="mochila" role="img"><use href="#i-backpack"/></svg> abre en cualquier momento tu plan personal de emergencia. Puedes definir tus señales de alerta, la herramienta con la que te regulas, el ajuste técnico que quieres aplicar y a quién pedir apoyo si sigues atascado. El botón <b>Activar mi plan</b> abre directamente la herramienta de la app que hayas elegido o, si es un recurso personal, te lo muestra.</p>
+        <p>El icono <svg class="ic ic-sm" aria-label="mochila" role="img"><use href="#i-backpack"/></svg> abre en cualquier momento tu plan personal de emergencia. Puedes definir tus señales de alerta, la herramienta con la que te regulas, el ajuste técnico que quieres aplicar y a quién pedir apoyo si sigues sin avanzar. El botón <b>Activar mi plan</b> abre directamente la herramienta de la app que hayas elegido o, si es un recurso personal, te lo muestra.</p>
       </div>
     </details>
 
@@ -3275,8 +3276,8 @@ function openCheckpoint(editId){
   openTool('Checkpoint de mitad de turno', `
     <div class="card" data-guarda>
       <p class="desc"><b>Tómate un momento y pregúntate:</b></p>
-      <p class="desc"><b>Cuerpo:</b> ¿estoy tenso, cansado o acelerado?<br>
-      <b>Cabeza:</b> ¿estoy concentrado o funcionando en automático?<br>
+      <p class="desc"><b>Cuerpo:</b> ¿noto tensión, cansancio o el cuerpo acelerado?<br>
+      <b>Cabeza:</b> ¿estoy a lo que estoy o voy en automático?<br>
       <b>Emoción:</b> ¿qué estoy sintiendo?<br>
       <b>Estrategia:</b> ¿necesito cambiar algo?</p>
       <label for="cpFatiga">Nivel de fatiga física/mental (1‑10)</label>
@@ -3975,7 +3976,7 @@ function renderAnchorTool(){
   openTool('Recordatorio de confianza', `
     <div class="card">
       <p class="desc">Para <b>evocar una sensación de seguridad y confianza</b> antes de una conversación difícil o después de un momento de inseguridad.</p>
-      <p class="desc"><b>Cómo se prepara:</b> elige un gesto discreto —por ejemplo, juntar pulgar e índice— mientras recuerdas una situación en la que te sentiste seguro, concentrado o satisfecho con tu trabajo. Después, ese gesto te sirve como recordatorio de ese estado.</p>
+      <p class="desc"><b>Cómo se prepara:</b> elige un gesto discreto —por ejemplo, juntar pulgar e índice— mientras recuerdas un momento de tu trabajo en el que tuviste seguridad, concentración o la satisfacción de hacerlo bien. Después, ese gesto te sirve como recordatorio de ese estado.</p>
       <label for="anchorWordInput">Palabra clave</label>
       <input type="text" id="anchorWordInput" placeholder='Ej: "Confianza", "Calma", "Seguridad"'>
       <label for="anchorMemoryInput">Recuerdo de seguridad o confianza</label>
@@ -4832,7 +4833,7 @@ function renderResetStep(){
         <h3>Mi protocolo personal</h3>
         <p class="desc">Cuando aparezcan tus primeras señales de alerta, <b>no improvises</b>. Decide de antemano qué harás, qué ajustarás y a quién pedirás ayuda.</p>
         ${flujo}
-        <p class="quote kit-regla"><b>Si detecto mis señales → me regulo → aplico un ajuste → y pido apoyo si sigo atascado.</b></p>
+        <p class="quote kit-regla"><b>Si detecto mis señales → me regulo → aplico un ajuste → y pido apoyo si sigo sin avanzar.</b></p>
         <p class="desc"><b>No espero a estar al límite. Actúo cuando aparecen las primeras señales.</b></p>
       </div>
       ${state.kitHerramienta ? `<button type="button" class="btn btn-outline" onclick="kitIr(1)">Editar mi plan</button>` : ''}
@@ -4875,7 +4876,7 @@ function renderResetStep(){
           <label class="q-label" for="kitPediraInput">¿Qué pediré?</label>
           <input type="text" id="kitPediraInput" value="${escapeHtml(state.kitPedira)}" placeholder="Ej: que observes dos paradas y me digas qué ajustar" oninput="state.kitPedira=this.value;saveSoon();">
           <p><b>¿Cuándo pediré ayuda?</b></p>
-          <p class="desc"><b>Si, después de regularme y aplicar mi ajuste, sigo bloqueado, evitando paradas o trabajando en automático.</b></p>`
+          <p class="desc"><b>Si, después de regularme y aplicar mi ajuste, sigo sin desbloquearme, evitando paradas o trabajando en automático.</b></p>`
       }[kitPaso];
       body.innerHTML = `
       ${dots}

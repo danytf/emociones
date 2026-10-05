@@ -18,6 +18,8 @@ const LOCAL = [
   ['stops3', 'Testea: +3 y «Ya he hecho las 10»'],
   ['nsqntest', 'No sé qué necesito'],
   ['motivotest', 'Mi motivo: preparar, borrar, exportar, Desánimo y atrás'],
+  ['cierretest', 'Aviso al cerrar con cambios sin guardar, con Escape y gesto atrás'],
+  ['ayudatest', 'La Ayuda describe todas las herramientas y cifras reales'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],
