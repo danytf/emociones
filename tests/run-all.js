@@ -22,6 +22,7 @@ const LOCAL = [
   ['ayudatest', 'La Ayuda describe todas las herramientas y cifras reales'],
   ['cptest', 'Checkpoint: niveles «Sin indicar» hasta elegirlos; edición conserva los guardados'],
   ['guardadotest', 'Reset y Kit con el almacenamiento fallando: nada se da por guardado'],
+  ['patronestest', 'Mis patrones: solo acciones hechas o decididas, sin negaciones ni hipótesis'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],

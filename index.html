@@ -2996,6 +2996,34 @@ renderWheel();
 let selectedEmociones = [];
 let patronesRango = 7;
 const ACCION_LABELS = ['Pausa consciente','Respiración lenta','Ajustar el ritmo','Revisar mi técnica','Adaptar el speech','Cambiar el enfoque o la ubicación','Pedir apoyo'];
+/* «Mis patrones»: una acción del Diario cuenta solo si se registra como hecha o decidida.
+   Criterio conservador y determinista: el nombre de la acción debe aparecer como palabras completas
+   y, en la misma frase y antes de él, no puede haber una negación («No voy a pedir apoyo»), una
+   hipótesis («Podría…», «Si hace falta…») ni una mención referida («Pensé en…», «Me recomendaron…»).
+   Las frases se separan por la puntuación y por «pero», «aunque» y «sino». Ante la duda, no cuenta.
+   Solo se lee el texto: no se modifica lo que escribió el usuario. */
+const ACCION_BLOQUEOS = [
+  'no','nunca','jamás','jamas','ni','tampoco','sin',
+  'podría','podria','podríamos','podriamos','quizá','quiza','quizás','quizas','tal vez','a lo mejor','puede que',
+  'si','debería','deberia','ojalá','ojala','quería','queria',
+  'pensé en','pense en','pensaba','me dijeron','me han dicho','me recomendaron','me han recomendado',
+  'me sugirieron','me aconsejaron','hablamos de'
+].map(c => ' ' + c + ' ');
+const palabrasDe = t => ' ' + String(t).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean).join(' ') + ' ';
+const ACCION_PALABRAS = ACCION_LABELS.map(lbl => [lbl, palabrasDe(lbl)]);
+function accionesRegistradas(texto){
+  const vistas = new Set();   // cada acción cuenta como mucho una vez por registro
+  String(texto || '').toLowerCase().split(/[.;:!?¡¿\n]+|\b(?:pero|aunque|sino)\b/).forEach(frase => {
+    const p = palabrasDe(frase);
+    ACCION_PALABRAS.forEach(([lbl, w]) => {
+      const i = p.indexOf(w);
+      if(i < 0) return;
+      const antes = p.slice(0, i + 1);
+      if(!ACCION_BLOQUEOS.some(c => antes.includes(c))) vistas.add(lbl);
+    });
+  });
+  return [...vistas];
+}
 function renderEmocionChips(){
   const c = document.getElementById('sepaEmocionChips');
   // Solo los chips (una parada de Tab por emoción); las fichas, desde un único enlace debajo
@@ -3212,10 +3240,7 @@ function renderPatrones(){
   entries.forEach(e=>{ if(e.situacion) sitCounts[e.situacion]=(sitCounts[e.situacion]||0)+1; });
   const sitTop = topEntry(sitCounts);
   const accCounts = {};
-  entries.forEach(e=>{
-    const txt = (e.accion||'').toLowerCase();
-    ACCION_LABELS.forEach(lbl=>{ if(txt.includes(lbl.toLowerCase())) accCounts[lbl]=(accCounts[lbl]||0)+1; });
-  });
+  entries.forEach(e=>accionesRegistradas(e.accion).forEach(lbl=>{ accCounts[lbl]=(accCounts[lbl]||0)+1; }));
   const accTop = topEntry(accCounts);
 
   const diarioHtml = `
