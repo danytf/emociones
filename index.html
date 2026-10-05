@@ -580,9 +580,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ql-btn .ql-em{color:var(--ds-ink-2);}
 @media (hover:hover){ .ql-btn:hover{border-color:var(--ds-line-strong);} }
 .ql-btn:active{background:var(--ds-canvas);}
-.ql-btn.ql-kit{background:var(--wesser-red);border-color:var(--wesser-red);color:#fff;box-shadow:0 2px 8px rgba(204,46,52,.25);}
-.ql-btn.ql-kit .ql-em{color:#fff;}
-@media (hover:hover){ .ql-btn.ql-kit:hover{background:var(--wesser-red-dark);border-color:var(--wesser-red-dark);} }
+.ql-btn.ql-kit{background:var(--amber);border-color:var(--amber);color:#292C2F;box-shadow:0 2px 8px rgba(224,160,48,.25);}
+.ql-btn.ql-kit .ql-em{color:#292C2F;}
+@media (hover:hover){ .ql-btn.ql-kit:hover{background:var(--amber-hover);border-color:var(--amber-hover);} }
 .ql-btn.ql-reset{background:color-mix(in srgb, var(--amber) 18%, var(--ds-surface));border-color:color-mix(in srgb, var(--amber) 40%, var(--ds-surface));color:var(--tone-track-ink);}
 .ql-btn.ql-reset .ql-em{color:var(--tone-track-ink);}
 :root[data-theme="dark"] .ql-btn.ql-reset{background:color-mix(in srgb, var(--tone-track-ink) 16%, var(--ds-surface));border-color:color-mix(in srgb, var(--tone-track-ink) 35%, var(--ds-surface));}
@@ -984,7 +984,7 @@ main:focus{outline:none;}
 .ds .reset-sub{margin:0 0 var(--sp-1);font-size:var(--fs-md);color:var(--ds-ink-2);}
 /* «Activar mi plan» en la fila compacta: neutro, con el rayo en rojo (no compite con el título ni con «Guardar») */
 #qlKitSlotCompact .ql-btn.ql-kit{background:var(--ds-surface);border-color:var(--ds-line);color:var(--ds-ink);box-shadow:0 1px 2px rgba(28,31,33,.04);}
-#qlKitSlotCompact .ql-btn.ql-kit .ql-em{color:var(--brand-accent);}
+#qlKitSlotCompact .ql-btn.ql-kit .ql-em{color:var(--tone-track-ink);}
 @media (hover:hover){ #qlKitSlotCompact .ql-btn.ql-kit:hover{background:var(--ds-surface);border-color:var(--ds-line-strong);} }
 /* Filas de herramientas más compactas en móvil: caben más sin cortar ningún texto */
 @media (max-width:600px){
@@ -1086,6 +1086,9 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
   .quick-launcher.ql-compact .ql-head{display:flex;}
   .quick-launcher.ql-compact .ql-sub{display:block;}
   .quick-launcher.ql-compact .ql-row, .quick-launcher.ql-compact .ql-row.ql-momentos{display:grid;grid-template-columns:minmax(0, 1fr);gap:var(--sp-2);}
+  /* En la columna lateral el principal es el de la pantalla: «Activar mi plan» va neutro, con el rayo en ocre */
+  .quick-launcher.ql-compact .ql-btn.ql-kit{background:var(--ds-surface);border-color:var(--ds-line);color:var(--ds-ink);box-shadow:none;}
+  .quick-launcher.ql-compact .ql-btn.ql-kit .ql-em{color:var(--tone-track-ink);}
   /* Herramientas: lanzador y caja de herramientas a todo el ancho de la caja común */
   .quick-launcher:not(.ql-compact){grid-column:1 / -1;grid-row:1;}
   .content-wrap > #view-herramientas.active{grid-column:1 / -1;grid-row:2;width:auto;margin:0;padding:0;}
@@ -1827,7 +1830,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       </div>
       <textarea id="sepaAccion" aria-required="true" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
 
-      <button type="button" class="btn btn-green" id="sepaSaveBtn" onclick="guardarSepa()">Guardar registro</button>
+      <button type="button" class="btn btn-primary" id="sepaSaveBtn" onclick="guardarSepa()">Guardar registro</button>
       <button type="button" class="btn btn-outline" id="sepaCancelBtn" style="display:none;margin-top:10px;" onclick="cancelarEdicionSepa()">Cancelar edición</button>
     </div>
 
@@ -2683,9 +2686,9 @@ function showWelcome(step){
     <div class="btn-row" style="margin-top:14px;">
       ${last
         ? `<button type="button" class="btn btn-outline" data-action="welcomeClose">Más tarde</button>
-           <button type="button" class="btn btn-navy" data-action="welcomeKit">Preparar mi Kit</button>`
+           <button type="button" class="btn btn-amber" data-action="welcomeKit">Preparar mi Kit</button>`
         : `<button type="button" class="btn btn-outline" data-action="welcomeClose">Saltar</button>
-           <button type="button" class="btn btn-navy" data-action="welcomeNext">Siguiente</button>`}
+           <button type="button" class="btn btn-primary" data-action="welcomeNext">Siguiente</button>`}
     </div>
   `);
 }
@@ -3073,7 +3076,7 @@ function openCheckpoint(editId){
         ${CHECKPOINT_DECISIONES.map(o=>`<button type="button" class="btn ${decision===o.v?'btn-amber':'btn-outline'}" aria-pressed="${decision===o.v}" data-decision="${escapeHtml(o.v)}" data-action="setCpDecision" data-value="${escapeHtml(o.v)}">${o.v}</button>`).join('')}
       </div>
       <input type="hidden" id="cpDecision" value="${escapeHtml(decision)}">
-      <button type="button" class="btn btn-green" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
+      <button type="button" class="btn btn-navy" style="margin-top:12px;" onclick="guardarCheckpoint()">${existing ? 'Actualizar checkpoint' : 'Guardar checkpoint'}</button>
     </div>
   `);
   Overlays.resetBaseline('tool');   // punto de partida para detectar cambios sin guardar
@@ -3154,7 +3157,7 @@ function renderExito(){
       <label class="q-label" for="exitoRepetirInput" style="margin-top:14px;">¿Qué quiero repetir en el siguiente?</label>
       <textarea id="exitoRepetirInput" placeholder="Sé concreto: una sola cosa..." oninput="exitoRepetirTexto=this.value;">${escapeHtml(exitoRepetirTexto)}</textarea>
       <p class="quote">Ha ido bien no significa que tengas que cambiarlo todo. Mantén lo que ya funciona.</p>
-      <button type="button" class="btn btn-green" style="margin-top:6px;" onclick="guardarExito()">Guardar</button>
+      <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="guardarExito()">Guardar</button>
     </div>
   `);
 }
@@ -3177,8 +3180,8 @@ function guardarExito(){
       <p class="desc"><b>Ha funcionado:</b><br>${escapeHtml(conducta)}</p>
       ${repetir ? `<p class="desc"><b>Quiero repetir:</b><br>${escapeHtml(repetir)}</p>` : ''}
       <div class="btn-row" style="margin-top:10px;">
-        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startExito()">Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="startExito()">Repetir</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
       </div>
     </div>
   `);
@@ -3305,8 +3308,8 @@ function finalizarPreTurno(){
       <p class="desc"><b>Quiero cuidar:</b><br>${escapeHtml(cuidar)||'—'}</p>
       <p class="desc"><b>Si aparece la señal:</b><br>${escapeHtml(senal)||'—'}</p>
       <div class="btn-row" style="margin-top:10px;">
-        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startPreTurno()">Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="startPreTurno()">Repetir</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
       </div>
     </div>
   `);
@@ -3343,8 +3346,8 @@ function finalizarCierreTurno(){
       <p class="desc"><b>Para cambiar de contexto:</b><br>${escapeHtml(contexto)||'—'}</p>
       <p class="quote">"El turno ha terminado. No necesito seguir resolviéndolo ahora."</p>
       <div class="btn-row" style="margin-top:10px;flex-wrap:wrap;">
-        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startCierreTurno()">Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="startCierreTurno()">Repetir</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
       </div>
       <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="closeTool();startGrounding();">Sigo dándole vueltas</button>
     </div>
@@ -3377,8 +3380,8 @@ function finalizarVolverCalle(){
       <p class="desc"><b>Primera parada:</b><br>${escapeHtml(primero)||'—'}</p>
       <p class="quote">"No necesito recuperar el día. Solo hacer bien la siguiente parada."</p>
       <div class="btn-row" style="margin-top:10px;">
-        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startVolverCalle()">Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="startVolverCalle()">Repetir</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
       </div>
     </div>
   `);
@@ -3529,8 +3532,8 @@ function selectRP(val){
         <p class="desc">Es un foco más cercano a lo que sí puedes ejecutar ahora.</p>
         <p class="desc">El resultado también depende de cosas que no controlas; el proceso es donde puedes actuar.</p>
         <div class="btn-row" style="margin-top:10px;">
-          <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-          <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">Repetir</button>
+          <button type="button" class="btn btn-outline" onclick="startResultadoProceso()">Repetir</button>
+          <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
         </div>
       </div>
     `);
@@ -3553,8 +3556,8 @@ function finalizarRP(foco){
       <h3>Mi foco ahora</h3>
       <p class="quote-strong">«${escapeHtml(foco)}»</p>
       <div class="btn-row" style="margin-top:14px;">
-        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startResultadoProceso()">Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="startResultadoProceso()">Repetir</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
       </div>
     </div>
   `);
@@ -3581,8 +3584,8 @@ function selectMomentoDecidir(val){
         <h3>Es tu decisión</h3>
         <p class="desc">No todas las paradas tienen que producirse. Decidir con criterio también es parte del trabajo.</p>
         <div class="btn-row" style="margin-top:10px;">
-          <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-          <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">Repetir</button>
+          <button type="button" class="btn btn-outline" onclick="startMomentoDecidir()">Repetir</button>
+          <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
         </div>
       </div>
     `);
@@ -3594,8 +3597,8 @@ function selectMomentoDecidir(val){
       <h3>Solo necesitas decidir</h3>
       <p class="quote-strong">«No necesito sentirme seguro. Solo necesito decidir.»</p>
       <div class="btn-row" style="margin-top:14px;">
-        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startMomentoDecidir()">Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="startMomentoDecidir()">Repetir</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
       </div>
     </div>
   `);
@@ -3727,7 +3730,7 @@ function renderAnchorTool(){
       <input type="text" id="anchorWordInput" placeholder='Ej: "Confianza", "Calma", "Seguridad"'>
       <label for="anchorMemoryInput">Recuerdo de seguridad o confianza</label>
       <textarea id="anchorMemoryInput" placeholder="Describe brevemente ese momento..."></textarea>
-      <button type="button" class="btn btn-green" onclick="addConfidenceAnchor()">Guardar recordatorio</button>
+      <button type="button" class="btn btn-navy" onclick="addConfidenceAnchor()">Guardar recordatorio</button>
     </div>
     <div style="margin-top:16px;">
       ${state.confidenceAnchors.length ? state.confidenceAnchors.map((a,i)=>`
@@ -3830,7 +3833,7 @@ function renderVisualAnchorModal(){
     <p class="desc">Guarda una frase o recordatorio de enfoque que puedas consultar rápidamente cuando lo necesites.</p>
     <label for="newVisualPhrase">Nuevo recordatorio</label>
     <input type="text" id="newVisualPhrase" placeholder="Ej: Me centro en hacer bien la siguiente parada">
-    <button type="button" class="btn btn-green" onclick="addVisualAnchor()">Guardar</button>
+    <button type="button" class="btn btn-navy" onclick="addVisualAnchor()">Guardar</button>
     <div style="margin-top:16px;">
       ${state.visualAnchors.length ? state.visualAnchors.map((p,i)=>`
         <div class="history-item">
@@ -3918,8 +3921,8 @@ function finalizarPedirFeedback(){
       <p class="quote-strong">«${escapeHtml(peticion)}»</p>
       ${state.kitPersona ? `<p class="desc" style="margin-top:10px;">Puedes pedírselo a: <b>${escapeHtml(state.kitPersona)}</b></p>` : ''}
       <div class="btn-row" style="margin-top:14px;flex-wrap:wrap;">
-        <button type="button" class="btn btn-outline" onclick="closeTool()">Volver</button>
-        <button type="button" class="btn btn-blue" onclick="startPedirFeedback()">Repetir</button>
+        <button type="button" class="btn btn-outline" onclick="startPedirFeedback()">Repetir</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
       </div>
       <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" data-action="guardarPedirFeedbackEnKit">Guardar como mi petición del Kit</button>
     </div>
@@ -4487,7 +4490,7 @@ function renderResetStep(){
             ${(state.kitPersona || state.kitPedira) ? `<p>Pido apoyo${state.kitPersona ? ` a ${escapeHtml(state.kitPersona)}` : ''}${state.kitPedira ? `: «${escapeHtml(state.kitPedira)}»` : ''}</p>` : '<p class="kit-flow-empty">Pido apoyo</p>'}
           </div>
         </div>
-        ${state.kitHerramienta ? `<button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="activarKitPlan()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-zap"/></svg> Activar mi plan</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
+        ${state.kitHerramienta ? `<button type="button" class="btn btn-amber" style="margin-top:10px;" onclick="activarKitPlan()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-zap"/></svg> Activar mi plan</button>` : `<p class="desc" style="font-style:italic;">Completa tu plan y tendrás claro qué hacer cuando aparezcan tus primeras señales.</p>`}
       </div>
 
       <div class="card">
@@ -4525,7 +4528,7 @@ function renderResetStep(){
         <p class="quote"><b>Si detecto mis señales → me regulo → aplico un ajuste → y pido apoyo si sigo atascado.</b></p>
         <p class="desc"><b>No espero a estar al límite. Actúo cuando aparecen las primeras señales.</b></p>
       </div>
-      <button type="button" class="btn btn-amber" onclick="saveKitPlan()">Guardar mi plan</button>
+      <button type="button" class="btn ${state.kitHerramienta ? 'btn-outline' : 'btn-amber'}" onclick="saveKitPlan()">Guardar mi plan</button>
       <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="resetGoto(0)">Volver</button>
     `;
   }
