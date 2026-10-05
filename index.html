@@ -943,6 +943,14 @@ main:focus{outline:none;}
 .ds .reset-falta{margin:0;text-align:center;font-size:var(--fs-sm);color:var(--ds-ink-2);}
 /* Testea */
 .ds .reset-test{text-align:center;}
+/* Testea cuenta hacia arriba: cifra, «paradas probadas» y diez marcas que se rellenan (sin «te faltan») */
+.ds .reset-cuenta{display:flex;flex-direction:column;align-items:center;gap:var(--sp-1);margin:var(--sp-3) 0 var(--sp-4);}
+.ds .reset-cuenta .timer-big{margin:0;line-height:1;}
+.ds .reset-cuenta-lb{font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);}
+.ds .reset-marcas{display:flex;gap:6px;margin-top:var(--sp-2);}
+.ds .reset-marcas i{width:18px;height:6px;border-radius:999px;background:var(--ds-line-strong);}
+.ds .reset-marcas i.on{background:var(--tone);}
+.ds .reset-test .reset-mas3{width:auto;min-width:180px;margin:0 auto;}
 .ds .reset-test > .desc, .ds .reset-test > details{text-align:left;}
 .ds .reset-ajuste{display:flex;flex-direction:column;gap:2px;margin:0 0 var(--sp-2);padding:var(--sp-3) var(--sp-4);background:var(--ds-canvas);border-radius:12px;}
 .ds .reset-ajuste span{font-size:var(--fs-xs);font-weight:650;color:var(--ds-ink-3);}
@@ -4762,12 +4770,13 @@ function renderResetStep(){
       <div class="card reset-test${resetStops>=10 ? ' is-completo' : ''}">
         ${resetStops<10 ? `<h3>Testea el ajuste en 10 paradas</h3>
         <p class="reset-ajuste"><span>Tu ajuste</span><b>${escapeHtml(resetMicro)}</b></p>
-        <div class="timer-big" aria-hidden="true">${escapeHtml(resetStops)} / 10</div>
-        <p class="sr-only">${escapeHtml(resetStops)} de 10 paradas.</p>
-        <div class="btn-row">
-          <button type="button" class="btn btn-amber" id="incrementStopBtn" onclick="incrementStop(1)">+1 parada probada</button>
-          ${resetStops<=7 ? '<button type="button" class="btn btn-outline" id="incrementStop3Btn" onclick="incrementStop(3)">+3 paradas</button>' : ''}
-        </div>`
+        <div class="reset-cuenta" aria-hidden="true">
+          <span class="timer-big">${escapeHtml(resetStops)}</span>
+          <span class="reset-cuenta-lb">${resetStops === 1 ? 'parada probada' : 'paradas probadas'}</span>
+          <span class="reset-marcas">${Array.from({length:10}, (_, i)=>`<i${i < resetStops ? ' class="on"' : ''}></i>`).join('')}</span>
+        </div>
+        <p class="sr-only">${escapeHtml(resetStops)} de 10 paradas probadas.</p>
+        ${resetStops<=7 ? '<button type="button" class="btn btn-outline reset-mas3" id="incrementStop3Btn" onclick="incrementStop(3)">+3 paradas</button>' : ''}`
         /* 10/10: el momento en que el método se cumple, con su propio peso */
         : `<div class="reset-completo">
           <span class="reset-completo-sello" aria-hidden="true"><svg class="ic"><use href="#i-check"/></svg></span>
@@ -4789,8 +4798,10 @@ function renderResetStep(){
           </div>
         </details>
       </div>
-      ${resetAcciones(`${resetStops>=10 ? '' : `<p class="reset-falta">${10-resetStops===1 ? 'Te falta <b>1</b> parada' : `Te faltan <b>${10-resetStops}</b> paradas`} para continuar.</p>`}
-        <button type="button" data-principal class="btn ${resetStops>=10 ? 'btn-amber' : 'btn-outline'}" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Ver lo aprendido</button>`, resetStops>=10)}
+      ${resetAcciones(resetStops>=10
+        ? '<button type="button" data-principal class="btn btn-amber" onclick="resetGoto(6)">Ver lo aprendido</button>'
+        /* Mientras se cuenta, el principal es sumar la parada: en la barra fija, al alcance del pulgar */
+        : '<button type="button" data-principal class="btn btn-amber" id="incrementStopBtn" onclick="incrementStop(1)">+1 parada probada</button>')}
     `;
   }
   else if(resetStep===6){
@@ -4929,7 +4940,12 @@ function incrementStop(n){
   saveResetProgress(); renderResetStep();
   // Al llegar a 10 desaparecen los contadores: el foco pasa al título del momento completado
   if(resetStops >= 10){ const t = document.getElementById('resetCompletoTitulo'); if(t) t.focus(); announce('Test completado: 10 de 10 paradas.'); }
-  else announce(`${resetStops} de 10 paradas.`);
+  else {
+    // Tras repintar, el foco sigue en el botón que se ha pulsado (o en «+1» si «+3» ya no está)
+    const b = document.getElementById(n === 3 && document.getElementById('incrementStop3Btn') ? 'incrementStop3Btn' : 'incrementStopBtn');
+    if(b) b.focus({preventScroll:true});
+    announce(`${resetStops} ${resetStops === 1 ? 'parada probada' : 'paradas probadas'} de 10.`);
+  }
 }
 /* Corrige una pulsación por error; nunca baja de 0. Si el botón desaparece (0), el foco pasa a «+1». */
 function decrementStop(){
