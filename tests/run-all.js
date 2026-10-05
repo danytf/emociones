@@ -17,6 +17,7 @@ const LOCAL = [
   ['undotest', 'Testea: contador y deshacer'],
   ['stops3', 'Testea: +3 y «Ya he hecho las 10»'],
   ['nsqntest', 'No sé qué necesito'],
+  ['motivotest', 'Mi motivo: preparar, borrar, exportar, Desánimo y atrás'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],

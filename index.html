@@ -789,6 +789,9 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .estado-ficha h4{margin:var(--sp-4) 0 var(--sp-1);font-family:var(--font-brand);font-size:var(--fs-md);color:var(--ds-ink);}
 .ds .estado-frase{margin:var(--sp-3) 0 0;font-style:italic;color:var(--ds-ink);}
 .ds .estado-cta{width:auto;margin-top:var(--sp-2);}
+.ds .estado-motivo{width:auto;margin-top:var(--sp-2);}
+.ds .mi-motivo-texto{font-size:var(--fs-lg);font-weight:600;line-height:1.55;white-space:pre-line;}
+.ds .mi-motivo-campo{min-height:7.5em;}
 /* Herramientas de calle: cada pregunta con sus opciones pulsables */
 .ds .tool-campo .q-label{margin:var(--sp-4) 0 var(--sp-2);font-size:var(--fs-md);font-weight:650;color:var(--ds-ink);line-height:1.4;}
 .ds .tool-campo .q-hint{font-weight:500;color:var(--ds-ink-3);}
@@ -1749,6 +1752,11 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
           <span class="trow-body"><span class="trow-title">Recordatorio visual</span><span class="trow-desc"><span class="trow-meta">Se prepara antes</span> · Tus frases para volver a tu objetivo.</span></span>
           <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
         </button>
+        <button type="button" class="trow" onclick="openMiMotivo()">
+          <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span>
+          <span class="trow-body"><span class="trow-title">Mi motivo</span><span class="trow-desc"><span class="trow-meta">Se prepara antes</span> · Por qué estás en este trabajo, con tus palabras.</span></span>
+          <svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </button>
         <button type="button" class="trow" onclick="openReset();openKit();">
           <span class="tile"><svg class="ic" aria-hidden="true"><use href="#i-backpack"/></svg></span>
           <span class="trow-body"><span class="trow-title">Kit de Emergencia</span><span class="trow-desc"><span class="trow-meta">Se prepara antes</span> · Tu plan para cuando aparezcan las primeras señales.</span></span>
@@ -2149,6 +2157,7 @@ function emptyState(){
     checkins:[],
     confidenceAnchors:[],
     kitSenales:[], kitHerramienta:'', kitAjuste:'', kitPersona:'', kitPedira:'',
+    miMotivo:'',
     resetProgress:null, resetHistory:[], exitos:[]
   };
 }
@@ -2310,6 +2319,7 @@ function normalizeState(raw){
   out.kitAjuste = cleanStr(s.kitAjuste, LIMITS.shortStr);
   out.kitPersona = cleanStr(s.kitPersona, LIMITS.shortStr);
   out.kitPedira = cleanStr(s.kitPedira, LIMITS.shortStr);
+  out.miMotivo = cleanStr(s.miMotivo, LIMITS.shortStr);
   out.resetProgress = cleanResetProgress(s.resetProgress);
   return out;
 }
@@ -2340,7 +2350,7 @@ function validateImport(obj){
   if(obj.kitSenales !== undefined && !(Array.isArray(obj.kitSenales) && obj.kitSenales.length <= 100 && obj.kitSenales.every(x => typeof x === 'string'))){
     return 'Las señales del Kit no tienen un formato válido.';
   }
-  for(const k of ['kitHerramienta','kitAjuste','kitPersona','kitPedira']){
+  for(const k of ['kitHerramienta','kitAjuste','kitPersona','kitPedira','miMotivo']){
     if(obj[k] !== undefined && typeof obj[k] !== 'string') return `El campo «${k}» no tiene un formato válido.`;
   }
   if(obj.resetProgress !== undefined && obj.resetProgress !== null && !isPlainObject(obj.resetProgress)){
@@ -2749,7 +2759,7 @@ function showWelcome(step){
 }
 function hasUserData(){
   return ['sepaEntries','checkpoints','checkins','resetHistory','exitos','confidenceAnchors','visualAnchors'].some(k => state[k].length)
-    || !!(state.kitHerramienta || state.kitSenales.length || state.kitAjuste || state.kitPersona || state.kitPedira);
+    || !!(state.kitHerramienta || state.kitSenales.length || state.kitAjuste || state.kitPersona || state.kitPedira || state.miMotivo);
 }
 function maybeShowWelcome(){
   let seen = false;
@@ -2855,7 +2865,7 @@ const ESTADOS_CAPTACION = [
     frase:"«No controlo su reacción. Sí controlo cómo hago mi trabajo. Que no quiera colaborar es su decisión en esa conversación, no una medida de lo que valgo.»",
     aviso:"",
     herramienta:"El momento de decidir", abrir:()=>startMomentoDecidir() },
-  { id:"desanimo", nombre:"Desánimo", icono:"emo-tristeza", resumen:"«No tengo ganas de seguir.»",
+  { id:"desanimo", leerMotivo:true, nombre:"Desánimo", icono:"emo-tristeza", resumen:"«No tengo ganas de seguir.»",
     pensamiento:"«No tengo ganas de seguir.»",
     surge:"Puede aparecer después de varios resultados negativos y afectar a nuestra <b>energía, motivación o confianza</b>.",
     clave:"<b>Clave:</b> bajan <b>las ganas de continuar</b>.",
@@ -2884,6 +2894,15 @@ function estadoIcono(e, cls){ return `<svg class="ic${cls ? ' ' + cls : ''}" ari
 function estadoAccionHtml(e, clase){
   return `<button type="button" class="btn ${clase}" data-action="abrirEstadoHerramienta" data-value="${escapeHtml(e.id)}">Probar ahora: ${escapeHtml(e.herramienta)}</button>`;
 }
+/* Vía secundaria y opcional: solo en los estados que la admiten y solo si el usuario escribió su motivo.
+   En Aprender se pinta siempre oculta y se muestra u oculta al guardar o borrar el motivo. */
+function estadoMotivoHtml(e){
+  if(!e.leerMotivo) return '';
+  return `<button type="button" class="btn btn-outline btn-sm estado-motivo" data-action="leerMiMotivo" data-value="${escapeHtml(e.id)}"${state.miMotivo ? '' : ' hidden'}>Leer mi motivo</button>`;
+}
+function actualizarBotonesMotivo(){
+  document.querySelectorAll('.estado-motivo').forEach(b => { b.hidden = !state.miMotivo; });
+}
 function renderEstadosCaptacion(){
   const cont = document.getElementById('estadosCaptacion'), lista = document.getElementById('estadosVistazo');
   if(cont) cont.innerHTML = ESTADOS_CAPTACION.map(e=>`
@@ -2897,6 +2916,7 @@ function renderEstadosCaptacion(){
               <p style="font-style:italic;">${e.frase}</p>
               ${e.aviso ? `<p>${e.aviso}</p>` : ''}
               ${estadoAccionHtml(e, 'btn-outline btn-sm estado-cta')}
+              ${estadoMotivoHtml(e)}
             </div>
           </details>`).join('');
   const sub = document.getElementById('estadosSub');
@@ -2935,6 +2955,7 @@ function openEstado(id){
         <button type="button" class="btn btn-outline" onclick="startEstados()">Elegir otro</button>
         ${estadoAccionHtml(e, 'btn-navy')}
       </div>
+      ${state.miMotivo ? estadoMotivoHtml(e) : ''}
     </div>
   `);
   toolAtras = startEstados;   // «atrás» desde la ficha vuelve a la lista
@@ -4107,6 +4128,67 @@ function activarRecordatorioVisual(){
   else{ openVisualAnchor(); }
 }
 
+/* ---- Mi motivo: un único texto personal, escrito con calma y releído desde Desánimo.
+   La app no lo interpreta ni lo corrige: solo lo guarda y lo devuelve tal cual. ---- */
+function openMiMotivo(){
+  const hay = !!state.miMotivo;
+  openTool('Mi motivo', `
+    <div class="card" style="text-align:left;">
+      <label for="miMotivoInput">¿Por qué estás en este trabajo?</label>
+      <textarea id="miMotivoInput" class="mi-motivo-campo" maxlength="${LIMITS.shortStr}" aria-describedby="miMotivoAyuda miMotivoPrivado" oninput="miMotivoCuenta()">${escapeHtml(state.miMotivo)}</textarea>
+      <p class="desc mi-motivo-cuenta" id="miMotivoCuenta" hidden></p>
+      <p class="desc" id="miMotivoAyuda">También puede ayudarte pensar qué te aporta, o para quién o para qué lo haces.</p>
+      <p class="desc" id="miMotivoPrivado">Se guarda en este dispositivo. Solo saldrá de él si tú exportas tus datos.</p>
+      <div class="btn-row" style="margin-top:var(--sp-3);">
+        ${hay ? '<button type="button" class="btn btn-outline" onclick="borrarMiMotivo()">Borrar mi motivo</button>' : ''}
+        <button type="button" class="btn btn-navy" onclick="guardarMiMotivo()">Guardar</button>
+      </div>
+    </div>
+  `);
+  miMotivoCuenta();
+}
+/* El contador solo aparece cerca del límite */
+function miMotivoCuenta(){
+  const t = document.getElementById('miMotivoInput'), c = document.getElementById('miMotivoCuenta');
+  if(!t || !c) return;
+  const quedan = LIMITS.shortStr - t.value.length;
+  c.hidden = quedan > 50;
+  c.textContent = quedan === 1 ? 'Queda 1 carácter.' : `Quedan ${quedan} caracteres.`;
+}
+function enfocarMiMotivo(){ const t = document.getElementById('miMotivoInput'); if(t) t.focus(); }
+function guardarMiMotivo(){
+  const t = document.getElementById('miMotivoInput');
+  const v = cleanStr(t.value.trim(), LIMITS.shortStr);
+  if(!v) return fieldError('miMotivoInput', 'Escribe tu motivo para guardarlo.');
+  const prev = state.miMotivo;
+  state.miMotivo = v;
+  if(!commitSave(()=>{ state.miMotivo = prev; })) return;   // lo escrito se conserva
+  actualizarBotonesMotivo();
+  openMiMotivo(); enfocarMiMotivo();
+  notify('Motivo guardado.');
+}
+async function borrarMiMotivo(){
+  if(!(await confirmDelete('tu motivo'))) return;
+  const prev = state.miMotivo;
+  state.miMotivo = '';
+  if(!commitSave(()=>{ state.miMotivo = prev; })) return;
+  actualizarBotonesMotivo();
+  openMiMotivo(); enfocarMiMotivo();
+  notify('Motivo borrado.');
+}
+/* Lectura desde la ficha de un estado: el texto del usuario, tal cual, y vuelta a calle.
+   Atrás devuelve a la ficha, igual que «Probar ahora». */
+function leerMiMotivo(id){
+  if(!state.miMotivo) return;
+  const desdeFicha = Overlays.top() === 'tool';
+  openTool('Mi motivo', `
+    <div class="card" style="text-align:center;">
+      <p class="mi-motivo-texto">${escapeHtml(state.miMotivo)}</p>
+      <button type="button" class="btn btn-navy" style="margin-top:16px;" onclick="closeTool()">Vuelvo a calle</button>
+    </div>
+  `);
+  if(desdeFicha && ESTADOS_CAPTACION.some(x => x.id === id)) toolAtras = ()=>openEstado(id);
+}
 /* ---- Pide feedback (concreta una peticion de observacion en vez de un generico "dime si lo hago bien") ---- */
 const PEDIR_FEEDBACK_OPCIONES = [
   {v:'Obsérvame en una parada'},
@@ -5476,6 +5558,7 @@ Object.assign(ACTIONS, {
   toolChip: el => toolChip(el),
   abrirEstado: el => openEstado(el.dataset.value),
   abrirEstadoHerramienta: el => abrirEstadoHerramienta(el.dataset.value),
+  leerMiMotivo: el => leerMiMotivo(el.dataset.value),
   toolOtro: el => toolOtro(el),
   resetOtro: el => resetOtro(el),
   setAprendizaje: el => {
