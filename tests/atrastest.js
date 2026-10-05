@@ -183,7 +183,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   ok(await p.evaluate(() => document.querySelectorAll('#estadosCaptacion details').length === 6 && document.querySelectorAll('#estadosVistazo li').length === 6 && document.querySelectorAll('#estadosCaptacion .estado-cta').length === 6), 'Aprender pinta los 6 estados y su resumen desde la misma fuente, con su botón de acción');
   await p.evaluate(() => { const d = document.querySelector('#estadosCaptacion details:nth-child(6)'); let x = d; while (x) { x.open = true; x = x.parentElement.closest('details'); } });
   await p.locator('#estadosCaptacion details:nth-child(6) .estado-cta').click();
-  ok(await p.evaluate(() => Overlays.top() === 'tool' && document.getElementById('toolTitle').textContent === 'Suspiro fisiológico'), 'el botón de Aprender (Fatiga mental) abre el Suspiro');
+  ok(await p.evaluate(() => Overlays.top() === 'tool' && document.getElementById('toolTitle').textContent === 'Checkpoint de mitad de turno'), 'el botón de Aprender (Fatiga mental) abre el Checkpoint, igual que el acceso rápido');
   await p.evaluate(() => closeTool());
 
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));

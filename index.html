@@ -2846,7 +2846,7 @@ const ESTADOS_CAPTACION = [
     queHago:"Haz una <b>pausa real</b>: aléjate unos minutos, hidrátate, respira y desconecta antes de volver.",
     frase:"«No necesito apretar más. Primero recupero; después continúo.»",
     aviso:"<b>Si esta sensación se repite casi a diario o no mejora al descansar</b>, no es solo un mal día: háblalo con tu responsable o con alguien de confianza, y valora consultarlo con un profesional.",
-    herramienta:"Suspiro fisiológico", abrir:()=>startBreath(60) }
+    herramienta:"Checkpoint de mitad de turno", abrir:()=>openCheckpoint() }
 ];
 function estadoIcono(e, cls){ return `<svg class="ic${cls ? ' ' + cls : ''}" aria-hidden="true"><use href="#i-${e.icono}"/></svg>`; }
 function estadoAccionHtml(e, clase){
