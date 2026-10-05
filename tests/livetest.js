@@ -8,6 +8,8 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
   const r = await p.goto('https://danytf.github.io/emociones/', { waitUntil: 'load' });
   ok(r.status() === 200, 'GitHub Pages responde 200 por https');
+  // Qué publicación se ha probado: un PASS de la versión anterior no valida un cambio nuevo
+  console.log('INFO versión servida: ' + (r.headers()['last-modified'] || 'desconocida'));
   for (const v of ['bienestar', 'herramientas', 'diario', 'aprender']) await p.locator(`#headerTabs [data-view="${v}"]`).click();
   ok(await p.evaluate(() => document.getElementById('view-aprender').classList.contains('active')), 'navegación entre secciones');
   await p.locator('#headerTabs [data-view="diario"]').click();
