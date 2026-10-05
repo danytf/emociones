@@ -32,11 +32,11 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await p.evaluate(() => localStorage.clear()); await p.reload();
   await p.locator('[data-action="welcomeClose"]').click();
   ok(await top() === null, '«Saltar» la cierra');
-  // «Más tarde» (último paso) lleva a Aprender, aunque se abra desde otra sección
+  // «Más tarde» (último paso) lleva a Herramientas, aunque se abra desde otra sección
   await p.evaluate(() => { goto('diario'); showWelcome(2); });
-  const kitPrincipal = await p.evaluate(() => document.querySelector('#modalSheet [data-action="welcomeKit"]').classList.contains('btn-navy') && document.querySelector('#modalSheet [data-action="welcomeClose"]').classList.contains('btn-outline'));
+  const kitPrincipal = await p.evaluate(() => document.querySelector('#modalSheet [data-action="welcomeKit"]').classList.contains('btn-amber') && document.querySelector('#modalSheet [data-action="welcomeClose"]').classList.contains('btn-outline'));
   await p.locator('#modalSheet button:text-is("Más tarde")').click();
-  ok(kitPrincipal && await top() === null && await p.evaluate(() => document.querySelector('.view.active').id) === 'view-aprender', '«Preparar mi Kit» es la acción principal; «Más tarde» cierra la bienvenida y lleva a Aprender');
+  ok(kitPrincipal && await top() === null && await p.evaluate(() => document.querySelector('.view.active').id) === 'view-herramientas', '«Preparar mi Kit» es la acción principal (ámbar, del Kit); «Más tarde» cierra la bienvenida y lleva a Herramientas');
   ok(errs.length === 0, 'sin errores de JS ' + errs.join('|'));
   await b.close();
 })();

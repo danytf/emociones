@@ -193,7 +193,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   for (let i = 0; i < 3; i++) await page.locator('#incrementStopBtn').click();
   await page.locator('#decrementStopBtn').click();
   ok(await page.evaluate(() => resetStops) === 2, 'contador +3 y deshacer → 2');
-  ok(await page.locator('#resetBody button:text-is("Ver qué he aprendido")').isDisabled() && await page.locator('#resetBody .btn-amber:text-is("Ver qué he aprendido")').count() === 0, 'no se puede continuar antes de 10 (y el botón no compite en ámbar con +1)');
+  ok(await page.locator('#resetBody button:text-is("Ver lo aprendido")').isDisabled() && await page.locator('#resetBody .btn-amber:text-is("Ver lo aprendido")').count() === 0, 'no se puede continuar antes de 10 (y el botón no compite en ámbar con +1)');
   // Cerrar a medias y reanudar
   await page.locator('#resetBody button:has-text("Cerrar y seguir luego")').click();
   await page.reload();
@@ -208,16 +208,19 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#qlRow .ql-reset').click();
   ok(await page.evaluate(() => resetStep === 5 && resetStops === 2), '«Seguir mi test» lleva directo al contador');
   for (let i = 0; i < 8; i++) await page.locator('#incrementStopBtn').click();
-  await page.locator('#resetBody button:text-is("Ver qué he aprendido")').click();
+  ok(await page.evaluate(() => !!document.querySelector('#resetBody .reset-completo') && !document.getElementById('incrementStopBtn') && document.activeElement.id === 'resetCompletoTitulo'), '10/10: bloque «Test completado», sin contadores y con el foco en su título');
+  await page.locator('#resetBody button:text-is("Ver lo aprendido")').click();
   await page.locator('#resetBody [data-value="Lo mantengo"]').click();
   ok(await page.evaluate(() => { const b = document.querySelector('#resetBody [data-value="Lo mantengo"]'); return b.classList.contains('is-sel') && !b.classList.contains('btn-amber'); }), 'la opción elegida se marca con el tinte del Reset, no como botón de acción');
   await page.fill('#resetObservacionInput', 'Más conversaciones largas');
   await page.locator('#resetBody button:text-is("Ver mi resumen")').click();
   const cierre = await page.locator('#resetBody').innerText();
   ok(cierre.includes('Vuelve a calle con esto') && cierre.includes('Simplificar la apertura') && cierre.includes('Mi próximo paso'), 'aprendizaje → cierre con el ajuste elegido y «Mi próximo paso»');
+  ok(await page.evaluate(() => !document.querySelector('#resetBody .reset-paso').open), '«Mi próximo paso» empieza plegado');
+  await page.locator('#resetBody .reset-paso > summary').click();
   await page.locator('#rc-paso [data-action="resetOtro"]').click();
   await page.fill('#rco-paso', 'Volver a lo básico');
-  await page.locator('#resetBody button:has-text("Hecho, vuelvo a calle")').click();
+  await page.locator('#resetBody button:has-text("Vuelvo a calle")').click();
   s = await st();
   ok(s.resetHistory.length === 1 && s.resetHistory[0].stops === 10 && s.resetHistory[0].pacto === 'Volver a lo básico' && s.resetProgress === null && await top() === null, 'finalizar guarda la sesión y limpia el progreso');
   await page.locator('#tabReset').click();
@@ -241,15 +244,24 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   section('Kit');
   await page.locator('#tabReset').click();
   await page.locator('#resetBody button:has-text("Mi Kit de Emergencia")').click();
-  for (let i = 0; i < 4; i++) await page.locator('#kitSenalChips button').nth(i).click();
-  ok((await st()).kitSenales.length === 3 && await page.locator('#kitSenalChips + .field-error').count() === 1, 'máximo 3 señales con aviso');
-  await page.selectOption('#kitHerramientaSelect', 'Otro recurso personal');
-  await page.fill('#kitHerramientaOtraInput', 'Salir a respirar al parque');
-  await page.fill('#kitAjusteInput', 'Simplificar la apertura');
+  // Sin plan, el Kit empieza por el paso 1 (señales)
+  ok(await page.evaluate(() => kitPaso) === 1, 'sin plan, el Kit empieza en el paso 1');
+  for (let i = 0; i < 4; i++) await page.locator('#rc-kitSenales [data-action="resetChip"]').nth(i).click();
+  ok((await st()).kitSenales.length === 3 && await page.locator('#rc-kitSenales + .field-error').count() === 1, 'máximo 3 señales con aviso');
+  const KIT_NEXT = '#resetBody .reset-actions .btn-amber';
+  await page.click(KIT_NEXT);
+  await page.click(KIT_NEXT);   // sin herramienta: no avanza y lo dice
+  ok(await page.evaluate(() => kitPaso) === 2 && await page.locator('#resetBody .field-error').count() === 1, 'la herramienta es obligatoria y se avisa en línea');
+  await page.locator('#rc-kitHerramienta [data-action="resetOtro"]').click();
+  await page.fill('#rco-kitHerramienta', 'Salir a respirar al parque');
+  await page.click(KIT_NEXT);
+  await page.evaluate(() => { const d = document.querySelector('#rc-kitAjuste details.reset-todos'); if(d) d.open = true; });
+  await page.locator('#rc-kitAjuste [data-action="resetChip"][data-value="Simplificar la apertura"]').click();
+  await page.click(KIT_NEXT);
   await page.fill('#kitPersonaInput', 'Laura');
   await page.fill('#kitPediraInput', 'Que me observe dos paradas');
   await page.locator('#resetBody button:has-text("Guardar mi plan")').click();
-  ok(await page.evaluate(() => resetStep === 'kit' && document.getElementById('resetTitle').textContent === 'Kit de Emergencia' && document.getElementById('toastMsg').textContent.startsWith('Plan guardado')), 'guardar el plan se queda en el Kit y lo confirma');
+  ok(await page.evaluate(() => resetStep === 'kit' && kitPaso === 0 && document.getElementById('resetTitle').textContent === 'Kit de Emergencia' && document.getElementById('toastMsg').textContent.startsWith('Plan guardado')), 'guardar el plan vuelve a la vista del Kit y lo confirma');
   await page.reload();
   s = await st();
   ok(s.kitHerramienta === 'Salir a respirar al parque' && s.kitAjuste === 'Simplificar la apertura' && s.kitPersona === 'Laura' && s.kitPedira === 'Que me observe dos paradas' && s.kitSenales.length === 3, 'plan persistido tras recargar');
@@ -259,9 +271,10 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.locator('#quickLauncher .ql-kit:visible').first().click();
   ok(await top() === 'modal' && (await page.locator('#modalSheet').innerText()).includes('Este es tu recurso personal'), 'activar con recurso personal lo muestra');
   await page.keyboard.press('Escape');
-  await page.evaluate(() => { openReset(); openKit(); });
-  await page.selectOption('#kitHerramientaSelect', 'Grounding 5-4-3-2-1');
-  await page.locator('#resetBody button:has-text("ACTIVAR MI PLAN")').click();
+  await page.evaluate(() => { openReset(); openKit(2); });
+  await page.locator('#rc-kitHerramienta [data-action="resetChip"][data-value="Grounding 5-4-3-2-1"]').click();
+  await page.evaluate(() => kitIr(0));
+  await page.locator('#resetBody .reset-actions button:has-text("Activar mi plan")').click();
   ok((await page.locator('#toolTitle').innerText()).startsWith('Grounding'), 'activar con herramienta interna la abre');
   await page.evaluate(() => { Overlays.close('tool'); Overlays.close('reset'); });
 

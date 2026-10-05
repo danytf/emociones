@@ -16,10 +16,12 @@ ok(await p.locator('#toolTitle').innerText()==='Suspiro fisiológico' && await t
 await p.evaluate(()=>{closeTool(); state.kitHerramienta='Llamar a mi madre'; activarKitPlan();});
 ok(await p.locator('[data-action="kitSuggestedTool"]').count()===0, 'sin parecido, no se sugiere ninguna herramienta');
 await p.evaluate(()=>{closeModal(); state.kitSenales=[]; openReset(); openKit();});
-ok((await p.locator('#resetBody').innerText()).includes('Elige hasta 3: así tu plan es fácil de recordar'), 'límite explicado de antemano como decisión de diseño');
-ok((await p.locator('#resetBody .kit-flow').innerText()).includes('Pido apoyo a Laura: «que me observe dos paradas»'), 'caja SI SIGO ATASCADO: «Pido apoyo a…»');
-for(let i=0;i<4;i++) await p.locator('#kitSenalChips button').nth(i).click();
-ok((await p.locator('#kitSenalChips + .field-error').innerText()).includes('Para que tu plan sea fácil de recordar, puedes elegir hasta 3 señales'), 'aviso del límite reformulado');
+ok(await p.evaluate(()=>kitPaso)===0 && (await p.locator('#resetBody .kit-flow').innerText()).includes('Pido apoyo a Laura: «que me observe dos paradas»'), 'con plan, el Kit abre en la vista; caja SI SIGO ATASCADO: «Pido apoyo a…»');
+ok(await p.locator('#resetBody .reset-actions .btn-amber:has-text("Activar mi plan")').isVisible(), '«Activar mi plan» en la barra fija de la vista');
+await p.locator('#resetBody button:has-text("Editar mi plan")').click();
+ok(await p.evaluate(()=>kitPaso)===1 && (await p.locator('#resetBody').innerText()).includes('Elige hasta 3: así tu plan es fácil de recordar'), 'límite explicado de antemano como decisión de diseño');
+for(let i=0;i<4;i++) await p.locator('#rc-kitSenales [data-action="resetChip"]').nth(i).click();
+ok(await p.evaluate(()=>state.kitSenales.length)===3 && (await p.locator('#rc-kitSenales + .field-error').innerText()).includes('Para que tu plan sea fácil de recordar, puedes elegir hasta 3 señales'), 'aviso del límite reformulado');
 // «Activar mi plan» con herramienta de la app: al terminar, «Hecho» recuerda ajuste y apoyo (solo desde el Kit)
 const plan = await p.evaluate(()=>{
   Overlays.close('reset');

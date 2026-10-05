@@ -4276,6 +4276,7 @@ const RESET_CAMPOS = {
     opciones:()=>['Paro 2 minutos antes de seguir empujando','Mantengo un solo ajuste en las próximas paradas','Pido feedback a un compañero o a mi responsable','Vuelvo a lo básico del speech'] },
   /* Kit de Emergencia (pasos 1-3): mismas respuestas rápidas, guardadas en las claves del Kit de siempre */
   kitSenales: { label:'Mis señales de alerta (hasta 3)', otro:'Otra señal', mas:'Otras señales', multi:true, max:3,
+    maxMsg:'Para que tu plan sea fácil de recordar, puedes elegir hasta 3 señales. Desmarca una para elegir otra.',
     get:()=>(state.kitSenales || []).join(RESET_SEP),
     set:v=>{ state.kitSenales = v ? v.split(RESET_SEP).map(x=>x.trim()).filter(Boolean) : []; saveSoon(); },
     opciones:()=>[...new Set([...(state.kitSenales || []).filter(s=>CHECKIN_TITLES.includes(s)), ...RESET_SENALES_BASE, ...CHECKIN_TITLES])] },
@@ -4378,7 +4379,8 @@ function resetChip(el){
   if(!c.multi){ sel = [v]; otro = ''; resetOtroAbierto.delete(f); }
   else if(sel.includes(v)) sel = sel.filter(x=>x!==v);
   else {
-    if(c.max && sel.length + (otro.trim() ? 1 : 0) >= c.max){ announce(`Puedes elegir hasta ${c.max}.`); notify(`Puedes elegir hasta ${c.max}. Quita una para cambiarla.`); return; }
+    // Límite: se explica en línea, junto a las opciones (sin cambiar lo elegido)
+    if(c.max && sel.length + (otro.trim() ? 1 : 0) >= c.max){ fieldError('rc-' + f, c.maxMsg || `Puedes elegir hasta ${c.max}. Quita una para cambiarla.`, {focus:false}); return; }
     sel = [...sel, v];
   }
   escribirCampoReset(f, sel, otro);
@@ -5186,7 +5188,7 @@ Object.assign(ACTIONS, {
   kitSuggestedTool: () => { const t = kitSuggestedTool; closeModal(); if(t && KIT_TOOL_EXACT[t]) KIT_TOOL_EXACT[t](); },
   welcomeNext: () => showWelcome(welcomeStep + 1),
   // Al cerrar la bienvenida se empieza por Aprender, como recomienda la Ayuda
-  welcomeClose: () => { closeModal(); goto('aprender'); },
+  welcomeClose: () => { closeModal(); goto('herramientas'); },
   welcomeKit: () => { closeModal(); openReset(); openKit(); },
   confirmOk: () => settleConfirm(true),
   confirmCancel: () => settleConfirm(false),

@@ -140,12 +140,12 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   await page.evaluate(() => { startFreshReset(); closeReset(); });
 
   // ---- Foco estable al re-renderizar ----
-  await page.evaluate(() => { state.kitSenales = []; openReset(); openKit(); });
-  const chip = page.locator('#kitSenalChips [data-action="toggleKitSenal"]').nth(2);
+  await page.evaluate(() => { state.kitSenales = []; openReset(); openKit(1); });
+  const chip = page.locator('#rc-kitSenales [data-action="resetChip"]').nth(2);
   await chip.focus();
   await page.keyboard.press('Enter');
   const f = await page.evaluate(() => ({ action: document.activeElement.dataset.action, value: document.activeElement.dataset.value, pressed: document.activeElement.getAttribute('aria-pressed') }));
-  ok(f.action === 'toggleKitSenal' && f.value === 'Empiezo ya cansado' && f.pressed === 'true', 'tras re-renderizar, el foco sigue en el mismo chip: ' + JSON.stringify(f));
+  ok(f.action === 'resetChip' && f.value === 'Empiezo ya cansado' && f.pressed === 'true', 'tras re-renderizar, el foco sigue en el mismo chip: ' + JSON.stringify(f));
   await page.evaluate(() => closeReset());
 
   // Fondo no clicable con overlay abierto

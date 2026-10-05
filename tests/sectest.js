@@ -93,8 +93,8 @@ const v1 = {
   ok(await page.isVisible('#sepaPensDestructivoLibre'), 'pensamiento «Otro…» muestra el campo libre');
 
   // Kit: toggle de una señal con «»
-  await page.evaluate(() => { state.kitSenales = []; openKit(); Overlays.open('reset'); });
-  await page.locator('#kitSenalChips [data-action="toggleKitSenal"]').nth(1).click();
+  await page.evaluate(() => { state.kitSenales = []; openKit(1); Overlays.open('reset'); });
+  await page.locator('#rc-kitSenales [data-action="resetChip"][data-value="El «no» me afecta más de lo habitual"]').click();
   ok(JSON.stringify(await page.evaluate(() => state.kitSenales)) === '["El «no» me afecta más de lo habitual"]', 'chip de señal del Kit con «no» funciona');
 
   // Repetir ajuste desde el historial

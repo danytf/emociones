@@ -14,11 +14,14 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   page.on('dialog', d => { dialogs.push(d.message()); d.accept(); });
 
   const now = Date.now();
+  // Fecha en texto de hace 10 días (formato antiguo d/m/aaaa, hh:mm:ss), para que la prueba no caduque
+  const hace10 = new Date(now - 10 * DAY); hace10.setHours(14, 5, 3, 0);
+  const fechaTxt = `${hace10.getDate()}/${hace10.getMonth() + 1}/${hace10.getFullYear()}, 14:05:03`;
   const v2 = {
     dataVersion: 2,
     sepaEntries: [
       { id: now - 2 * DAY, fecha: 'x', situacion: 'reciente por id', emociones: ['ira'], pensD: 'a', pensC: 'b', accion: 'c' },
-      { id: 12345, fecha: '3/9/2026, 14:05:03', situacion: 'por fecha', emociones: [], pensD: '', pensC: '', accion: '' },
+      { id: 12345, fecha: fechaTxt, situacion: 'por fecha', emociones: [], pensD: '', pensC: '', accion: '' },
       { id: 999, fecha: 'texto raro', situacion: 'sin fecha', emociones: [], pensD: '', pensC: '', accion: '' },
       { id: now, createdAt: new Date(now - 20 * DAY).toISOString(), situacion: 'id reciente pero creado hace 20 días', emociones: [], pensD: '', pensC: '', accion: '' }
     ],
@@ -31,7 +34,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   const st = await page.evaluate(() => state);
   ok(st.dataVersion === 3, 'migra a dataVersion 3');
   ok(st.sepaEntries[0].createdAt === new Date(now - 2 * DAY).toISOString(), 'createdAt deducido del id antiguo');
-  ok(st.sepaEntries[1].createdAt === await page.evaluate(() => new Date(2026, 8, 3, 14, 5, 3).toISOString()), 'createdAt deducido del texto fecha (hora local)');
+  ok(st.sepaEntries[1].createdAt === hace10.toISOString(), 'createdAt deducido del texto fecha (hora local)');
   ok(st.sepaEntries[2].createdAt === null && st.sepaEntries[2].fecha === 'texto raro', 'sin fecha deducible: createdAt null y se conserva el texto');
   ok(!('fecha' in st.sepaEntries[0]), 'fecha legada eliminada cuando hay createdAt');
   ok(st.sepaEntries.every(e => e.updatedAt === e.createdAt), 'updatedAt inicial = createdAt');
@@ -60,13 +63,13 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
     window.__writes = 0;
     const orig = Storage.prototype.setItem;
     Storage.prototype.setItem = function (k, v) { if (k === 'wesserAppState') window.__writes++; return orig.call(this, k, v); };
-    openKit(); Overlays.open('reset');
+    openKit(4); Overlays.open('reset');
   });
-  await page.locator('#kitAjusteInput').pressSequentially('escuchar hasta el final', { delay: 30 });
+  await page.locator('#kitPediraInput').pressSequentially('escuchar hasta el final', { delay: 30 });
   const duringTyping = await page.evaluate(() => window.__writes);
   await page.waitForTimeout(600);
   const afterPause = await page.evaluate(() => window.__writes);
-  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('wesserAppState')).kitAjuste);
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('wesserAppState')).kitPedira);
   ok(duringTyping === 0, `sin escrituras mientras se teclea (23 teclas → ${duringTyping})`);
   ok(afterPause === 1 && stored === 'escuchar hasta el final', `una sola escritura tras la pausa (${afterPause}) con el texto completo`);
 
@@ -80,7 +83,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.evaluate(() => { Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true }); closeReset(); });
 
   // ---- 2.4 Límites ----
-  await page.evaluate(() => { goto('diario'); openKit(); });
+  await page.evaluate(() => { goto('diario'); openKit(4); });
   const lim = await page.evaluate(() => {
     return {
       ta: document.getElementById('sepaPensConstructivo').maxLength,
@@ -123,7 +126,7 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.setInputFiles('#importDatosInput', file);
   await page.locator('#confirmOk').waitFor();
   await Promise.all([page.waitForEvent('load'), page.locator('#confirmOk').click()]);
-  const re = await page.evaluate(() => ({ v: state.dataVersion, n: state.sepaEntries.length, e: state.exitos.length, k: state.kitAjuste }));
+  const re = await page.evaluate(() => ({ v: state.dataVersion, n: state.sepaEntries.length, e: state.exitos.length, k: state.kitPedira }));
   ok(re.v === 3 && re.n === 4 && re.e === 1 && re.k === 'escuchar hasta el final', 'el archivo exportado se vuelve a importar sin pérdidas');
   const bad = await page.evaluate(() => validateImport({ exportFormat: 'otra-app', sepaEntries: [], checkpoints: [], visualAnchors: [], checkins: [], confidenceAnchors: [], resetHistory: [] }));
   ok(!!bad, 'rechaza archivos de otro formato: ' + bad);

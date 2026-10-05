@@ -71,9 +71,9 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
   await page.evaluate(() => startFreshReset());
 
   // Kit: límite de 3 señales
-  await page.evaluate(() => { state.kitSenales = []; openKit(); });
-  for (let i = 0; i < 4; i++) await page.locator('#kitSenalChips button').nth(i).click();
-  ok(await page.evaluate(() => state.kitSenales.length === 3 && document.querySelector('#kitSenalChips + .field-error').textContent.includes('hasta 3 señales')), 'Kit: la 4.ª señal muestra aviso en línea');
+  await page.evaluate(() => { state.kitSenales = []; openKit(1); });
+  for (let i = 0; i < 4; i++) await page.locator('#rc-kitSenales [data-action="resetChip"]').nth(i).click();
+  ok(await page.evaluate(() => state.kitSenales.length === 3 && document.querySelector('#rc-kitSenales + .field-error').textContent.includes('hasta 3 señales')), 'Kit: la 4.ª señal muestra aviso en línea');
   await page.evaluate(() => startFreshReset());
   await page.evaluate(() => closeReset());
 
