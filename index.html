@@ -660,6 +660,14 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds details.help-item > summary{display:flex;align-items:center;gap:var(--sp-3);min-height:64px;
   padding:var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-3);font-family:var(--font-brand);font-size:var(--fs-md);font-weight:650;color:var(--ds-ink);}
 .ds details.help-item > summary .sum-title{flex:1;}
+/* Línea de consulta bajo el título de cada ficha de Aprender (frase clave o contenido) */
+.ds details.help-item > summary .sum-sub{display:block;margin-top:2px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:var(--fs-sm);font-weight:500;line-height:1.4;color:var(--ds-ink-2);}
+.ds details.help-item > summary .sum-sub:empty{display:none;}
+#view-aprender details[name="aprender-fichas"]{scroll-margin-top:var(--sp-3);}
+/* Mitos del autocontrol: un bloque por mito */
+.ds .mito{background:var(--ds-canvas);border-radius:var(--ds-radius-md);padding:var(--sp-3) var(--sp-4);margin:0 0 var(--sp-3);}
+.ds details.help-item .help-body .mito > :first-child{margin-top:0;}
+.ds .mito > :last-child{margin-bottom:0;}
 .ds details.help-item > summary::after{content:'';content:'' / '';width:8px;height:8px;flex-shrink:0;margin:0 4px 4px auto;
   border-right:2px solid var(--ds-ink-3);border-bottom:2px solid var(--ds-ink-3);transform:rotate(45deg);transition:transform .2s ease;}
 .ds details.help-item[open] > summary::after{content:'';content:'' / '';transform:rotate(-135deg);margin-bottom:-4px;}
@@ -1318,8 +1326,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
 
     <h3 class="ds-section-title">Fundamentos de la Inteligencia Emocional</h3>
     <div class="accordion-block">
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg></span><span class="sum-title">¿Qué es una emoción?</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg></span><span class="sum-title">¿Qué es una emoción?<span class="sum-sub">Una emoción aparece cuando nuestro organismo percibe algo como relevante para nosotros y se prepara para responder.</span></span></summary>
         <div class="help-body">
           <p>Una emoción es una <b>respuesta de nuestro cuerpo y nuestra mente ante algo que sucede o que interpretamos</b>. Muchas veces aparece de forma automática y nos prepara para responder.</p>
 
@@ -1348,8 +1356,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-smile"/></svg></span><span class="sum-title">Las 6 Emociones</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-smile"/></svg></span><span class="sum-title">Las 6 Emociones<span class="sum-sub">Alegría, tristeza, miedo, ira, sorpresa y asco.</span></span></summary>
         <div class="help-body">
           <p>Aquí conocerás <b>6 emociones básicas asociadas al modelo clásico de Paul Ekman</b>. Es un modelo práctico, no una clasificación única de todas las emociones. Pulsa en una emoción para descubrir <b>para qué puede servir, cómo puede manifestarse en tu cuerpo y cómo puedes responder cuando aparezca en la calle</b>.</p>
           <p><b>Recuerda:</b> el objetivo <b>no es eliminar lo que sientes</b>, sino <b>entender qué te está señalando y aprender a responder mejor</b>.</p>
@@ -1357,8 +1365,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span class="sum-title">Inteligencia Emocional en la calle</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span class="sum-title">Inteligencia Emocional en la calle<span class="sum-sub">Autoconciencia, autorregulación, motivación, empatía y habilidades sociales.</span></span></summary>
         <div class="help-body">
           <p>Hay varias formas de definir la <b>Inteligencia Emocional</b>. En general, se refiere a <b>reconocer y gestionar nuestras emociones y comprender mejor las de los demás</b> para responder de forma más eficaz.</p>
           <p>Para esta app utilizamos el <b>modelo de cinco competencias de Daniel Goleman</b> como marco práctico.</p>
@@ -1377,8 +1385,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-bubble"/></svg></span><span class="sum-title">El diálogo interno</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-bubble"/></svg></span><span class="sum-title">El diálogo interno<span class="sum-sub">El bucle negativo y cómo comparar sin castigarme.</span></span></summary>
         <div class="help-body">
           <p>El <b>diálogo interno</b> es lo que nos decimos a nosotros mismos y cómo <b>interpretamos lo que nos ocurre</b>.</p>
           <p>Muchas veces aparece de forma <b>automática</b>, especialmente cuando estamos cansados, frustrados, nerviosos o después de una situación difícil.</p>
@@ -1419,24 +1427,30 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-x-circle"/></svg></span><span class="sum-title">Mitos del autocontrol</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-x-circle"/></svg></span><span class="sum-title">Mitos del autocontrol<span class="sum-sub">Gestionar una emoción no significa eliminarla ni estar siempre tranquilo.</span></span></summary>
         <div class="help-body">
+          <div class="mito">
           <p><b>Reprimir o negar la emoción</b></p>
           <p style="font-style:italic;">«No pasa nada», «no debería sentirme así»</p>
           <p>o intentar actuar como si la emoción no existiera.</p>
           <p><b>Ignorar lo que sentimos no hace que desaparezca necesariamente.</b> La activación emocional puede mantenerse, especialmente si seguimos evitando lo ocurrido o dándole vueltas.</p>
+          </div>
 
+          <div class="mito">
           <p><b>Quedarse atrapado en la emoción</b></p>
           <p>Prestar tanta atención a lo negativo que entramos en un <b>bucle de pensamientos, emociones y sensaciones físicas</b> que cada vez cuesta más cortar.</p>
           <p class="quote">«Me han rechazado otra vez → qué mal se me da esto → seguro que hoy no consigo nada → otro rechazo más…»</p>
           <p>Aquí los pensamientos y las emociones <b>pueden empezar a dirigir nuestra conducta</b>.</p>
+          </div>
 
+          <div class="mito">
           <p><b>Confundir autocontrol con estar siempre tranquilo</b></p>
           <p><b>Estar nervioso, activado o sentir cierta tensión no significa que estés haciéndolo mal.</b></p>
           <p>Una activación manejable puede ayudarte a <b>estar atento, concentrarte y actuar</b>. Cuando es demasiado intensa o se mantiene durante demasiado tiempo, puede empezar a dificultar tu rendimiento.</p>
           <p class="quote"><b>Activación manejable → puede ayudarte.</b><br><b>Activación excesiva o mantenida → puede dificultarte.</b></p>
           <p><b>No necesitas eliminar toda la activación. Necesitas regularla cuando empieza a jugar en tu contra.</b></p>
+          </div>
 
           <p><b>Entonces, ¿qué es gestionar bien una emoción?</b></p>
           <p><b>1. Reconocerla </b><br><span style="font-style:italic;">«Estoy frustrado.»</span></p>
@@ -1450,8 +1464,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg></span><span class="sum-title">¿Qué es el estrés?</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg></span><span class="sum-title">¿Qué es el estrés?<span class="sum-sub">El objetivo no es no sentir estrés. Es detectarlo antes de que empiece a dirigir cómo trabajas.</span></span></summary>
         <div class="help-body">
           <p>Una forma práctica de entenderlo: el estrés aparece cuando <b>sientes que una situación te exige más de lo que crees poder afrontar en ese momento</b>.</p>
           <p>No es una emoción concreta: suele venir acompañado de emociones (miedo, frustración…), pensamientos y cambios en el cuerpo. <b>Cierto nivel de presión puede ayudarte a activarte y concentrarte</b>; el problema llega cuando es muy intensa o no baja durante mucho tiempo.</p>
@@ -1479,8 +1493,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-gauge"/></svg></span><span class="sum-title">Estados que pueden aparecer durante la captación</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-gauge"/></svg></span><span class="sum-title">Estados que pueden aparecer durante la captación<span class="sum-sub" id="estadosSub"></span></span></summary>
         <div class="help-body">
           <p>Además de estas 6 emociones, en captación pueden aparecer <b>estados y experiencias muy concretos</b> relacionados con el rechazo, la presión, la incertidumbre y el desgaste de la jornada.</p>
           <p>Distinguirlos ayuda a <b>poner nombre a lo que te está pasando y elegir mejor cómo responder</b>.</p>
@@ -1495,8 +1509,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-hourglass"/></svg></span><span class="sum-title">Cuando la jornada se hace eterna</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-hourglass"/></svg></span><span class="sum-title">Cuando la jornada se hace eterna<span class="sum-sub">No puedes acortar la jornada, pero sí cambiar cómo la vives: menos reloj y más parada.</span></span></summary>
         <div class="help-body">
           <p>El reloj marca lo mismo para todos, pero <b>el tiempo que vives no pasa igual</b>. Depende de lo que estás haciendo y de cómo te sientes.</p>
           <p class="quote">«Un día lleno de emoción, sin pausa, se dice que pasa antes de que nos demos cuenta; en cambio, un día lleno de espera, de deseo insatisfecho de cambio, parecerá una pequeña eternidad.» — William James, <i>Principios de psicología</i> (1890), traducción propia</p>
@@ -1521,8 +1535,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-mountain"/></svg></span><span class="sum-title">Aprender de la adversidad</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-mountain"/></svg></span><span class="sum-title">Aprender de la adversidad<span class="sum-sub">No eliges siempre lo que sientes. Sí puedes trabajar en cómo respondes.</span></span></summary>
         <div class="help-body">
           <p>Un rechazo no te hace mejor automáticamente. Pero puedes <b>utilizarlo como información</b>:</p>
           <p><b>¿Qué ha pasado? → ¿Qué puedo aprender? → ¿Qué voy a hacer diferente?</b></p>
@@ -1540,8 +1554,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         </div>
       </details>
 
-      <details class="help-item">
-        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span class="sum-title">Pedir y dar apoyo</span></summary>
+      <details class="help-item" name="aprender-fichas">
+        <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span class="sum-title">Pedir y dar apoyo<span class="sum-sub">Pedir ayuda no es una señal de debilidad: es parte de hacer bien el trabajo.</span></span></summary>
         <div class="help-body">
           <p>Pedir ayuda no es una señal de debilidad: es parte de hacer bien el trabajo. Y el apoyo funciona mejor cuando <b>quien lo pide y quien lo da</b> saben qué es útil.</p>
 
@@ -2869,6 +2883,8 @@ function renderEstadosCaptacion(){
               ${estadoAccionHtml(e, 'btn-outline btn-sm estado-cta')}
             </div>
           </details>`).join('');
+  const sub = document.getElementById('estadosSub');
+  if(sub) sub.textContent = ESTADOS_CAPTACION.map((e, i)=> i ? e.nombre.charAt(0).toLowerCase() + e.nombre.slice(1) : e.nombre).join(', ').replace(/, ([^,]+)$/, ' y $1') + '.';
   if(lista) lista.innerHTML = ESTADOS_CAPTACION.map(e=>`<li>${estadoIcono(e)} <b>${escapeHtml(e.nombre)}</b> → ${e.resumen}</li>`).join('');
 }
 renderEstadosCaptacion();
@@ -5469,6 +5485,12 @@ Object.assign(ACTIONS, {
 /* ============ INIT ============ */
 renderResetTab();
 maybeShowWelcome();
+/* Aprender en modo consulta: al abrir una ficha, su título queda arriba y a la vista */
+document.querySelectorAll('#view-aprender details[name="aprender-fichas"]').forEach(d=>d.addEventListener('toggle', ()=>{
+  if(!d.open) return;
+  const main = document.querySelector('main'), top = d.getBoundingClientRect().top - main.getBoundingClientRect().top;
+  if(top < 0) d.scrollIntoView({block:'start', behavior: motionOK() ? 'smooth' : 'auto'});
+}));
 /* Preferencia de interfaz (no es un dato del usuario): recordar si la explicación del Diario está plegada */
 (function initSepaIntro(){
   const d = document.getElementById('sepaIntro');

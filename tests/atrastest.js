@@ -186,6 +186,18 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   ok(await p.evaluate(() => Overlays.top() === 'tool' && document.getElementById('toolTitle').textContent === 'Checkpoint de mitad de turno'), 'el botón de Aprender (Fatiga mental) abre el Checkpoint, igual que el acceso rápido');
   await p.evaluate(() => closeTool());
 
+  // ---- Aprender en modo consulta ----
+  await p.evaluate(() => goto('aprender'));
+  const ap = await p.evaluate(() => {
+    const ds = [...document.querySelectorAll('#view-aprender .accordion-block > details')];
+    ds.forEach(d => d.open = false);
+    return { n: ds.length, conSub: ds.filter(d => (d.querySelector('.sum-sub') || {}).textContent).length, estadosSub: document.getElementById('estadosSub').textContent, mitos: document.querySelectorAll('#view-aprender .mito').length };
+  });
+  ok(ap.n === 10 && ap.conSub === 10 && ap.estadosSub.startsWith('Ansiedad anticipatoria, frustración') && ap.mitos === 3, 'Aprender: 10 fichas con línea de consulta (la de Estados, desde la fuente única) y Mitos en 3 bloques');
+  const fichasAp = p.locator('#view-aprender .accordion-block > details > summary');
+  await fichasAp.nth(1).click(); await fichasAp.nth(3).click();
+  ok(await p.evaluate(() => [...document.querySelectorAll('#view-aprender .accordion-block > details')].filter(d => d.open).length === 1), 'Aprender: al abrir una ficha se cierra la anterior');
+
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));
   await b.close();
 })();
