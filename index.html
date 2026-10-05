@@ -2371,7 +2371,8 @@ function saveSoon(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(save, SAVE_DELAY);
 }
-function flushSave(){ if(saveTimer) save(); }
+/* Si un guardado falló (p. ej., uno diferido), queda pendiente: se reintenta al ocultar o cerrar la página */
+function flushSave(){ if(saveTimer || save.pendiente) save(); }
 // Si se oculta o cierra la página con un guardado pendiente, se escribe ya para no perder texto
 window.addEventListener('pagehide', flushSave);
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') flushSave(); });
@@ -2389,9 +2390,12 @@ function save(){
   saveTimer = null;
   try{
     localStorage.setItem(LS_KEY, JSON.stringify(state));
+    save.pendiente = false;
+    save.lastErrorAt = 0;   // si vuelve a fallar después de recuperarse, se avisa otra vez
     return true;
   }catch(e){
     console.error('No se pudo guardar en localStorage', e);
+    save.pendiente = true;
     // Aviso no modal; con guardado diferido se evita repetirlo en cada intento seguido
     if(!save.lastErrorAt || Date.now() - save.lastErrorAt > 15000){
       save.lastErrorAt = Date.now();
@@ -4443,21 +4447,59 @@ async function borrarCheckin(id){
   renderResetStep();
 }
 
-/* Copia en memoria el progreso del Reset; persistirlo es aparte (inmediato o diferido) */
-function syncResetProgress(){
-  if(typeof resetStep!=='number' || resetStep<1){ return false; }
-  state.resetProgress = {
+/* Lo que se guarda de una sesión del Reset (state.resetProgress) */
+function sesionReset(){
+  return {
     step: resetStep, senal: resetSenal,
     examResultado: resetExamResultado, examRendimiento: resetExamRendimiento,
     aspecto1: resetAspecto1, aspecto2: resetAspecto2,
     micro: resetMicro, stops: resetStops, pacto: resetPacto,
     aprendizaje: resetAprendizaje, ajusteNuevo: resetAjusteNuevo, observacion: resetObservacion
   };
+}
+function aplicarSesionReset(p){
+  resetStep = p.step; resetSenal = p.senal || '';
+  resetExamResultado = p.examResultado || ''; resetExamRendimiento = p.examRendimiento || '';
+  resetAspecto1 = p.aspecto1 || ''; resetAspecto2 = p.aspecto2 || '';
+  resetMicro = p.micro || null; resetStops = p.stops || 0; resetPacto = p.pacto || '';
+  resetAprendizaje = p.aprendizaje || ''; resetAjusteNuevo = p.ajusteNuevo || ''; resetObservacion = p.observacion || '';
+}
+const KIT_CLAVES = ['kitSenales', 'kitHerramienta', 'kitAjuste', 'kitPersona', 'kitPedira'];
+/* Copia en memoria el progreso del Reset; persistirlo es aparte (inmediato o diferido) */
+function syncResetProgress(){
+  if(typeof resetStep!=='number' || resetStep<1){ return false; }
+  state.resetProgress = sesionReset();
   return true;
 }
-function saveResetProgress(){ if(syncResetProgress()) save(); }
-function saveResetProgressSoon(){ if(syncResetProgress()) saveSoon(); }
-function clearResetProgress(){ state.resetProgress = null; save(); renderResetTab(); }
+/* Cambios del Reset y del Kit que se guardan solos: se aplican y se guardan ya. Si no se puede
+   guardar, se deshacen (sesión, progreso y Kit en memoria) y devuelve false: quien llama repinta
+   lo que sí está guardado y no avanza ni lo da por guardado. Anidado (p. ej., resetGoto() dentro
+   de otra acción), guarda una sola vez la acción completa. */
+let cambioResetActivo = false;
+function cambioReset(fn){
+  if(cambioResetActivo){ fn(); return true; }
+  const antes = sesionReset(), prevProgress = state.resetProgress;
+  const prevKit = Object.fromEntries(KIT_CLAVES.map(k => [k, state[k]]));
+  cambioResetActivo = true;
+  try{ fn(); } finally { cambioResetActivo = false; }
+  syncResetProgress();
+  if(save()) return true;
+  aplicarSesionReset(antes); state.resetProgress = prevProgress; Object.assign(state, prevKit);
+  renderQlKitButton();
+  return false;
+}
+function saveResetProgress(){ return cambioReset(()=>{}); }
+/* Texto que se escribe (Otra…, observación, ajuste retocado y campos de texto del Kit): guardado
+   diferido; si falla, avisa y queda pendiente de reintento sin borrar lo escrito */
+function saveResetProgressSoon(){ syncResetProgress(); saveSoon(); }
+function clearResetProgress(){
+  const prev = state.resetProgress;
+  state.resetProgress = null;
+  const ok = save();
+  if(!ok) state.resetProgress = prev;   // el Reset a medias sigue guardado: no se da por borrado
+  renderResetTab();
+  return ok;
+}
 /* El botón Reset abre un diálogo (no es una sección) y avisa si hay un Reset a medias */
 function renderResetTab(){
   const b = document.getElementById('tabReset');
@@ -4506,18 +4548,7 @@ function openReset(directo){
 }
 function resumeReset(){
   const p = state.resetProgress || {};
-  resetStep = p.step || 1;
-  resetSenal = p.senal || '';
-  resetExamResultado = p.examResultado || '';
-  resetExamRendimiento = p.examRendimiento || '';
-  resetAspecto1 = p.aspecto1 || '';
-  resetAspecto2 = p.aspecto2 || '';
-  resetMicro = p.micro || null;
-  resetStops = p.stops || 0;
-  resetPacto = p.pacto || '';
-  resetAprendizaje = p.aprendizaje || '';
-  resetAjusteNuevo = p.ajusteNuevo || '';
-  resetObservacion = p.observacion || '';
+  aplicarSesionReset({ ...p, step: p.step || 1 });
   resetStopsUndo = [];
   examinaParte = 0; resetTodosAbierto = false;
   renderResetStep();
@@ -4532,7 +4563,7 @@ async function confirmarEmpezarDeNuevo(){
   if(ok) startFreshReset();
 }
 function startFreshReset(){
-  clearResetProgress();
+  if(!clearResetProgress()) return;   // si no se pudo borrar, se sigue ofreciendo el Reset a medias
   clearResetSession();
   renderResetStep();
 }
@@ -4589,12 +4620,12 @@ const RESET_CAMPOS = {
   kitSenales: { label:'Mis señales de alerta (hasta 3)', otro:'Otra señal', mas:'Otras señales', multi:true, max:3,
     maxMsg:'Para que tu plan sea fácil de recordar, puedes elegir hasta 3 señales. Desmarca una para elegir otra.',
     get:()=>(state.kitSenales || []).join(RESET_SEP),
-    set:v=>{ state.kitSenales = v ? v.split(RESET_SEP).map(x=>x.trim()).filter(Boolean) : []; saveSoon(); },
+    set:v=>{ state.kitSenales = v ? v.split(RESET_SEP).map(x=>x.trim()).filter(Boolean) : []; },
     opciones:()=>[...new Set([...(state.kitSenales || []).filter(s=>CHECKIN_TITLES.includes(s)), ...RESET_SENALES_BASE, ...CHECKIN_TITLES])] },
   kitHerramienta: { label:'Mi herramienta', otro:'Otro recurso', mas:'Más herramientas',
-    get:()=>state.kitHerramienta || '', set:v=>{ state.kitHerramienta = v || ''; saveSoon(); renderQlKitButton(); },
+    get:()=>state.kitHerramienta || '', set:v=>{ state.kitHerramienta = v || ''; renderQlKitButton(); },
     opciones:()=>KIT_HERRAMIENTAS_FIJAS.filter(h=>h !== 'Otro recurso personal') },
-  kitAjuste: { label:'Mi ajuste', otro:'Otro ajuste', get:()=>state.kitAjuste || '', set:v=>{ state.kitAjuste = v || ''; saveSoon(); },
+  kitAjuste: { label:'Mi ajuste', otro:'Otro ajuste', get:()=>state.kitAjuste || '', set:v=>{ state.kitAjuste = v || ''; },
     grupos:()=>Object.entries(MICROAUDITORIA),
     /* Los ajustes asociados a las señales elegidas; sin señales, los más habituales */
     sugeridos:()=>{
@@ -4694,8 +4725,8 @@ function resetChip(el){
     if(c.max && sel.length + (otro.trim() ? 1 : 0) >= c.max){ fieldError('rc-' + f, c.maxMsg || `Puedes elegir hasta ${c.max}. Quita una para cambiarla.`, {focus:false}); return; }
     sel = [...sel, v];
   }
-  escribirCampoReset(f, sel, otro);
-  saveResetProgress();
+  const otroAbierto = resetOtroAbierto.has(f);
+  if(!cambioReset(()=>escribirCampoReset(f, sel, otro)) && otroAbierto) resetOtroAbierto.add(f);   // si no se guarda, vuelve como estaba
   repintarCampoReset(f, `[data-action="resetChip"][data-value="${CSS.escape(v)}"]`);
 }
 function resetOtro(el){
@@ -4705,8 +4736,10 @@ function resetOtro(el){
   if(abrir){ resetOtroAbierto.add(f); if(!c.multi) sel = []; }
   else { resetOtroAbierto.delete(f); otro = ''; }
   if(abrir && c.max && sel.length >= c.max) sel = sel.slice(0, c.max - 1);
-  escribirCampoReset(f, sel, otro);
-  saveResetProgress();
+  if(!cambioReset(()=>escribirCampoReset(f, sel, otro))){
+    if(abrir) resetOtroAbierto.delete(f); else resetOtroAbierto.add(f);   // vuelve como estaba
+    return repintarCampoReset(f, `[data-action="resetOtro"]`);
+  }
   repintarCampoReset(f, abrir ? `#rco-${f}` : `[data-action="resetOtro"]`);
 }
 function resetOtroInput(input){
@@ -5248,35 +5281,45 @@ function probarOtroAjuste(){
     aprendizaje: resetAprendizaje, ajusteNuevo: '', observacion: resetObservacion
   }), ...prevHistory];
   if(!commitSave(()=>{ state.resetHistory = prevHistory; })) return;
-  if(resetMicro && !resetDescartados.includes(resetMicro)) resetDescartados.push(resetMicro);
-  resetMicro = null; resetStops = 0; resetStopsUndo = []; resetAvisoCero = false;
-  resetAprendizaje = ''; resetAjusteNuevo = ''; resetObservacion = ''; resetPacto = '';
+  const descartado = resetMicro;
   resetNotaElige = 'Test guardado en tu Historial. Elige otro ajuste para probar.';
-  resetGoto(4);
+  if(!cambioReset(()=>{
+    resetMicro = null; resetStops = 0;
+    resetAprendizaje = ''; resetAjusteNuevo = ''; resetObservacion = ''; resetPacto = '';
+    resetGoto(4);
+  })){ resetNotaElige = ''; renderResetStep(); return; }
+  if(descartado && !resetDescartados.includes(descartado)) resetDescartados.push(descartado);
+  resetStopsUndo = []; resetAvisoCero = false;
+  renderResetStep();
   announce(resetNotaElige);
 }
 function repetirAjuste(id){
   const r = state.resetHistory.find(x=>x.id===id);
   if(!r || !r.micro) return;
   const micro = r.ajusteNuevo || r.micro, senal = r.senal;
-  clearResetProgress();
+  const antes = sesionReset();
   clearResetSession();
-  resetMicro = micro; resetSenal = senal || '';
-  resetStep = 5;
-  saveResetProgress();
+  if(!cambioReset(()=>{ resetMicro = micro; resetSenal = senal || ''; resetStep = 5; })){ aplicarSesionReset(antes); renderResetStep(); return; }
   Overlays.open('reset');
   renderResetStep();
 }
 /* Cada paso nuevo empieza arriba (el overlay conserva su desplazamiento entre pantallas) */
-function resetGoto(step){ resetStep = step; if(step === 2) examinaParte = 0; if(step === 4) resetTodosAbierto = false; saveResetProgress(); renderResetStep(); document.getElementById('resetOverlay').scrollTo(0, 0); }
+function resetGoto(step){
+  if(!cambioReset(()=>{ resetStep = step; })){ renderResetStep(); return false; }   // no se pudo guardar: sigue en el paso guardado
+  if(step === 2) examinaParte = 0; if(step === 4) resetTodosAbierto = false;
+  renderResetStep(); document.getElementById('resetOverlay').scrollTo(0, 0);
+  return true;
+}
 /* Cuánto sumó cada pulsación (+1 / +3), para que «Deshacer última» revierta la última acción
    completa. Es solo de esta sesión: tras recargar, deshacer resta de 1 en 1. */
 let resetStopsUndo = [];
 function incrementStop(n){
   const add = Math.min(n || 1, 10 - resetStops);
   if(add <= 0) return;
-  resetStops += add; resetStopsUndo.push(add); resetAvisoCero = false;
-  saveResetProgress(); renderResetStep();
+  // Si no se puede guardar, la cifra vuelve a la guardada y no se anuncia la nueva
+  if(!cambioReset(()=>{ resetStops += add; })){ renderResetStep(); return; }
+  resetStopsUndo.push(add); resetAvisoCero = false;
+  renderResetStep();
   // Al llegar a 10 desaparecen los contadores: el foco pasa al título del momento completado
   if(resetStops >= 10){ const t = document.getElementById('resetCompletoTitulo'); if(t) t.focus(); announce('Test completado: 10 de 10 paradas.'); }
   else {
@@ -5289,8 +5332,10 @@ function incrementStop(n){
 /* Corrige una pulsación por error; nunca baja de 0. Si el botón desaparece (0), el foco pasa a «+1». */
 function decrementStop(){
   if(resetStops<=0) return;
-  resetStops = Math.max(0, resetStops - (resetStopsUndo.pop() || 1));
-  saveResetProgress(); renderResetStep();
+  const quita = resetStopsUndo[resetStopsUndo.length - 1] || 1;
+  if(!cambioReset(()=>{ resetStops = Math.max(0, resetStops - quita); })){ renderResetStep(); return; }
+  resetStopsUndo.pop();
+  renderResetStep();
   if(resetStops===0){ const b = document.getElementById('incrementStopBtn'); if(b) b.focus(); }
   announce(`${resetStops} de 10 paradas.`);
 }
@@ -5302,8 +5347,8 @@ async function marcarTodasParadas(){
     confirmText:'Sí, las he hecho', cancelText:'Seguir contando'
   });
   if(!ok) return;
-  resetStops = 10; resetStopsUndo = [];
-  resetGoto(6);
+  if(!cambioReset(()=>{ resetStops = 10; resetGoto(6); })){ renderResetStep(); return; }
+  resetStopsUndo = [];
 }
 
 
@@ -5579,7 +5624,7 @@ Object.assign(ACTIONS, {
   resetOtro: el => resetOtro(el),
   setAprendizaje: el => {
     const v = el.dataset.value;
-    resetAprendizaje = v; saveResetProgress(); renderResetStep();
+    cambioReset(()=>{ resetAprendizaje = v; }); renderResetStep();   // si no se guarda, se repinta lo guardado
     const b = document.querySelector(`#resetAprendizajeRow [data-value="${CSS.escape(v)}"]`);
     if(b) b.focus();
   }
