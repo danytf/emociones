@@ -17,6 +17,8 @@ require('fs').mkdirSync(require('path').join(__dirname, 'out'), { recursive: tru
     await p.goto(URL);
     const states = {
       aprender: () => { goto('aprender'); },
+      estados: () => { startEstados(); },
+      estadoFicha: () => { openEstado('fatiga'); },
       bienestar: () => { goto('bienestar'); },
       herramientas: () => { goto('herramientas'); },
       diario: () => { goto('diario'); showFieldErrors([['sepaAccion', 'Indica qué vas a hacer ahora.']]); },

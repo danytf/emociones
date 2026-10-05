@@ -388,6 +388,12 @@ Pantalla completa sobre Gris niebla con título en Ocre tinta y cabecera fija al
 - **Tablet en vertical:** la tarjeta del paso baja junto a la barra (como en las herramientas); el espacio libre queda bajo el progreso.
 - **Cierre:** «Vuelve a calle con esto», con el ajuste elegido y lo que sigue funcionando en bloques Gris niebla; «Mi próximo paso (opcional)» va plegado, con el mismo estilo que «Tres ideas para llevarte», y se abre solo si ya tiene respuesta. La guía PARA, REVISA, PIDE vive en el Kit, no en el cierre: al final no se aprende nada nuevo. En 10/10 ya no se ofrece «Cerrar y seguir luego», y «Ya he hecho las 10» va al final de la fila discreta, lejos de «+3 paradas».
 
+### Estados durante la captación (ponerle nombre y actuar)
+Los 6 estados de Formación (ansiedad anticipatoria, frustración, miedo al rechazo o al juicio, desánimo, impotencia, fatiga mental) tienen **una sola fuente** (`ESTADOS_CAPTACION`): la ficha de Aprender y el acceso rápido se pintan desde ahí, con el texto de Formación sin cambios.
+- **Acceso:** enlace discreto «Ponle nombre a lo que sientes» junto a «Ahora mismo» en el lanzador (y en la columna lateral); no añade una casilla más.
+- **Lista:** «¿Qué te está pasando?», cada estado con su cara de línea, su nombre y su frase corta, y «No lo tengo claro» (lleva a «No sé qué necesito»). Sin emojis y sin lenguaje de diagnóstico: «No es un diagnóstico».
+- **Ficha:** pensamiento habitual (cita), «Qué puede estar pasando», «Qué hacer ahora», la frase útil y «Probar ahora: *herramienta*» (antracita) hacia una herramienta que ya existe y encaja con su «¿Qué hago?»; «Elegir otro» como secundario. El mismo botón cierra cada estado en Aprender.
+
 ### Diario S-E-P-A
 - **Emociones:** seis chips con su cara de línea, una sola parada de tabulador cada uno; las fichas, desde un único enlace discreto «¿Qué es cada emoción?» que abre la lista de las seis.
 - **Historial:** cada registro con «Editar» y «Eliminar» en su propia fila al pie, separados 24 px; fechas recientes como «Hoy, 11:31» y «Ayer, 11:31».

@@ -168,6 +168,24 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m);
   ok((await p.locator('#resetBody').innerText()).includes('Marca una o dos cosas'), 'Separa no usa el verbo del paso siguiente');
   await p.evaluate(() => closeReset());
 
+  // ---- Estados durante la captación: una sola fuente, acceso rápido y paso a la acción ----
+  await p.evaluate(() => goto('herramientas'));
+  await p.locator('.ql-nombre:visible').first().click();
+  ok(await p.evaluate(() => document.querySelectorAll('#toolBody .estado-opcion').length === 6 && !!document.querySelector('#toolBody [onclick="startNoSeQueNecesito()"]')), '«Ponle nombre a lo que sientes»: 6 estados y «No lo tengo claro»');
+  const destinos = await p.evaluate(() => ESTADOS_CAPTACION.map(e => [e.id, e.herramienta]));
+  for (const [id, herramienta] of destinos) {
+    await p.evaluate(id => { startEstados(); openEstado(id); }, id);
+    await p.locator('#toolBody button:has-text("Probar ahora")').click();
+    ok(await p.evaluate(h => (document.getElementById('toolTitle').textContent || '').startsWith(h.slice(0, 10)), herramienta), `estado «${id}» → abre «${herramienta}»`);
+    await p.evaluate(() => { if (Overlays.top() === 'tool') closeTool(); if (Overlays.top() === 'reset') closeReset(); });
+  }
+  await p.evaluate(() => goto('aprender'));
+  ok(await p.evaluate(() => document.querySelectorAll('#estadosCaptacion details').length === 6 && document.querySelectorAll('#estadosVistazo li').length === 6 && document.querySelectorAll('#estadosCaptacion .estado-cta').length === 6), 'Aprender pinta los 6 estados y su resumen desde la misma fuente, con su botón de acción');
+  await p.evaluate(() => { const d = document.querySelector('#estadosCaptacion details:nth-child(6)'); let x = d; while (x) { x.open = true; x = x.parentElement.closest('details'); } });
+  await p.locator('#estadosCaptacion details:nth-child(6) .estado-cta').click();
+  ok(await p.evaluate(() => Overlays.top() === 'tool' && document.getElementById('toolTitle').textContent === 'Suspiro fisiológico'), 'el botón de Aprender (Fatiga mental) abre el Suspiro');
+  await p.evaluate(() => closeTool());
+
   ok(errs.length === 0, 'sin errores de JS ' + errs.join(' | '));
   await b.close();
 })();

@@ -769,6 +769,21 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .checkin-card.con-desc .ci-desc{display:block;margin-top:2px;font-size:var(--fs-sm);color:var(--ds-ink-2);}
 .ds .checkin-bloque{margin:var(--sp-4) 0 var(--sp-2);font-weight:700;color:var(--ds-ink);}
 .ds .checkin-desc-btn{margin-top:var(--sp-1);}
+/* Estados durante la captación: acceso desde el lanzador, lista y ficha rápida */
+.ql-nombre{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;background:none;border:0;font:inherit;font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);cursor:pointer;text-decoration:underline;text-decoration-color:var(--ds-line-strong);text-underline-offset:4px;}
+@media (hover:hover){ .ql-nombre:hover{color:var(--ds-ink);} }
+.quick-launcher.ql-compact .ql-ahora-head{display:none;}
+.ql-ahora-head{margin:var(--sp-3) 0 var(--sp-1);}
+.ds .estados-lista{display:grid;grid-template-columns:repeat(auto-fill, minmax(min(260px, 100%), 1fr));gap:var(--sp-2);margin-top:var(--sp-3);}
+.ds .estado-opcion{display:flex;align-items:center;gap:var(--sp-3);min-height:60px;padding:var(--sp-2) var(--sp-3);text-align:left;background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-md);color:var(--ds-ink);font:inherit;cursor:pointer;}
+@media (hover:hover){ .ds .estado-opcion:hover{border-color:var(--ds-line-strong);} }
+.ds .estado-opcion .estado-ic{width:24px;height:24px;flex-shrink:0;color:var(--ds-ink-2);}
+.ds .estado-opcion span{display:flex;flex-direction:column;gap:2px;}
+.ds .estado-opcion b{font-size:var(--fs-md);font-weight:700;}
+.ds .estado-opcion small{font-size:var(--fs-sm);color:var(--ds-ink-2);}
+.ds .estado-ficha h4{margin:var(--sp-4) 0 var(--sp-1);font-family:var(--font-brand);font-size:var(--fs-md);color:var(--ds-ink);}
+.ds .estado-frase{margin:var(--sp-3) 0 0;font-style:italic;color:var(--ds-ink);}
+.ds .estado-cta{width:auto;margin-top:var(--sp-2);}
 /* Herramientas de calle: cada pregunta con sus opciones pulsables */
 .ds .tool-campo .q-label{margin:var(--sp-4) 0 var(--sp-2);font-size:var(--fs-md);font-weight:650;color:var(--ds-ink);line-height:1.4;}
 .ds .tool-campo .q-hint{font-weight:500;color:var(--ds-ink-3);}
@@ -1151,6 +1166,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
   .quick-launcher.ql-compact .ql-compact-bar{display:none;}
   .quick-launcher.ql-compact .ql-head{display:flex;}
   .quick-launcher.ql-compact .ql-sub{display:block;}
+  .quick-launcher.ql-compact .ql-ahora-head{display:flex;flex-direction:column;align-items:flex-start;gap:0;}
   .quick-launcher.ql-compact .ql-row, .quick-launcher.ql-compact .ql-row.ql-momentos{display:grid;grid-template-columns:minmax(0, 1fr);gap:var(--sp-2);}
   .quick-launcher.ql-compact .ql-row.ql-momentos{grid-template-columns:repeat(3, minmax(0, 1fr));}
   .quick-launcher.ql-compact .ql-momentos .ql-btn{flex-direction:column;justify-content:center;text-align:center;gap:4px;padding:8px 4px;font-size:var(--fs-xs);min-height:64px;}
@@ -1278,7 +1294,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       <button type="button" class="ql-btn" onclick="startVolverCalle()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-return"/></svg></span><span class="ql-lb">Volver a calle</span></button>
       <button type="button" class="ql-btn" onclick="startCierreTurno()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg></span><span class="ql-lb">Cierre de turno</span></button>
     </div>
-    <p class="ql-sub" id="qlAhoraLbl">Ahora mismo</p>
+    <div class="ql-sub-head ql-ahora-head"><p class="ql-sub" id="qlAhoraLbl">Ahora mismo</p><button type="button" class="ql-nombre" onclick="startEstados()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-emo-tristeza"/></svg> Ponle nombre a lo que sientes</button></div>
     <div class="ql-row" id="qlRow" role="group" aria-labelledby="qlAhoraLbl">
       <span id="qlKitSlot"></span>
       <button type="button" class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset(true)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg></span><span class="ql-lb">Estoy en una mala racha</span></button>
@@ -1469,82 +1485,10 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
           <p>Además de estas 6 emociones, en captación pueden aparecer <b>estados y experiencias muy concretos</b> relacionados con el rechazo, la presión, la incertidumbre y el desgaste de la jornada.</p>
           <p>Distinguirlos ayuda a <b>poner nombre a lo que te está pasando y elegir mejor cómo responder</b>.</p>
 
-          <details class="help-item">
-            <summary><svg class="ic" aria-hidden="true"><use href="#i-emo-miedo"/></svg> Ansiedad anticipatoria</summary>
-            <div class="help-body">
-              <p class="quote">«¿Y si hoy no sale bien?»</p>
-              <p>Aparece cuando anticipamos <b>un resultado negativo que todavía no ha ocurrido</b>: no alcanzar el objetivo, encadenar rechazos o pensar cómo terminará el día.</p>
-              <p><b>Clave:</b> preocupa <b>lo que podría pasar</b>.</p>
-              <p><b>¿Qué hago?</b><br>Deja el resultado final en segundo plano y céntrate en <b>la siguiente parada</b>.</p>
-              <p style="font-style:italic;">«No sé cómo acabará el día. Solo necesito hacer bien la próxima conversación.»</p>
-            </div>
-          </details>
-
-          <details class="help-item">
-            <summary><svg class="ic" aria-hidden="true"><use href="#i-emo-ira"/></svg> Frustración</summary>
-            <div class="help-body">
-              <p class="quote">«Estoy esforzándome y no consigo el resultado.»</p>
-              <p>Surge cuando <b>un objetivo se bloquea a pesar del esfuerzo</b>: muchas conversaciones y pocas firmas, o una colaboración que finalmente se cae.</p>
-              <p><b>Clave:</b> quiero conseguir algo y <b>algo se interpone</b>.</p>
-              <p><b>¿Qué hago?</b><br>Haz una pausa y busca <b>un ajuste concreto</b> para el siguiente intento.</p>
-              <p style="font-style:italic;">«Esto no ha salido como quería. ¿Qué puedo hacer diferente en la próxima?»</p>
-            </div>
-          </details>
-
-          <details class="help-item">
-            <summary><svg class="ic" aria-hidden="true"><use href="#i-emo-miedo"/></svg> Miedo al rechazo o al juicio</summary>
-            <div class="help-body">
-              <p class="quote">«¿Qué pensarán de mí?»</p>
-              <p>Aparece cuando nos preocupa <b>que nos rechacen, quedar mal o ser valorados negativamente</b>. Puede hacer que hagamos menos paradas, dudemos más o evitemos determinadas situaciones.</p>
-              <p><b>Clave:</b> preocupa <b>cómo me van a recibir o valorar</b>.</p>
-              <p><b>¿Qué hago?</b><br>Deja de intentar controlar la reacción de la otra persona y vuelve a tu tarea: <b>acercarte, comunicar y escuchar con respeto</b>.</p>
-              <p style="font-style:italic;">«No controlo su reacción. Sí controlo cómo hago mi trabajo. Que no quiera colaborar es su decisión en esa conversación, no una medida de lo que valgo.»</p>
-            </div>
-          </details>
-
-          <details class="help-item">
-            <summary><svg class="ic" aria-hidden="true"><use href="#i-emo-tristeza"/></svg> Desánimo</summary>
-            <div class="help-body">
-              <p class="quote">«No tengo ganas de seguir.»</p>
-              <p>Puede aparecer después de varios resultados negativos y afectar a nuestra <b>energía, motivación o confianza</b>.</p>
-              <p><b>Clave:</b> bajan <b>las ganas de continuar</b>.</p>
-              <p><b>¿Qué hago?</b><br>Reduce el horizonte: no pienses en toda la jornada. Céntrate en <b>las próximas paradas</b>.</p>
-              <p style="font-style:italic;">«No necesito sentirme motivado ahora. Solo necesito dar el siguiente paso.»</p>
-            </div>
-          </details>
-
-          <details class="help-item">
-            <summary><svg class="ic" aria-hidden="true"><use href="#i-emo-tristeza"/></svg> Impotencia</summary>
-            <div class="help-body">
-              <p class="quote">«Haga lo que haga, no depende de mí.»</p>
-              <p>Aparece cuando sentimos que tenemos <b>poco control sobre la situación</b>: una zona complicada, pocas oportunidades de parada, permisos difíciles o factores externos.</p>
-              <p><b>Clave:</b> siento que <b>no puedo cambiar lo que está pasando</b>.</p>
-              <p><b>¿Qué hago?</b><br>Separa lo que depende de ti de lo que no y vuelve a <b>lo que sí puedes hacer: tu preparación, tu técnica, tu comunicación, tu escucha y tu capacidad de adaptación</b>.</p>
-              <p style="font-style:italic;">«No controlo el entorno. Sí puedo decidir cómo respondo.»</p>
-            </div>
-          </details>
-
-          <details class="help-item">
-            <summary><svg class="ic" aria-hidden="true"><use href="#i-gauge"/></svg> Fatiga mental</summary>
-            <div class="help-body">
-              <p class="quote">«Estoy mentalmente saturado.»</p>
-              <p>Aparece cuando se acumulan <b>esfuerzo, rechazo, tensión y atención constante</b>. Puede hacer que baje el ritmo, cueste concentrarse o empecemos a funcionar en automático.</p>
-              <p><b>Clave:</b> no es <b>«no quiero»</b>, sino <b>«me falta energía mental»</b>.</p>
-              <p><b>¿Qué hago?</b><br>Haz una <b>pausa real</b>: aléjate unos minutos, hidrátate, respira y desconecta antes de volver.</p>
-              <p style="font-style:italic;">«No necesito apretar más. Primero recupero; después continúo.»</p>
-              <p><b>Si esta sensación se repite casi a diario o no mejora al descansar</b>, no es solo un mal día: háblalo con tu responsable o con alguien de confianza, y valora consultarlo con un profesional.</p>
-            </div>
-          </details>
+          <div id="estadosCaptacion"></div>
 
           <p><b>Los 6 estados, de un vistazo</b></p>
-          <ul>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-emo-miedo"/></svg> <b>Ansiedad anticipatoria</b> → «¿Qué podría pasar?»</li>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-emo-ira"/></svg> <b>Frustración</b> → «No consigo lo que quiero.»</li>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-emo-miedo"/></svg> <b>Miedo al rechazo o al juicio</b> → «¿Cómo me van a recibir?»</li>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-emo-tristeza"/></svg> <b>Desánimo</b> → «No tengo ganas de seguir.»</li>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-emo-tristeza"/></svg> <b>Impotencia</b> → «No depende de mí.»</li>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-gauge"/></svg> <b>Fatiga mental</b> → «Me falta energía mental.»</li>
-          </ul>
+          <ul id="estadosVistazo"></ul>
 
           <p class="quote"><b>Ponle nombre a lo que te pasa. Después, decide qué hacer con ello.</b></p>
         </div>
@@ -2850,6 +2794,118 @@ function emoIcon(id){
   const e = EMOTIONS.find(x=>x.id===id);
   return e ? `<svg class="ic emo-ic" style="--emo:${e.color};" aria-hidden="true"><use href="#i-emo-${id}"/></svg>` : '';
 }
+/* ============ ESTADOS DURANTE LA CAPTACIÓN ============
+   Una sola fuente para los 6 estados: la ficha de Aprender y el acceso rápido «Ponle nombre a lo que sientes»
+   se pintan desde aquí. Texto de Formación, sin cambios; cada estado lleva a la herramienta que encaja
+   con su «¿Qué hago?». */
+const ESTADOS_CAPTACION = [
+  { id:"ansiedad", nombre:"Ansiedad anticipatoria", icono:"emo-miedo", resumen:"«¿Qué podría pasar?»",
+    pensamiento:"«¿Y si hoy no sale bien?»",
+    surge:"Aparece cuando anticipamos <b>un resultado negativo que todavía no ha ocurrido</b>: no alcanzar el objetivo, encadenar rechazos o pensar cómo terminará el día.",
+    clave:"<b>Clave:</b> preocupa <b>lo que podría pasar</b>.",
+    queHago:"Deja el resultado final en segundo plano y céntrate en <b>la siguiente parada</b>.",
+    frase:"«No sé cómo acabará el día. Solo necesito hacer bien la próxima conversación.»",
+    aviso:"",
+    herramienta:"Resultado vs. Proceso", abrir:()=>startResultadoProceso() },
+  { id:"frustracion", nombre:"Frustración", icono:"emo-ira", resumen:"«No consigo lo que quiero.»",
+    pensamiento:"«Estoy esforzándome y no consigo el resultado.»",
+    surge:"Surge cuando <b>un objetivo se bloquea a pesar del esfuerzo</b>: muchas conversaciones y pocas firmas, o una colaboración que finalmente se cae.",
+    clave:"<b>Clave:</b> quiero conseguir algo y <b>algo se interpone</b>.",
+    queHago:"Haz una pausa y busca <b>un ajuste concreto</b> para el siguiente intento.",
+    frase:"«Esto no ha salido como quería. ¿Qué puedo hacer diferente en la próxima?»",
+    aviso:"",
+    herramienta:"Después de una mala interacción", abrir:()=>startBadApproach() },
+  { id:"miedo-rechazo", nombre:"Miedo al rechazo o al juicio", icono:"emo-miedo", resumen:"«¿Cómo me van a recibir?»",
+    pensamiento:"«¿Qué pensarán de mí?»",
+    surge:"Aparece cuando nos preocupa <b>que nos rechacen, quedar mal o ser valorados negativamente</b>. Puede hacer que hagamos menos paradas, dudemos más o evitemos determinadas situaciones.",
+    clave:"<b>Clave:</b> preocupa <b>cómo me van a recibir o valorar</b>.",
+    queHago:"Deja de intentar controlar la reacción de la otra persona y vuelve a tu tarea: <b>acercarte, comunicar y escuchar con respeto</b>.",
+    frase:"«No controlo su reacción. Sí controlo cómo hago mi trabajo. Que no quiera colaborar es su decisión en esa conversación, no una medida de lo que valgo.»",
+    aviso:"",
+    herramienta:"El momento de decidir", abrir:()=>startMomentoDecidir() },
+  { id:"desanimo", nombre:"Desánimo", icono:"emo-tristeza", resumen:"«No tengo ganas de seguir.»",
+    pensamiento:"«No tengo ganas de seguir.»",
+    surge:"Puede aparecer después de varios resultados negativos y afectar a nuestra <b>energía, motivación o confianza</b>.",
+    clave:"<b>Clave:</b> bajan <b>las ganas de continuar</b>.",
+    queHago:"Reduce el horizonte: no pienses en toda la jornada. Céntrate en <b>las próximas paradas</b>.",
+    frase:"«No necesito sentirme motivado ahora. Solo necesito dar el siguiente paso.»",
+    aviso:"",
+    herramienta:"Resultado vs. Proceso", abrir:()=>startResultadoProceso() },
+  { id:"impotencia", nombre:"Impotencia", icono:"emo-tristeza", resumen:"«No depende de mí.»",
+    pensamiento:"«Haga lo que haga, no depende de mí.»",
+    surge:"Aparece cuando sentimos que tenemos <b>poco control sobre la situación</b>: una zona complicada, pocas oportunidades de parada, permisos difíciles o factores externos.",
+    clave:"<b>Clave:</b> siento que <b>no puedo cambiar lo que está pasando</b>.",
+    queHago:"Separa lo que depende de ti de lo que no y vuelve a <b>lo que sí puedes hacer: tu preparación, tu técnica, tu comunicación, tu escucha y tu capacidad de adaptación</b>.",
+    frase:"«No controlo el entorno. Sí puedo decidir cómo respondo.»",
+    aviso:"",
+    herramienta:"Resultado vs. Proceso", abrir:()=>startResultadoProceso() },
+  { id:"fatiga", nombre:"Fatiga mental", icono:"gauge", resumen:"«Me falta energía mental.»",
+    pensamiento:"«Estoy mentalmente saturado.»",
+    surge:"Aparece cuando se acumulan <b>esfuerzo, rechazo, tensión y atención constante</b>. Puede hacer que baje el ritmo, cueste concentrarse o empecemos a funcionar en automático.",
+    clave:"<b>Clave:</b> no es <b>«no quiero»</b>, sino <b>«me falta energía mental»</b>.",
+    queHago:"Haz una <b>pausa real</b>: aléjate unos minutos, hidrátate, respira y desconecta antes de volver.",
+    frase:"«No necesito apretar más. Primero recupero; después continúo.»",
+    aviso:"<b>Si esta sensación se repite casi a diario o no mejora al descansar</b>, no es solo un mal día: háblalo con tu responsable o con alguien de confianza, y valora consultarlo con un profesional.",
+    herramienta:"Suspiro fisiológico", abrir:()=>startBreath(60) }
+];
+function estadoIcono(e, cls){ return `<svg class="ic${cls ? ' ' + cls : ''}" aria-hidden="true"><use href="#i-${e.icono}"/></svg>`; }
+function estadoAccionHtml(e, clase){
+  return `<button type="button" class="btn ${clase}" data-action="abrirEstadoHerramienta" data-value="${escapeHtml(e.id)}">Probar ahora: ${escapeHtml(e.herramienta)}</button>`;
+}
+function renderEstadosCaptacion(){
+  const cont = document.getElementById('estadosCaptacion'), lista = document.getElementById('estadosVistazo');
+  if(cont) cont.innerHTML = ESTADOS_CAPTACION.map(e=>`
+          <details class="help-item">
+            <summary>${estadoIcono(e)} ${escapeHtml(e.nombre)}</summary>
+            <div class="help-body">
+              <p class="quote">${e.pensamiento}</p>
+              <p>${e.surge}</p>
+              <p>${e.clave}</p>
+              <p><b>¿Qué hago?</b><br>${e.queHago}</p>
+              <p style="font-style:italic;">${e.frase}</p>
+              ${e.aviso ? `<p>${e.aviso}</p>` : ''}
+              ${estadoAccionHtml(e, 'btn-outline btn-sm estado-cta')}
+            </div>
+          </details>`).join('');
+  if(lista) lista.innerHTML = ESTADOS_CAPTACION.map(e=>`<li>${estadoIcono(e)} <b>${escapeHtml(e.nombre)}</b> → ${e.resumen}</li>`).join('');
+}
+renderEstadosCaptacion();
+/* Acceso rápido: ponerle nombre a lo que pasa y pasar a la acción en pocos toques */
+function startEstados(){
+  openTool('¿Qué te está pasando?', `
+    <div class="card" style="text-align:left;">
+      <p class="desc">Elige lo que más se parece a lo que notas. <b>No es un diagnóstico</b>: sirve para encontrar qué hacer ahora.</p>
+      <div class="estados-lista">${ESTADOS_CAPTACION.map(e=>`<button type="button" class="estado-opcion" data-action="abrirEstado" data-value="${escapeHtml(e.id)}">${estadoIcono(e, 'estado-ic')}<span><b>${escapeHtml(e.nombre)}</b><small>${e.resumen}</small></span></button>`).join('')}</div>
+      <button type="button" class="btn-quiet" style="margin-top:var(--sp-2);" onclick="startNoSeQueNecesito()">No lo tengo claro</button>
+    </div>
+  `);
+}
+function openEstado(id){
+  const e = ESTADOS_CAPTACION.find(x=>x.id===id);
+  if(!e) return;
+  openTool(e.nombre, `
+    <div class="card estado-ficha" style="text-align:left;">
+      <p class="quote">${e.pensamiento}</p>
+      <h4>Qué puede estar pasando</h4>
+      <p class="desc">${e.surge}</p>
+      <h4>Qué hacer ahora</h4>
+      <p class="desc">${e.queHago}</p>
+      <p class="estado-frase">${e.frase}</p>
+      ${e.aviso ? `<p class="desc">${e.aviso}</p>` : ''}
+      <div class="btn-row" style="margin-top:var(--sp-3);">
+        <button type="button" class="btn btn-outline" onclick="startEstados()">Elegir otro</button>
+        ${estadoAccionHtml(e, 'btn-navy')}
+      </div>
+    </div>
+  `);
+}
+function abrirEstadoHerramienta(id){
+  const e = ESTADOS_CAPTACION.find(x=>x.id===id);
+  if(!e) return;
+  if(Overlays.top() === 'tool') closeTool();
+  e.abrir();
+}
+
 function showEmotion(id){
   const e = EMOTIONS.find(x=>x.id===id);
   if(!e) return;
@@ -5396,6 +5452,8 @@ Object.assign(ACTIONS, {
   toastClose: () => hideToast(),
   resetChip: el => resetChip(el),
   toolChip: el => toolChip(el),
+  abrirEstado: el => openEstado(el.dataset.value),
+  abrirEstadoHerramienta: el => abrirEstadoHerramienta(el.dataset.value),
   toolOtro: el => toolOtro(el),
   resetOtro: el => resetOtro(el),
   setAprendizaje: el => {
