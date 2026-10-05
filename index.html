@@ -23,13 +23,13 @@
   --alert-coral:#B91C1C;
   --error-text:#B91C1C;
   --ok-text:#047857;
-  --danger:#B91C1C;
+  --danger:#B91C1C; --danger-hover:#991B1B;
   --asco-purple:#6D28D9;
   --bg-main:#F2F4F4;
   --card-bg:#FFFFFF;
   --text-primary:#1C1F21;
   --text-secondary:#4A5250;
-  --border-color:#D5DADA;
+  --border-color:var(--ds-line-strong);   /* borde heredado: alias del token del sistema */
   --shadow:0 2px 8px rgba(28,31,33,0.07);
   --shadow-lvl2:0 6px 20px rgba(28,31,33,0.12);
   --radius:16px;
@@ -43,7 +43,7 @@
   --card-bg:#292C2F;
   --text-primary:#F2F4F4;
   --text-secondary:#B4BCB9;
-  --border-color:#3C4145;
+  --border-color:var(--ds-line);
   --shadow:0 2px 10px rgba(0,0,0,0.4);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -87,7 +87,7 @@ header{
 .icon-btn{
   background:transparent;
   border:1px solid var(--ds-line);color:var(--ds-ink-2);border-radius:12px;
-  width:44px;height:44px;font-size:18px;
+  width:44px;height:44px;
   display:flex;align-items:center;justify-content:center;
 }
 
@@ -106,7 +106,7 @@ header{
 .tabs-wrap.at-end .tabs-fade{display:none;}
 .header-tabs button{
   flex:0 0 auto;background:transparent;border:none;
-  color:var(--ds-ink-2);font-weight:650;font-size:13px;
+  color:var(--ds-ink-2);font-weight:650;font-size:var(--fs-sm);
   padding:9px 14px;border-radius:10px;white-space:nowrap;min-height:44px;
   display:flex;align-items:center;gap:6px;
 }
@@ -154,7 +154,7 @@ main{
 .ql-row{display:grid;grid-template-columns:repeat(auto-fill, minmax(125px, 1fr));gap:8px;}
 .ql-btn{
   display:flex;align-items:center;gap:6px;text-align:left;
-  padding:9px 10px;font-size:13.5px;
+  padding:9px 10px;font-size:var(--fs-sm);
   line-height:1.2;min-height:48px;
 }
 .ql-btn .ql-em{font-size:16px;}
@@ -168,8 +168,8 @@ main{
 .ql-head .ql-title{margin-bottom:0;}
 .ql-toggle{
   display:inline-flex;align-items:center;gap:6px;flex-shrink:0;min-height:44px;padding:0 14px;
-  border-radius:22px;border:1px solid var(--ds-line-strong);background:var(--ds-surface);
-  color:var(--ds-ink-2);font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:border-color .15s ease, background-color .15s ease;
+  border-radius:var(--ds-radius-md);border:1px solid var(--ds-line-strong);background:var(--ds-surface);
+  color:var(--ds-ink-2);font:inherit;font-size:var(--fs-sm);font-weight:700;cursor:pointer;transition:border-color .15s ease, background-color .15s ease;
 }
 .ql-toggle[aria-expanded="true"]{border-color:var(--ds-ink-3);color:var(--ds-ink);}
 @media (hover:hover){ .ql-toggle:hover{border-color:var(--ds-ink-3);} }
@@ -181,7 +181,7 @@ main{
   .ql-row{grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px;}
   .ql-head{margin-bottom:6px;}
   .ql-toggle{min-height:36px;padding:0 12px;}  /* ≥24 px (WCAG AA); en tablet se mantienen 44 px */
-  .ql-btn{padding:7px 10px;font-size:13px;}
+  .ql-btn{padding:7px 10px;font-size:var(--fs-sm);}
   .ql-btn .ql-em{font-size:15px;}
 }
 .view.active{
@@ -216,10 +216,10 @@ main{
 .tool-group .tool-cards .card .desc:last-of-type{flex:1;}
 .kit-flow{margin-top:6px;}
 .kit-flow-step{padding:8px 12px;}
-.kit-flow-step p{margin:2px 0 0;font-size:14.5px;font-weight:700;color:var(--text-primary);}
+.kit-flow-step p{margin:2px 0 0;font-size:var(--fs-md);font-weight:700;color:var(--text-primary);}
 .kit-flow-step p.kit-flow-empty{font-weight:400;font-style:italic;color:var(--text-secondary);}
 .kit-flow-label{font-size:11px;font-weight:800;letter-spacing:.4px;}
-.kit-flow-arrow{text-align:center;font-size:14px;color:var(--text-secondary);line-height:1.4;}
+.kit-flow-arrow{text-align:center;color:var(--text-secondary);line-height:1.4;}
 .tool-group.tracking .tool-cards{grid-template-columns:repeat(auto-fit, minmax(min(320px,100%),480px));}
 #sepaHistorial{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:10px;align-content:start;}
 @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
@@ -248,13 +248,13 @@ main{
   margin-bottom:14px;
   box-shadow:var(--shadow);
 }
-.card h3{font-size:17px;font-weight:800;}
+.card h3{font-size:var(--fs-lg);font-weight:800;}
 .tool-meta{font-size:12px;color:var(--text-secondary);font-weight:700;margin:-6px 0 10px;text-transform:uppercase;letter-spacing:.3px;}
-.card .desc{color:var(--text-secondary);font-size:14px;margin-bottom:12px;line-height:1.6;}
+.card .desc{color:var(--text-secondary);font-size:var(--fs-sm);margin-bottom:12px;line-height:1.6;}
 .card .desc:last-child{margin-bottom:0;}
 .badge{
   display:inline-block;font-size:11px;font-weight:700;
-  padding:3px 9px;border-radius:99px;letter-spacing:.4px;
+  padding:3px 9px;border-radius:999px;letter-spacing:.4px;
   text-transform:uppercase;margin-bottom:8px;
 }
 
@@ -283,7 +283,7 @@ main{
 .btn-green{background:var(--success-green);color:#fff;}
 .btn-navy{background:var(--wesser-navy);color:#fff;}
 .btn-outline{background:transparent;color:var(--text-primary);border:1.5px solid var(--border-color);}
-.btn-sm{padding:10px 14px;min-height:44px;font-size:14px;width:auto;}
+.btn-sm{padding:10px 14px;min-height:44px;font-size:var(--fs-sm);width:auto;}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;}
 .btn-row .btn{flex:1 1 160px;}
 .btn[disabled]{opacity:.5;}
@@ -294,14 +294,14 @@ select,input[type=text],input[type=number],textarea{
   color:var(--text-primary);font-size:16px;margin-bottom:10px;font-family:inherit;
 }
 textarea{min-height:70px;resize:vertical;}
-label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
+label{font-size:var(--fs-sm);font-weight:700;color:var(--text-secondary);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
 
 .chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
 /* Chips: <button type="button"> reales; los que seleccionan llevan aria-pressed */
 .chip{
   display:inline-flex;align-items:center;gap:4px;min-height:44px;
-  padding:9px 14px;border-radius:22px;border:1.5px solid var(--border-color);
-  background:var(--card-bg);color:var(--text-primary);font:inherit;font-size:13px;font-weight:600;
+  padding:9px 14px;border-radius:999px;border:1.5px solid var(--border-color);
+  background:var(--card-bg);color:var(--text-primary);font:inherit;font-size:var(--fs-sm);font-weight:600;
   line-height:1.3;text-align:left;cursor:pointer;
 }
 /* Chip con título y descripción (señal principal del Reset): texto en bloque, no en columnas */
@@ -340,37 +340,37 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 }
 .overlay-body{padding:24px 28px;max-width:900px;margin:0 auto;width:100%;flex:1;}
 .overlay-body.center-short{display:flex;flex-direction:column;justify-content:center;}
-.close-x{background:transparent;border:1px solid var(--ds-line);color:var(--ds-ink-2);width:44px;height:44px;border-radius:10px;font-size:18px;flex-shrink:0;}
+.close-x{background:transparent;border:1px solid var(--ds-line);color:var(--ds-ink-2);width:44px;height:44px;border-radius:10px;font-size:var(--fs-lg);flex-shrink:0;}
 @media (hover:hover){ .close-x:hover{background:var(--ds-canvas);} }
 .close-x.labeled{width:auto;height:44px;padding:0 12px;display:flex;align-items:center;gap:6px;}
-.close-x.labeled .lbl{font-size:12.5px;font-weight:700;white-space:nowrap;}
+.close-x.labeled .lbl{font-size:var(--fs-xs);font-weight:700;white-space:nowrap;}
 .step-dots{display:flex;gap:6px;justify-content:center;margin:14px 0 4px;}
-.step-dots span{width:8px;height:8px;border-radius:99px;background:var(--border-color);}
+.step-dots span{width:8px;height:8px;border-radius:999px;background:var(--border-color);}
 .step-dots span.on{background:var(--wesser-red);}
 
 .breath-circle{
   width:180px;height:180px;border-radius:50%;
   margin:24px auto;display:flex;align-items:center;justify-content:center;
-  font-size:18px;text-align:center;
+  font-size:var(--fs-lg);text-align:center;
   transition:transform 1.6s ease-in-out;
 }
 .breath-circle.grow{transform:scale(1.3);}
 .timer-big{font-size:44px;font-weight:800;text-align:center;margin:8px 0;}
 /* Cada señal del check-in es un <label> con su casilla nativa: se anula el estilo global de label */
 .check-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;margin-bottom:10px;cursor:pointer;
-  font-size:14px;font-weight:400;color:var(--text-primary);text-transform:none;letter-spacing:normal;}
+  font-size:var(--fs-sm);font-weight:400;color:var(--text-primary);text-transform:none;letter-spacing:normal;}
 .check-item input{width:24px;height:24px;margin:0;flex-shrink:0;}
 
 /* HISTORY */
 .history-item .meta{font-size:12px;color:var(--text-secondary);margin-bottom:4px;}
-.history-item .del, .help-body .del{float:right;background:none;border:none;color:var(--error-text);font-size:13px;font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px -6px 0 0;}
-.history-item .edit, .help-body .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:13px;font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px 4px 0 0;}
-:root[data-theme="dark"] .history-item .edit, :root[data-theme="dark"] .help-body .edit{color:#cbd5e1;}
+.history-item .del, .help-body .del{float:right;background:none;border:none;color:var(--error-text);font-size:var(--fs-sm);font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px -6px 0 0;}
+.history-item .edit, .help-body .edit{float:right;background:none;border:none;color:var(--wesser-navy);font-size:var(--fs-sm);font-weight:700;min-height:44px;min-width:44px;padding:0 8px;margin:-10px 4px 0 0;}
+:root[data-theme="dark"] .history-item .edit, :root[data-theme="dark"] .help-body .edit{color:var(--ds-ink-2);}
 
 /* WHEEL */
 .wheel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:12px;}
 .wheel-btn{
-  border-radius:16px;padding:20px 10px;font-size:15px;
+  border-radius:var(--ds-radius-md);padding:20px 10px;font-size:var(--fs-md);
   display:flex;flex-direction:column;align-items:center;gap:6px;min-height:96px;justify-content:center;
 }
 .wheel-btn .em{font-size:26px;}
@@ -385,7 +385,7 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
   padding:24px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lvl2);
 }
 /* Mensajes en línea de formularios y de «Mis datos» */
-.field-error, .field-ok{font-size:13.5px;font-weight:700;margin:-4px 0 12px;line-height:1.45;}
+.field-error, .field-ok{font-size:var(--fs-sm);font-weight:700;margin:-4px 0 12px;line-height:1.45;}
 .field-error{color:var(--error-text);}
 /* Icono de estado (de línea, en el color del texto) delante de cada mensaje con contenido */
 .field-error:not(:empty)::before, .field-ok:not(:empty)::before{content:'';display:inline-block;width:1.15em;height:1.15em;margin-right:6px;vertical-align:-.2em;
@@ -398,11 +398,11 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
 /* Confirmación accesible (alertdialog), por encima de cualquier otro overlay */
 .confirm-back{z-index:300;align-items:center;padding:16px;}
 .confirm-box{
-  background:var(--card-bg);color:var(--text-primary);width:100%;max-width:440px;border-radius:18px;
+  background:var(--card-bg);color:var(--text-primary);width:100%;max-width:440px;border-radius:var(--ds-radius-lg);
   padding:22px;box-shadow:var(--shadow-lvl2);
 }
 .confirm-box:focus{outline:none;}
-.confirm-box h2{font-size:19px;margin:0 0 8px;}
+.confirm-box h2{font-size:var(--fs-xl);margin:0 0 8px;}
 .confirm-box .desc{margin:0 0 18px;}
 .btn-danger{background:var(--danger);color:#fff;}
 /* Aviso breve no modal (p. ej. error al guardar) */
@@ -410,16 +410,16 @@ label{font-size:13px;font-weight:700;color:var(--text-secondary);display:block;m
   position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
   z-index:400;width:min(560px, calc(100% - 32px));display:none;align-items:flex-start;gap:10px;
   background:var(--wesser-navy);color:#fff;border-radius:14px;padding:12px 12px 12px 16px;box-shadow:var(--shadow-lvl2);
-  font-size:14px;font-weight:600;line-height:1.45;
+  font-size:var(--fs-sm);font-weight:600;line-height:1.45;
 }
 .toast.show{display:flex;}
 .toast.error{background:var(--danger);}
 .toast button{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:10px;min-width:44px;min-height:44px;font-size:16px;flex-shrink:0;cursor:pointer;}
-.modal-sheet .handle{width:40px;height:4px;background:var(--border-color);border-radius:99px;margin:0 auto 14px;}
+.modal-sheet .handle{width:40px;height:4px;background:var(--border-color);border-radius:999px;margin:0 auto 14px;}
 
 .slider-wrap{margin-bottom:12px;}
 input[type=range]{width:100%;accent-color:var(--wesser-red);}
-.range-val{text-align:center;font-weight:800;font-size:20px;color:var(--wesser-red);margin-top:6px;}
+.range-val{text-align:center;font-weight:800;font-size:var(--fs-xl);color:var(--ds-ink);margin-top:6px;}
 .range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:2px;}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
@@ -427,28 +427,28 @@ input[type=range]{width:100%;accent-color:var(--wesser-red);}
 .compare-row{display:flex;gap:10px;margin-bottom:10px;}
 .compare-col{flex:1;background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px 12px;}
 .compare-col b{font-size:12px;text-transform:uppercase;letter-spacing:.3px;color:var(--brand-ink);}
-.compare-col p{font-size:13.5px;margin:4px 0 0;color:var(--text-secondary);}
+.compare-col p{font-size:var(--fs-sm);margin:4px 0 0;color:var(--text-secondary);}
 
 
 .circle-control{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
 .circle-control .cc-col{flex:1;min-width:96px;background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px;}
 .circle-control .cc-col b{font-size:11px;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:6px;color:var(--wesser-red);}
-.circle-control .cc-col ul{margin:0;padding-left:16px;font-size:12.5px;color:var(--text-secondary);}
+.circle-control .cc-col ul{margin:0;padding-left:16px;font-size:var(--fs-xs);color:var(--text-secondary);}
 .circle-control .cc-col li{margin-bottom:3px;}
 
 .mini-card{background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
-.mini-card b{font-size:13px;color:var(--wesser-red);}
-.mini-card p{font-size:13px;margin:4px 0 0;color:var(--text-secondary);}
+.mini-card b{font-size:var(--fs-sm);color:var(--wesser-red);}
+.mini-card p{font-size:var(--fs-sm);margin:4px 0 0;color:var(--text-secondary);}
 /* Modo oscuro: el rojo, el ámbar oscuro y el azul marino usados como COLOR DE TEXTO no llegan
    a 4,5:1 sobre el fondo oscuro; se sustituyen por tonos claros equivalentes. */
 /* Frases destacadas de herramientas y confirmaciones «hecho» */
-.quote-strong{font-size:19px;font-weight:800;color:var(--wesser-navy);}
+.quote-strong{font-size:var(--fs-xl);font-weight:800;color:var(--wesser-navy);}
 :root[data-theme="dark"] .quote-strong{color:var(--text-primary);}
 .text-ok{color:var(--ok-text);}
 
 .patron-block{margin-bottom:16px;}
 .patron-block:last-child{margin-bottom:0;}
-.patron-block h4{margin:0 0 4px;font-size:14.5px;font-weight:800;color:var(--text-primary);}
+.patron-block h4{margin:0 0 4px;font-size:var(--fs-md);font-weight:800;color:var(--text-primary);}
 .patron-count{font-size:12px;color:var(--text-secondary);margin:0 0 8px;font-weight:600;}
 
 
@@ -459,11 +459,11 @@ details.help-item summary{
   display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
 details.help-item summary::-webkit-details-marker{display:none;}
-details.help-item summary::after{content:'+';content:'+' / '';font-size:20px;color:var(--text-secondary);font-weight:400;flex-shrink:0;}
+details.help-item summary::after{content:'+';content:'+' / '';font-size:var(--fs-xl);color:var(--text-secondary);font-weight:400;flex-shrink:0;}
 details.help-item[open] summary::after{content:'–';content:'–' / '';}
-details.help-item .help-body{padding:0 14px 16px;font-size:14px;color:var(--text-secondary);}
+details.help-item .help-body{padding:0 14px 16px;font-size:var(--fs-sm);color:var(--text-secondary);}
 details.help-item .help-body details.help-item{background:var(--card-bg);margin-top:12px;margin-bottom:12px;}
-details.help-item .help-body details.help-item summary{font-size:14px;}
+details.help-item .help-body details.help-item summary{font-size:var(--fs-sm);}
 details.help-item .help-body p{margin:0 0 14px;line-height:1.65;}
 details.help-item .help-body p:has(> b:first-child){margin-top:18px;}
 details.help-item .help-body p:first-child{margin-top:0;}
@@ -473,12 +473,12 @@ details.help-item .help-body li{margin-bottom:6px;}
 details.help-item .help-body .compare-row{margin-bottom:14px;}
 details.help-item .help-body .flow-diagram{margin:14px 0;}
 
-.flow-diagram{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-weight:700;justify-content:center;margin:8px 0;}
+.flow-diagram{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:var(--fs-sm);font-weight:700;justify-content:center;margin:8px 0;}
 .flow-diagram .fbox{background:var(--bg-main);border:1.5px solid var(--border-color);border-radius:10px;padding:8px 10px;}
 .flow-diagram .arrow{color:var(--text-secondary);}
 
 .hidden{display:none !important;}
-.empty-state{text-align:center;color:var(--text-secondary);padding:24px 10px;font-size:14px;}
+.empty-state{text-align:center;color:var(--text-secondary);padding:24px 10px;font-size:var(--fs-sm);}
 
 /* =====================================================================
    SISTEMA DE DISEÑO v2 (prototipo, aplicado de momento a la Caja de Herramientas)
@@ -706,7 +706,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .ds-remember .desc{color:var(--ds-ink);}
 /* Selector de periodo: control segmentado */
 .ds .btn-row.seg{display:inline-flex;flex-wrap:nowrap;gap:2px;padding:3px;background:var(--ds-canvas);border:1px solid var(--ds-line);border-radius:12px;max-width:none !important;}
-.ds .btn-row.seg .btn{flex:0 0 auto;width:auto;min-height:40px;padding:8px 14px;border:none;border-radius:9px;box-shadow:none;font-size:var(--fs-sm);}
+.ds .btn-row.seg .btn{flex:0 0 auto;width:auto;min-height:40px;padding:8px 14px;border:none;border-radius:var(--ds-radius-sm);box-shadow:none;font-size:var(--fs-sm);}
 .ds .btn-row.seg .btn-outline{background:transparent;color:var(--ds-ink-2);}
 .ds .btn-row.seg .btn-navy{background:var(--ds-surface);color:var(--ds-ink);box-shadow:0 1px 3px rgba(28,31,33,.12);}
 .ds > h2 + .desc{margin-bottom:var(--sp-4) !important;}
@@ -728,7 +728,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 /* Insignia del paso y progreso */
 .ds .badge.amber{background:color-mix(in srgb, var(--amber) 18%, var(--ds-surface));color:var(--tone-ink);font-family:var(--font-brand);letter-spacing:.06em;}
 .ds .step-dots{gap:4px;}
-.ds .step-dots span{width:28px;height:4px;border-radius:2px;background:var(--ds-line-strong);}
+.ds .step-dots span{width:28px;height:4px;border-radius:999px;background:var(--ds-line-strong);}
 .ds .step-dots span.on{background:var(--tone);}
 /* Acción del Reset: ámbar sólido con texto antracita (contraste 6,6:1) */
 .ds .btn-amber{background:var(--amber);color:#292C2F;min-height:52px;box-shadow:0 2px 8px rgba(224,160,48,.25);}
@@ -759,7 +759,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 @media (max-width:480px){ #toolOverlay .overlay-header, #helpOverlay .overlay-header{flex-wrap:nowrap;} }
 .ds.overlay{background:var(--ds-canvas);}
 /* Icono grande en lugar del emoji de cabecera de cada paso */
-.ds .tile-lg{width:60px;height:60px;border-radius:18px;}
+.ds .tile-lg{width:60px;height:60px;border-radius:var(--ds-radius-lg);}
 .ds .tile-lg .ic{width:30px;height:30px;}
 .ds .tool-hero{display:flex;justify-content:center;margin:var(--sp-2) 0 var(--sp-3);}
 /* Botones secundarios de herramienta: antracita (claro) / superficie clara (oscuro) */
@@ -787,7 +787,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   color:var(--tone-relief-ink);font-family:var(--font-brand);font-weight:700;
   box-shadow:0 0 0 14px color-mix(in srgb, var(--tone-relief) 7%, transparent);}
 /* Deslizador propio: pista del tema y tramo recorrido en rojo (--fill lo pone rangeFill) */
-.ds input[type=range]{-webkit-appearance:none;appearance:none;height:8px;border-radius:4px;margin:16px 0 10px;
+.ds input[type=range]{-webkit-appearance:none;appearance:none;height:8px;border-radius:999px;margin:16px 0 10px;
   background:linear-gradient(to right, var(--slider) var(--fill,50%), var(--ds-line-strong) var(--fill,50%));}
 .ds input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--slider);
   border:3px solid var(--ds-surface);box-shadow:0 1px 4px rgba(27,29,31,.3);cursor:pointer;}
@@ -892,9 +892,9 @@ main:focus{outline:none;}
 .ds .reset-steps.kit-steps{grid-template-columns:repeat(4, minmax(0, 1fr));}
 .ds .kit-summary .kit-regla{margin-top:var(--sp-4);}
 .ds .reset-steps li{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;margin:0;}
-.ds .reset-steps li::before{content:'';width:100%;height:4px;border-radius:2px;background:var(--ds-line-strong);}
+.ds .reset-steps li::before{content:'';width:100%;height:4px;border-radius:999px;background:var(--ds-line-strong);}
 .ds .reset-steps li.done::before, .ds .reset-steps li.on::before{background:var(--tone);}
-.ds .reset-steps .rs-l{display:inline-flex;align-items:center;justify-content:center;height:18px;font-family:var(--font-brand);font-size:13px;font-weight:750;color:var(--ds-ink-3);}
+.ds .reset-steps .rs-l{display:inline-flex;align-items:center;justify-content:center;height:18px;font-family:var(--font-brand);font-size:var(--fs-sm);font-weight:750;color:var(--ds-ink-3);}
 .ds .reset-steps .rs-l .ic{width:14px;height:14px;stroke-width:2.25;}
 .ds .reset-steps .rs-n{font-size:var(--fs-xs);font-weight:600;color:var(--ds-ink-3);white-space:nowrap;}
 .ds .reset-steps li.done .rs-l{color:var(--ds-ink-2);}
@@ -982,7 +982,7 @@ main:focus{outline:none;}
 #resetOverlay .has-error{outline-color:var(--tone) !important;}
 #resetOverlay input[aria-invalid="true"]{border-color:var(--tone) !important;}
 /* Chips del Reset algo mayores para leer al sol */
-#resetOverlay .chip{font-size:14px;line-height:1.35;}
+#resetOverlay .chip{font-size:var(--fs-sm);line-height:1.35;}
 .ds .reset-sub{margin:0 0 var(--sp-1);font-size:var(--fs-md);color:var(--ds-ink-2);}
 /* «Activar mi plan» en la fila compacta: neutro, con el rayo en rojo (no compite con el título ni con «Guardar») */
 #qlKitSlotCompact .ql-btn.ql-kit{background:var(--ds-surface);border-color:var(--ds-line);color:var(--ds-ink);box-shadow:0 1px 2px rgba(28,31,33,.04);}
@@ -1055,7 +1055,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
   .ds .btn-blue:hover, .ds .btn-navy:hover{background:var(--ds-ink-2);}
   .ds .btn-row.seg .btn-navy:hover{background:var(--ds-surface);}
   .ds .btn-green:hover{background:var(--tone-anchor-ink);}
-  .btn-danger:hover{background:#991B1B;}
+  .btn-danger:hover{background:var(--danger-hover);}
   .ds .chip:not(.selected):not([aria-pressed="true"]):hover, .ds .chip-info:hover{border-color:var(--ds-ink-3);}
   .ds .wheel-btn:hover{border-color:var(--emo);}
 }
@@ -1073,7 +1073,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
 @media (min-width:601px) and (max-width:1023px) and (orientation:portrait){
   .brand-logo{height:38px;}
   .header-tabs{max-width:720px;margin:0 auto;}
-  .header-tabs button{font-size:12.5px;}
+  .header-tabs button{font-size:var(--fs-sm);}
 }
 /* Tablet en horizontal y escritorio: lectura a la izquierda y «¿Qué necesitas ahora?» como columna fija
    a la derecha, con los accesos abiertos (alineada con los botones de la cabecera). En Herramientas
@@ -1792,7 +1792,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       <label id="sepaEmocionLabel">E · Emoción</label>
       <p class="desc" style="margin-top:-6px;">¿Qué estoy sintiendo?</p>
       <div class="chip-group" id="sepaEmocionChips" role="group" aria-labelledby="sepaEmocionLabel"></div>
-      <p class="desc" style="font-size:12.5px;">Puedes marcar más de una si has sentido varias a la vez.</p>
+      <p class="desc" style="font-size:var(--fs-xs);">Puedes marcar más de una si has sentido varias a la vez.</p>
     </div>
 
     <div class="card">
@@ -2031,8 +2031,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       <summary><span class="tile tile-sm" data-tone="neutral"><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg></span><span class="sum-title">Mis datos</span></summary>
       <div class="help-body">
         <p class="desc">Los datos que guardas (Diario, Checkpoints, Check-ins, Reset, Kit y recursos personales) se almacenan <b>solo en este dispositivo y no se envían a ningún sitio</b>. Eso significa que <b>no hay una copia de seguridad automática</b>: si borras los datos del navegador o cambias de navegador, móvil o tablet, pueden perderse. Exporta una copia desde aquí para guardarla a salvo. Los formularios de uso rápido que no generan un registro no se conservan al cerrar la herramienta.</p>
-        <p class="desc" style="font-size:12.5px;">Los datos se almacenan localmente en este navegador. La app no los envía a un servidor. No están cifrados; en un dispositivo compartido, otras personas con acceso al mismo perfil del navegador podrían verlos.</p>
-        <p class="desc" style="font-size:12.5px;">Para abrir la app necesitas conexión. Una vez abierta, funciona sin cobertura: si la pierdes, no recargues la página. Tus datos siguen guardados en el dispositivo aunque no puedas abrirla en ese momento.</p>
+        <p class="desc" style="font-size:var(--fs-xs);">Los datos se almacenan localmente en este navegador. La app no los envía a un servidor. No están cifrados; en un dispositivo compartido, otras personas con acceso al mismo perfil del navegador podrían verlos.</p>
+        <p class="desc" style="font-size:var(--fs-xs);">Para abrir la app necesitas conexión. Una vez abierta, funciona sin cobertura: si la pierdes, no recargues la página. Tus datos siguen guardados en el dispositivo aunque no puedas abrirla en ese momento.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-navy" onclick="exportarDatos()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-save"/></svg> Exportar datos</button>
           <button type="button" class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-upload"/></svg> Importar datos</button>
@@ -3453,7 +3453,7 @@ function renderPauseStep(){
   openTool('Parar y decidir', `
     <div class="card" style="text-align:center;">
       <div class="step-dots">${pauseSteps.map((_,i)=>`<span class="${i<=pauseIdx?'on':''}"></span>`).join('')}</div>
-      <div class="timer-big" style="font-size:36px;">${s.l}</div>
+      <div class="timer-big">${s.l}</div>
       <h3>${s.title}</h3>
       <p class="desc">${s.desc}</p>
       ${s.input ? `<textarea id="pauseInput" placeholder="${s.ph}">${escapeHtml(prefill)}</textarea>` : ''}
@@ -3570,7 +3570,7 @@ function startMomentoDecidir(){
   openTool('El momento de decidir', `
     <div class="card" style="text-align:center;">
       <p class="desc">Antes de dejar pasar a alguien, hazte esta pregunta:</p>
-      <p style="font-size:17px;font-weight:800;margin:10px 0;">¿Estoy decidiendo no hacer la parada o estoy evitando sentir el rechazo?</p>
+      <p style="font-size:var(--fs-lg);font-weight:800;margin:10px 0;">¿Estoy decidiendo no hacer la parada o estoy evitando sentir el rechazo?</p>
       <div class="btn-row" style="flex-wrap:wrap;">
         <button type="button" class="btn btn-outline" onclick="selectMomentoDecidir('decide')">Decido conscientemente</button>
         <button type="button" class="btn btn-outline" onclick="selectMomentoDecidir('evita')">Estoy evitando</button>
@@ -3706,7 +3706,7 @@ function renderGroundingStep(){
     <div class="card" style="text-align:center;">
       <div class="step-dots">${groundingSteps.map((_,i)=>`<span class="${i<=groundingIdx?'on':''}"></span>`).join('')}</div>
       <div class="timer-big">${s.n}</div>
-      <p style="font-size:18px;font-weight:700;">${s.label}</p>
+      <p style="font-size:var(--fs-lg);font-weight:700;">${s.label}</p>
       <p class="desc" style="font-size:var(--fs-sm);">Nómbralo mentalmente, sin hablar. Si no llegas a esa cifra, no pasa nada: pasa al siguiente sentido.</p>
       <button type="button" class="btn btn-navy" onclick="nextGrounding()">${groundingIdx<groundingSteps.length-1?'Siguiente':'Terminar'}</button>
     </div>
@@ -3771,7 +3771,7 @@ function runAnchorGuide(i){
   openTool('Recordatorio de confianza', `
     <div class="card" style="text-align:center;">
       <p class="desc">Repite tu gesto mientras recuerdas:</p>
-      <p style="font-weight:700;font-size:17px;">«${escapeHtml(a.memory)}»</p>
+      <p style="font-weight:700;font-size:var(--fs-lg);">«${escapeHtml(a.memory)}»</p>
       <p class="desc" style="margin-top:14px;">Repite tu palabra clave:</p>
       <p class="text-ok" style="font-size:26px;font-weight:800;">${escapeHtml(a.word)}</p>
       <div class="timer-big" role="timer" id="anchorTimer">30</div>
@@ -3868,7 +3868,7 @@ function usarRecordatorioVisual(i){
   closeModal();
   openTool('Recordatorio visual', `
     <div class="card" style="text-align:center;">
-      <p style="font-size:20px;font-weight:700;line-height:1.5;">«${escapeHtml(v)}»</p>
+      <p style="font-size:var(--fs-xl);font-weight:700;line-height:1.5;">«${escapeHtml(v)}»</p>
       <button type="button" class="btn btn-outline" style="margin-top:16px;" onclick="closeTool()">Cerrar</button>
     </div>
   `);
@@ -4057,7 +4057,7 @@ function activarKitPlan(){
   kitSuggestedTool = match ? match.name : null;
   openModal(`
     <h2>Este es tu recurso personal</h2>
-    <p style="font-size:18px;font-weight:800;line-height:1.45;">«${escapeHtml(txt)}»</p>
+    <p style="font-size:var(--fs-lg);font-weight:800;line-height:1.45;">«${escapeHtml(txt)}»</p>
     ${kitPlanRestoHtml('Después, ajusto:')}
     ${kitSuggestedTool ? `<button type="button" class="btn btn-outline" style="margin-top:6px;" data-action="kitSuggestedTool">Abrir también «${escapeHtml(kitSuggestedTool)}» de la app</button>` : ''}
     <button type="button" class="btn btn-navy" style="margin-top:10px;" onclick="closeModal()">Hecho</button>

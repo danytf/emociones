@@ -85,6 +85,15 @@ typography:
     fontSize: "15px"
     fontWeight: 650
     lineHeight: 1.3
+  control:
+    fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+    fontSize: "13.5px"
+    fontWeight: 650
+    lineHeight: 1.3
+  nav-label:
+    fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+    fontSize: "11px"
+    fontWeight: 650
   meta:
     fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
     fontSize: "12px"

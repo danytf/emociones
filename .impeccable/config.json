@@ -20,6 +20,11 @@
         ],
         "createdAt": "2026-09-30T22:20:09.659Z",
         "reason": "Claude: carga XSS de la prueba de seguridad; se comprueba que el <img src=x> NO llega al DOM, no es una imagen de la interfaz"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(240,203,133,.16)",
+        "createdAt": "2026-10-05T08:58:48.630Z"
       }
     ]
   }
