@@ -837,6 +837,11 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .quick-launcher.ql-compact .ql-compact-bar{display:flex;gap:var(--sp-2);}
 #qlKitSlotCompact{display:flex;flex:0 0 auto;}
 #qlKitSlotCompact:empty{display:none;}
+#qlTestSlotCompact{display:flex;flex:0 0 auto;}
+#qlTestSlotCompact:empty{display:none;}
+#qlTestSlotCompact .ql-btn{flex:1;white-space:nowrap;}
+.ql-compact-bar.con-test #qlKitSlotCompact{display:none;}
+@media (max-width:360px){ #qlTestSlotCompact{flex:1 1 0;min-width:0;} #qlTestSlotCompact .ql-btn{white-space:normal;} }
 #qlKitSlotCompact .ql-btn{flex:1;white-space:nowrap;}
 .quick-launcher.ql-compact .ql-compact-btn{display:flex;align-items:center;gap:var(--sp-2);flex:1 1 0;min-width:0;min-height:48px;padding:var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-3);
   background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-md);box-shadow:0 1px 2px rgba(28,31,33,.04);
@@ -847,7 +852,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ql-compact-btn .ql-go{display:inline-flex;align-items:center;gap:2px;font-size:var(--fs-xs);font-weight:600;color:var(--ds-ink-3);white-space:nowrap;}
 @media (hover:hover){ .ql-compact-btn:hover{border-color:var(--ds-line-strong);} }
 .ql-compact-btn:active{background:var(--ds-canvas);}
-@media (max-width:420px){ .ql-compact-btn .ql-go{font-size:0;} .ql-compact-btn .ql-go .ic{width:18px;height:18px;} .ql-compact-bar:has(#qlKitSlotCompact .ql-kit) .ql-compact-btn > .ql-em{display:none;} }
+@media (max-width:420px){ .ql-compact-btn .ql-go{font-size:0;} .ql-compact-btn .ql-go .ic{width:18px;height:18px;} .ql-compact-bar:has(#qlKitSlotCompact .ql-kit) .ql-compact-btn > .ql-em, .ql-compact-bar:has(#qlTestSlotCompact .ql-btn) .ql-compact-btn > .ql-em{display:none;} }
 @media (min-width:601px){ .ql-row{grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));} }
 /* Lanzador en dos grupos: momentos del turno y cómo estoy ahora */
 .ql-sub{margin:var(--sp-3) 0 var(--sp-2);font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);}
@@ -1205,6 +1210,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
     <div class="ql-compact-bar">
       <button type="button" class="ql-compact-btn" onclick="goto('herramientas')"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span><span class="ql-lb">¿Qué necesitas ahora?</span><span class="ql-go">Ver accesos rápidos<svg class="ic ic-sm" aria-hidden="true"><use href="#i-chevron"/></svg></span></button>
       <span id="qlKitSlotCompact"></span>
+      <span id="qlTestSlotCompact"></span>
     </div>
     <div class="ql-head">
       <h2 class="ql-title">¿Qué necesitas ahora?</h2>
@@ -4173,7 +4179,12 @@ function renderResetTab(){
   b.title = pending ? 'Tienes un Reset a medias' : 'Abrir el Modo Reset';
   // Con un test a medias, el acceso del lanzador lleva directo a las paradas y dice cuántas llevas
   const p = state.resetProgress, ql = document.querySelector('#qlRow .ql-reset .ql-lb');
-  if(ql) ql.textContent = (p && p.step === 5 && p.micro) ? `Seguir mi test · ${p.stops || 0}/10` : 'Estoy en una mala racha';
+  const enTest = !!(p && p.step === 5 && p.micro);
+  if(ql) ql.textContent = enTest ? `Seguir mi test · ${p.stops || 0}/10` : 'Estoy en una mala racha';
+  // En el resto de secciones, el test a medias también queda a un toque (ocupa el sitio de «Activar mi plan»)
+  const slot = document.getElementById('qlTestSlotCompact');
+  if(slot) slot.innerHTML = enTest ? `<button type="button" class="ql-btn ql-reset" aria-haspopup="dialog" onclick="openReset(true)"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-lifebuoy"/></svg></span><span class="ql-lb">Seguir mi test · ${p.stops || 0}/10</span></button>` : '';
+  const barra = document.querySelector('.ql-compact-bar'); if(barra) barra.classList.toggle('con-test', enTest);
 }
 
 /* Único punto que deja la sesión de Reset en blanco (en memoria). Si se añade un campo nuevo
