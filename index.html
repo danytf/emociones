@@ -754,6 +754,10 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .checkin-card.con-desc .ci-desc{display:block;margin-top:2px;font-size:var(--fs-sm);color:var(--ds-ink-2);}
 .ds .checkin-bloque{margin:var(--sp-4) 0 var(--sp-2);font-weight:700;color:var(--ds-ink);}
 .ds .checkin-desc-btn{margin-top:var(--sp-1);}
+/* Herramientas de calle: cada pregunta con sus opciones pulsables */
+.ds .tool-campo .q-label{margin:var(--sp-4) 0 var(--sp-2);font-size:var(--fs-md);font-weight:650;color:var(--ds-ink);line-height:1.4;}
+.ds .tool-campo .q-hint{font-weight:500;color:var(--ds-ink-3);}
+.ds .tool-campo .tool-otro{margin-top:var(--sp-2);}
 #resetOverlay .check-item.checked{background:color-mix(in srgb, var(--tone) 12%, var(--ds-surface));border-color:var(--tone);}
 #resetOverlay .check-item input{accent-color:var(--tone-ink);}
 .ds .empty-state{color:var(--ds-ink-3);}
@@ -1005,7 +1009,7 @@ main:focus{outline:none;}
   #resetOverlay .close-x.labeled .lbl{display:none;}
 }
 /* Avisos del Reset en el ocre del Reset y con icono de información: en mala racha, el rojo riñe */
-#resetOverlay .field-error{color:var(--tone-ink);--msg-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5'/%3E%3Cpath d='M12 7.8h.01'/%3E%3C/svg%3E");}
+#resetOverlay .field-error, #toolOverlay .tool-campo .field-error{color:var(--tone-ink);--msg-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5'/%3E%3Cpath d='M12 7.8h.01'/%3E%3C/svg%3E");}
 #resetOverlay .has-error{outline-color:var(--tone) !important;}
 #resetOverlay input[aria-invalid="true"]{border-color:var(--tone) !important;}
 /* Chips del Reset algo mayores para leer al sol */
@@ -1028,6 +1032,11 @@ main:focus{outline:none;}
 /* Dentro del Reset, lo elegido va en el ocre del Reset (el rojo se lee como «error») */
 #resetOverlay .chip.selected, #resetOverlay .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--tone) 16%, var(--ds-surface));border-color:var(--tone);color:var(--tone-ink);}
 @supports not (color: color-mix(in srgb, red 50%, blue)){ #resetOverlay .chip.selected, #resetOverlay .chip[aria-pressed="true"]{background:var(--ds-canvas);} }
+/* Herramientas (flujo de apoyo): lo elegido en antracita, nunca en rojo; el aviso de límite, en ocre como en el Reset */
+#toolOverlay .chip.selected, #toolOverlay .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--ds-ink) 14%, var(--ds-surface));border-color:var(--ds-ink);border-width:1.5px;color:var(--ds-ink);}
+@supports not (color: color-mix(in srgb, red 50%, blue)){ #toolOverlay .chip.selected, #toolOverlay .chip[aria-pressed="true"]{background:var(--ds-canvas);} }
+#toolOverlay .tool-campo .field-error{color:var(--tone-track-ink);}
+#toolOverlay .tool-campo .chip-group.has-error, #toolOverlay .tool-campo [aria-invalid="true"]{outline-color:var(--tone-track);border-color:var(--tone-track);}
 /* Al llevar el foco a un error, que no quede bajo la cabecera ni bajo la barra fija */
 #resetOverlay{scroll-padding-top:120px;scroll-padding-bottom:140px;}
 /* El contorno del grupo con error no pisa el mensaje */
@@ -3277,6 +3286,47 @@ function showToolDone(title, repeatFn){
 }
 
 /* ---- Antes de salir (pre-turno) ---- */
+/* ---- Respuestas rápidas en las herramientas de calle: pulsar en vez de escribir ----
+   Una opción (o hasta `max`) y «Otra…» para escribirla con tus palabras. No se guardan: solo ordenan las ideas. */
+const toolCampos = {};
+function toolCampo(id, pregunta, opciones, max){
+  toolCampos[id] = { pregunta, opciones: [...new Set(opciones.filter(Boolean))], max: max || 1, sel: [], otro: '', abierto: false };
+  return `<div class="tool-campo" id="tf-${id}">${toolCampoHtml(id)}</div>`;
+}
+function toolCampoHtml(id){
+  const c = toolCampos[id];
+  const chip = o => `<button type="button" ${chipAttrs(c.sel.includes(o))} data-action="toolChip" data-f="${id}" data-value="${escapeHtml(o)}">${escapeHtml(o)}</button>`;
+  return `<p class="q-label" id="tl-${id}">${escapeHtml(c.pregunta)}${c.max > 1 ? ` <span class="q-hint">(hasta ${c.max})</span>` : ''}</p>
+    <div class="chip-group" id="tc-${id}" role="group" aria-labelledby="tl-${id}">${c.opciones.map(chip).join('')}<button type="button" ${chipAttrs(c.abierto)} data-action="toolOtro" data-f="${id}" aria-expanded="${c.abierto}" aria-controls="tco-wrap-${id}">Otra…</button></div>
+    <div class="tool-otro" id="tco-wrap-${id}"${c.abierto ? '' : ' hidden'}><label for="tco-${id}">Con tus palabras</label><input type="text" id="tco-${id}" maxlength="${LIMITS.shortStr}" value="${escapeHtml(c.otro)}" oninput="toolCampos['${id}'].otro=this.value"></div>`;
+}
+/* Se repinta solo la pregunta y el foco vuelve al mismo control */
+function repintarToolCampo(id, foco){
+  const w = document.getElementById('tf-' + id); if(!w) return;
+  w.innerHTML = toolCampoHtml(id);
+  const el = foco && w.querySelector(foco); if(el) el.focus();
+}
+function toolChip(el){
+  const id = el.dataset.f, v = el.dataset.value, c = toolCampos[id];
+  if(!c) return;
+  if(c.max === 1){ c.sel = c.sel[0] === v ? [] : [v]; c.abierto = false; c.otro = ''; }
+  else if(c.sel.includes(v)) c.sel = c.sel.filter(x=>x!==v);
+  else {
+    if(c.sel.length + (c.otro.trim() ? 1 : 0) >= c.max){ fieldError('tc-' + id, `Puedes elegir hasta ${c.max}. Quita una para cambiarla.`, {focus:false}); return; }
+    c.sel = [...c.sel, v];
+  }
+  repintarToolCampo(id, `[data-action="toolChip"][data-value="${CSS.escape(v)}"]`);
+}
+function toolOtro(el){
+  const id = el.dataset.f, c = toolCampos[id];
+  if(!c) return;
+  c.abierto = !c.abierto;
+  if(c.abierto){ if(c.max === 1) c.sel = []; else if(c.sel.length >= c.max) c.sel = c.sel.slice(0, c.max - 1); }
+  else c.otro = '';
+  repintarToolCampo(id, c.abierto ? `#tco-${id}` : '[data-action="toolOtro"]');
+}
+function toolValor(id){ const c = toolCampos[id]; return c ? [...c.sel, c.otro.trim()].filter(Boolean).join(' · ') : ''; }
+
 function startPreTurno(){
   const tienePlan = state.kitHerramienta && (state.kitSenales.length || state.kitAjuste);
   openTool('Antes de salir', `
@@ -3315,20 +3365,15 @@ function startPreTurno(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">30–45 segundos</p>
       <p class="desc" data-no-guarda>Tres preguntas rápidas antes de empezar el turno. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label class="q-label" for="preTurno1">¿Cómo llego hoy?</label>
-      <textarea id="preTurno1" placeholder="Una palabra o frase corta..."></textarea>
-      <label class="q-label" for="preTurno2">¿Qué quiero cuidar en mi forma de captar?</label>
-      <textarea id="preTurno2" placeholder="Ej: escuchar hasta el final, sonreír más..."></textarea>
-      <label for="preTurno3">Si aparece mi primera señal, ¿qué haré?</label>
-      <textarea id="preTurno3" placeholder="${tienePlan ? 'Ya lo tienes en tu plan de arriba; añade algo solo si quieres' : 'Tu respuesta de emergencia...'}"></textarea>
+      ${toolCampo('preTurno1', '¿Cómo llego hoy?', ['Con energía', 'Tranquilo', 'Cansado', 'Acelerado'])}
+      ${toolCampo('preTurno2', '¿Qué quiero cuidar en mi forma de captar?', [state.kitAjuste, 'El ritmo', 'La escucha', 'Postura y contacto visual'])}
+      ${toolCampo('preTurno3', 'Si aparece mi primera señal, ¿qué haré?', [state.kitHerramienta ? 'Activar mi plan' : '', 'Respirar entre paradas', 'Pedir un relevo de aire (2 minutos)', 'Hacer un Reset'])}
       <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarPreTurno()">Estoy preparado</button>
     </div>
   `);
 }
 function finalizarPreTurno(){
-  const llego = document.getElementById('preTurno1').value.trim();
-  const cuidar = document.getElementById('preTurno2').value.trim();
-  const senal = document.getElementById('preTurno3').value.trim();
+  const llego = toolValor('preTurno1'), cuidar = toolValor('preTurno2'), senal = toolValor('preTurno3');
   clearToolTimers();
   openTool('Antes de salir', `
     <div class="card" style="text-align:left;">
@@ -3352,20 +3397,15 @@ function startCierreTurno(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">30 segundos</p>
       <p class="desc" data-no-guarda>Tres preguntas rápidas para cerrar el turno antes de volver a casa. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label class="q-label" for="cierreTurno1">¿Qué dejo hoy en el trabajo?</label>
-      <textarea id="cierreTurno1" placeholder="Una palabra o frase corta..."></textarea>
-      <label class="q-label" for="cierreTurno2">¿Qué quiero llevarme?</label>
-      <textarea id="cierreTurno2" placeholder="Ej: un aprendizaje, una buena conversación..."></textarea>
-      <label class="q-label" for="cierreTurno3">¿Qué necesito hacer ahora para cambiar de contexto?</label>
-      <textarea id="cierreTurno3" placeholder="Ej: cambiarme de ropa, caminar, llamar a alguien..."></textarea>
+      ${toolCampo('cierreTurno1', '¿Qué dejo hoy en el trabajo?', ['El número del día', 'Los rechazos', 'Una conversación difícil', 'La comparación con otros'], 2)}
+      ${toolCampo('cierreTurno2', '¿Qué quiero llevarme?', ['Una buena conversación', 'Algo que he aprendido', 'Algo por lo que estar agradecido', 'Un buen momento con el equipo'])}
+      ${toolCampo('cierreTurno3', '¿Qué necesito hacer ahora para cambiar de contexto?', ['Cambiarme de ropa', 'Caminar un rato', 'Hablar con alguien', 'Hacer algo que me guste'])}
       <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarCierreTurno()">Turno cerrado</button>
     </div>
   `);
 }
 function finalizarCierreTurno(){
-  const dejo = document.getElementById('cierreTurno1').value.trim();
-  const llevo = document.getElementById('cierreTurno2').value.trim();
-  const contexto = document.getElementById('cierreTurno3').value.trim();
+  const dejo = toolValor('cierreTurno1'), llevo = toolValor('cierreTurno2'), contexto = toolValor('cierreTurno3');
   clearToolTimers();
   openTool('Cierre de turno', `
     <div class="card" style="text-align:left;">
@@ -3391,17 +3431,14 @@ function startVolverCalle(){
     <div class="card" style="text-align:left;">
       <p class="tool-meta">15–20 segundos</p>
       <p class="desc" data-no-guarda>Dos preguntas rápidas para retomar el turno después de la pausa. No se guardan: son solo para ordenar tus ideas ahora.</p>
-      <label class="q-label" for="volverCalle1">¿Cómo estoy?</label>
-      <textarea id="volverCalle1" placeholder="Una palabra o frase corta..."></textarea>
-      <label class="q-label" for="volverCalle2">¿Qué quiero hacer en la primera parada?</label>
-      <textarea id="volverCalle2" placeholder="Ej: sonreír, escuchar bien, ritmo tranquilo..."></textarea>
+      ${toolCampo('volverCalle1', '¿Cómo estoy?', ['Más tranquilo', 'Todavía tenso', 'Cansado', 'Listo para seguir'])}
+      ${toolCampo('volverCalle2', '¿Qué quiero hacer en la primera parada?', [state.kitAjuste, 'Tener una buena charla, sin pensar en el número', 'Escuchar hasta el final', 'Simplificar la apertura'])}
       <button type="button" class="btn btn-navy" style="margin-top:6px;" onclick="finalizarVolverCalle()">Vuelvo a calle</button>
     </div>
   `);
 }
 function finalizarVolverCalle(){
-  const como = document.getElementById('volverCalle1').value.trim();
-  const primero = document.getElementById('volverCalle2').value.trim();
+  const como = toolValor('volverCalle1'), primero = toolValor('volverCalle2');
   clearToolTimers();
   openTool('Volver a calle', `
     <div class="card" style="text-align:left;">
@@ -5246,6 +5283,8 @@ Object.assign(ACTIONS, {
   confirmCancel: () => settleConfirm(false),
   toastClose: () => hideToast(),
   resetChip: el => resetChip(el),
+  toolChip: el => toolChip(el),
+  toolOtro: el => toolOtro(el),
   resetOtro: el => resetOtro(el),
   setAprendizaje: el => {
     const v = el.dataset.value;
