@@ -4690,7 +4690,8 @@ function renderResetStep(){
         <h3>Reconoce lo que está pasando</h3>
         <p class="desc reset-sub">Estoy atravesando una mala racha. Eso no significa que haya dejado de saber hacer mi trabajo.</p>
         <p class="q">¿Qué señal estás notando con más fuerza hoy?</p>
-        ${resetCheckinItems.length ? '<p class="desc">De lo marcado en tu check-in, elige la principal.</p>' : ''}
+        ${resetCheckinItems.length > 1 ? `<p class="desc">Has marcado <b>${resetCheckinItems.length} señales</b>. Vamos a por una sola: elige la que más pesa hoy.</p>`
+          : resetCheckinItems.length === 1 ? '<p class="desc">Has marcado <b>1 señal</b>. Vamos a por ella: confírmala para seguir.</p>' : ''}
         ${resetCampo('senal')}
       </div>
       ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="continuarReconoce()">Examinar el contexto</button>`)}`;
