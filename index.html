@@ -859,6 +859,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 /* «Más situaciones» es una casilla más de la rejilla (al final): no añade una fila propia */
 .ql-row .ql-toggle{width:100%;min-height:48px;justify-content:center;border-radius:var(--ds-radius-md);}
 .ds .reset-row .btn.reset-atras{flex:0 0 auto;width:auto;padding:0 18px;}
+/* En pantallas muy estrechas «Atrás» queda solo con la flecha para que el principal quepa en una línea */
+@media (max-width:360px){ .ds .reset-row .btn.reset-atras{padding:0 14px;} .reset-atras-lb{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;} }
 .ic-atras{transform:rotate(180deg);}
 .ic-abajo{transform:rotate(90deg);}
 @media (max-width:420px){ .view h2, .ds .ds-page-head h2{font-size:22px;} }
@@ -924,7 +926,7 @@ main:focus{outline:none;}
 .ds .reset-actions.no-fija{position:static;border-top:none;padding-top:0;}
 .ds .reset-row{display:flex;gap:var(--sp-2);}
 .ds .reset-row .btn-outline{flex:0 0 38%;}
-.ds .reset-row .btn-amber{flex:1 1 auto;}
+.ds .reset-row .btn-amber, .ds .reset-row .btn[data-principal]{flex:1 1 auto;}
 #resetOverlay.reset-inicio .overlay-header .oh-actions{width:auto;}
 .ds .reset-falta{margin:0;text-align:center;font-size:var(--fs-sm);color:var(--ds-ink-2);}
 /* Testea */
@@ -1009,6 +1011,9 @@ main:focus{outline:none;}
 .ds .desc{max-width:68ch;}
 /* La introducción de cada sección ocupa el mismo ancho que sus tarjetas (un solo bloque en tablet y escritorio) */
 .ds > .desc{max-width:none;}
+/* Diario: aviso de los pasos obligatorios antes del formulario */
+.ds .sepa-oblig{margin:var(--sp-3) 0 var(--sp-3) !important;color:var(--ds-ink-2);}
+.ds .sepa-oblig .ic{vertical-align:-3px;margin-right:4px;color:var(--ds-ink-3);}
 .ds .card[style*="text-align:center"] .desc{margin-left:auto;margin-right:auto;}
 /* ---------- Cifras y cortes de línea ---------- */
 /* Contadores y valores con cifras de ancho fijo: al contar atrás el número no se desplaza */
@@ -1696,6 +1701,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       </div>
     </details>
 
+    <p class="desc sepa-oblig"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-info"/></svg> Para guardar, completa los <b>5 pasos</b> (S, E, P, P+ y A). En P+ puedes pulsar <b>Sugerir reencuadre</b>.</p>
+
     <div class="card">
       <h3>1. Contexto</h3>
       <label for="sepaSituacion">S · Situación</label>
@@ -1744,7 +1751,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       <label for="sepaPensConstructivo">P+ · Pensamiento útil</label>
       <p class="desc" style="margin-top:-6px;">¿Cómo puedo interpretar la situación de una forma más realista y útil?</p>
       <button type="button" class="btn btn-outline btn-sm" style="margin-bottom:10px;" onclick="sugerirReencuadre()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-bulb"/></svg>Sugerir reencuadre</button>
-      <textarea id="sepaPensConstructivo" placeholder="Es una zona difícil, pero todavía puedo aplicar técnica y centrarme en hacer buenas conversaciones..."></textarea>
+      <textarea id="sepaPensConstructivo" aria-required="true" placeholder="Es una zona difícil, pero todavía puedo aplicar técnica y centrarme en hacer buenas conversaciones..."></textarea>
 
       <label for="sepaAccion">A · Acción inmediata</label>
       <p class="desc" style="margin-top:-6px;">¿Qué voy a hacer ahora?</p>
@@ -1757,7 +1764,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         <button type="button" class="chip" onclick="insertAccion('Cambiar el enfoque o la ubicación')">Cambiar el enfoque o la ubicación</button>
         <button type="button" class="chip" onclick="insertAccion('Pedir apoyo')">Pedir apoyo</button>
       </div>
-      <textarea id="sepaAccion" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
+      <textarea id="sepaAccion" aria-required="true" placeholder="¿Qué técnica concreta vas a aplicar en la próxima parada?"></textarea>
 
       <button type="button" class="btn btn-green" id="sepaSaveBtn" onclick="guardarSepa()">Guardar registro</button>
       <button type="button" class="btn btn-outline" id="sepaCancelBtn" style="display:none;margin-top:10px;" onclick="cancelarEdicionSepa()">Cancelar edición</button>
@@ -4305,7 +4312,7 @@ function resetAcciones(html, fija){
     if(i < 0) i = html.indexOf('<button type="button" class="btn btn-amber"');
     if(i >= 0){
       const j = html.indexOf('</button>', i) + 9;
-      html = html.slice(0, i) + `<div class="reset-row"><button type="button" class="btn btn-outline reset-atras" onclick="resetAtras()"><svg class="ic ic-sm ic-atras" aria-hidden="true"><use href="#i-arrow"/></svg> Atrás</button>${html.slice(i, j)}</div>` + html.slice(j);
+      html = html.slice(0, i) + `<div class="reset-row"><button type="button" class="btn btn-outline reset-atras" onclick="resetAtras()"><svg class="ic ic-sm ic-atras" aria-hidden="true"><use href="#i-arrow"/></svg><span class="reset-atras-lb"> Atrás</span></button>${html.slice(i, j)}</div>` + html.slice(j);
     }
   }
   return `<div class="reset-actions${fija === false ? ' no-fija' : ''}">${html}</div>`;
@@ -4585,7 +4592,7 @@ function renderResetStep(){
         <p class="desc">Lo que está pasando a tu alrededor y <b>no controlas directamente</b>. Marca lo que aplique hoy.</p>
         ${resetCampo('contexto')}
       </div>
-      ${resetAcciones(`<p class="reset-falta">1 de 2</p><button type="button" class="btn btn-amber" onclick="continuarExamina()">Ver mi forma de trabajar</button>`)}
+      ${resetAcciones(`<p class="reset-falta">1 de 2</p><button type="button" class="btn btn-amber" onclick="continuarExamina()">Ver cómo trabajo</button>`)}
     ` : `
       ${resetDots()}
       <div class="card">
@@ -4593,7 +4600,7 @@ function renderResetStep(){
         <p class="desc">Lo que <b>sí puedes revisar y ajustar tú</b>. Marca lo que aplique hoy.</p>
         ${resetCampo('forma')}
       </div>
-      ${resetAcciones(`<p class="reset-falta">2 de 2</p><button type="button" class="btn btn-amber" onclick="continuarExamina()">Separar lo que funciona</button>`)}
+      ${resetAcciones(`<p class="reset-falta">2 de 2</p><button type="button" class="btn btn-amber" onclick="continuarExamina()">Ver qué funciona</button>`)}
     `;
   }
   else if(resetStep===3){
@@ -4615,7 +4622,7 @@ function renderResetStep(){
         <p class="desc">Cuando no sale, es fácil cambiar más cosas, gastar más energía y captar con más tensión. <b>No necesitas cambiarlo todo: elige una conducta y aplícala durante las próximas 10 paradas.</b></p>
         ${resetCampo('micro')}
       </div>
-      ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="continuarElige()">Empezar las 10 paradas</button>`)}
+      ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="continuarElige()">Empezar el test</button>`)}
     `;
   }
   else if(resetStep===5){
@@ -4645,7 +4652,7 @@ function renderResetStep(){
         </details>
       </div>
       ${resetAcciones(`${resetStops>=10 ? '' : `<p class="reset-falta">${10-resetStops===1 ? 'Te falta <b>1</b> parada' : `Te faltan <b>${10-resetStops}</b> paradas`} para continuar.</p>`}
-        <button type="button" data-principal class="btn ${resetStops>=10 ? 'btn-amber' : 'btn-outline'}" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Ver qué he aprendido</button>`, resetStops>=10)}
+        <button type="button" data-principal class="btn ${resetStops>=10 ? 'btn-amber' : 'btn-outline'}" ${resetStops>=10?'':'disabled'} onclick="resetGoto(6)">Ver lo aprendido</button>`, resetStops>=10)}
     `;
   }
   else if(resetStep===6){
@@ -4699,7 +4706,7 @@ function renderResetStep(){
           <div class="mini-card"><b>PIDE</b><p>No hace falta llegar a «no puedo más».</p><p>¿Hay algo que otra persona pueda ayudarme a ver o ajustar ahora mismo?</p></div>
         </div>
       </details>
-      ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="finalizarReset()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-check"/></svg> Hecho, vuelvo a calle</button>`)}
+      ${resetAcciones(`<button type="button" class="btn btn-amber" onclick="finalizarReset()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-check"/></svg> Vuelvo a calle</button>`)}
     `;
   }
 }
