@@ -23,6 +23,7 @@ const LOCAL = [
   ['cptest', 'Checkpoint: niveles «Sin indicar» hasta elegirlos; edición conserva los guardados'],
   ['guardadotest', 'Reset y Kit con el almacenamiento fallando: nada se da por guardado'],
   ['patronestest', 'Mis patrones: solo acciones hechas o decididas, sin negaciones ni hipótesis'],
+  ['borradotest', 'Borrar todos los datos: comprueba el borrado, sin borrados a medias ni datos ajenos'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],

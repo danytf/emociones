@@ -2625,8 +2625,34 @@ async function borrarTodosDatos(){
     confirmText:'Borrar todo', danger:true
   });
   if(!ok) return;
-  localStorage.removeItem(LS_KEY);
-  location.reload();
+  // Un guardado pendiente (diferido o reintento) se escribiría al recargar y devolvería los datos borrados
+  const pendiente = { timer: !!saveTimer, reintento: !!save.pendiente };
+  clearTimeout(saveTimer); saveTimer = null; save.pendiente = false;
+  const r = borrarClavesApp();
+  if(r === 'ok'){ location.reload(); return; }
+  if(pendiente.timer) saveSoon();
+  save.pendiente = pendiente.reintento;
+  datosMsg(r === 'intacto'
+    ? 'No se han podido borrar tus datos: el navegador no lo ha permitido. Siguen guardados en este dispositivo. Inténtalo de nuevo o revisa el almacenamiento del navegador.'
+    : 'No se han podido borrar todos tus datos: el navegador solo ha permitido borrar una parte. Vuelve a pulsar «Borrar todos los datos» o revisa el almacenamiento del navegador.', 'error');
+}
+/* Claves de esta app en el navegador. Solo se tocan estas: nunca localStorage.clear(), que borraría datos ajenos */
+const CLAVES_APP = [LS_KEY, 'wesserLastView', 'wesserWelcomeSeen', 'wesserSepaIntro'];
+/* Borra las claves de la app y comprueba con getItem() que ya no están. Si algo falla, vuelve a escribir
+   las que ya se habían borrado (no se queda a medias) y lo dice: 'ok', 'intacto' (todo restaurado) o 'parcial'. */
+function borrarClavesApp(){
+  let copia;
+  try{ copia = Object.fromEntries(CLAVES_APP.map(k => [k, localStorage.getItem(k)])); }
+  catch(e){ console.error('No se pudieron leer los datos', e); return 'intacto'; }
+  try{
+    CLAVES_APP.forEach(k => localStorage.removeItem(k));
+    if(CLAVES_APP.every(k => localStorage.getItem(k) === null)) return 'ok';
+  }catch(e){ console.error('No se pudieron borrar los datos', e); }
+  try{
+    CLAVES_APP.forEach(k => { if(copia[k] !== null && localStorage.getItem(k) !== copia[k]) localStorage.setItem(k, copia[k]); });
+    if(CLAVES_APP.every(k => localStorage.getItem(k) === copia[k])) return 'intacto';
+  }catch(e){ console.error('No se pudieron restaurar los datos', e); }
+  return 'parcial';
 }
 
 /* ============ THEME ============ */
