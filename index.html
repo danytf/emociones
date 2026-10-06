@@ -3129,6 +3129,9 @@ function toggleSepaPensOtro(){
   document.getElementById('sepaPensOtroWrap').style.display = isOtro ? 'block' : 'none';
 }
 let editingSepaId = null;
+/* Un doble toque en «Guardar registro» validaba el formulario ya vacío y mostraba errores junto a «Registro guardado»:
+   un toque justo después de guardar con el formulario vacío se ignora (nunca bloquea un registro rellenado) */
+let sepaGuardadoEn = 0;
 function guardarSepa(){
   const situacionSel = document.getElementById('sepaSituacion').value;
   const situacionOtra = document.getElementById('sepaSituacionOtra').value.trim();
@@ -3138,6 +3141,7 @@ function guardarSepa(){
   const pensD = (pDLista==='Otro' && pDLibre) ? pDLibre : pDLista;
   const pensC = document.getElementById('sepaPensConstructivo').value.trim();
   const accion = document.getElementById('sepaAccion').value.trim();
+  if(Date.now() - sepaGuardadoEn < 800 && !situacionSel && !selectedEmociones.length && !pDLista && !pensC && !accion) return;
   // Mismas condiciones que antes, pero se indican todas a la vez junto a cada campo
   const errores = [];
   if(!situacionSel) errores.push(['sepaSituacion', 'Elige la situación (o «Otra…» para escribirla).']);
@@ -3161,6 +3165,7 @@ function guardarSepa(){
   }
   // Si no se guarda: se deshace el cambio y el formulario (y la edición) siguen tal cual
   if(!commitSave(()=>{ state.sepaEntries = prevEntries; })) return;
+  sepaGuardadoEn = Date.now();
   if(editando) cancelarEdicionSepa();
   if(!prevEntries.length){
     let pref = null; try{ pref = localStorage.getItem('wesserSepaIntro'); }catch(e){}

@@ -31,6 +31,7 @@ const LOCAL = [
   ['compattest', 'Tablets antiguas: sin ?./??, sin depender de inset ni de MediaQueryList.addEventListener'],
   ['malainteracciontest', 'Mala interacción: insultos o amenazas no son tu técnica; avisa al responsable'],
   ['derivaciontest', 'Derivación: aviso en Desánimo y en la Ayuda, sin la frase de crisis descartada'],
+  ['dobletoquetest', 'Diario: doble toque en Guardar guarda una vez y sin errores falsos'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],
