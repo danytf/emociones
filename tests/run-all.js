@@ -28,6 +28,7 @@ const LOCAL = [
   ['momentotest', 'El momento de decidir: texto final, Repetir, Volver y atrás'],
   ['pestanastest', 'Dos pestañas: una copia vieja no pisa ni resucita datos'],
   ['pantallatest', 'La pantalla no se apaga en los ejercicios guiados y se suelta al acabar'],
+  ['compattest', 'Tablets antiguas: sin ?./??, sin depender de inset ni de MediaQueryList.addEventListener'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],

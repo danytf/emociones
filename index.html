@@ -314,7 +314,7 @@ label{font-size:var(--fs-sm);font-weight:700;color:var(--text-secondary);display
 
 /* OVERLAY / RESET FLOW */
 .overlay{
-  position:fixed;inset:0;z-index:200;background:var(--bg-main);
+  position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;background:var(--bg-main);   /* sin inset: tablets antiguas */
   display:none;flex-direction:column;overflow-y:auto;
 }
 .overlay.active{display:flex;}
@@ -376,7 +376,7 @@ label{font-size:var(--fs-sm);font-weight:700;color:var(--text-secondary);display
   .wheel-grid{grid-template-columns:repeat(2, minmax(0, 1fr));}
 }
 
-.modal-back{position:fixed;inset:0;background:rgba(27,29,31,.55);z-index:250;display:none;align-items:flex-end;justify-content:center;}
+.modal-back{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(27,29,31,.55);z-index:250;display:none;align-items:flex-end;justify-content:center;}
 .modal-back.active{display:flex;}
 .modal-sheet{
   background:var(--card-bg);width:100%;max-width:760px;border-radius:20px 20px 0 0;
@@ -2693,7 +2693,8 @@ applyTheme();
   if(window.ResizeObserver) new ResizeObserver(fijar).observe(h);
 })();
 // Sin elección manual, se sigue el tema del sistema también si cambia con la app abierta
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ if(!state.theme) applyTheme(); });
+/* addEventListener en MediaQueryList no existe en Safari anterior a 14: allí se usa addListener (si no, el script se detendría aquí) */
+(function(){ const mq = window.matchMedia('(prefers-color-scheme: dark)'), f = ()=>{ if(!state.theme) applyTheme(); }; if(mq.addEventListener) mq.addEventListener('change', f); else if(mq.addListener) mq.addListener(f); })();
 document.getElementById('themeToggle').onclick = ()=>{
   const cur = document.documentElement.getAttribute('data-theme');
   state.theme = cur === 'dark' ? 'light' : 'dark';
@@ -3224,7 +3225,7 @@ function renderSepaHistorial(){
   const visibles = state.sepaEntries.slice(0, sepaHistorialLimit);
   wrap.innerHTML = visibles.map(e=>{
     const emos = e.emociones || [];
-    const emosTxt = emos.map(id=>`<span class="emo-name">${emoIcon(id)}${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||'')}</span>`).join(' · ');
+    const emosTxt = emos.map(id=>`<span class="emo-name">${emoIcon(id)}${escapeHtml((EMOTIONS.find(x=>x.id===id)||{}).nombre||'')}</span>`).join(' · ');
     return `
     <div class="history-item">
       <div class="meta">${escapeHtml(fechaDe(e))} · ${emosTxt}</div>
@@ -3292,7 +3293,7 @@ function renderPatrones(){
       <h4>Diario S-E-P-A</h4>
       <p class="patron-count">${entries.length} registro${entries.length===1?'':'s'} · ${patronesTier(entries.length)}</p>
       ${entries.length===0 ? '' : `
-        <div class="mini-card"><b>Emoción más registrada</b><p>${topText(emoTop, true, id=>`<span class="emo-name">${emoIcon(id)}${escapeHtml(EMOTIONS.find(x=>x.id===id)?.nombre||id)}</span>`)}</p></div>
+        <div class="mini-card"><b>Emoción más registrada</b><p>${topText(emoTop, true, id=>`<span class="emo-name">${emoIcon(id)}${escapeHtml((EMOTIONS.find(x=>x.id===id)||{}).nombre||id)}</span>`)}</p></div>
         <div class="mini-card"><b>Situación más repetida</b><p>${topText(sitTop, true)}</p></div>
         <div class="mini-card"><b>Acción más utilizada</b><p>${topText(accTop, true)}</p></div>
       `}
@@ -5307,7 +5308,7 @@ function continuarElige(){
 function continuarAprendizaje(){
   if(!resetAprendizaje) return fieldError('resetAprendizajeRow', 'Elige una opción para continuar.');
   if(resetAprendizaje === 'Lo ajusto'){
-    resetAjusteNuevo = (document.getElementById('resetAjusteNuevoInput')?.value || resetAjusteNuevo || '').trim();
+    resetAjusteNuevo = ((document.getElementById('resetAjusteNuevoInput')||{}).value || resetAjusteNuevo || '').trim();
     if(!resetAjusteNuevo) return fieldError('resetAjusteNuevoInput', 'Escribe cómo queda tu ajuste.');
     if(resetAjusteNuevo === (resetMicro || '').trim()) return fieldError('resetAjusteNuevoInput', 'Cambia algo del ajuste, o elige «Lo mantengo» si lo dejas igual.');
   }
