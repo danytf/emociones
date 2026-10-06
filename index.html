@@ -3837,7 +3837,9 @@ function nextPause(){
 const badApproachSteps = [
   {l:'x', title:'Corta', desc:'Esa interacción ya ha terminado.'},
   {l:'split', title:'Separa', desc:'Lo que ha pasado no determina cómo irá la siguiente.'},
-  {l:'eye', title:'Aprende', desc:'¿Hay algo concreto que pueda revisar?', input:true, key:'aprende', ph:'Escribe algo breve si se te ocurre (opcional)...'},
+  {l:'eye', title:'Aprende', desc:'¿Hay algo concreto que pueda revisar?',
+    // Tras un insulto o una amenaza no hay nada que revisar: se dice antes de pedir que se escriba
+    aviso:'Si ha habido insultos o amenazas, no es algo de tu técnica. Avísalo a tu responsable antes de seguir.', input:true, key:'aprende', ph:'Escribe algo breve si se te ocurre (opcional)...'},
   {l:'wind', title:'Suelta', desc:'Haz una respiración lenta: inhala por la nariz y exhala despacio por la boca.'},
   {l:'arrow', title:'Vuelve', desc:'Mi único objetivo ahora es hacer bien la siguiente parada.'}
 ];
@@ -3853,6 +3855,7 @@ function renderBadApproachStep(){
       <div class="tool-hero"><span class="tile tile-lg" data-tone="relief"><svg class="ic" aria-hidden="true"><use href="#i-${s.l}"/></svg></span></div>
       <h3>${s.title}</h3>
       <p class="desc">${s.desc}</p>
+      ${s.aviso ? `<p class="desc" style="font-size:var(--fs-sm);"><b>${s.aviso}</b></p>` : ''}
       ${s.input ? `<textarea id="badApproachInput" placeholder="${s.ph}">${escapeHtml(prefill)}</textarea>` : ''}
     </div>
     <button type="button" class="btn btn-navy" onclick="nextBadApproach()">${badApproachIdx<badApproachSteps.length-1?'Siguiente':'Terminar'}</button>

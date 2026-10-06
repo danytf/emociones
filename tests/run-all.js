@@ -29,6 +29,7 @@ const LOCAL = [
   ['pestanastest', 'Dos pestañas: una copia vieja no pisa ni resucita datos'],
   ['pantallatest', 'La pantalla no se apaga en los ejercicios guiados y se suelta al acabar'],
   ['compattest', 'Tablets antiguas: sin ?./??, sin depender de inset ni de MediaQueryList.addEventListener'],
+  ['malainteracciontest', 'Mala interacción: insultos o amenazas no son tu técnica; avisa al responsable'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],
