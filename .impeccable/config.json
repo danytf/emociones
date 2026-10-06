@@ -1,7 +1,9 @@
 {
   "detector": {
     "ignoreRules": [],
-    "ignoreFiles": [],
+    "ignoreFiles": [
+      "tests/fulltest.js"
+    ],
     "ignoreValues": [
       {
         "rule": "broken-image",
