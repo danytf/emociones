@@ -27,6 +27,7 @@ const LOCAL = [
   ['qltest', 'Barra compacta de «¿Qué necesitas ahora?» en móvil con un segundo botón'],
   ['momentotest', 'El momento de decidir: texto final, Repetir, Volver y atrás'],
   ['pestanastest', 'Dos pestañas: una copia vieja no pisa ni resucita datos'],
+  ['pantallatest', 'La pantalla no se apaga en los ejercicios guiados y se suelta al acabar'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],

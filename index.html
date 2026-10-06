@@ -3515,7 +3515,28 @@ renderExitoHistorial();
 
 /* ============ GENERIC TOOL OVERLAY ============ */
 let toolTimers = [];
-function clearToolTimers(){ toolTimers.forEach(t=>{ clearInterval(t); clearTimeout(t); }); toolTimers=[]; }
+function clearToolTimers(){ toolTimers.forEach(t=>{ clearInterval(t); clearTimeout(t); }); toolTimers=[]; soltarPantalla(); }
+/* Mientras corre un ejercicio guiado sin tocar la pantalla (Suspiro, Tense & Release, Recordatorio de
+   confianza), se pide que la pantalla no se apague, si el navegador lo admite. Se suelta al terminar,
+   cerrar o cambiar de herramienta (clearToolTimers) y se vuelve a pedir al volver a la pestaña. */
+let pantallaLock = null, pantallaQuiere = false, pantallaPidiendo = false;
+async function mantenerPantalla(){
+  pantallaQuiere = true;
+  if(pantallaLock || pantallaPidiendo || !('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+  pantallaPidiendo = true;   // una sola petición a la vez
+  try{
+    const l = await navigator.wakeLock.request('screen');
+    if(!pantallaQuiere){ l.release().catch(()=>{}); return; }   // el ejercicio terminó mientras se concedía
+    pantallaLock = l;
+    l.addEventListener('release', ()=>{ if(pantallaLock === l) pantallaLock = null; });
+  }catch(e){}   // sin permiso, sin batería o no admitido: el ejercicio sigue igual
+  finally{ pantallaPidiendo = false; }
+}
+function soltarPantalla(){
+  pantallaQuiere = false;
+  if(pantallaLock){ const l = pantallaLock; pantallaLock = null; l.release().catch(()=>{}); }
+}
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible' && pantallaQuiere) mantenerPantalla(); });
 /* Pantalla anterior para el gesto «atrás» dentro de un recorrido encadenado (lista → ficha → herramienta).
    Se borra al abrir otra herramienta distinta o al cerrar; los repintados de la misma pantalla la conservan. */
 let toolAtras = null;
@@ -3755,6 +3776,7 @@ function startBreath(seconds){
   const circle = document.getElementById('breathCircle');
   const timerEl = document.getElementById('breathTimer');
   stepBreathCycle(circle, 0);
+  mantenerPantalla();
   const t2 = setInterval(()=>{
     remaining--;
     timerEl.textContent = remaining;
@@ -4064,6 +4086,7 @@ function runAnchorGuide(i){
     </div>
   `);
   announce('Recordatorio de confianza: 30 segundos. Repite tu gesto mientras recuerdas ese momento y di tu palabra clave.');
+  mantenerPantalla();
   let remaining = 30;
   const el = document.getElementById('anchorTimer');
   const t = setInterval(()=>{
@@ -4092,6 +4115,7 @@ function runTensePhase(phase, secs){
     </div>
   `);
   clearToolTimers();
+  mantenerPantalla();   // después de limpiar: clearToolTimers() suelta la pantalla
   announce(`${g.name}: ${phase==='tense' ? 'tensa' : 'suelta'}.`);
   let remaining = secs;
   const el = document.getElementById('tenseTimer');
