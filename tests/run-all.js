@@ -30,6 +30,7 @@ const LOCAL = [
   ['pantallatest', 'La pantalla no se apaga en los ejercicios guiados y se suelta al acabar'],
   ['compattest', 'Tablets antiguas: sin ?./??, sin depender de inset ni de MediaQueryList.addEventListener'],
   ['malainteracciontest', 'Mala interacción: insultos o amenazas no son tu técnica; avisa al responsable'],
+  ['derivaciontest', 'Derivación: aviso en Desánimo y en la Ayuda, sin la frase de crisis descartada'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],
@@ -47,20 +48,21 @@ const suites = process.argv.includes('--live') ? LOCAL.concat(LIVE) : LOCAL;
 let pass = 0, fail = 0;
 const failures = [];
 for (const [file, desc] of suites) {
-  let out = '';
+  let out = '', cortada = false;
   try {
     out = execFileSync(process.execPath, [path.join(__dirname, file + '.js')], { cwd: __dirname, encoding: 'utf8', timeout: 10 * 60 * 1000, stdio: ['ignore', 'pipe', 'pipe'] });
   } catch (e) {
-    out = (e.stdout || '') + (e.stderr || '');
+    out = (e.stdout || '') + (e.stderr || ''); cortada = true;
     failures.push(`${file}: terminó con error\n${out.split('\n').slice(-8).join('\n')}`);
   }
   const p = (out.match(/^PASS /gm) || []).length;
   const f = (out.match(/^FAIL .*$/gm) || []);
-  pass += p; fail += f.length;
+  // Una suite que se detiene con error cuenta como fallo aunque no haya llegado a imprimir FAIL
+  pass += p; fail += f.length + (cortada ? 1 : 0);
   f.forEach(line => failures.push(`${file}: ${line}`));
   // Las pruebas que no usan PASS/FAIL (axe, responsive, referencias) imprimen su propio resumen
   const summary = p || f.length ? `${p} pass, ${f.length} fail` : out.trim().split('\n').slice(-1)[0];
-  console.log(`${f.length ? '✗' : '✓'} ${file.padEnd(12)} ${desc}\n    ${summary}`);
+  console.log(`${f.length || cortada ? '✗' : '✓'} ${file.padEnd(12)} ${desc}\n    ${summary}${cortada ? ' · se detuvo con error' : ''}`);
 }
 console.log(`\nTOTAL: ${pass} comprobaciones superadas, ${fail} fallidas`);
 if (failures.length) { console.log('\nFallos:\n' + failures.join('\n')); process.exitCode = 1; }
