@@ -26,6 +26,7 @@ const LOCAL = [
   ['borradotest', 'Borrar todos los datos: comprueba el borrado, sin borrados a medias ni datos ajenos'],
   ['qltest', 'Barra compacta de «¿Qué necesitas ahora?» en móvil con un segundo botón'],
   ['momentotest', 'El momento de decidir: texto final, Repetir, Volver y atrás'],
+  ['pestanastest', 'Dos pestañas: una copia vieja no pisa ni resucita datos'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],

@@ -2385,6 +2385,15 @@ function flushSave(){ if(saveTimer || save.pendiente) save(); }
 // Si se oculta o cierra la página con un guardado pendiente, se escribe ya para no perder texto
 window.addEventListener('pagehide', flushSave);
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') flushSave(); });
+/* Otra pestaña de la app ha guardado (o borrado) los datos: esta tiene una copia vieja y, si guardara,
+   pisaría lo nuevo (o devolvería datos borrados). Se recarga con lo guardado, sin escribir nada antes.
+   Solo si de verdad es distinto: así dos pestañas no se recargan la una a la otra en bucle. */
+window.addEventListener('storage', e=>{
+  if(e.storageArea !== localStorage || (e.key !== LS_KEY && e.key !== null)) return;
+  if(e.key === LS_KEY && e.newValue === JSON.stringify(state)) return;
+  clearTimeout(saveTimer); saveTimer = null; save.pendiente = false;
+  location.reload();
+});
 /* Guarda un cambio ya aplicado en memoria. Si no se puede guardar, lo deshace con revert()
    (save() ya ha mostrado el aviso de error) y devuelve false: la interfaz no debe confirmar
    ni avanzar. */
