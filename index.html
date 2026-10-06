@@ -919,6 +919,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 @media (hover:hover){ .ql-compact-btn:hover{border-color:var(--ds-line-strong);} }
 .ql-compact-btn:active{background:var(--ds-canvas);}
 @media (max-width:420px){ .ql-compact-btn .ql-go{font-size:0;} .ql-compact-btn .ql-go .ic{width:18px;height:18px;} .ql-compact-bar:has(#qlKitSlotCompact .ql-kit) .ql-compact-btn > .ql-em, .ql-compact-bar:has(#qlTestSlotCompact .ql-btn) .ql-compact-btn > .ql-em{display:none;} }
+/* Con un segundo botón en la barra compacta («Seguir mi test» o «Activar mi plan»), entre 421 y 559 px tampoco cabe la pista «Ver accesos rápidos»: sin esto el título se partía en 3 líneas o se montaba con la pista */
+@media (min-width:421px) and (max-width:559px){ .ql-compact-bar:has(#qlKitSlotCompact .ql-kit) .ql-compact-btn .ql-go, .ql-compact-bar:has(#qlTestSlotCompact .ql-btn) .ql-compact-btn .ql-go{font-size:0;} .ql-compact-bar:has(#qlKitSlotCompact .ql-kit) .ql-compact-btn .ql-go .ic, .ql-compact-bar:has(#qlTestSlotCompact .ql-btn) .ql-compact-btn .ql-go .ic{width:18px;height:18px;} .ql-compact-bar:has(#qlKitSlotCompact .ql-kit) .ql-compact-btn > .ql-em, .ql-compact-bar:has(#qlTestSlotCompact .ql-btn) .ql-compact-btn > .ql-em{display:none;} }
 @media (min-width:601px){ .ql-row{grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));} .quick-launcher:not(.ql-compact) #qlRow{grid-template-columns:repeat(4, minmax(0, 1fr));} }
 /* Lanzador en dos grupos: momentos del turno y cómo estoy ahora */
 .ql-sub{margin:var(--sp-3) 0 var(--sp-2);font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);}

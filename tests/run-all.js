@@ -24,6 +24,7 @@ const LOCAL = [
   ['guardadotest', 'Reset y Kit con el almacenamiento fallando: nada se da por guardado'],
   ['patronestest', 'Mis patrones: solo acciones hechas o decididas, sin negaciones ni hipótesis'],
   ['borradotest', 'Borrar todos los datos: comprueba el borrado, sin borrados a medias ni datos ajenos'],
+  ['qltest', 'Barra compacta de «¿Qué necesitas ahora?» en móvil con un segundo botón'],
   ['sepaintro', 'Explicación plegable del Diario'],
   ['welcometest', 'Bienvenida de primera vez'],
   ['atrastest', 'Atrás en el Reset, gesto atrás del móvil y plan del Kit'],
