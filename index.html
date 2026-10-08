@@ -955,10 +955,6 @@ main:focus{outline:none;}
 /* Ajustes sugeridos: rótulo en frase normal, sin mayúsculas */
 .ds .reset-sug-title{margin:var(--sp-3) 0 var(--sp-2);font-size:var(--fs-sm);font-weight:650;color:var(--ds-ink-2);}
 .ds .reset-sug-title span{color:var(--tone-ink);}
-/* Con plan guardado, «No sé qué necesito» va dentro de «Más situaciones» */
-.ql-nsqn-alt{display:none;}
-#qlRow.con-kit > .ql-nsqn{display:none;}
-#qlRow.con-kit .ql-nsqn-alt{display:flex;}
 /* ---------- Modo Reset ---------- */
 /* Progreso R-E-S-E-T: barra y letra por paso; el nombre del paso actual siempre visible */
 .ds .reset-steps{display:grid;grid-template-columns:repeat(6, minmax(0, 1fr));gap:4px;list-style:none;margin:0 0 var(--sp-4);padding:0;}
@@ -1332,7 +1328,6 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
       <button type="button" class="ql-btn ql-nsqn" onclick="startNoSeQueNecesito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span><span class="ql-lb">No sé qué necesito</span></button>
       <div id="qlMoreWrap" class="ql-more-collapsed">
         <button type="button" class="ql-btn" onclick="startGrounding()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg></span><span class="ql-lb">No paro de darle vueltas</span></button>
-        <button type="button" class="ql-btn ql-nsqn-alt" onclick="startNoSeQueNecesito()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></span><span class="ql-lb">No sé qué necesito</span></button>
         <button type="button" class="ql-btn" onclick="startPauseDecision()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-pause-oct"/></svg></span><span class="ql-lb">Reacciono en automático</span></button>
         <button type="button" class="ql-btn" onclick="startMomentoDecidir()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-split"/></svg></span><span class="ql-lb">Dudo en la parada</span></button>
         <button type="button" class="ql-btn" onclick="startResultadoProceso()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span class="ql-lb">Presión por objetivo</span></button>
@@ -2743,8 +2738,6 @@ function renderQlKitButton(){
     ? `<button type="button" class="ql-btn ql-kit" onclick="activarKitPlan()"><span class="ql-em"><svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg></span><span class="ql-lb">Activar mi plan</span></button>`
     : '';
   ['qlKitSlot', 'qlKitSlotCompact'].forEach(id=>{ const slot = document.getElementById(id); if(slot) slot.innerHTML = html; });
-  // Con plan, «Ahora mismo» sigue en 4 a la vista: «No sé qué necesito» pasa a «Más situaciones»
-  const row = document.getElementById('qlRow'); if(row) row.classList.toggle('con-kit', !!html);
 }
 renderQlKitButton();
 
