@@ -809,6 +809,17 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds label.check-item{font-family:inherit;font-size:var(--fs-md);font-weight:400;letter-spacing:normal;margin-top:0;line-height:1.45;}
 .ds label.check-item b{font-weight:700;}
 .ds .mini-card > b + p{margin-top:4px;}
+/* «Pruébalo» en Aprender: una situación, tres opciones y la explicación de la elegida. No guarda nada */
+.ds .practica{margin:var(--sp-4) 0 0;padding:var(--sp-4);background:var(--ds-canvas);border-radius:12px;}
+.ds .practica-q{margin:0 0 var(--sp-3);color:var(--ds-ink);font-weight:650;}
+.ds .practica-ops{display:flex;flex-direction:column;gap:var(--sp-2);}
+.ds .practica-ops .chip{width:100%;}
+.ds .practica .practica-fb{margin:var(--sp-3) 0 0;color:var(--ds-ink);}
+/* La opción elegida no es un acierto ni un error: tinte neutro, como los chips de las herramientas */
+.ds .practica .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--ds-ink) 10%, var(--ds-surface));border-color:var(--ds-ink);color:var(--ds-ink);}
+:root[data-theme="dark"] .ds .practica .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--ds-ink) 14%, var(--ds-surface));}
+@supports not (color: color-mix(in srgb, red 50%, blue)){ .ds .practica .chip[aria-pressed="true"], :root[data-theme="dark"] .ds .practica .chip[aria-pressed="true"]{background:var(--ds-surface);} }
+.ds .practica .practica-fb:empty{display:none;}
 
 /* ---------- Herramientas, Ayuda y diálogos en el sistema de diseño ---------- */
 #toolOverlay .overlay-header b, #helpOverlay .overlay-header b{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--ds-ink);white-space:normal;}
@@ -1441,6 +1452,16 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
           <div class="mini-card"><b>Interpretación</b><p>«Soy peor que él.»</p></div>
           <div class="mini-card"><b>Acción útil</b><p>«¿Qué puedo aprender de cómo está trabajando?»</p></div>
           <p class="desc">El dato es un hecho observable. La interpretación es el significado que le damos a ese hecho; no es el hecho en sí. La acción útil te ayuda a volver al presente y centrarte en lo que sí puedes hacer ahora mismo. Es la misma lógica que el Diario S-E-P-A, aplicada a la comparación social.</p>
+          <div class="practica" role="group" aria-labelledby="prDatoQ">
+            <p class="eyebrow">Pruébalo</p>
+            <p class="practica-q" id="prDatoQ">Llevas 0 socios a media tarde, tu compañero lleva 5 y piensas: «No sirvo para esto, hoy ya no saco nada». ¿Cuál de estas frases es un dato?</p>
+            <div class="practica-ops">
+              <button type="button" class="chip chip-block" data-action="practica" aria-pressed="false" data-fb="Eso es un dato: se puede comprobar. Lo demás es lo que tú le añades.">«Llevo 0 y mi compañero lleva 5.»</button>
+              <button type="button" class="chip chip-block" data-action="practica" aria-pressed="false" data-fb="Es una interpretación: un juicio sobre ti a partir de un número de media tarde.">«No sirvo para esto.»</button>
+              <button type="button" class="chip chip-block" data-action="practica" aria-pressed="false" data-fb="Es una predicción: todavía no ha pasado. El dato es solo cuánto llevas ahora.">«Hoy ya no saco nada.»</button>
+            </div>
+            <p class="practica-fb"></p>
+          </div>
         </div>
       </details>
 
@@ -1506,6 +1527,16 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
             <li>Si solo miras el número: <b>Resultado vs. Proceso</b>.</li>
             <li>Si se repite varios días: <b>Modo Reset</b>.</li>
           </ul>
+          <div class="practica" role="group" aria-labelledby="prEstresQ">
+            <p class="eyebrow">Pruébalo</p>
+            <p class="practica-q" id="prEstresQ">Tras un rechazo brusco, notas el pulso acelerado y la respiración corta. ¿Qué encaja mejor primero?</p>
+            <div class="practica-ops">
+              <button type="button" class="chip chip-block" data-action="practica" aria-pressed="false" data-fb="Encaja: cuando el cuerpo va acelerado, lo primero es bajar la activación física.">Suspiro fisiológico</button>
+              <button type="button" class="chip chip-block" data-action="practica" aria-pressed="false" data-fb="Ayuda más cuando la cabeza no para. Aquí manda el cuerpo: empieza por la respiración.">Grounding 5-4-3-2-1</button>
+              <button type="button" class="chip chip-block" data-action="practica" aria-pressed="false" data-fb="Sirve cuando solo miras el número. Con el pulso así, primero baja la activación.">Resultado vs. Proceso</button>
+            </div>
+            <p class="practica-fb"></p>
+          </div>
           <p class="quote"><b>El objetivo no es no sentir estrés. Es detectarlo antes de que empiece a dirigir cómo trabajas.</b></p>
         </div>
       </details>
@@ -3995,6 +4026,13 @@ function startNoSeQueNecesito(){
     </div>
   `);
 }
+/* «Pruébalo» en Aprender: marca la opción elegida y muestra su explicación; se puede cambiar de opción */
+function elegirPractica(btn){
+  const box = btn.closest('.practica');
+  box.querySelectorAll('[data-action="practica"]').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+  box.querySelector('.practica-fb').textContent = btn.dataset.fb;
+  announce(btn.dataset.fb);
+}
 function nsqnGo(key){ const o = NSQN_OPCIONES.find(x => x.key === key); if(o) o.abrir(); }
 
 /* ---- Grounding 5-4-3-2-1 ---- */
@@ -5637,6 +5675,7 @@ Object.assign(ACTIONS, {
   toolRepeat: () => { if(typeof toolRepeatFn === 'function') toolRepeatFn(); },
   finalizarRP: el => finalizarRP(el.dataset.value),
   nsqnGo: el => nsqnGo(el.dataset.value),
+  practica: el => elegirPractica(el),
   delConfidenceAnchor: el => delConfidenceAnchor(dataIdx(el)),
   runAnchorGuide: el => runAnchorGuide(dataIdx(el)),
   delVisualAnchor: el => delVisualAnchor(dataIdx(el)),
