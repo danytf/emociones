@@ -820,6 +820,10 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 :root[data-theme="dark"] .ds .practica .chip[aria-pressed="true"]{background:color-mix(in srgb, var(--ds-ink) 14%, var(--ds-surface));}
 @supports not (color: color-mix(in srgb, red 50%, blue)){ .ds .practica .chip[aria-pressed="true"], :root[data-theme="dark"] .ds .practica .chip[aria-pressed="true"]{background:var(--ds-surface);} }
 .ds .practica .practica-fb:empty{display:none;}
+/* Nombre de herramienta dentro de un texto de Aprender que la abre (mismo peso que la negrita que sustituye) */
+.ds .enlace-herramienta{display:inline;padding:0;margin:0;background:none;border:0;font:inherit;font-weight:700;color:var(--ds-ink);cursor:pointer;
+  text-decoration:underline;text-decoration-color:var(--ds-line-strong);text-underline-offset:3px;text-align:left;}
+@media (hover:hover){ .ds .enlace-herramienta:hover{text-decoration-color:currentColor;} }
 
 /* ---------- Herramientas, Ayuda y diálogos en el sistema de diseño ---------- */
 #toolOverlay .overlay-header b, #helpOverlay .overlay-header b{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--ds-ink);white-space:normal;}
@@ -1522,10 +1526,10 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
           <p><b>¿Qué puedo hacer?</b></p>
           <p>No siempre puedes cambiar lo que lo provoca. Sí puedes detectarlo antes: <b>¿Qué está pasando? → ¿Qué me estoy diciendo? → ¿Qué noto? → ¿Qué puedo hacer ahora?</b></p>
           <ul>
-            <li>Si notas el cuerpo acelerado: <b>Suspiro fisiológico</b> o <b>Tense &amp; Release</b>.</li>
-            <li>Si la cabeza no para: <b>Grounding 5-4-3-2-1</b>.</li>
-            <li>Si solo miras el número: <b>Resultado vs. Proceso</b>.</li>
-            <li>Si se repite varios días: <b>Modo Reset</b>.</li>
+            <li>Si notas el cuerpo acelerado: <button type="button" class="enlace-herramienta" aria-haspopup="dialog" data-action="abrirHerramienta" data-value="Suspiro fisiológico">Suspiro fisiológico</button> o <button type="button" class="enlace-herramienta" aria-haspopup="dialog" data-action="abrirHerramienta" data-value="Tense &amp; Release">Tense &amp; Release</button>.</li>
+            <li>Si la cabeza no para: <button type="button" class="enlace-herramienta" aria-haspopup="dialog" data-action="abrirHerramienta" data-value="Grounding 5-4-3-2-1">Grounding 5-4-3-2-1</button>.</li>
+            <li>Si solo miras el número: <button type="button" class="enlace-herramienta" aria-haspopup="dialog" data-action="abrirHerramienta" data-value="Resultado vs. Proceso">Resultado vs. Proceso</button>.</li>
+            <li>Si se repite varios días: <button type="button" class="enlace-herramienta" aria-haspopup="dialog" data-action="abrirHerramienta" data-value="Modo Reset">Modo Reset</button>.</li>
           </ul>
           <div class="practica" role="group" aria-labelledby="prEstresQ">
             <p class="eyebrow">Pruébalo</p>
@@ -4033,6 +4037,13 @@ function elegirPractica(btn){
   box.querySelector('.practica-fb').textContent = btn.dataset.fb;
   announce(btn.dataset.fb);
 }
+/* Herramientas que se abren desde un nombre en Aprender («¿Qué es el estrés?»): las mismas aperturas
+   que «Probar ahora» y el Kit; el Reset entra por su portada, como desde la pestaña Reset */
+const APRENDER_HERRAMIENTAS = {
+  'Resultado vs. Proceso': ()=>startResultadoProceso(),
+  'Modo Reset': ()=>openReset()
+};
+function abrirHerramienta(nombre){ const f = APRENDER_HERRAMIENTAS[nombre] || KIT_TOOL_EXACT[nombre]; if(f) f(); }
 function nsqnGo(key){ const o = NSQN_OPCIONES.find(x => x.key === key); if(o) o.abrir(); }
 
 /* ---- Grounding 5-4-3-2-1 ---- */
@@ -5676,6 +5687,7 @@ Object.assign(ACTIONS, {
   finalizarRP: el => finalizarRP(el.dataset.value),
   nsqnGo: el => nsqnGo(el.dataset.value),
   practica: el => elegirPractica(el),
+  abrirHerramienta: el => abrirHerramienta(el.dataset.value),
   delConfidenceAnchor: el => delConfidenceAnchor(dataIdx(el)),
   runAnchorGuide: el => runAnchorGuide(dataIdx(el)),
   delVisualAnchor: el => delVisualAnchor(dataIdx(el)),
