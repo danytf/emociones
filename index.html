@@ -3927,7 +3927,7 @@ function selectRP(val){
         <p class="desc">El resultado también depende de cosas que no controlas; el proceso es donde puedes actuar.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-outline" onclick="startResultadoProceso()">Repetir</button>
-          <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
+          <button type="button" class="btn btn-navy" onclick="closeTool()">Vuelvo a calle</button>
         </div>
       </div>
     `);
@@ -3951,7 +3951,7 @@ function finalizarRP(foco){
       <p class="quote-strong">«${escapeHtml(foco)}»</p>
       <div class="btn-row" style="margin-top:14px;">
         <button type="button" class="btn btn-outline" onclick="startResultadoProceso()">Repetir</button>
-        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Vuelvo a calle</button>
       </div>
     </div>
   `);
@@ -3979,7 +3979,7 @@ function selectMomentoDecidir(val){
         <p class="desc">No todas las paradas tienen que producirse. Decidir con criterio también es parte del trabajo.</p>
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-outline" onclick="startMomentoDecidir()">Repetir</button>
-          <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
+          <button type="button" class="btn btn-navy" onclick="closeTool()">Vuelvo a calle</button>
         </div>
       </div>
     `);
@@ -3992,7 +3992,7 @@ function selectMomentoDecidir(val){
       <p class="quote-strong">«Primero decido. Después veo qué pasa.»</p>
       <div class="btn-row" style="margin-top:14px;">
         <button type="button" class="btn btn-outline" onclick="startMomentoDecidir()">Repetir</button>
-        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Vuelvo a calle</button>
       </div>
     </div>
   `);
@@ -4336,7 +4336,7 @@ function finalizarPedirFeedback(){
       ${state.kitPersona ? `<p class="desc" style="margin-top:10px;">Puedes pedírselo a: <b>${escapeHtml(state.kitPersona)}</b></p>` : ''}
       <div class="btn-row" style="margin-top:14px;flex-wrap:wrap;">
         <button type="button" class="btn btn-outline" onclick="startPedirFeedback()">Repetir</button>
-        <button type="button" class="btn btn-navy" onclick="closeTool()">Volver</button>
+        <button type="button" class="btn btn-navy" onclick="closeTool()">Vuelvo a calle</button>
       </div>
       <button type="button" class="btn btn-outline btn-sm" style="margin-top:10px;" data-action="guardarPedirFeedbackEnKit">Guardar como mi petición del Kit</button>
     </div>
