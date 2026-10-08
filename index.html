@@ -3854,6 +3854,7 @@ function renderPauseStep(){
     ${summary}
     <button type="button" class="btn btn-navy" onclick="nextPause()">${pauseIdx<pauseSteps.length-1?'Siguiente':'Terminar'}</button>
   `);
+  announce(`Paso ${pauseIdx+1} de ${pauseSteps.length}: ${s.title}.`);
 }
 function nextPause(){
   const s = pauseSteps[pauseIdx];
@@ -3894,6 +3895,7 @@ function renderBadApproachStep(){
     </div>
     <button type="button" class="btn btn-navy" onclick="nextBadApproach()">${badApproachIdx<badApproachSteps.length-1?'Siguiente':'Terminar'}</button>
   `);
+  announce(`Paso ${badApproachIdx+1} de ${badApproachSteps.length}: ${s.title}.`);
 }
 function nextBadApproach(){
   const s = badApproachSteps[badApproachIdx];
