@@ -3214,6 +3214,8 @@ function guardarSepa(){
   // Formulario limpio, sin avisos de un intento anterior
   document.querySelectorAll('#view-diario [data-error-id]').forEach(clearFieldError);
   notify(editando ? 'Registro actualizado.' : 'Registro guardado. Lo tienes en el Historial.');
+  // En móvil el aviso tapaba por completo el botón, que conserva el foco: se lleva a la zona visible
+  document.getElementById('sepaSaveBtn').scrollIntoView({block:'center'});
 }
 function editarSepa(id){
   const e = state.sepaEntries.find(x=>x.id===id);
