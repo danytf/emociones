@@ -219,7 +219,7 @@ main{
 .kit-flow-step{padding:8px 12px;}
 .kit-flow-step p{margin:2px 0 0;font-size:var(--fs-md);font-weight:700;color:var(--text-primary);}
 .kit-flow-step p.kit-flow-empty{font-weight:400;font-style:italic;color:var(--text-secondary);}
-.kit-flow-label{font-size:11px;font-weight:800;letter-spacing:.4px;}
+.kit-flow-label{font-size:12px;font-weight:800;letter-spacing:.4px;}
 .kit-flow-arrow{text-align:center;color:var(--text-secondary);line-height:1.4;}
 .tool-group.tracking .tool-cards{grid-template-columns:repeat(auto-fit, minmax(min(320px,100%),480px));}
 #sepaHistorial{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:10px;align-content:start;}
@@ -254,7 +254,7 @@ main{
 .card .desc{color:var(--text-secondary);font-size:var(--fs-sm);margin-bottom:12px;line-height:1.6;}
 .card .desc:last-child{margin-bottom:0;}
 .badge{
-  display:inline-block;font-size:11px;font-weight:700;
+  display:inline-block;font-size:12px;font-weight:700;
   padding:3px 9px;border-radius:999px;letter-spacing:.4px;
   text-transform:uppercase;margin-bottom:8px;
 }
@@ -418,7 +418,7 @@ label{font-size:var(--fs-sm);font-weight:700;color:var(--text-secondary);display
 .slider-wrap{margin-bottom:12px;}
 input[type=range]{width:100%;accent-color:var(--wesser-red);}
 .range-val{text-align:center;font-weight:800;font-size:var(--fs-xl);color:var(--ds-ink);margin-top:6px;}
-.range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:2px;}
+.range-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-top:2px;}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
@@ -430,7 +430,7 @@ input[type=range]{width:100%;accent-color:var(--wesser-red);}
 
 .circle-control{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
 .circle-control .cc-col{flex:1;min-width:96px;background:var(--bg-main);border:1px solid var(--border-color);border-radius:12px;padding:10px;}
-.circle-control .cc-col b{font-size:11px;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:6px;color:var(--wesser-red);}
+.circle-control .cc-col b{font-size:12px;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:6px;color:var(--wesser-red);}
 .circle-control .cc-col ul{margin:0;padding-left:16px;font-size:var(--fs-xs);color:var(--text-secondary);}
 .circle-control .cc-col li{margin-bottom:3px;}
 
@@ -608,7 +608,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 /* ---------- Logotipo oficial ---------- */
 .brand{flex-direction:row;align-items:center;gap:12px;}
 .brand-logo{display:block;height:38px;width:auto;}
-.brand-sub{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ds-ink-3);
+.brand-sub{font-size:12px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ds-ink-3);
   padding-left:12px;border-left:1px solid var(--ds-line);line-height:1.3;}
 .brand .brand-tagline{display:block;margin-top:2px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px;font-weight:500;
   letter-spacing:normal;text-transform:none;color:var(--ds-ink-3);}
@@ -638,7 +638,8 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px));}
   header{padding-bottom:10px;}
 }
-@media (max-width:350px){ .header-tabs{gap:0;grid-template-columns:1fr 1fr 1.3fr 1fr 1fr;} .header-tabs button{font-size:11px;letter-spacing:-.03em;padding-left:0;padding-right:0;} }
+@media (max-width:430px){ .header-tabs{grid-template-columns:1fr 1fr 1.3fr 1fr 1fr;} }
+@media (max-width:350px){ .header-tabs{gap:0;} .header-tabs button{font-size:11px;letter-spacing:-.03em;padding-left:0;padding-right:0;} }
 
 /* ---------- Pantallas de lectura (Aprender, Bienestar) en el sistema de diseño ---------- */
 .ds [data-tone="neutral"], .ds[data-tone="neutral"]{--tone:var(--ds-ink-2);--tone-ink:var(--ds-ink);}
@@ -694,7 +695,7 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
 .ds .card{background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:var(--ds-radius-lg);padding:var(--sp-5);box-shadow:var(--ds-shadow);}
 .ds .card h3{font-family:var(--font-brand);font-size:var(--fs-lg);font-weight:700;color:var(--ds-ink);margin:0 0 var(--sp-4);}
 .ds .card h4{font-family:var(--font-brand);font-size:var(--fs-md);font-weight:700;color:var(--ds-ink);margin:var(--sp-4) 0 var(--sp-2);}
-.ds label{font-family:var(--font-brand);font-size:11.5px;font-weight:700;letter-spacing:.07em;color:var(--ds-ink-2);margin-top:var(--sp-4);}
+.ds label{font-family:var(--font-brand);font-size:12px;font-weight:700;letter-spacing:.07em;color:var(--ds-ink-2);margin-top:var(--sp-4);}
 .ds .card h3 + label{margin-top:0;}
 .ds label + .desc{font-size:var(--fs-sm);color:var(--ds-ink-3);}
 .ds select, .ds input[type=text], .ds textarea{background:var(--ds-surface);border:1px solid var(--ds-line-strong);border-radius:12px;color:var(--ds-ink);
@@ -895,8 +896,16 @@ details.help-item .help-body .flow-diagram{margin:14px 0;}
   .ds .emo-ic{color:var(--emo);}
 }
 .ds .kit-plan-next{text-align:left;background:var(--ds-canvas);border-radius:12px;padding:var(--sp-3) var(--sp-4);margin-top:var(--sp-3);}
-.ds .eyebrow{display:block;font-family:var(--font-brand);font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ds-ink-3);margin:0 0 var(--sp-1);}
+.ds .eyebrow{display:block;font-family:var(--font-brand);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ds-ink-3);margin:0 0 var(--sp-1);}
 .ds .kit-plan-next .desc{margin:var(--sp-1) 0 0;}
+/* Modo de alto contraste (Windows): la selección no puede depender solo de un tinte de fondo */
+@media (forced-colors: active){
+  .header-tabs button.active{outline:3px solid Highlight;outline-offset:-3px;}
+  .ds .chip.selected, .ds .chip[aria-pressed="true"], .ds .practica .chip[aria-pressed="true"]{border:3px solid Highlight;}
+  .step-dots span, .ds .step-dots span, .ds .reset-steps li::before{border:1px solid CanvasText;}
+  .step-dots span.on, .ds .step-dots span.on, #toolOverlay .step-dots span.on,
+  .ds .reset-steps li.done::before, .ds .reset-steps li.on::before{background:Highlight;border-color:Highlight;}
+}
 /* ---------- Accesibilidad visual y táctil ---------- */
 /* Preguntas como etiqueta de campo: se leen como texto, no como rótulo en mayúsculas */
 .ds label.q-label{font-family:inherit;font-size:var(--fs-md);font-weight:650;letter-spacing:normal;text-transform:none;color:var(--ds-ink);line-height:1.4;}
