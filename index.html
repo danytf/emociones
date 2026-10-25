@@ -2130,6 +2130,7 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
         <p class="desc">Los datos que guardas (Diario, Checkpoints, Check-ins, Reset, Kit y recursos personales) se almacenan <b>solo en este dispositivo y no se envían a ningún sitio</b>. Eso significa que <b>no hay una copia de seguridad automática</b>: si borras los datos del navegador o cambias de navegador, móvil o tablet, pueden perderse. Exporta una copia desde aquí para guardarla a salvo. Los formularios de uso rápido que no generan un registro no se conservan al cerrar la herramienta.</p>
         <p class="desc" style="font-size:var(--fs-xs);">Los datos se almacenan localmente en este navegador. La app no los envía a un servidor. No están cifrados; en un dispositivo compartido, otras personas con acceso al mismo perfil del navegador podrían verlos.</p>
         <p class="desc" style="font-size:var(--fs-xs);">Para abrir la app necesitas conexión. Una vez abierta, funciona sin cobertura: si la pierdes, no recargues la página. Tus datos siguen guardados en el dispositivo aunque no puedas abrirla en ese momento.</p>
+        <p id="datosCopia" class="desc" style="font-size:var(--fs-xs);"></p>
         <div class="btn-row" style="margin-top:10px;">
           <button type="button" class="btn btn-navy" onclick="exportarDatos()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-save"/></svg> Exportar datos</button>
           <button type="button" class="btn btn-outline" onclick="document.getElementById('importDatosInput').click()"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-upload"/></svg> Importar datos</button>
@@ -2145,6 +2146,8 @@ p, li, .desc, .trow-desc{text-wrap:pretty;}
 <script>
 /* ============ STATE ============ */
 const LS_KEY = 'wesserAppState';
+const LS_COPIA = 'wesserLastBackup';        // cuándo se descargó la última copia de seguridad
+const LS_AVISO_COPIA = 'wesserBackupAviso';  // desde cuándo se cuentan los 30 días del recordatorio
 const LS_KEY_CORRUPTO = 'wesserAppStateCorrupto';   // copia intacta de unos datos que no se han podido leer
 const DATA_VERSION = 3;
 const EXPORT_FORMAT = 'wesser-app-data';
@@ -2624,6 +2627,35 @@ function localDateStamp(d){
   const pad = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
+/* ---- Recordatorio de copia de seguridad: los datos viven solo en el navegador, que puede borrarlos
+   (Safari tras ~7 días sin abrir la web, o con poco espacio). Aviso discreto cada 30 días si hay datos. ---- */
+const DIAS_COPIA = 30, MS_DIA = 86400000;
+function leerFecha(clave){
+  try{ const t = Date.parse(localStorage.getItem(clave)); return Number.isFinite(t) ? t : null; }catch(e){ return null; }
+}
+function tieneRegistros(){
+  return [state.sepaEntries, state.checkpoints, state.checkins, state.resetHistory, state.exitos, state.kitSenales].some(a => a.length > 0)
+    || !!(state.kitHerramienta || state.miMotivo);
+}
+function registrarCopia(){ try{ localStorage.setItem(LS_COPIA, nowIso()); }catch(e){} actualizarCopiaInfo(); }
+function actualizarCopiaInfo(){
+  const el = document.getElementById('datosCopia'), t = leerFecha(LS_COPIA);
+  if(!el) return;
+  if(t === null){ el.textContent = 'Todavía no has descargado ninguna copia de seguridad en este dispositivo.'; return; }
+  const dias = Math.max(0, Math.floor((Date.now() - t) / MS_DIA));
+  el.textContent = 'Última copia descargada: ' + localDateStamp(new Date(t)) + (dias === 0 ? ' (hoy).' : dias === 1 ? ' (ayer).' : ` (hace ${dias} días).`);
+}
+function avisoCopia(){
+  actualizarCopiaInfo();
+  if(!tieneRegistros()) return;
+  const ref = Math.max(leerFecha(LS_COPIA) || 0, leerFecha(LS_AVISO_COPIA) || 0), ahora = Date.now();
+  try{
+    if(!ref){ localStorage.setItem(LS_AVISO_COPIA, nowIso()); return; }   // empieza a contar sin avisar
+    if(ahora - ref < DIAS_COPIA * MS_DIA || document.getElementById('toast').classList.contains('show')) return;
+    localStorage.setItem(LS_AVISO_COPIA, nowIso());
+    notify('Hace más de 30 días de tu última copia. Descarga una en Ayuda › Mis datos › «Exportar datos», por si el navegador borra tus datos.');
+  }catch(e){}
+}
 function exportarDatos(){
   flushSave();
   let url = null;
@@ -2639,6 +2671,7 @@ function exportarDatos(){
     // Margen antes de liberar el Blob: algunos navegadores inician la descarga de forma asíncrona
     const toRevoke = url;
     setTimeout(()=>URL.revokeObjectURL(toRevoke), 30000);
+    registrarCopia();
     const n = (arr, uno, varios) => `${arr.length} ${arr.length===1 ? uno : varios}`;
     datosMsg(`Copia de seguridad descargada: ${filename}. `
       + `Incluye ${n(state.sepaEntries,'registro del Diario','registros del Diario')}, `
@@ -2706,7 +2739,7 @@ async function borrarTodosDatos(){
     : 'No se han podido borrar todos tus datos: el navegador solo ha permitido borrar una parte. Vuelve a pulsar «Borrar todos los datos» o revisa el almacenamiento del navegador.', 'error');
 }
 /* Claves de esta app en el navegador. Solo se tocan estas: nunca localStorage.clear(), que borraría datos ajenos */
-const CLAVES_APP = [LS_KEY, LS_KEY_CORRUPTO, 'wesserLastView', 'wesserWelcomeSeen', 'wesserSepaIntro'];
+const CLAVES_APP = [LS_KEY, LS_KEY_CORRUPTO, LS_COPIA, LS_AVISO_COPIA, 'wesserLastView', 'wesserWelcomeSeen', 'wesserSepaIntro'];
 /* Borra las claves de la app y comprueba con getItem() que ya no están. Si algo falla, vuelve a escribir
    las que ya se habían borrado (no se queda a medias) y lo dice: 'ok', 'intacto' (todo restaurado) o 'parcial'. */
 function borrarClavesApp(){
@@ -5778,6 +5811,7 @@ if(loadState.corrupto){
     ? 'No se han podido leer tus datos guardados. Se ha conservado una copia sin tocar en este navegador; avisa a quien te dio la app antes de borrar nada.'
     : 'No se han podido leer tus datos guardados y no se ha podido conservar una copia. Avisa a quien te dio la app antes de guardar nada nuevo.', 'error');
 }
+avisoCopia();
 // Se abre en la última sección usada (Herramientas la primera vez): la herramienta de calle, a un toque
 (function(){
   let v = null;
